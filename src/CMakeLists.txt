@@ -6,6 +6,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionExecute.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionProperty.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Item.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validation.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/PropertyManager.h

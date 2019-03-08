@@ -22,28 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
-
 #include <string>
 
 namespace shellanything
 {
-  /// <summary>
-  /// Returns the cursor position.
-  /// </summary>
-  /// <remarks>The console x and y coordinate system is 0 based</remarks>
-  /// <param name="col">The x coordinate of the cursor.</param>
-  /// <param name="row">The y coordinate of the cursor.</param>
-  void foo();
-
-  struct Context
-  {
-    std::string path;
-    bool isFile;
-    bool isDirectory;
-  };
-
 } //namespace shellanything
-
-#endif //SA_CONTEXT_H

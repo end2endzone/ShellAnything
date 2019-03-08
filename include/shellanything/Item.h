@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef SA_ITEM_H
+#define SA_ITEM_H
 
 #include "shellanything/Validation.h"
 #include "shellanything/Action.h"
@@ -74,4 +74,4 @@ namespace shellanything
 
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //SA_ITEM_H
