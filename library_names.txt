@@ -1,0 +1,11 @@
+ShellAnything
+ShellIt
+ShellExView
+Shell Extension Warehouse
+Shell Extension Depot
+ShellExBin
+ShellExMill
+ShellForge
+Shell Extension Composer
+FileExplorer Forge
+FileExplorer Composer
