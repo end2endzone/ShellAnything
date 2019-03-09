@@ -22,47 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_NODE_H
-#define SA_NODE_H
+#ifndef TEST_SA_NODE_H
+#define TEST_SA_NODE_H
 
-#include <string>
-#include <vector>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-
-  class Node
+  class TestNode : public ::testing::Test
   {
   public:
-    typedef std::vector<Node*> NodePtrList;
-
-    Node();
-    Node(const std::string & name);
-    virtual ~Node();
-
-    const std::string & getName() const;
-
-    Node * getParent() const;
-
-    Node * addChild(Node * child);
-
-    NodePtrList getChildren() const;
-    NodePtrList findChildren(const std::string & name) const;
-    Node * findFirst(const std::string & name) const;
-
-    size_t getNumChildren() const;
-    Node * getChild(size_t index) const;
-
-    size_t depth() const;
-    bool isLeaf() const;
-    bool isRoot() const;
-
-protected:
-    std::string mName;
-    Node * mParent;
-    NodePtrList mChildren;
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_NODE_H
+#endif //TEST_SA_NODE_H
