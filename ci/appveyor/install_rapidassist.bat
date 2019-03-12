@@ -30,13 +30,13 @@ mkdir build >NUL 2>NUL
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=%rapidassist_DIR% ..
 if %errorlevel% neq 0 exit /b %errorlevel%
-cmake --build . --config Debug
+cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
 echo ============================================================================
 echo Installing into %rapidassist_DIR%
 echo ============================================================================
-cmake --build . --config Debug --target INSTALL
+cmake --build . --config %Configuration% --target INSTALL
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
