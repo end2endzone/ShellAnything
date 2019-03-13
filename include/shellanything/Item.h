@@ -26,7 +26,7 @@
 #define SA_ITEM_H
 
 #include "shellanything/Node.h"
-#include "shellanything/Validation.h"
+#include "shellanything/Validator.h"
 #include "shellanything/Action.h"
 #include <string>
 #include <vector>
@@ -49,11 +49,11 @@ namespace shellanything
     const std::string & getName() const;
     void setName(const std::string & iName);
 
-    const Validation & getValidity() const;
-    void setValidity(const Validation & iValidity);
+    const Validator & getValidity() const;
+    void setValidity(const Validator & iValidity);
 
-    const Validation & getVisibility() const;
-    void setVisibility(const Validation & iVisibility);
+    const Validator & getVisibility() const;
+    void setVisibility(const Validator & iVisibility);
 
     const Action::ActionPtrList & getActionsList() const;
     void addAction(Action * iAction);
@@ -64,8 +64,8 @@ namespace shellanything
   private:
     bool mSeparator;
     std::string mName;
-    Validation mValidity;
-    Validation mVisibility;
+    Validator mValidity;
+    Validator mVisibility;
     Action::ActionPtrList mActions;
   };
 

@@ -66,22 +66,22 @@ namespace shellanything
     mName = iName;
   }
 
-  const Validation & Item::getValidity() const
+  const Validator & Item::getValidity() const
   {
     return mValidity;
   }
 
-  void Item::setValidity(const Validation & iValidity)
+  void Item::setValidity(const Validator & iValidity)
   {
     mValidity = iValidity;
   }
 
-  const Validation & Item::getVisibility() const
+  const Validator & Item::getVisibility() const
   {
     return mVisibility;
   }
 
-  void Item::setVisibility(const Validation & iVisibility)
+  void Item::setVisibility(const Validator & iVisibility)
   {
     mVisibility = iVisibility;
   }

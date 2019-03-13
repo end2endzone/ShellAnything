@@ -10,7 +10,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Configuration.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Item.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/Validation.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/PropertyManager.h
 )
 
@@ -27,7 +27,7 @@ add_library(shellanything STATIC
   Configuration.cpp
   Item.cpp
   Node.cpp
-  Validation.cpp
+  Validator.cpp
   PropertyManager.cpp
 )
 

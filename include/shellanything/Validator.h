@@ -31,12 +31,12 @@
 namespace shellanything
 {
 
-  class Validation
+  class Validator
   {
   public:
-    Validation();
-    Validation(const Validation & iValidation);
-    virtual ~Validation();
+    Validator();
+    Validator(const Validator & iValidation);
+    virtual ~Validator();
 
     const int & getMaxFiles() const;
     void setMaxFiles(const int & iMaxFiles);
@@ -52,7 +52,7 @@ namespace shellanything
 
     bool isValid(const Context & iContext) const;
 
-    const Validation & operator =(const Validation & iValidation);
+    const Validator & operator =(const Validator & iValidation);
 
   private:
     int mMaxFiles;

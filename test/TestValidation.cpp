@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestValidation.h"
-#include "shellanything/Validation.h"
+#include "shellanything/Validator.h"
 #include "shellanything/PropertyManager.h"
 #include "rapidassist/gtesthelp.h"
 
@@ -51,7 +51,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validation v;
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -78,7 +78,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Users");
     c.elements.push_back("C:\\Windows");
 
-    Validation v;
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -106,7 +106,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validation v;
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -142,7 +142,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validation v;
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );

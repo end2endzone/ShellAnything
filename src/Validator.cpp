@@ -24,7 +24,7 @@
 
 #include <string>
 #include <limits>
-#include "shellanything/Validation.h"
+#include "shellanything/Validator.h"
 #include "shellanything/PropertyManager.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
@@ -55,62 +55,62 @@ namespace shellanything
 
 
 
-  Validation::Validation() :
+  Validator::Validator() :
     mMaxFiles(std::numeric_limits<int>::max()),
     mMaxDirectories(std::numeric_limits<int>::max())
   {
   }
 
-  Validation::Validation(const Validation & iValidation)
+  Validator::Validator(const Validator & iValidation)
   {
     (*this) = iValidation;
   }
   
-  Validation::~Validation()
+  Validator::~Validator()
   {
   }
 
-  const int & Validation::getMaxFiles() const
+  const int & Validator::getMaxFiles() const
   {
     return mMaxFiles;
   }
 
-  void Validation::setMaxFiles(const int & iMaxFiles)
+  void Validator::setMaxFiles(const int & iMaxFiles)
   {
     mMaxFiles = iMaxFiles;
   }
 
-  const int & Validation::getMaxDirectories() const
+  const int & Validator::getMaxDirectories() const
   {
     return mMaxDirectories;
   }
 
-  void Validation::setMaxDirectories(const int & iMaxDirectories)
+  void Validator::setMaxDirectories(const int & iMaxDirectories)
   {
     mMaxDirectories = iMaxDirectories;
   }
 
-  const std::string & Validation::getProperties() const
+  const std::string & Validator::getProperties() const
   {
     return mProperties;
   }
 
-  void Validation::setProperties(const std::string & iProperties)
+  void Validator::setProperties(const std::string & iProperties)
   {
     mProperties = iProperties;
   }
 
-  const std::string & Validation::getFileExtensions() const
+  const std::string & Validator::getFileExtensions() const
   {
     return mFileExtensions;
   }
 
-  void Validation::setFileExtensions(const std::string & iFileExtensions)
+  void Validator::setFileExtensions(const std::string & iFileExtensions)
   {
     mFileExtensions = iFileExtensions;
   }
 
-  bool Validation::isValid(const Context & iContext) const
+  bool Validator::isValid(const Context & iContext) const
   {
     if (iContext.filesCount > mMaxFiles)
       return false; //too many files selected
@@ -157,7 +157,7 @@ namespace shellanything
     return true;
   }
 
-  const Validation & Validation::operator =(const Validation & iValidation)
+  const Validator & Validator::operator =(const Validator & iValidation)
   {
     this->mMaxFiles       = iValidation.mMaxFiles      ;
     this->mMaxDirectories = iValidation.mMaxDirectories;
