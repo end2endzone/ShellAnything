@@ -27,6 +27,13 @@
 
 namespace shellanything { namespace test
 {
+  Item * newItem(const std::string & name)
+  {
+    Item * item = new Item();
+    item->setName(name);
+    return item;
+  }
+
   class MyItem : public Item
   {
   public:
@@ -79,11 +86,11 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestItem, testItemOwnership)
   {
-    Item * root =   (new Item("html"));
-    Item * body =   (new Item("body"));
-    Item * child1 = (new Item("h1"));
-    Item * child2 = (new Item("p"));
-    Item * child3 = (new Item("p"));
+    Item * root =   newItem("html");
+    Item * body =   newItem("body");
+    Item * child1 = newItem("h1");
+    Item * child2 = newItem("p");
+    Item * child3 = newItem("p");
 
     //no children yet
     bool deleted = false;
@@ -107,11 +114,11 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestItem, testActionOwnership)
   {
-    Item * root =   (new Item("html"));
-    Item * body =   (new Item("body"));
-    Item * child1 = (new Item("h1"));
-    Item * child2 = (new Item("p"));
-    Item * child3 = (new Item("p"));
+    Item * root =   newItem("html");
+    Item * body =   newItem("body");
+    Item * child1 = newItem("h1");
+    Item * child2 = newItem("p");
+    Item * child3 = newItem("p");
 
     //no children yet
     bool deleted = false;
@@ -124,7 +131,7 @@ namespace shellanything { namespace test
     body->addChild(child1);
     body->addChild(child2);
     body->addChild(child3);
-    child3->addAction(my_test_action); //child3 takes ownership of my_test_item
+    child3->addChild(my_test_action); //child3 takes ownership of my_test_item
 
     //destroy the tree
     delete root;

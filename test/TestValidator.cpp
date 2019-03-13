@@ -51,7 +51,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validator v;
+    Validator v("Validator");
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -78,7 +78,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Users");
     c.elements.push_back("C:\\Windows");
 
-    Validator v;
+    Validator v("Validator");
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -106,7 +106,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validator v;
+    Validator v("Validator");
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -142,7 +142,7 @@ namespace shellanything { namespace test
     c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
     c.elements.push_back("C:\\Windows\\System32\\services.msc");
 
-    Validator v;
+    Validator v("Validator");
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );

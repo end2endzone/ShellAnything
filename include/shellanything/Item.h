@@ -40,7 +40,6 @@ namespace shellanything
     typedef std::vector<Item*> ItemPtrList;
 
     Item();
-    Item(const std::string & name);
     virtual ~Item();
 
     bool isSeparator() const;
@@ -49,24 +48,15 @@ namespace shellanything
     const std::string & getName() const;
     void setName(const std::string & iName);
 
-    const Validator & getValidity() const;
-    void setValidity(const Validator & iValidity);
+    Validator * getValidity();
+    void setValidity(Validator * iValidity);
 
-    const Validator & getVisibility() const;
-    void setVisibility(const Validator & iVisibility);
-
-    const Action::ActionPtrList & getActionsList() const;
-    void addAction(Action * iAction);
-
-    ItemPtrList getChildrenItems() const;
-    Item * getChildItem(size_t index) const;
+    Validator * getVisibility();
+    void setVisibility(Validator * iVisibility);
 
   private:
     bool mSeparator;
     std::string mName;
-    Validator mValidity;
-    Validator mVisibility;
-    Action::ActionPtrList mActions;
   };
 
 } //namespace shellanything

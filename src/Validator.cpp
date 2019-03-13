@@ -55,17 +55,12 @@ namespace shellanything
 
 
 
-  Validator::Validator() :
+  Validator::Validator(const std::string & type) : Node(type),
     mMaxFiles(std::numeric_limits<int>::max()),
     mMaxDirectories(std::numeric_limits<int>::max())
   {
   }
 
-  Validator::Validator(const Validator & iValidation)
-  {
-    (*this) = iValidation;
-  }
-  
   Validator::~Validator()
   {
   }
@@ -155,16 +150,6 @@ namespace shellanything
     }
 
     return true;
-  }
-
-  const Validator & Validator::operator =(const Validator & iValidation)
-  {
-    this->mMaxFiles       = iValidation.mMaxFiles      ;
-    this->mMaxDirectories = iValidation.mMaxDirectories;
-    this->mProperties     = iValidation.mProperties    ;
-    this->mFileExtensions = iValidation.mFileExtensions;
-
-    return (*this);
   }
 
 } //namespace shellanything

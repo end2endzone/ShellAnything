@@ -26,24 +26,12 @@
 
 namespace shellanything
 {
-  Item::Item()
-  {
-  }
-
-  Item::Item(const std::string & name) : Node(name)
+  Item::Item() : Node("Item")
   {
   }
 
   Item::~Item()
   {
-    //delete actions
-    for(size_t i=0; i<mActions.size(); i++) 
-    {
-      Action * action = mActions[i];
-      if (action)
-        delete action;
-    }
-    mActions.clear();
   }
 
   bool Item::isSeparator() const
@@ -66,58 +54,41 @@ namespace shellanything
     mName = iName;
   }
 
-  const Validator & Item::getValidity() const
+  Validator * Item::getValidity()
   {
-    return mValidity;
+    Node * node = this->findFirst("Validity");
+    Validator * validator = dynamic_cast<Validator *>(node);
+    return validator;
   }
 
-  void Item::setValidity(const Validator & iValidity)
+  void Item::setValidity(Validator * iValidity)
   {
-    mValidity = iValidity;
-  }
-
-  const Validator & Item::getVisibility() const
-  {
-    return mVisibility;
-  }
-
-  void Item::setVisibility(const Validator & iVisibility)
-  {
-    mVisibility = iVisibility;
-  }
-
-  const Action::ActionPtrList & Item::getActionsList() const
-  {
-    return mActions;
-  }
-
-  void Item::addAction(Action * iAction)
-  {
-    mActions.push_back(iAction);
-  }
-
-  Item::ItemPtrList Item::getChildrenItems() const
-  {
-    Item::ItemPtrList items;
-    NodePtrList nodes = getChildren();
-    for(size_t i=0; i<nodes.size(); i++)
+    Validator * previous_validator = getValidity();
+    if (previous_validator)
     {
-      Node * node = nodes[i];
-      Item * item = dynamic_cast<Item*>(node);
-      if (item)
-        items.push_back(item);
+      this->removeChild(previous_validator);
+      delete previous_validator;
     }
-    return items;
+    this->addChild(iValidity);
   }
 
-  Item * Item::getChildItem(size_t index) const
+  Validator * Item::getVisibility()
   {
-    Node * node = this->getChild(index);
-    if (!node)
-      return NULL;
-
-    Item * item = dynamic_cast<Item*>(node);
-    return item;
+    Node * node = this->findFirst("Visibility");
+    Validator * validator = dynamic_cast<Validator *>(node);
+    return validator;
   }
+
+  void Item::setVisibility(Validator * iVisibility)
+  {
+    Validator * previous_validator = getVisibility();
+    if (previous_validator)
+    {
+      this->removeChild(previous_validator);
+      delete previous_validator;
+    }
+    this->addChild(iVisibility);
+  }
+
 
 } //namespace shellanything

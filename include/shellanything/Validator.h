@@ -25,17 +25,17 @@
 #ifndef SA_VALIDATION_H
 #define SA_VALIDATION_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Context.h"
 #include <string>
 
 namespace shellanything
 {
 
-  class Validator
+  class Validator : public Node
   {
   public:
-    Validator();
-    Validator(const Validator & iValidation);
+    Validator(const std::string & type);
     virtual ~Validator();
 
     const int & getMaxFiles() const;
@@ -51,8 +51,6 @@ namespace shellanything
     void setFileExtensions(const std::string & iFileExtensions);
 
     bool isValid(const Context & iContext) const;
-
-    const Validator & operator =(const Validator & iValidation);
 
   private:
     int mMaxFiles;

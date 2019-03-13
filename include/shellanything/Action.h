@@ -32,19 +32,14 @@
 namespace shellanything
 {
 
-  class Action
+  class Action : public Node
   {
   public:
-    typedef std::vector<Action*> ActionPtrList;
 
     Action(const std::string & type);
     virtual ~Action();
 
-    const std::string & getActionType() const;
     virtual bool execute(const Context & iContext) const = 0;
-
-  private:
-    std::string mType;
   };
 
 
