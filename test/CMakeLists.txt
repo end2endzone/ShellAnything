@@ -12,8 +12,8 @@ add_executable(shellanything_unittest
   TestNode.h
   TestPropertyManager.cpp
   TestPropertyManager.h
-  TestValidation.cpp
-  TestValidation.h
+  TestValidator.cpp
+  TestValidator.h
 )
 
 # Unit test projects requires to link with pthread if also linking with gtest

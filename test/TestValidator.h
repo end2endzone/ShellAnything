@@ -22,14 +22,14 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef TEST_SA_VALIDATION_H
-#define TEST_SA_VALIDATION_H
+#ifndef TEST_SA_VALIDATOR_H
+#define TEST_SA_VALIDATOR_H
 
 #include <gtest/gtest.h>
 
 namespace shellanything { namespace test
 {
-  class TestValidation : public ::testing::Test
+  class TestValidator : public ::testing::Test
   {
   public:
     virtual void SetUp();
@@ -39,4 +39,4 @@ namespace shellanything { namespace test
 } //namespace test
 } //namespace shellanything
 
-#endif //TEST_SA_VALIDATION_H
+#endif //TEST_SA_VALIDATOR_H

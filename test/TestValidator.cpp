@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestValidation.h"
+#include "TestValidator.h"
 #include "shellanything/Validator.h"
 #include "shellanything/PropertyManager.h"
 #include "rapidassist/gtesthelp.h"
@@ -31,17 +31,17 @@ namespace shellanything { namespace test
 {
 
   //--------------------------------------------------------------------------------------------------
-  void TestValidation::SetUp()
+  void TestValidator::SetUp()
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
     pmgr.clear();
   }
   //--------------------------------------------------------------------------------------------------
-  void TestValidation::TearDown()
+  void TestValidator::TearDown()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestValidation, testMaxFiles)
+  TEST_F(TestValidator, testMaxFiles)
   {
     Context c;
     c.filesCount = 4;
@@ -69,7 +69,7 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestValidation, testMaxDirectories)
+  TEST_F(TestValidator, testMaxDirectories)
   {
     Context c;
     c.filesCount = 0;
@@ -96,7 +96,7 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestValidation, testProperties)
+  TEST_F(TestValidator, testProperties)
   {
     Context c;
     c.filesCount = 4;
@@ -132,7 +132,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestValidation, testFileExtensions)
+  TEST_F(TestValidator, testFileExtensions)
   {
     Context c;
     c.filesCount = 4;
