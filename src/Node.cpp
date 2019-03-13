@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/Node.h"
+#include <algorithm>
 
 namespace shellanything
 {
@@ -73,6 +74,19 @@ namespace shellanything
     return child;
   }
 
+  bool Node::removeChild(Node * child)
+  {
+    Node::NodePtrList::iterator it = std::find(mChildren.begin(), mChildren.end(), child);
+    if (it != mChildren.end())
+    {
+      //found!
+      Node * node = (*it);
+      mChildren.erase(it);
+      return true;
+    }
+    return false;
+  }
+
   Node::NodePtrList Node::getChildren() const
   {
     return mChildren;
@@ -111,6 +125,17 @@ namespace shellanything
     if (index < mChildren.size())
     {
       Node * node = mChildren[index];
+      return node;
+    }
+    return NULL;
+  }
+
+  Node * Node::removeChild(size_t index)
+  {
+    if (index < mChildren.size())
+    {
+      Node * node = mChildren[index];
+      mChildren.erase(mChildren.begin() + index);
       return node;
     }
     return NULL;
