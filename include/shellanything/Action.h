@@ -25,6 +25,7 @@
 #ifndef SA_ACTION_H
 #define SA_ACTION_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Context.h"
 #include <vector>
 
@@ -34,15 +35,18 @@ namespace shellanything
   class Action
   {
   public:
-    Action();
+    typedef std::vector<Action*> ActionPtrList;
+
+    Action(const std::string & type);
     virtual ~Action();
 
-    virtual const std::string & getType() const = 0;
-
+    const std::string & getActionType() const;
     virtual bool execute(const Context & iContext) const = 0;
+
+  private:
+    std::string mType;
   };
 
-  typedef std::vector<Action*> ActionPtrList;
 
 } //namespace shellanything
 

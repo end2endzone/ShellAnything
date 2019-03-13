@@ -22,51 +22,31 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ActionProperty.h"
-#include "shellanything/PropertyManager.h"
+#ifndef SA_CONFIGURATION_H
+#define SA_CONFIGURATION_H
+
+#include "shellanything/Configuration.h"
+#include "shellanything/Item.h"
+#include <vector>
 
 namespace shellanything
 {
 
-  ActionProperty::ActionProperty() : Action("ActionProperty")
+  class Configuration
   {
-  }
+  public:
+    Configuration();
+    virtual ~Configuration();
 
-  ActionProperty::~ActionProperty()
-  {
-  }
+    const std::string & getName() const;
+    void setName(const std::string & iName);
 
-  bool ActionProperty::execute(const Context & iContext) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string name = pmgr.expand(mName);
-    std::string value = pmgr.expand(mValue);
 
-    //debug
-    printf("Setting property '%s' to '%s'\n", name.c_str(), value.c_str());
-    pmgr.setProperty(name, value);
-
-    return true;
-  }
-
-  const std::string & ActionProperty::getName() const
-  {
-    return mName;
-  }
-
-  void ActionProperty::setName(const std::string & iName)
-  {
-    mName = iName;
-  }
-
-  const std::string & ActionProperty::getValue() const
-  {
-    return mValue;
-  }
-
-  void ActionProperty::setValue(const std::string & iValue)
-  {
-    mValue = iValue;
-  }
+  private:
+    std::string mName;
+    Item::ItemPtrList mItems;
+  };
 
 } //namespace shellanything
+
+#endif //SA_CONFIGURATION_H

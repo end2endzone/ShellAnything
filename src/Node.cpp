@@ -32,10 +32,10 @@ namespace shellanything
   {
   }
 
-  Node::Node(const std::string & name) :
+  Node::Node(const std::string & type) :
     mParent(NULL)
   {
-    mName = name;
+    mNodeType = type;
   }
 
   Node::~Node()
@@ -50,9 +50,9 @@ namespace shellanything
     mChildren.clear();
   }
 
-  const std::string & Node::getName() const
+  const std::string & Node::getNodeType() const
   {
-    return mName;
+    return mNodeType;
   }
 
   Node * Node::getParent() const
@@ -78,24 +78,24 @@ namespace shellanything
     return mChildren;
   }
 
-  Node::NodePtrList Node::findChildren(const std::string & name) const
+  Node::NodePtrList Node::findChildren(const std::string & type) const
   {
     Node::NodePtrList nodes;
     for(size_t i=0; i<mChildren.size(); i++) 
     {
       Node * n = mChildren[i];
-      if (n->mName == name)
+      if (n->mNodeType == type)
         nodes.push_back(n);
     }
     return nodes;
   }
 
-  Node * Node::findFirst(const std::string & name) const
+  Node * Node::findFirst(const std::string & type) const
   {
     for(size_t i=0; i<mChildren.size(); i++) 
     {
       Node * n = mChildren[i];
-      if (n->mName == name)
+      if (n->mNodeType == type)
         return n;
     }
     return NULL;

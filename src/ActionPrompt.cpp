@@ -28,18 +28,12 @@
 namespace shellanything
 {
 
-  ActionPrompt::ActionPrompt()
+  ActionPrompt::ActionPrompt() : Action("ActionPrompt")
   {
   }
 
   ActionPrompt::~ActionPrompt()
   {
-  }
-
-  const std::string & ActionPrompt::getType() const
-  {
-    static std::string _type("ActionPrompt");
-    return _type;
   }
 
   bool ActionPrompt::execute(const Context & iContext) const

@@ -31,13 +31,12 @@
 namespace shellanything
 {
 
-  class ActionExecute
+  class ActionExecute : public Action
   {
   public:
     ActionExecute();
     virtual ~ActionExecute();
 
-    virtual const std::string & getType() const;
     virtual bool execute(const Context & iContext) const;
 
     const std::string & getPath() const;

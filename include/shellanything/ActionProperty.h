@@ -31,13 +31,12 @@
 namespace shellanything
 {
 
-  class ActionProperty
+  class ActionProperty : public Action
   {
   public:
     ActionProperty();
     virtual ~ActionProperty();
 
-    virtual const std::string & getType() const;
     virtual bool execute(const Context & iContext) const;
 
     const std::string & getName() const;

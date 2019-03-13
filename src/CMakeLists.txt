@@ -7,6 +7,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/Configuration.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Item.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validation.h
@@ -23,6 +24,7 @@ add_library(shellanything STATIC
   ActionExecute.cpp
   ActionPrompt.cpp
   ActionProperty.cpp
+  Configuration.cpp
   Item.cpp
   Node.cpp
   Validation.cpp

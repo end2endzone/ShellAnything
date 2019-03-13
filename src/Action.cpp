@@ -22,8 +22,22 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include <string>
+#include "shellanything/Action.h"
 
 namespace shellanything
 {
+
+  Action::Action(const std::string & type) : mType(type)
+  {
+  }
+
+  Action::~Action()
+  {
+  }
+
+  const std::string & Action::getActionType() const
+  {
+    return mType;
+  }
+
 } //namespace shellanything

@@ -28,18 +28,12 @@
 namespace shellanything
 {
 
-  ActionExecute::ActionExecute()
+  ActionExecute::ActionExecute() : Action("ActionExecute")
   {
   }
 
   ActionExecute::~ActionExecute()
   {
-  }
-
-  const std::string & ActionExecute::getType() const
-  {
-    static std::string _type("ActionExecute");
-    return _type;
   }
 
   bool ActionExecute::execute(const Context & iContext) const

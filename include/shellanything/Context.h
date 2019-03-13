@@ -34,8 +34,8 @@ namespace shellanything
   struct Context
   {
     std::vector<std::string> elements;
-    size_t filesCount;
-    size_t directoryCount;
+    int filesCount;
+    int directoryCount;
   };
 
 } //namespace shellanything

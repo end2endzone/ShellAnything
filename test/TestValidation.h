@@ -22,51 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ActionProperty.h"
-#include "shellanything/PropertyManager.h"
+#ifndef TEST_SA_VALIDATION_H
+#define TEST_SA_VALIDATION_H
 
-namespace shellanything
+#include <gtest/gtest.h>
+
+namespace shellanything { namespace test
 {
-
-  ActionProperty::ActionProperty() : Action("ActionProperty")
+  class TestValidation : public ::testing::Test
   {
-  }
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
+  };
 
-  ActionProperty::~ActionProperty()
-  {
-  }
-
-  bool ActionProperty::execute(const Context & iContext) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string name = pmgr.expand(mName);
-    std::string value = pmgr.expand(mValue);
-
-    //debug
-    printf("Setting property '%s' to '%s'\n", name.c_str(), value.c_str());
-    pmgr.setProperty(name, value);
-
-    return true;
-  }
-
-  const std::string & ActionProperty::getName() const
-  {
-    return mName;
-  }
-
-  void ActionProperty::setName(const std::string & iName)
-  {
-    mName = iName;
-  }
-
-  const std::string & ActionProperty::getValue() const
-  {
-    return mValue;
-  }
-
-  void ActionProperty::setValue(const std::string & iValue)
-  {
-    mValue = iValue;
-  }
-
+} //namespace test
 } //namespace shellanything
+
+#endif //TEST_SA_VALIDATION_H

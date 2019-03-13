@@ -37,18 +37,18 @@ namespace shellanything
     typedef std::vector<Node*> NodePtrList;
 
     Node();
-    Node(const std::string & name);
+    Node(const std::string & type);
     virtual ~Node();
 
-    const std::string & getName() const;
+    const std::string & getNodeType() const;
 
     Node * getParent() const;
 
     Node * addChild(Node * child);
 
     NodePtrList getChildren() const;
-    NodePtrList findChildren(const std::string & name) const;
-    Node * findFirst(const std::string & name) const;
+    NodePtrList findChildren(const std::string & type) const;
+    Node * findFirst(const std::string & type) const;
 
     size_t getNumChildren() const;
     Node * getChild(size_t index) const;
@@ -58,7 +58,7 @@ namespace shellanything
     bool isRoot() const;
 
 protected:
-    std::string mName;
+    std::string mNodeType;
     Node * mParent;
     NodePtrList mChildren;
   };

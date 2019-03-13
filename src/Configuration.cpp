@@ -22,51 +22,28 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ActionProperty.h"
-#include "shellanything/PropertyManager.h"
+#include "shellanything/Configuration.h"
 
 namespace shellanything
 {
 
-  ActionProperty::ActionProperty() : Action("ActionProperty")
+  Configuration::Configuration()
   {
   }
 
-  ActionProperty::~ActionProperty()
+  Configuration::~Configuration()
   {
   }
 
-  bool ActionProperty::execute(const Context & iContext) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string name = pmgr.expand(mName);
-    std::string value = pmgr.expand(mValue);
-
-    //debug
-    printf("Setting property '%s' to '%s'\n", name.c_str(), value.c_str());
-    pmgr.setProperty(name, value);
-
-    return true;
-  }
-
-  const std::string & ActionProperty::getName() const
+  const std::string & Configuration::getName() const
   {
     return mName;
   }
 
-  void ActionProperty::setName(const std::string & iName)
+  void Configuration::setName(const std::string & iName)
   {
     mName = iName;
   }
 
-  const std::string & ActionProperty::getValue() const
-  {
-    return mValue;
-  }
-
-  void ActionProperty::setValue(const std::string & iValue)
-  {
-    mValue = iValue;
-  }
 
 } //namespace shellanything

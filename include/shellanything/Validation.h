@@ -35,6 +35,7 @@ namespace shellanything
   {
   public:
     Validation();
+    Validation(const Validation & iValidation);
     virtual ~Validation();
 
     const int & getMaxFiles() const;
@@ -50,6 +51,8 @@ namespace shellanything
     void setFileExtensions(const std::string & iFileExtensions);
 
     bool isValid(const Context & iContext) const;
+
+    const Validation & operator =(const Validation & iValidation);
 
   private:
     int mMaxFiles;

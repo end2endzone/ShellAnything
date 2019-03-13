@@ -31,13 +31,12 @@
 namespace shellanything
 {
 
-  class ActionClipboard
+  class ActionClipboard : public Action
   {
   public:
     ActionClipboard();
     virtual ~ActionClipboard();
 
-    virtual const std::string & getType() const;
     virtual bool execute(const Context & iContext) const;
 
     const std::string & getValue() const;

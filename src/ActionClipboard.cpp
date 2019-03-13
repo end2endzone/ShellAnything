@@ -28,18 +28,12 @@
 namespace shellanything
 {
 
-  ActionClipboard::ActionClipboard()
+  ActionClipboard::ActionClipboard() : Action("ActionClipboard")
   {
   }
 
   ActionClipboard::~ActionClipboard()
   {
-  }
-
-  const std::string & ActionClipboard::getType() const
-  {
-    static std::string _type("ActionClipboard");
-    return _type;
   }
 
   bool ActionClipboard::execute(const Context & iContext) const

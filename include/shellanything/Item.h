@@ -25,6 +25,7 @@
 #ifndef SA_ITEM_H
 #define SA_ITEM_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Validation.h"
 #include "shellanything/Action.h"
 #include <string>
@@ -33,13 +34,13 @@
 namespace shellanything
 {
 
-  class Item;
-  typedef std::vector<Item*> ItemPtrList;
-
-  class Item
+  class Item : public Node
   {
   public:
+    typedef std::vector<Item*> ItemPtrList;
+
     Item();
+    Item(const std::string & name);
     virtual ~Item();
 
     bool isSeparator() const;
@@ -54,23 +55,19 @@ namespace shellanything
     const Validation & getVisibility() const;
     void setVisibility(const Validation & iVisibility);
 
-    const ActionPtrList & getActionPtrList() const;
-    void setActionPtrList(const ActionPtrList & iActionPtrList);
+    const Action::ActionPtrList & getActionsList() const;
+    void addAction(Action * iAction);
 
-    const ItemPtrList & getItemPtrList() const;
-    void setItemPtrList(const ItemPtrList & iItemPtrList);
+    ItemPtrList getChildrenItems() const;
+    Item * getChildItem(size_t index) const;
 
   private:
     bool mSeparator;
     std::string mName;
     Validation mValidity;
     Validation mVisibility;
-    ActionPtrList mActionPtrList;
-    ItemPtrList mItemPtrList;
+    Action::ActionPtrList mActions;
   };
-
-  typedef std::vector<Item> ItemList;
-
 
 } //namespace shellanything
 

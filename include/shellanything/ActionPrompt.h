@@ -31,13 +31,12 @@
 namespace shellanything
 {
 
-  class ActionPrompt
+  class ActionPrompt : public Action
   {
   public:
     ActionPrompt();
     virtual ~ActionPrompt();
 
-    virtual const std::string & getType() const;
     virtual bool execute(const Context & iContext) const;
 
     const std::string & getName() const;
