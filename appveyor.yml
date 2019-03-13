@@ -1,0 +1,79 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+# version must contains build number to make sure that all commits are processed by appveyor.
+# If build number is not part of the version than appveyor build fails with the following message: "Build version x.y.z already exists."
+version: "{branch} (#{build})"
+
+# branches to build
+branches:
+  only:
+    - master
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - cmd: git config --global core.autocrlf true
+  - ps: $env:GIT_HASH=$env:APPVEYOR_REPO_COMMIT.Substring(0, 10)
+
+# clone directory
+clone_folder: c:\projects\shellanything
+
+# scripts that run after cloning repository
+install:
+- cmd: echo INSTALL!
+- cmd: git submodule update --init --recursive
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+#platform: x86
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+before_build:
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_googletest.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_tinyxml2.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_rapidassist.bat
+
+build_script:
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\build_library.bat
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+# to run your custom scripts instead of automatic tests
+test_script:
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\test_script.bat
+- ps: . "$env:APPVEYOR_BUILD_FOLDER\ci\appveyor\UploadJUnitFiles.ps1" -Path "$env:APPVEYOR_BUILD_FOLDER\build\bin"
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+- path: .\build\bin\Release\shellanything_unittest.x86.release.xml
+  name: shellanything_unittest.x86.release.xml
+- path: .\build\shellanything-*-win32.exe
+  name: shellanything-win32.exe
