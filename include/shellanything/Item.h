@@ -37,8 +37,6 @@ namespace shellanything
   class Item : public Node
   {
   public:
-    typedef std::vector<Item*> ItemPtrList;
-
     Item();
     virtual ~Item();
 

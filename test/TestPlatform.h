@@ -22,37 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef TEST_SA_PLATFORM_H
+#define TEST_SA_PLATFORM_H
 
-#include <string>
-#include <vector>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-
-  class Context
+  class TestPlatform : public ::testing::Test
   {
   public:
-    typedef std::vector<std::string> ElementList;
-
-    Context();
-    virtual ~Context();
-
-    const ElementList & getElements() const;
-    void setElements(const ElementList & elements);
-
-    int getNumFiles() const;
-    int getNumDirectories() const;
-
-  private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
-
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
-
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //TEST_SA_PLATFORM_H

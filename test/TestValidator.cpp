@@ -44,12 +44,18 @@ namespace shellanything { namespace test
   TEST_F(TestValidator, testMaxFiles)
   {
     Context c;
-    c.filesCount = 4;
-    c.directoryCount = 0;
-    c.elements.push_back("C:\\Windows\\System32\\kernel32.dll");
-    c.elements.push_back("C:\\Windows\\System32\\cmd.exe");
-    c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
-    c.elements.push_back("C:\\Windows\\System32\\services.msc");
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.setElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
 
     Validator v("Validator");
 
@@ -57,26 +63,32 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.isValid(c) );
 
     //assert higher value
-    v.setMaxFiles(c.filesCount + 1);
+    v.setMaxFiles(c.getNumFiles() + 1);
     ASSERT_TRUE( v.isValid(c) );
 
     //assert exact value
-    v.setMaxFiles(c.filesCount);
+    v.setMaxFiles(c.getNumFiles());
     ASSERT_TRUE( v.isValid(c) );
 
     //assert lower value
-    v.setMaxFiles(c.filesCount - 1);
+    v.setMaxFiles(c.getNumFiles() - 1);
     ASSERT_FALSE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxDirectories)
   {
     Context c;
-    c.filesCount = 0;
-    c.directoryCount = 3;
-    c.elements.push_back("C:\\Program Files");
-    c.elements.push_back("C:\\Users");
-    c.elements.push_back("C:\\Windows");
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Program Files");
+      elements.push_back("C:\\Users"        );
+      elements.push_back("C:\\Windows"      );
+      c.setElements(elements);
+    }
+#else
+    //TODO: complete with known path to directories
+#endif
 
     Validator v("Validator");
 
@@ -84,27 +96,33 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.isValid(c) );
 
     //assert higher value
-    v.setMaxDirectories(c.directoryCount + 1);
+    v.setMaxDirectories(c.getNumDirectories() + 1);
     ASSERT_TRUE( v.isValid(c) );
 
     //assert exact value
-    v.setMaxDirectories(c.directoryCount);
+    v.setMaxDirectories(c.getNumDirectories());
     ASSERT_TRUE( v.isValid(c) );
 
     //assert lower value
-    v.setMaxDirectories(c.directoryCount - 1);
+    v.setMaxDirectories(c.getNumDirectories() - 1);
     ASSERT_FALSE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testProperties)
   {
     Context c;
-    c.filesCount = 4;
-    c.directoryCount = 0;
-    c.elements.push_back("C:\\Windows\\System32\\kernel32.dll");
-    c.elements.push_back("C:\\Windows\\System32\\cmd.exe");
-    c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
-    c.elements.push_back("C:\\Windows\\System32\\services.msc");
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.setElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
 
     Validator v("Validator");
 
@@ -135,12 +153,18 @@ namespace shellanything { namespace test
   TEST_F(TestValidator, testFileExtensions)
   {
     Context c;
-    c.filesCount = 4;
-    c.directoryCount = 0;
-    c.elements.push_back("C:\\Windows\\System32\\kernel32.dll");
-    c.elements.push_back("C:\\Windows\\System32\\cmd.exe");
-    c.elements.push_back("C:\\Windows\\System32\\notepad.exe");
-    c.elements.push_back("C:\\Windows\\System32\\services.msc");
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.setElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
 
     Validator v("Validator");
 

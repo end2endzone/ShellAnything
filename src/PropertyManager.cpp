@@ -23,13 +23,15 @@
  *********************************************************************************/
 
 #include "shellanything/PropertyManager.h"
-#include "rapidassist/strings.h"
+#include "shellanything/Platform.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
 
   PropertyManager::PropertyManager()
   {
+    registerEnvironmentVariables();
   }
 
   PropertyManager::~PropertyManager()
@@ -45,6 +47,7 @@ namespace shellanything
   void PropertyManager::clear()
   {
     properties.clear();
+    registerEnvironmentVariables();
   }
 
   bool PropertyManager::hasProperty(const std::string & name) const
@@ -95,6 +98,22 @@ namespace shellanything
     }
 
     return output;
+  }
+
+  void PropertyManager::registerEnvironmentVariables()
+  {
+    //register all environment variables
+    ra::strings::StringVector vars = getEnvironmentVariables();
+    for(size_t i=0; i<vars.size(); i++)
+    {
+      const std::string & var = vars[i];
+
+      std::string name = "env." + var;
+      std::string value = ra::environment::getEnvironmentVariable(var.c_str());
+      
+      //register the variable as a valid property
+      setProperty(name, value);
+    }
   }
 
 

@@ -27,7 +27,7 @@
 namespace shellanything
 {
 
-  Configuration::Configuration()
+  Configuration::Configuration() : Node("Configuration")
   {
   }
 
@@ -35,15 +35,14 @@ namespace shellanything
   {
   }
 
-  const std::string & Configuration::getName() const
+  const std::string & Configuration::getFilePath() const
   {
-    return mName;
+    return mFilePath;
   }
 
-  void Configuration::setName(const std::string & iName)
+  void Configuration::setFilePath(const std::string & iFilePath)
   {
-    mName = iName;
+    mFilePath = iFilePath;
   }
-
 
 } //namespace shellanything

@@ -22,37 +22,34 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef SA_CONFIGMANAGER_H
+#define SA_CONFIGMANAGER_H
 
-#include <string>
-#include <vector>
+#include "shellanything/Node.h"
+#include "shellanything/Configuration.h"
+#include "shellanything/Context.h"
 
 namespace shellanything
 {
 
-  class Context
+  class ConfigManager
   {
+  private:
+    ConfigManager();
+    virtual ~ConfigManager();
+
   public:
-    typedef std::vector<std::string> ElementList;
+    static ConfigManager & getInstance();
+    Configuration * loadFile(const std::string & path);
+    void refresh();
 
-    Context();
-    virtual ~Context();
-
-    const ElementList & getElements() const;
-    void setElements(const ElementList & elements);
-
-    int getNumFiles() const;
-    int getNumDirectories() const;
+    void registerProperties(const Context & c) const;
+    void unregisterProperties(const Context & c) const;
 
   private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
-
+     Node mConfigurations;
   };
-
 
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //SA_CONFIGMANAGER_H

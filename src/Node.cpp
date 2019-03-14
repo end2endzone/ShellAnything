@@ -82,6 +82,7 @@ namespace shellanything
       //found!
       Node * node = (*it);
       mChildren.erase(it);
+      delete node;
       return true;
     }
     return false;
@@ -130,15 +131,16 @@ namespace shellanything
     return NULL;
   }
 
-  Node * Node::removeChild(size_t index)
+  bool Node::removeChild(size_t index)
   {
     if (index < mChildren.size())
     {
       Node * node = mChildren[index];
       mChildren.erase(mChildren.begin() + index);
-      return node;
+      delete node;
+      return true;
     }
-    return NULL;
+    return false;
   }
 
   size_t Node::depth() const
@@ -160,6 +162,18 @@ namespace shellanything
   bool Node::isRoot() const
   {
     return (mParent == NULL);
+  }
+
+  size_t Node::size() const
+  {
+    size_t total = 1;
+    for(size_t i=0; i<mChildren.size(); i++) 
+    {
+      Node * n = mChildren[i];
+      size_t node_size = n->size();
+      total += node_size;
+    }
+    return total;
   }
 
 } //namespace shellanything

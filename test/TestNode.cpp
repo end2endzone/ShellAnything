@@ -231,6 +231,58 @@ namespace shellanything { namespace test
     ASSERT_FALSE( child3->isRoot() );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestNode, testSize)
+  {
+    Node root("html");
+    Node * body = (new Node("body"));
+    Node * child1 = (new Node("h1"));
+    Node * child2 = (new Node("p"));
+    Node * child3 = (new Node("p"));
+
+    //no children yet
+    ASSERT_EQ( 1, root.size() );
+
+    //build tree
+    root.addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+
+    //assert
+    ASSERT_EQ( 5, root.size() );
+    ASSERT_EQ( 4, body->size() );
+    ASSERT_EQ( 1, child1->size() );
+    ASSERT_EQ( 1, child2->size() );
+    ASSERT_EQ( 1, child3->size() );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestNode, testRemoveChild)
+  {
+    Node root("html");
+    Node * body = (new Node("body"));
+    Node * child1 = (new Node("h1"));
+    Node * child2 = (new Node("p"));
+    Node * child3 = (new Node("p"));
+
+    //invalid values
+    ASSERT_FALSE( root.removeChild( (Node*)NULL ) );
+    ASSERT_FALSE( root.removeChild( child3 ) );
+    ASSERT_FALSE( root.removeChild(9999) ); //out of bounds
+
+    //build tree
+    root.addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+
+    //assert
+    ASSERT_EQ( 5, root.size() );
+    ASSERT_TRUE( body->removeChild(child3) );
+    ASSERT_EQ( 4, root.size() );
+    ASSERT_TRUE( body->removeChild(1) ); //matches child2
+    ASSERT_EQ( 3, root.size() );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

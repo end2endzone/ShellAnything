@@ -6,10 +6,18 @@ add_executable(shellanything_unittest
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
   main.cpp
+  TestConfigManager.cpp
+  TestConfigManager.h
+  TestConfiguration.cpp
+  TestConfiguration.h
+  TestContext.cpp
+  TestContext.h
   TestItem.cpp
   TestItem.h
   TestNode.cpp
   TestNode.h
+  TestPlatform.cpp
+  TestPlatform.h
   TestPropertyManager.cpp
   TestPropertyManager.h
   TestValidator.cpp

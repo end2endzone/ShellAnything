@@ -25,26 +25,22 @@
 #ifndef SA_CONFIGURATION_H
 #define SA_CONFIGURATION_H
 
-#include "shellanything/Configuration.h"
-#include "shellanything/Item.h"
-#include <vector>
+#include "shellanything/Node.h"
 
 namespace shellanything
 {
 
-  class Configuration
+  class Configuration : public Node
   {
   public:
     Configuration();
     virtual ~Configuration();
 
-    const std::string & getName() const;
-    void setName(const std::string & iName);
-
+    const std::string & getFilePath() const;
+    void setFilePath(const std::string & iFilePath);
 
   private:
-    std::string mName;
-    Item::ItemPtrList mItems;
+    std::string mFilePath;
   };
 
 } //namespace shellanything

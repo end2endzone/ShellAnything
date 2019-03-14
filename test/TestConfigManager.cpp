@@ -22,37 +22,27 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#include "TestConfigManager.h"
+#include "shellanything/ConfigManager.h"
 
-#include <string>
-#include <vector>
-
-namespace shellanything
+namespace shellanything { namespace test
 {
 
-  class Context
+  //--------------------------------------------------------------------------------------------------
+  void TestConfigManager::SetUp()
   {
-  public:
-    typedef std::vector<std::string> ElementList;
+  }
+  //--------------------------------------------------------------------------------------------------
+  void TestConfigManager::TearDown()
+  {
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testDefault)
+  {
+    ConfigManager & mgr = ConfigManager::getInstance();
 
-    Context();
-    virtual ~Context();
+  }
+  //--------------------------------------------------------------------------------------------------
 
-    const ElementList & getElements() const;
-    void setElements(const ElementList & elements);
-
-    int getNumFiles() const;
-    int getNumDirectories() const;
-
-  private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
-
-  };
-
-
+} //namespace test
 } //namespace shellanything
-
-#endif //SA_CONTEXT_H

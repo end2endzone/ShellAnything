@@ -98,6 +98,22 @@ namespace shellanything { namespace test
     }
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testEnvironmentVariableProperty)
+  {
+    PropertyManager & pmgr = PropertyManager::getInstance();
+
+#ifdef _WIN32
+    const std::string name = "env.TEMP";
+#else
+    const std::string name = "env.HOME";
+#endif
+
+    ASSERT_TRUE( pmgr.hasProperty(name) ) << "Missing registered property '" << name << "'.";
+
+    const std::string value = pmgr.getProperty(name);
+    ASSERT_FALSE( value.empty() );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

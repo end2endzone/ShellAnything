@@ -7,6 +7,8 @@ Help:
   ${selection.filename} is selection.filename (including file extension)
   ${selection.filename_noext} is selection.filename without file extension
   
+  ${env.XYZ} refers to environment variable XYZ
+  
   Property names must not contain spaces
   Property lists must be separated by ';' character
   File extension lists must be separated by ';' character

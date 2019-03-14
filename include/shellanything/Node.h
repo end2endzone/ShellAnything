@@ -30,7 +30,6 @@
 
 namespace shellanything
 {
-
   class Node
   {
   public:
@@ -53,17 +52,33 @@ namespace shellanything
 
     size_t getNumChildren() const;
     Node * getChild(size_t index) const;
-    Node * removeChild(size_t index);
+    bool removeChild(size_t index);
 
     size_t depth() const;
     bool isLeaf() const;
     bool isRoot() const;
+    size_t size() const;
 
 protected:
     std::string mNodeType;
     Node * mParent;
     NodePtrList mChildren;
   };
+
+  //utility fonctions for converting Node::NodePtrList to a vector of type T
+  template <typename T>
+  std::vector<T> filterNodes(Node::NodePtrList & nodes)
+  {
+    std::vector<T> output;
+    for(size_t i=0; i<nodes.size(); i++)
+    {
+      Node * node = nodes[i];
+      T out = dynamic_cast<T>(node);
+      if (out)
+        output.push_back(out);
+    }
+    return output;
+  }
 
 } //namespace shellanything
 

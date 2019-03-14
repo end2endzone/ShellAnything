@@ -22,37 +22,55 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
-
-#include <string>
-#include <vector>
+#include "shellanything/Context.h"
+#include "rapidassist/filesystem.h"
 
 namespace shellanything
 {
 
-  class Context
+  Context::Context() :
+    mNumFiles(0),
+    mNumDirectories(0)
   {
-  public:
-    typedef std::vector<std::string> ElementList;
+  }
 
-    Context();
-    virtual ~Context();
+  Context::~Context()
+  {
+  }
 
-    const ElementList & getElements() const;
-    void setElements(const ElementList & elements);
+  const Context::ElementList & Context::getElements() const
+  {
+    return mElements;
+  }
 
-    int getNumFiles() const;
-    int getNumDirectories() const;
+  void Context::setElements(const Context::ElementList & elements)
+  {
+    mElements = elements;
 
-  private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
+    mNumFiles = 0;
+    mNumDirectories = 0;
 
-  };
+    //get elements stats
+    for(size_t i=0; i<elements.size(); i++)
+    {
+      const std::string & element = elements[i];
+      bool isFile = ra::filesystem::fileExists(element.c_str());
+      bool isDir  = ra::filesystem::folderExists(element.c_str());
+      if (isFile)
+        mNumFiles++;
+      if (isDir)
+        mNumDirectories++;
+    }
+  }
 
+  int Context::getNumFiles() const
+  {
+    return mNumFiles;
+  }
+
+  int Context::getNumDirectories() const
+  {
+    return mNumDirectories;
+  }
 
 } //namespace shellanything
-
-#endif //SA_CONTEXT_H

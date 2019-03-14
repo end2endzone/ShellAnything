@@ -57,6 +57,8 @@ namespace shellanything
     std::string expand(const std::string & value) const;
 
   private:
+
+    void registerEnvironmentVariables();
     PropertyMap properties;
   };
 

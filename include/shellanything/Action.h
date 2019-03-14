@@ -35,6 +35,7 @@ namespace shellanything
   class Action : public Node
   {
   public:
+    typedef std::vector<Action*> ActionPtrList;
 
     Action(const std::string & type);
     virtual ~Action();

@@ -22,37 +22,20 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef SA_PLATFORM_H
+#define SA_PLATFORM_H
 
-#include <string>
-#include <vector>
+#include "rapidassist/strings.h"
 
 namespace shellanything
 {
 
-  class Context
-  {
-  public:
-    typedef std::vector<std::string> ElementList;
-
-    Context();
-    virtual ~Context();
-
-    const ElementList & getElements() const;
-    void setElements(const ElementList & elements);
-
-    int getNumFiles() const;
-    int getNumDirectories() const;
-
-  private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
-
-  };
-
+  ra::strings::StringVector getEnvironmentVariables();
+  std::string getHomeDirectory();
+  std::string getApplicationsDataDirectory();
+  std::string getDocumentsDirectory();
+  std::string getDesktopDirectory();
 
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //SA_ACTION_H

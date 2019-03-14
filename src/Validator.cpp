@@ -107,10 +107,10 @@ namespace shellanything
 
   bool Validator::isValid(const Context & iContext) const
   {
-    if (iContext.filesCount > mMaxFiles)
+    if (iContext.getNumFiles() > mMaxFiles)
       return false; //too many files selected
 
-    if (iContext.directoryCount > mMaxDirectories)
+    if (iContext.getNumDirectories() > mMaxDirectories)
       return false; //too many directories selected
 
     //validate properties
@@ -137,9 +137,10 @@ namespace shellanything
       uppercase(accepted_file_extensions);
 
       //for each file selected
-      for(size_t i=0; i<iContext.elements.size(); i++) 
+      const Context::ElementList & elements = iContext.getElements();
+      for(size_t i=0; i<elements.size(); i++) 
       {
-        const std::string & element = iContext.elements[i];
+        const std::string & element = elements[i];
         std::string current_file_extension = ra::strings::uppercase(ra::filesystem::getFileExtention(element));
 
         //each file extension must be part of accepted_file_extensions

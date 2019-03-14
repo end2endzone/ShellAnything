@@ -24,6 +24,7 @@
 
 #include "TestItem.h"
 #include "shellanything/Item.h"
+#include "shellanything/ActionExecute.h"
 
 namespace shellanything { namespace test
 {
@@ -139,6 +140,37 @@ namespace shellanything { namespace test
 
     //assert that MyAction destructor was run
     ASSERT_TRUE(deleted);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestItem, testFindAllActions)
+  {
+    Item item;
+    item.setName("Open my important directories...");
+    Validator * validity = new Validator("Validity"); //always valid
+    Validator * visibility = new Validator("Visibility"); //always visible
+    ActionExecute * action1 = new ActionExecute();
+    action1->setPath("C:\\windows\\system32\\cmd.exe");
+    action1->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\"");
+    ActionExecute * action2 = new ActionExecute();
+    action2->setPath("C:\\windows\\system32\\cmd.exe");
+    action2->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\\Documents\"");
+    ActionExecute * action3 = new ActionExecute();
+    action3->setPath("C:\\windows\\system32\\cmd.exe");
+    action3->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\\Downloads\"");
+    
+    //link everything
+    item.addChild(validity);
+    item.addChild(visibility);
+    item.addChild(action1);
+    item.addChild(action2);
+    item.addChild(action3);
+
+    //find all actions
+    Action::ActionPtrList actions = filterNodes<Action*>(item.getChildren());
+    ASSERT_EQ(3, actions.size());
+    ASSERT_EQ( action1, actions[0] );
+    ASSERT_EQ( action2, actions[1] );
+    ASSERT_EQ( action3, actions[2] );
   }
   //--------------------------------------------------------------------------------------------------
 
