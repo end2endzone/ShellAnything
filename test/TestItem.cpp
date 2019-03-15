@@ -171,6 +171,41 @@ namespace shellanything { namespace test
     ASSERT_EQ( action1, actions[0] );
     ASSERT_EQ( action2, actions[1] );
     ASSERT_EQ( action3, actions[2] );
+
+    //validate with getActions()
+    actions = item.getActions();
+    ASSERT_EQ(3, actions.size());
+    ASSERT_EQ( action1, actions[0] );
+    ASSERT_EQ( action2, actions[1] );
+    ASSERT_EQ( action3, actions[2] );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestItem, testSubItems)
+  {
+    Item * root =   newItem("html");
+    Item * body =   newItem("body");
+    Item * child1 = newItem("h1");
+    Item * child2 = newItem("p");
+    Item * child3 = newItem("p");
+
+    //no children yet
+    ASSERT_TRUE( root->getSubItems().empty() );
+
+    //build tree
+    root->addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+
+    Item::ItemPtrList subs = body->getSubItems();
+    ASSERT_EQ(3, subs.size());
+    ASSERT_EQ( child1, subs[0] );
+    ASSERT_EQ( child2, subs[1] );
+    ASSERT_EQ( child3, subs[2] );
+
+    //destroy the tree
+    delete root;
+    root = NULL;
   }
   //--------------------------------------------------------------------------------------------------
 

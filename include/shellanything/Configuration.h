@@ -33,6 +33,8 @@ namespace shellanything
   class Configuration : public Node
   {
   public:
+    typedef std::vector<Configuration*> ConfigurationPtrList;
+
     Configuration();
     virtual ~Configuration();
 

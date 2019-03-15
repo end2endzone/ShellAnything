@@ -37,6 +37,8 @@ namespace shellanything
   class Item : public Node
   {
   public:
+    typedef std::vector<Item*> ItemPtrList;
+
     Item();
     virtual ~Item();
 
@@ -51,6 +53,9 @@ namespace shellanything
 
     Validator * getVisibility();
     void setVisibility(Validator * iVisibility);
+
+    ItemPtrList getSubItems();
+    Action::ActionPtrList getActions();
 
   private:
     bool mSeparator;

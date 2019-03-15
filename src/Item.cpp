@@ -90,5 +90,17 @@ namespace shellanything
     this->addChild(iVisibility);
   }
 
+  Item::ItemPtrList Item::getSubItems()
+  {
+    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
+    return sub_items;
+  }
+
+  Action::ActionPtrList Item::getActions()
+  {
+    //cannot filter using node_type because each action classes have a different type 
+    Action::ActionPtrList actions = filterNodes<Action*>(this->getChildren());
+    return actions;
+  }
 
 } //namespace shellanything

@@ -58,4 +58,10 @@ namespace shellanything
   {
   }
 
+  Configuration::ConfigurationPtrList ConfigManager::getConfigurations()
+  {
+    Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));
+    return configurations;
+  }
+
 } //namespace shellanything
