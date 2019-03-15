@@ -37,7 +37,10 @@ namespace shellanything
     typedef std::vector<std::string> ElementList;
 
     Context();
+    Context(const Context & c);
     virtual ~Context();
+
+    const Context & operator =(const Context & c);
 
     const ElementList & getElements() const;
     void setElements(const ElementList & elements);

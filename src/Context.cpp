@@ -34,8 +34,24 @@ namespace shellanything
   {
   }
 
+  Context::Context(const Context & c)
+  {
+    (*this) = c;
+  }
+
   Context::~Context()
   {
+  }
+
+  const Context & Context::operator =(const Context & c)
+  {
+    if (this != &c)
+    {
+      mElements       = c.mElements;
+      mNumFiles       = c.mNumFiles;
+      mNumDirectories = c.mNumDirectories;
+    }
+    return (*this);
   }
 
   const Context::ElementList & Context::getElements() const

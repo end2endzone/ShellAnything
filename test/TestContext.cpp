@@ -67,6 +67,59 @@ namespace shellanything { namespace test
     ASSERT_EQ( 3, c.getNumDirectories() );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testCopy)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      elements.push_back("C:\\Program Files");
+      elements.push_back("C:\\Users"        );
+      elements.push_back("C:\\Windows"      );
+      c.setElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    ASSERT_EQ( 4, c.getNumFiles() );
+    ASSERT_EQ( 3, c.getNumDirectories() );
+
+    //operator =
+    Context c2;
+    c2 = c;
+
+    //assert both equals
+    ASSERT_EQ( c.getElements().size() , c2.getElements().size() );
+    ASSERT_EQ( c.getNumFiles()        , c2.getNumFiles()        );
+    ASSERT_EQ( c.getNumDirectories()  , c2.getNumDirectories()  );
+    for(size_t i=0; i<c.getElements().size(); i++)
+    {
+      const std::string & c1_element =  c.getElements()[i];
+      const std::string & c2_element = c2.getElements()[i];
+      ASSERT_EQ(c1_element, c2_element);
+    }
+
+    //copy constructor
+    Context c3(c);
+
+    //assert both equals
+    ASSERT_EQ( c.getElements().size() , c3.getElements().size() );
+    ASSERT_EQ( c.getNumFiles()        , c3.getNumFiles()        );
+    ASSERT_EQ( c.getNumDirectories()  , c3.getNumDirectories()  );
+    for(size_t i=0; i<c.getElements().size(); i++)
+    {
+      const std::string & c1_element =  c.getElements()[i];
+      const std::string & c3_element = c3.getElements()[i];
+      ASSERT_EQ(c1_element, c3_element);
+    }
+
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
