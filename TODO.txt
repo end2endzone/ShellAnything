@@ -1,0 +1,36 @@
+Implement the following:
+  ConfigManager::registerProperties()
+  ConfigManager::unregisterProperties()
+  ConfigManager::update(Configuration * config) --> Add a new config to the list of configurations. Delete previous existing configuration if any.
+  ConfigurationPtrList ConfigManager::getConfigurations()
+  ConfigManager::loadFile(const std::string & path, std::string & error)
+  ConfigManager::refresh()
+    --> Browse through all added "search path" and load all *.xml files.
+
+  Icon class : public Node
+    --> setPath(), setIndex()
+
+  Define Node List Types
+    --> typedef std::vector<Item*> ItemPtrList;
+    --> typedef std::vector<Configuration*> ConfigurationPtrList;
+
+  ConfigManager::clearSearchPath()
+  ConfigManager::addSearchPath()
+    --> Add an existing directory to monitor while refreshing. This option allows adding the test build project directory for picking up unit test files easily.
+
+  Item::isParent()
+    --> DO NOT CALL !isLeaf(); --> This would pick up the item's actions and validators.
+    --> Call instead bool parent_item = this->findChildren("ITEM").size() != 0;
+
+  Context::(const Context & c)
+  Context::operator =(const Context & c)
+
+  Action::ActionPtrList Item::getActions()
+  --> Action::ActionPtrList actions = filterNodes<Action*>(item.getChildren());
+
+
+Think about redesigning the Node class:
+- The node_type may not need to be set at the Node constructor level, it could have a setNodeType() and a getNodeType() method to allow setting the type when inserting the node as a child:
+  For instance, Item::addAction(Action * action) which executes the following: item.addChild(action); action->setNodeType("ACTION");
+  With this approch, the implementation of item.getChildren("ACTION") is more meaningful if the class Item is the one that have set "ACTION" as the node type.
+- Another option is to NOT CREATE a setNodeType() method but to modify addChild() to addChild(node, type) and have a getNodeType(). This allows settings the node type only when adding the node as a child of another.
