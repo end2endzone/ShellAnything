@@ -22,52 +22,37 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ITEM_H
-#define SA_ITEM_H
-
-#include "shellanything/Node.h"
 #include "shellanything/Icon.h"
-#include "shellanything/Validator.h"
-#include "shellanything/Action.h"
-#include <string>
-#include <vector>
 
 namespace shellanything
 {
-
-  class Item : public Node
+  Icon::Icon() : Node("Icon"),
+    mIndex(0)
   {
-  public:
-    typedef std::vector<Item*> ItemPtrList;
+  }
 
-    Item();
-    virtual ~Item();
+  Icon::~Icon()
+  {
+  }
 
-    bool isSeparator() const;
-    void setSeparator(bool iSeparator);
+  const std::string & Icon::getPath() const
+  {
+    return mPath;
+  }
 
-    bool isParent() const;
+  void Icon::setPath(const std::string & iPath)
+  {
+    mPath = iPath;
+  }
 
-    const std::string & getName() const;
-    void setName(const std::string & iName);
+  const int & Icon::getIndex() const
+  {
+    return mIndex;
+  }
 
-    Icon * getIcon();
-    void setIcon(Icon * iIcon);
-
-    Validator * getValidity();
-    void setValidity(Validator * iValidity);
-
-    Validator * getVisibility();
-    void setVisibility(Validator * iVisibility);
-
-    ItemPtrList getSubItems();
-    Action::ActionPtrList getActions();
-
-  private:
-    bool mSeparator;
-    std::string mName;
-  };
+  void Icon::setIndex(const int & iIndex)
+  {
+    mIndex = iIndex;
+  }
 
 } //namespace shellanything
-
-#endif //SA_ITEM_H

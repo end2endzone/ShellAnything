@@ -61,6 +61,24 @@ namespace shellanything
     mName = iName;
   }
 
+  Icon * Item::getIcon()
+  {
+    Node * node = this->findFirst("Icon");
+    Icon * icon = dynamic_cast<Icon *>(node);
+    return icon;
+  }
+
+  void Item::setIcon(Icon * iIcon)
+  {
+    Icon * previous_icon = getIcon();
+    if (previous_icon)
+    {
+      this->removeChild(previous_icon);
+      delete previous_icon;
+    }
+    this->addChild(iIcon);
+  }
+
   Validator * Item::getValidity()
   {
     Node * node = this->findFirst("Validity");

@@ -7,9 +7,6 @@ Implement the following:
   ConfigManager::refresh()
     --> Browse through all added "search path" and load all *.xml files.
 
-  Icon class : public Node
-    --> setPath(), setIndex()
-
   Context::(const Context & c)
   Context::operator =(const Context & c)
   
