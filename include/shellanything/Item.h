@@ -45,6 +45,8 @@ namespace shellanything
     bool isSeparator() const;
     void setSeparator(bool iSeparator);
 
+    bool isParent() const;
+
     const std::string & getName() const;
     void setName(const std::string & iName);
 

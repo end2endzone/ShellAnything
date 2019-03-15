@@ -64,4 +64,14 @@ namespace shellanything
     return configurations;
   }
 
+  void ConfigManager::clearSearchPath()
+  {
+    mPaths.clear();
+  }
+
+  void ConfigManager::addSearchPath(const std::string & path)
+  {
+    mPaths.push_back(path);
+  }
+
 } //namespace shellanything

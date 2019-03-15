@@ -39,6 +39,8 @@ namespace shellanything
     virtual ~ConfigManager();
 
   public:
+    typedef std::vector<std::string> PathList;
+
     static ConfigManager & getInstance();
     Configuration * loadFile(const std::string & path);
     void refresh();
@@ -48,8 +50,12 @@ namespace shellanything
 
     Configuration::ConfigurationPtrList getConfigurations();
 
+    void clearSearchPath();
+    void addSearchPath(const std::string & path);
+
   private:
-     Node mConfigurations;
+    PathList mPaths;
+    Node mConfigurations;
   };
 
 } //namespace shellanything

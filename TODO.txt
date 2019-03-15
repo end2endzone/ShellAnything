@@ -10,14 +10,6 @@ Implement the following:
   Icon class : public Node
     --> setPath(), setIndex()
 
-  ConfigManager::clearSearchPath()
-  ConfigManager::addSearchPath()
-    --> Add an existing directory to monitor while refreshing. This option allows adding the test build project directory for picking up unit test files easily.
-
-  Item::isParent()
-    --> DO NOT CALL !isLeaf(); --> This would pick up the item's actions and validators.
-    --> Call instead bool parent_item = this->findChildren("ITEM").size() != 0;
-
   Context::(const Context & c)
   Context::operator =(const Context & c)
   
