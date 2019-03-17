@@ -24,9 +24,11 @@
 
 #include "TestConfigManager.h"
 #include "shellanything/ConfigManager.h"
+#include "rapidassist/gtesthelp.h"
 
 namespace shellanything { namespace test
 {
+  static const Configuration * INVALID_CONFIGURATION = NULL;
 
   //--------------------------------------------------------------------------------------------------
   void TestConfigManager::SetUp()
@@ -37,10 +39,16 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestConfigManager, testDefault)
+  TEST_F(TestConfigManager, testLoadFile)
   {
     ConfigManager & mgr = ConfigManager::getInstance();
+    
+    const std::string path = "test_files/demo.xml";
+    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
+    Configuration * config = mgr.loadFile(path, error_message);
 
+    ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
+    ASSERT_NE( INVALID_CONFIGURATION, config );
   }
   //--------------------------------------------------------------------------------------------------
 
