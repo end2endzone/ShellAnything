@@ -2,8 +2,6 @@ Implement the following:
   ConfigManager::registerProperties()
   ConfigManager::unregisterProperties()
   ConfigManager::update(Configuration * config) --> Add a new config to the list of configurations. Delete previous existing configuration if any.
-  ConfigurationPtrList ConfigManager::getConfigurations()
-  ConfigManager::loadFile(const std::string & path, std::string & error)
   ConfigManager::refresh()
     --> Browse through all added "search path" and load all *.xml files.
 
