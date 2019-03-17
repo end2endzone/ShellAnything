@@ -66,6 +66,12 @@ namespace shellanything
 
   bool parseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
   {
+    if (element == NULL)
+    {
+      error = "XMLElement is NULL";
+      return false;
+    }
+
     attr_value = "";
 
     const XMLAttribute * attr_node = element->FindAttribute(attr_name);
@@ -91,26 +97,26 @@ namespace shellanything
     return true;
   }
 
-  Validator * parseValidator(const XMLElement* xml_validator, std::string & error)
+  Validator * parseValidator(const XMLElement* element, std::string & error)
   {
-    if (!xml_validator)
+    if (element == NULL)
     {
-      error = "Validity is NULL";
+      error = "XMLElement is NULL";
       return NULL;
     }
 
     Validator * validator = NULL;
-    if (VALIDITY_NODE == xml_validator->Name())
+    if (VALIDITY_NODE == element->Name())
     {
       validator = new Validator("Validity");
     }
-    else if (VISIBILITY_NODE == xml_validator->Name())
+    else if (VISIBILITY_NODE == element->Name())
     {
       validator = new Validator("Visibility");
     }
     else
     {
-      error = "Node '" + std::string(xml_validator->Name()) + "' at line " + ra::strings::toString(xml_validator->GetLineNum()) + " is not a <validity> or <visibility> node";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
       return NULL;
     }
 
@@ -121,7 +127,7 @@ namespace shellanything
     //parse maxfiles
     tmp_str = "";
     tmp_int = -1;
-    if (parseAttribute(xml_validator, "maxfiles", true, true, tmp_str, error))
+    if (parseAttribute(element, "maxfiles", true, true, tmp_str, error))
     {
       if (ra::strings::parse(tmp_str, tmp_int))
       {
@@ -132,7 +138,7 @@ namespace shellanything
     //parse maxfolders
     tmp_str = "";
     tmp_int = -1;
-    if (parseAttribute(xml_validator, "maxfolders", true, true, tmp_str, error))
+    if (parseAttribute(element, "maxfolders", true, true, tmp_str, error))
     {
       if (ra::strings::parse(tmp_str, tmp_int))
       {
@@ -143,7 +149,7 @@ namespace shellanything
     //parse fileextensions
     tmp_str = "";
     tmp_int = -1;
-    if (parseAttribute(xml_validator, "fileextensions", true, true, tmp_str, error))
+    if (parseAttribute(element, "fileextensions", true, true, tmp_str, error))
     {
       if (!tmp_str.empty())
       {
@@ -154,11 +160,11 @@ namespace shellanything
     return validator;
   }
 
-  Action * parseAction(const XMLElement* xml_action, std::string & error)
+  Action * parseAction(const XMLElement* element, std::string & error)
   {
-    if (!xml_action)
+    if (element == NULL)
     {
-      error = "Action node is NULL";
+      error = "XMLElement is NULL";
       return NULL;
     }
 
@@ -166,14 +172,14 @@ namespace shellanything
     std::string tmp_str;
     int tmp_int = -1;
 
-    if (CLIPBOARD_ACTION_NODE == xml_action->Name())
+    if (CLIPBOARD_ACTION_NODE == element->Name())
     {
       ActionClipboard * action = new ActionClipboard();
 
       //parse value
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "value", false, true, tmp_str, error))
+      if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
         action->setValue(tmp_str);
       }
@@ -181,14 +187,14 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (EXEC_ACTION_NODE == xml_action->Name())
+    else if (EXEC_ACTION_NODE == element->Name())
     {
       ActionExecute * action = new ActionExecute();
 
       //parse path
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "path", false, true, tmp_str, error))
+      if (parseAttribute(element, "path", false, true, tmp_str, error))
       {
         action->setPath(tmp_str);
       }
@@ -196,7 +202,7 @@ namespace shellanything
       //parse arguments
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "arguments", true, true, tmp_str, error))
+      if (parseAttribute(element, "arguments", true, true, tmp_str, error))
       {
         action->setArguments(tmp_str);
       }
@@ -204,14 +210,14 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (PROMPT_ACTION_NODE == xml_action->Name())
+    else if (PROMPT_ACTION_NODE == element->Name())
     {
       ActionPrompt * action = new ActionPrompt();
 
       //parse name
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "name", false, true, tmp_str, error))
+      if (parseAttribute(element, "name", false, true, tmp_str, error))
       {
         action->setName(tmp_str);
       }
@@ -219,7 +225,7 @@ namespace shellanything
       //parse title
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "title", false, true, tmp_str, error))
+      if (parseAttribute(element, "title", false, true, tmp_str, error))
       {
         action->setTitle(tmp_str);
       }
@@ -227,14 +233,14 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (PROPERTY_ACTION_NODE == xml_action->Name())
+    else if (PROPERTY_ACTION_NODE == element->Name())
     {
       ActionProperty * action = new ActionProperty();
 
       //parse name
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "name", false, true, tmp_str, error))
+      if (parseAttribute(element, "name", false, true, tmp_str, error))
       {
         action->setName(tmp_str);
       }
@@ -242,7 +248,7 @@ namespace shellanything
       //parse value
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(xml_action, "value", false, true, tmp_str, error))
+      if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
         action->setValue(tmp_str);
       }
@@ -252,7 +258,7 @@ namespace shellanything
     }
     else
     {
-      error = "Node '" + std::string(xml_action->Name()) + "' at line " + ra::strings::toString(xml_action->GetLineNum()) + " is an unknown type.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
@@ -273,40 +279,34 @@ namespace shellanything
     return false;
   }
 
-  Item * parseItem(const XMLElement* xml_item, std::string & error)
+  Item * parseItem(const XMLElement* element, std::string & error)
   {
-    if (!xml_item)
+    if (element == NULL)
     {
-      error = "Item is NULL";
-      return NULL;
-    }
-    if (ITEM_NODE != xml_item->Name())
-    {
-      error = "Node '" + std::string(xml_item->Name()) + "' at line " + ra::strings::toString(xml_item->GetLineNum()) + " is not a <item> node";
+      error = "XMLElement is NULL";
       return NULL;
     }
 
+    //at this step the <item> is valid
+    Item * item = new Item();
+
     //parse separator
     std::string item_separator;
-    bool have_separetor = parseAttribute(xml_item, "separator", true, true, item_separator, error);
+    bool have_separetor = parseAttribute(element, "separator", true, true, item_separator, error);
     bool is_separator = false;
     if (have_separetor)
     {
       is_separator = parseBoolean(item_separator);
-    }
-    
-    //at this step the <item> is valid
-    Item * item = new Item();
-
-    if (is_separator)
-    {
-      item->setSeparator(true);
-      return item;
+      if (is_separator)
+      {
+        item->setSeparator(true);
+        return item;
+      }
     }
 
     //parse name
     std::string item_name;
-    if (!parseAttribute(xml_item, "name", false, false, item_name, error))
+    if (!parseAttribute(element, "name", false, false, item_name, error))
     {
       delete item;
       return NULL;
@@ -315,7 +315,7 @@ namespace shellanything
 
     //parse icon
     std::string icon_path;
-    if (parseAttribute(xml_item, "icon", true, true, icon_path, error))
+    if (parseAttribute(element, "icon", true, true, icon_path, error))
     {
       Icon * icon = new Icon();
       icon->setPath(icon_path);
@@ -323,7 +323,7 @@ namespace shellanything
     }
 
     //find <validity> node under <item>
-    const XMLElement* xml_validity = xml_item->FirstChildElement(VALIDITY_NODE.c_str());
+    const XMLElement* xml_validity = element->FirstChildElement(VALIDITY_NODE.c_str());
     while (xml_validity)
     {
       //found a new validity node
@@ -342,7 +342,7 @@ namespace shellanything
     }
 
     //find <visibility> node under <item>
-    const XMLElement* xml_visibility = xml_item->FirstChildElement(VISIBILITY_NODE.c_str());
+    const XMLElement* xml_visibility = element->FirstChildElement(VISIBILITY_NODE.c_str());
     while (xml_visibility)
     {
       //found a new visibility node
@@ -361,7 +361,7 @@ namespace shellanything
     }
 
     //find <actions> node under <item>
-    const XMLElement* xml_actions = xml_item->FirstChildElement("actions");
+    const XMLElement* xml_actions = element->FirstChildElement("actions");
     if (xml_actions)
     {
       //find <clipboard>, <exec>, <prompt>, <property> or <open> nodes under <actions>
@@ -391,7 +391,7 @@ namespace shellanything
   {
     if (element == NULL)
     {
-      error = "Element is NULL";
+      error = "XMLElement is NULL";
       return NULL;
     }
 
