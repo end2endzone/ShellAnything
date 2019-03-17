@@ -13,6 +13,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Icon.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Item.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/NodeFactory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Platform.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/PropertyManager.h
@@ -34,6 +35,7 @@ add_library(shellanything STATIC
   Icon.cpp
   Item.cpp
   Node.cpp
+  NodeFactory.cpp
   Validator.cpp
   Platform.cpp
   PropertyManager.cpp
