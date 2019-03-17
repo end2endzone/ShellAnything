@@ -31,6 +31,7 @@
 #include "shellanything/ActionExecute.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionProperty.h"
+#include "shellanything/ActionOpen.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
@@ -270,6 +271,21 @@ namespace shellanything
       if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
         action->setValue(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+    else if (NODE_ACTION_OPEN == element->Name())
+    {
+      ActionOpen * action = new ActionOpen();
+
+      //parse path
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "path", false, true, tmp_str, error))
+      {
+        action->setPath(tmp_str);
       }
 
       //done parsing
