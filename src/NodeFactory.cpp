@@ -398,6 +398,20 @@ namespace shellanything
       }
     }
 
+    //find <item> node under <item>
+    elements = getChildNodes(element, NODE_ITEM);
+    for(size_t i=0; i<elements.size(); i++)
+    {
+      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
+      Item * subitem = dynamic_cast<Item *>(parsed);
+      if (subitem == NULL)
+      {
+        delete item;
+        return NULL;
+      }
+      item->addChild(subitem);
+    }
+
     return item;
   }
 
