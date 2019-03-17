@@ -39,16 +39,14 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
-  static const std::string ROOT_NODE = "root";
-  static const std::string SHELL_NODE = "shell";
-  static const std::string ITEM_NODE = "item";
-  static const std::string VALIDITY_NODE = "validity";
-  static const std::string VISIBILITY_NODE = "visibility";
-  static const std::string CLIPBOARD_ACTION_NODE = "clipboard";
-  static const std::string EXEC_ACTION_NODE = "exec";
-  static const std::string PROMPT_ACTION_NODE = "prompt";
-  static const std::string PROPERTY_ACTION_NODE = "property";
-  static const std::string OPEN_ACTION_NODE = "open";
+  static const std::string NODE_ITEM = "item";
+  static const std::string NODE_VALIDITY = "validity";
+  static const std::string NODE_VISIBILITY = "visibility";
+  static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
+  static const std::string NODE_ACTION_EXEC = "exec";
+  static const std::string NODE_ACTION_PROMPT = "prompt";
+  static const std::string NODE_ACTION_PROPERTY = "property";
+  static const std::string NODE_ACTION_OPEN = "open";
 
   NodeFactory::NodeFactory()
   {
@@ -62,6 +60,27 @@ namespace shellanything
   {
     static NodeFactory _instance;
     return _instance;
+  }
+
+  typedef std::vector<const XMLElement *> ElementPtrList;
+  ElementPtrList getChildNodes(const XMLElement* element, const std::string & name)
+  {
+    ElementPtrList elements;
+
+    if (!element)
+      return elements;
+
+    const XMLElement* current = element->FirstChildElement(name.c_str());
+    while (current)
+    {
+      //found a new node
+      elements.push_back(current);
+
+      //next node
+      current = current->NextSiblingElement(name.c_str());
+    }
+
+    return elements;
   }
 
   bool parseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
@@ -106,11 +125,11 @@ namespace shellanything
     }
 
     Validator * validator = NULL;
-    if (VALIDITY_NODE == element->Name())
+    if (NODE_VALIDITY == element->Name())
     {
       validator = new Validator("Validity");
     }
-    else if (VISIBILITY_NODE == element->Name())
+    else if (NODE_VISIBILITY == element->Name())
     {
       validator = new Validator("Visibility");
     }
@@ -172,7 +191,7 @@ namespace shellanything
     std::string tmp_str;
     int tmp_int = -1;
 
-    if (CLIPBOARD_ACTION_NODE == element->Name())
+    if (NODE_ACTION_CLIPBOARD == element->Name())
     {
       ActionClipboard * action = new ActionClipboard();
 
@@ -187,7 +206,7 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (EXEC_ACTION_NODE == element->Name())
+    else if (NODE_ACTION_EXEC == element->Name())
     {
       ActionExecute * action = new ActionExecute();
 
@@ -210,7 +229,7 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (PROMPT_ACTION_NODE == element->Name())
+    else if (NODE_ACTION_PROMPT == element->Name())
     {
       ActionPrompt * action = new ActionPrompt();
 
@@ -233,7 +252,7 @@ namespace shellanything
       //done parsing
       return action;
     }
-    else if (PROPERTY_ACTION_NODE == element->Name())
+    else if (NODE_ACTION_PROPERTY == element->Name())
     {
       ActionProperty * action = new ActionProperty();
 
@@ -322,54 +341,49 @@ namespace shellanything
       item->setIcon(icon);
     }
 
+    ElementPtrList elements; //temporary xml element containers
+
     //find <validity> node under <item>
-    const XMLElement* xml_validity = element->FirstChildElement(VALIDITY_NODE.c_str());
-    while (xml_validity)
+    elements = getChildNodes(element, NODE_VALIDITY);
+    for(size_t i=0; i<elements.size(); i++)
     {
-      //found a new validity node
-      Validator * validity = parseValidator(xml_validity, error);
+      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
+      Validator * validity = dynamic_cast<Validator *>(parsed);
       if (validity == NULL)
       {
         delete item;
         return NULL;
       }
-
-      //add the new validity node
       item->setValidity(validity);
-
-      //next validity node
-      xml_validity = xml_validity->NextSiblingElement(VALIDITY_NODE.c_str());
     }
 
     //find <visibility> node under <item>
-    const XMLElement* xml_visibility = element->FirstChildElement(VISIBILITY_NODE.c_str());
-    while (xml_visibility)
+    elements = getChildNodes(element, NODE_VISIBILITY);
+    for(size_t i=0; i<elements.size(); i++)
     {
-      //found a new visibility node
-      Validator * visibility = parseValidator(xml_visibility, error);
+      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
+      Validator * visibility = dynamic_cast<Validator *>(parsed);
       if (visibility == NULL)
       {
         delete item;
         return NULL;
       }
-
-      //add the new visibility node
       item->setVisibility(visibility);
-
-      //next visibility node
-      xml_visibility = xml_visibility->NextSiblingElement(VISIBILITY_NODE.c_str());
     }
 
     //find <actions> node under <item>
     const XMLElement* xml_actions = element->FirstChildElement("actions");
     if (xml_actions)
     {
+      //actions must be read in order.
+
       //find <clipboard>, <exec>, <prompt>, <property> or <open> nodes under <actions>
       const XMLElement* xml_action = xml_actions->FirstChildElement();
       while (xml_action)
       {
-        //found a new clipboard node
-        Action * action = parseAction(xml_action, error);
+        //found a new action node
+        Node * parsed = NodeFactory::getInstance().parseNode(xml_action, error);
+        Action * action = dynamic_cast<Action*>(parsed);
         if (action == NULL)
         {
           delete item;
@@ -379,7 +393,7 @@ namespace shellanything
         //add the new action node
         item->addChild(action);
 
-        //next visibility node
+        //next action node
         xml_action = xml_action->NextSiblingElement();
       }
     }
@@ -397,13 +411,13 @@ namespace shellanything
 
     std::string xml_name = element->Name();
 
-    if (xml_name == ITEM_NODE)
+    if (xml_name == NODE_ITEM)
       return parseItem(element, error);
-    else if (xml_name == VALIDITY_NODE)
+    else if (xml_name == NODE_VALIDITY)
       return parseValidator(element, error);
-    else if (xml_name == VISIBILITY_NODE)
+    else if (xml_name == NODE_VISIBILITY)
       return parseValidator(element, error);
-    else if (xml_name == CLIPBOARD_ACTION_NODE || xml_name == EXEC_ACTION_NODE || xml_name == PROMPT_ACTION_NODE || xml_name == PROPERTY_ACTION_NODE || xml_name == OPEN_ACTION_NODE )
+    else if (xml_name == NODE_ACTION_CLIPBOARD || xml_name == NODE_ACTION_EXEC || xml_name == NODE_ACTION_PROMPT || xml_name == NODE_ACTION_PROPERTY || xml_name == NODE_ACTION_OPEN )
       return parseAction(element, error);
     else
     {
