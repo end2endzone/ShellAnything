@@ -36,9 +36,21 @@ target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} r
 add_dependencies(shellanything_unittest shellanything)
 target_link_libraries(shellanything_unittest PUBLIC shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist )
 
+# Copy test files database to target dir
+add_custom_command( TARGET shellanything_unittest POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_CURRENT_SOURCE_DIR}/test_files $<TARGET_FILE_DIR:shellanything_unittest>/test_files
+                    COMMENT "Copying test_files database.")
+
+# Copy test files to build dir for local execution (from within the IDE)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test_files DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 install(TARGETS shellanything_unittest
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test_files
+        DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
