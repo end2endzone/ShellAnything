@@ -26,7 +26,8 @@
 
 namespace shellanything
 {
-  Item::Item() : Node("Item")
+  Item::Item() : Node("Item"),
+    mSeparator(false)
   {
   }
 
