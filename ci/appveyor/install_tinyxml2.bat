@@ -29,13 +29,13 @@ mkdir build >NUL 2>NUL
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=%tinyxml2_DIR% -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_LIBS:BOOL=ON -DBUILD_TESTS:BOOL=OFF ..
 if %errorlevel% neq 0 exit /b %errorlevel%
-cmake --build . --config Debug
+cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
 echo ============================================================================
 echo Installing into %tinyxml2_DIR%
 echo ============================================================================
-cmake --build . --config Debug --target INSTALL
+cmake --build . --config %Configuration% --target INSTALL
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
