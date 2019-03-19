@@ -143,6 +143,28 @@ namespace shellanything
     return false;
   }
 
+  bool Node::removeChildren()
+  {
+    bool success = true;
+    while(mChildren.size() > 0)
+    {
+      success = success && removeChild((size_t)0);
+    }
+    return success;
+  }
+ 
+  bool Node::removeChildren(const std::string & type)
+  {
+    bool success = true;
+    Node * node = findFirst(type);
+    while(node != NULL)
+    {
+      success = success && removeChild(node);
+      node = findFirst(type);
+    }
+    return success;
+  }
+
   size_t Node::depth() const
   {
     size_t depth = 0;

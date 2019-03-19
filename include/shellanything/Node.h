@@ -44,15 +44,17 @@ namespace shellanything
     Node * getParent() const;
 
     Node * addChild(Node * child);
-    bool removeChild(Node * child);
 
     NodePtrList getChildren() const;
+    size_t getNumChildren() const;
     NodePtrList findChildren(const std::string & type) const;
     Node * findFirst(const std::string & type) const;
-
-    size_t getNumChildren() const;
     Node * getChild(size_t index) const;
+
     bool removeChild(size_t index);
+    bool removeChild(Node * child);
+    bool removeChildren();
+    bool removeChildren(const std::string & type);
 
     size_t depth() const;
     bool isLeaf() const;

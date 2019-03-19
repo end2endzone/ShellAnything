@@ -283,6 +283,51 @@ namespace shellanything { namespace test
     ASSERT_EQ( 3, root.size() );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestNode, testRemoveChildren)
+  {
+    Node root("html");
+    Node * body = (new Node("body"));
+    Node * child1 = (new Node("h1"));
+    Node * child2 = (new Node("p"));
+    Node * child3 = (new Node("p"));
+
+    //removeChildren empty nodes
+    ASSERT_TRUE( root.removeChildren() );
+
+    //build tree
+    root.addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+
+    //assert
+    ASSERT_TRUE( body->removeChildren() );
+    ASSERT_EQ( 1, body->size() ); //body should be a leaf since we removed all children 
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestNode, testRemoveChildrenType)
+  {
+    Node root("html");
+    Node * body = (new Node("body"));
+    Node * child1 = (new Node("h1"));
+    Node * child2 = (new Node("p"));
+    Node * child3 = (new Node("p"));
+
+    //removeChildren empty nodes
+    ASSERT_TRUE( root.removeChildren() );
+
+    //build tree
+    root.addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+
+    //assert
+    ASSERT_TRUE( body->removeChildren("p") );
+    ASSERT_EQ( 2, body->size() ); //body should only contain child1 of type "h1"
+    ASSERT_EQ( child1, body->getChildren()[0] );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
