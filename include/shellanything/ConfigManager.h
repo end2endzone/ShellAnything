@@ -56,6 +56,10 @@ namespace shellanything
     void addSearchPath(const std::string & path);
 
   private:
+    //methods
+    static bool isConfigurationFile(const std::string & path);
+
+    //attributes
     PathList mPaths;
     Node mConfigurations;
   };

@@ -24,6 +24,7 @@
 
 #include "shellanything/Platform.h"
 #include "rapidassist/environment.h"
+#include "rapidassist/filesystem.h"
 #include <stdio.h>
 
 #ifdef WIN32
@@ -116,6 +117,45 @@ namespace shellanything
     std::string dektop_dir = userprofile + "\\Desktop";
     return dektop_dir;
 #endif
+  }
+
+  bool readFile(const std::string & path, std::string & content)
+  {
+    //static const std::string EMPTY;
+    content = "";
+
+    //allocate a buffer which can hold the content of the file
+    uint32_t file_size = ra::filesystem::getFileSize(path.c_str());
+    //uint32_t buffer_size = file_size + 1; //+1 for the ending \0 character
+
+    FILE * f = fopen(path.c_str(), "rb");
+    if (!f)
+      return false;
+
+    char * buffer = new char[file_size]; 
+    if (!buffer)
+    {
+      fclose(f);
+      return false;
+    }
+    memset(buffer, 0, file_size);
+
+    //read the content
+    size_t read_size = fread(buffer, 1, file_size, f);
+    if (read_size != file_size)
+    {
+      delete[] buffer;
+      fclose(f);
+      return false;
+    }
+
+    fclose(f);
+
+    //copy the content of the buffer to the output string
+    content.assign(buffer, file_size);
+
+    bool success = (content.size() == file_size);
+    return success;
   }
 
 } //namespace shellanything
