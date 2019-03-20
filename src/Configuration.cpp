@@ -27,7 +27,8 @@
 namespace shellanything
 {
 
-  Configuration::Configuration() : Node("Configuration")
+  Configuration::Configuration() : Node("Configuration"),
+    mFileModifiedDate(0)
   {
   }
 
@@ -43,6 +44,16 @@ namespace shellanything
   void Configuration::setFilePath(const std::string & iFilePath)
   {
     mFilePath = iFilePath;
+  }
+
+  const uint64_t & Configuration::getFileModifiedDate() const
+  {
+    return mFileModifiedDate;
+  }
+
+  void Configuration::setFileModifiedDate(const uint64_t & iFileModifiedDate)
+  {
+    mFileModifiedDate = iFileModifiedDate;
   }
 
 } //namespace shellanything

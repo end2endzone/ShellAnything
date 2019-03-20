@@ -26,6 +26,7 @@
 #define SA_CONFIGURATION_H
 
 #include "shellanything/Node.h"
+#include <stdint.h>
 
 namespace shellanything
 {
@@ -41,7 +42,11 @@ namespace shellanything
     const std::string & getFilePath() const;
     void setFilePath(const std::string & iFilePath);
 
+    const uint64_t & getFileModifiedDate() const;
+    void setFileModifiedDate(const uint64_t & iFileModifiedDate);
+
   private:
+    uint64_t mFileModifiedDate;
     std::string mFilePath;
   };
 
