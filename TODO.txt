@@ -1,3 +1,4 @@
+- Rename Validator::isValid() to validate()
 - Rename NodeFactory to ObjectFactory/XmlFactory since it can other type of object (not only Node)
 - Create node Visibility Validity classes. ?? Not sure. Think about Validator and Icon classes that are not Node instances.
  

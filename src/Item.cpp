@@ -74,60 +74,34 @@ namespace shellanything
 
   bool Item::isVisible(const Context & c)
   {
-    Validator * validator = getVisibility();
-    if (validator)
-    {
-      bool validated = validator->isValid(c);
-      return validated;
-    }
-    return true; //visible by default
+    bool validated = mVisibility.isValid(c);
+    return validated;
   }
 
   bool Item::isEnabled(const Context & c)
   {
-    Validator * validator = getValidity();
-    if (validator)
-    {
-      bool validated = validator->isValid(c);
-      return validated;
-    }
-    return true; //enabled by default
+    bool validated = mValidity.isValid(c);
+    return validated;
   }
 
-  Validator * Item::getValidity()
+  const Validator & Item::getValidity()
   {
-    Node * node = this->findFirst("Validity");
-    Validator * validator = dynamic_cast<Validator *>(node);
-    return validator;
+    return mValidity;
   }
 
-  void Item::setValidity(Validator * iValidity)
+  void Item::setValidity(const Validator & iValidity)
   {
-    Validator * previous_validator = getValidity();
-    if (previous_validator)
-    {
-      this->removeChild(previous_validator);
-      delete previous_validator;
-    }
-    this->addChild(iValidity);
+    mValidity = iValidity;
   }
 
-  Validator * Item::getVisibility()
+  const Validator & Item::getVisibility()
   {
-    Node * node = this->findFirst("Visibility");
-    Validator * validator = dynamic_cast<Validator *>(node);
-    return validator;
+    return mVisibility;
   }
 
-  void Item::setVisibility(Validator * iVisibility)
+  void Item::setVisibility(const Validator & iVisibility)
   {
-    Validator * previous_validator = getVisibility();
-    if (previous_validator)
-    {
-      this->removeChild(previous_validator);
-      delete previous_validator;
-    }
-    this->addChild(iVisibility);
+    mVisibility = iVisibility;
   }
 
   Item::ItemPtrList Item::getSubItems()

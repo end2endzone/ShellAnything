@@ -163,8 +163,6 @@ namespace shellanything { namespace test
   {
     Item item;
     item.setName("Open my important directories...");
-    Validator * validity = new Validator("Validity"); //always valid
-    Validator * visibility = new Validator("Visibility"); //always visible
     ActionExecute * action1 = new ActionExecute();
     action1->setPath("C:\\windows\\system32\\cmd.exe");
     action1->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\"");
@@ -176,8 +174,6 @@ namespace shellanything { namespace test
     action3->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\\Downloads\"");
     
     //link everything
-    item.addChild(validity);
-    item.addChild(visibility);
     item.addChild(action1);
     item.addChild(action2);
     item.addChild(action3);

@@ -32,11 +32,14 @@
 namespace shellanything
 {
 
-  class Validator : public Node
+  class Validator
   {
   public:
-    Validator(const std::string & type);
+    Validator();
+    Validator(const Validator & validator);
     virtual ~Validator();
+
+    const Validator & operator =(const Validator & validator);
 
     const int & getMaxFiles() const;
     void setMaxFiles(const int & iMaxFiles);

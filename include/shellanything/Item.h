@@ -57,17 +57,19 @@ namespace shellanything
     bool isVisible(const Context & c);
     bool isEnabled(const Context & c);
 
-    Validator * getValidity();
-    void setValidity(Validator * iValidity);
+    const Validator & getValidity();
+    void setValidity(const Validator & iValidity);
 
-    Validator * getVisibility();
-    void setVisibility(Validator * iVisibility);
+    const Validator & getVisibility();
+    void setVisibility(const Validator & iVisibility);
 
     ItemPtrList getSubItems();
     Action::ActionPtrList getActions();
 
   private:
     Icon mIcon;
+    Validator mValidity;
+    Validator mVisibility;
     bool mSeparator;
     std::string mName;
   };

@@ -54,18 +54,18 @@ namespace shellanything { namespace test
     // </item>
     Item * item = new Item();
     item->setName("Command line from here...");
-    Validator * validity = new Validator("Validity");
-    validity->setMaxFiles(0); //no files accepted
-    validity->setMaxDirectories(1); //a single directory is accepted
-    Validator * visibility = new Validator("Visibility"); //no requirement, always visible
+    Validator validity;
+    validity.setMaxFiles(0); //no files accepted
+    validity.setMaxDirectories(1); //a single directory is accepted
+    Validator visibility; //no requirement, always visible
     ActionExecute * action = new ActionExecute();
     action->setPath("C:\\windows\\system32\\cmd.exe");
     action->setBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
     config->addChild(item);
-    item->addChild(validity);
-    item->addChild(visibility);
+    item->setValidity(validity);
+    item->setVisibility(visibility);
     item->addChild(action);
   }
   //--------------------------------------------------------------------------------------------------

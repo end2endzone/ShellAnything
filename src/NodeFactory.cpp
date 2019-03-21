@@ -117,7 +117,27 @@ namespace shellanything
     return true;
   }
 
-  Validator * parseValidator(const XMLElement* element, std::string & error)
+  bool parseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
+  {
+    std::string str_value;    
+    if (!parseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
+      return false; //error is already set
+
+    //convert string to int
+    int int_value = -1;
+    if (!ra::strings::parse(str_value, int_value))
+    {
+      //failed parsing
+      error << "Failed parsing attribute '" << attr_name << "' of node '" << element->Name() << "'.";
+      return false;
+    }
+
+    //valid
+    attr_value = int_value;
+    return true;
+  }
+
+  bool NodeFactory::parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
   {
     if (element == NULL)
     {
@@ -125,59 +145,45 @@ namespace shellanything
       return NULL;
     }
 
-    Validator * validator = NULL;
-    if (NODE_VALIDITY == element->Name())
-    {
-      validator = new Validator("Validity");
-    }
-    else if (NODE_VISIBILITY == element->Name())
-    {
-      validator = new Validator("Visibility");
-    }
-    else
+    if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name())
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
-      return NULL;
+      return false;
     }
+
+    Validator result;
 
     //temporary parsed attribute values
     std::string tmp_str;
     int tmp_int = -1;
 
     //parse maxfiles
-    tmp_str = "";
-    tmp_int = -1;
-    if (parseAttribute(element, "maxfiles", true, true, tmp_str, error))
+    int maxfiles = -1;
+    if (parseAttribute(element, "maxfiles", true, true, maxfiles, error))
     {
-      if (ra::strings::parse(tmp_str, tmp_int))
-      {
-        validator->setMaxFiles(tmp_int);
-      }
+      result.setMaxFiles(maxfiles);
     }
 
     //parse maxfolders
-    tmp_str = "";
-    tmp_int = -1;
-    if (parseAttribute(element, "maxfolders", true, true, tmp_str, error))
+    int maxfolders = -1;
+    if (parseAttribute(element, "maxfolders", true, true, maxfolders, error))
     {
-      if (ra::strings::parse(tmp_str, tmp_int))
-      {
-        validator->setMaxDirectories(tmp_int);
-      }
+      result.setMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
-    tmp_str = "";
-    tmp_int = -1;
-    if (parseAttribute(element, "fileextensions", true, true, tmp_str, error))
+    std::string fileextensions;
+    if (parseAttribute(element, "fileextensions", true, true, fileextensions, error))
     {
-      if (!tmp_str.empty())
+      if (!fileextensions.empty())
       {
-        validator->setFileExtensions(tmp_str);
+        result.setFileExtensions(tmp_str);
       }
     }
 
-    return validator;
+    //success
+    validator = result;
+    return true;
   }
 
   Action * parseAction(const XMLElement* element, std::string & error)
@@ -363,9 +369,8 @@ namespace shellanything
     elements = getChildNodes(element, NODE_VALIDITY);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
-      Validator * validity = dynamic_cast<Validator *>(parsed);
-      if (validity == NULL)
+      Validator validity;
+      if (!NodeFactory::getInstance().parseValidator(elements[i], validity, error))
       {
         delete item;
         return NULL;
@@ -377,9 +382,8 @@ namespace shellanything
     elements = getChildNodes(element, NODE_VISIBILITY);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
-      Validator * visibility = dynamic_cast<Validator *>(parsed);
-      if (visibility == NULL)
+      Validator visibility;
+      if (!NodeFactory::getInstance().parseValidator(elements[i], visibility, error))
       {
         delete item;
         return NULL;
@@ -465,19 +469,9 @@ namespace shellanything
     result.setPath(icon_path);
 
     //parse index
-    std::string icon_index_str;
-    if (parseAttribute(element, "index", true, true, icon_index_str, error))
+    int icon_index = -1;
+    if (parseAttribute(element, "index", true, true, icon_index, error))
     {
-      //convert string to int
-      int icon_index = -1;
-      if (!ra::strings::parse(icon_index_str, icon_index))
-      {
-        //failed parsing
-        error = "Failed parsing icon index with value '" + icon_index_str + "'.";
-        return false;
-      }
-
-      //valid
       result.setIndex(icon_index);
     }
 
@@ -498,10 +492,6 @@ namespace shellanything
 
     if (xml_name == NODE_ITEM)
       return parseItem(element, error);
-    else if (xml_name == NODE_VALIDITY)
-      return parseValidator(element, error);
-    else if (xml_name == NODE_VISIBILITY)
-      return parseValidator(element, error);
     else if (xml_name == NODE_ACTION_CLIPBOARD || xml_name == NODE_ACTION_EXEC || xml_name == NODE_ACTION_PROMPT || xml_name == NODE_ACTION_PROPERTY || xml_name == NODE_ACTION_OPEN )
       return parseAction(element, error);
     else

@@ -24,6 +24,7 @@
 
 #include "TestValidator.h"
 #include "shellanything/Validator.h"
+#include "shellanything/Context.h"
 #include "shellanything/PropertyManager.h"
 #include "rapidassist/gtesthelp.h"
 
@@ -39,6 +40,15 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestValidator::TearDown()
   {
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testValidByDEfault)
+  {
+    Context c;
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE( v.isValid(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxFiles)
@@ -57,7 +67,7 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
 
-    Validator v("Validator");
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -90,7 +100,7 @@ namespace shellanything { namespace test
     //TODO: complete with known path to directories
 #endif
 
-    Validator v("Validator");
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -124,7 +134,7 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
 
-    Validator v("Validator");
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );
@@ -166,7 +176,7 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
 
-    Validator v("Validator");
+    Validator v;
 
     //assert default
     ASSERT_TRUE( v.isValid(c) );

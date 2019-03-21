@@ -44,8 +44,8 @@ namespace shellanything
   {
     if (this != &icon)
     {
-    mPath  = icon.mPath;
-    mIndex = icon.mIndex;
+      mPath  = icon.mPath ;
+      mIndex = icon.mIndex;
     }
     return (*this);
   }
