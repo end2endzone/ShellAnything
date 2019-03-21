@@ -47,9 +47,6 @@ namespace shellanything
     
     void refresh();
 
-    void registerProperties(const Context & c) const;
-    void unregisterProperties(const Context & c) const;
-
     Configuration::ConfigurationPtrList getConfigurations();
 
     void clearSearchPath();

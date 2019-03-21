@@ -1,5 +1,4 @@
 - Create node Visibility Validity classes. ?? Not sure. Think about Validator and Icon classes that are not Node instances.
-- Move ConfigurationManager::registerContext(c) to Context::registerProperties() and Context::unregisterProperties()
 - Implement Item::isVisible(const Context & c) const;
 - Implement Item::isEnabled(const Context & c) const;
  

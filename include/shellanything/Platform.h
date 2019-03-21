@@ -38,6 +38,8 @@ namespace shellanything
 
   bool peekFile(const std::string & path, size_t size, std::string & content);
 
+  std::string getFilenameWithoutExtension(const char * iPath);
+
 } //namespace shellanything
 
 #endif //SA_ACTION_H

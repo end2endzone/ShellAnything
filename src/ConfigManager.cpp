@@ -26,37 +26,16 @@
 #include "shellanything/NodeFactory.h"
 #include "shellanything/Item.h"
 #include "shellanything/Platform.h"
-#include "shellanything/PropertyManager.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/logger.h"
-#include "rapidassist/environment.h"
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
 
 namespace shellanything
 {
-
-  std::string getFilenameWithoutExtension(const char * iPath)
-  {
-    if (iPath == NULL)
-      return "";
-
-    std::string filename = ra::filesystem::getFilename(iPath);
-    std::string extension = ra::filesystem::getFileExtention(iPath);
-  
-    //extract filename without extension
-    std::string filenameWE = filename.substr(0, filename.size() - extension.size());
-  
-    //remove last dot of the filename if required
-    filenameWE = ra::strings::trimRight(filenameWE, '.');
-
-    return filenameWE;
-  }
-
-
 
   ConfigManager::ConfigManager()
   {
@@ -197,73 +176,6 @@ namespace shellanything
     }
   }
 
-  void ConfigManager::registerProperties(const Context & c) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-   
-    const Context::ElementList & elements = c.getElements();
- 
-    if (elements.empty())
-      return; //nothing to register
- 
-    std::string selection_path           ;
-    std::string selection_parent_path    ;
-    std::string selection_parent_filename;
-    std::string selection_filename       ;
-    std::string selection_filename_noext ;
- 
-    //for each element
-    for(size_t i=0; i<elements.size(); i++)
-    {
-      const std::string & element = elements[i];
- 
-      //${selection.path} is the full path of the clicked element
-      //${selection.parent.path} is the full path of the parent element
-      //${selection.parent.filename} is the filename of the parent element
-      //${selection.filename} is selection.filename (including file extension)
-      //${selection.filename_noext} is selection.filename without file extension
- 
-      //build properties for this specific element
-      std::string element_selection_path            = element;
-      std::string element_selection_parent_path     = ra::filesystem::getParentPath(element_selection_path);
-      std::string element_selection_parent_filename = ra::filesystem::getFilename(element_selection_parent_path.c_str());
-      std::string element_selection_filename        = ra::filesystem::getFilename(element_selection_path.c_str());
-      std::string element_selection_filename_noext  = getFilenameWithoutExtension(element_selection_path.c_str());
- 
-      //append this specific element properties to the global property string
- 
-      //add a newline if the property value is not empty. This allows printing all file path on individual lines
-      static const char * line_separator = ra::environment::getLineSeparator();
-      if (!selection_path           .empty()) selection_path           .append( line_separator );
-      if (!selection_parent_path    .empty()) selection_parent_path    .append( line_separator );
-      if (!selection_parent_filename.empty()) selection_parent_filename.append( line_separator );
-      if (!selection_filename       .empty()) selection_filename       .append( line_separator );
-      if (!selection_filename_noext .empty()) selection_filename_noext .append( line_separator );
- 
-      selection_path           .append( element_selection_path            );
-      selection_parent_path    .append( element_selection_parent_path     );
-      selection_parent_filename.append( element_selection_parent_filename );
-      selection_filename       .append( element_selection_filename        );
-      selection_filename_noext .append( element_selection_filename_noext  );
-    }
- 
-    pmgr.setProperty("selection.path"           , selection_path           );
-    pmgr.setProperty("selection.parent.path"    , selection_parent_path    );
-    pmgr.setProperty("selection.parent.filename", selection_parent_filename);
-    pmgr.setProperty("selection.filename"       , selection_filename       );
-    pmgr.setProperty("selection.filename.noext" , selection_filename_noext );
-  }
- 
-  void ConfigManager::unregisterProperties(const Context & c) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-    pmgr.clearProperty("selection.path"           );
-    pmgr.clearProperty("selection.parent.path"    );
-    pmgr.clearProperty("selection.parent.filename");
-    pmgr.clearProperty("selection.filename"       );
-    pmgr.clearProperty("selection.filename.noext" );
-  }
- 
   Configuration::ConfigurationPtrList ConfigManager::getConfigurations()
   {
     Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));

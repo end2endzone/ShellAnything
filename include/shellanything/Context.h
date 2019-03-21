@@ -42,6 +42,9 @@ namespace shellanything
 
     const Context & operator =(const Context & c);
 
+    void registerProperties() const;
+    void unregisterProperties() const;
+
     const ElementList & getElements() const;
     void setElements(const ElementList & elements);
 

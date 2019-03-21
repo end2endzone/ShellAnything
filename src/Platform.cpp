@@ -158,4 +158,21 @@ namespace shellanything
     return success;
   }
 
+  std::string getFilenameWithoutExtension(const char * iPath)
+  {
+    if (iPath == NULL)
+      return "";
+
+    std::string filename = ra::filesystem::getFilename(iPath);
+    std::string extension = ra::filesystem::getFileExtention(iPath);
+  
+    //extract filename without extension
+    std::string filenameWE = filename.substr(0, filename.size() - extension.size());
+  
+    //remove last dot of the filename if required
+    filenameWE = ra::strings::trimRight(filenameWE, '.');
+
+    return filenameWE;
+  }
+
 } //namespace shellanything
