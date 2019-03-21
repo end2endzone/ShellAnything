@@ -55,6 +55,8 @@ namespace shellanything
     void clearSearchPath();
     void addSearchPath(const std::string & path);
 
+    bool isLoadedConfigurationFile(const std::string & path) const;
+
   private:
     //methods
     static bool isConfigurationFile(const std::string & path);

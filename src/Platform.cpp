@@ -119,30 +119,30 @@ namespace shellanything
 #endif
   }
 
-  bool readFile(const std::string & path, std::string & content)
+  bool peekFile(const std::string & path, size_t size, std::string & content)
   {
     //static const std::string EMPTY;
     content = "";
 
     //allocate a buffer which can hold the content of the file
     uint32_t file_size = ra::filesystem::getFileSize(path.c_str());
-    //uint32_t buffer_size = file_size + 1; //+1 for the ending \0 character
+    uint32_t max_read_size = (file_size < size ? file_size : size);
 
     FILE * f = fopen(path.c_str(), "rb");
     if (!f)
       return false;
 
-    char * buffer = new char[file_size]; 
+    char * buffer = new char[max_read_size]; 
     if (!buffer)
     {
       fclose(f);
       return false;
     }
-    memset(buffer, 0, file_size);
+    memset(buffer, 0, max_read_size);
 
     //read the content
-    size_t read_size = fread(buffer, 1, file_size, f);
-    if (read_size != file_size)
+    size_t read_size = fread(buffer, 1, max_read_size, f);
+    if (read_size != max_read_size)
     {
       delete[] buffer;
       fclose(f);
@@ -152,9 +152,9 @@ namespace shellanything
     fclose(f);
 
     //copy the content of the buffer to the output string
-    content.assign(buffer, file_size);
+    content.assign(buffer, max_read_size);
 
-    bool success = (content.size() == file_size);
+    bool success = (content.size() == max_read_size);
     return success;
   }
 

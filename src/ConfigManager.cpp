@@ -108,8 +108,24 @@ namespace shellanything
 
   void ConfigManager::refresh()
   {
-    //clear previous configurations
-    mConfigurations.removeChildren();
+    //validate existing configurations
+    Configuration::ConfigurationPtrList existing = getConfigurations();
+    for(size_t i=0; i<existing.size(); i++)
+    {
+      Configuration * config = existing[i];
+      const std::string & file_path = config->getFilePath();
+      const uint64_t & file_date = config->getFileModifiedDate();
+      if (ra::filesystem::fileExists(file_path.c_str()) && ra::filesystem::getFileModifiedDate(file_path) == file_date)
+      {
+        //current configuration is up to date
+      }
+      else
+      {
+        //file is missing or current configuration is out of date
+        //forget about existing config
+        mConfigurations.removeChild(config);
+      }
+    }
    
     //search every known path
     for (size_t i=0; i<mPaths.size(); i++)
@@ -127,18 +143,22 @@ namespace shellanything
           const std::string & file_path = files[j];
           if (isConfigurationFile(file_path))
           {
-            //parse the file
-            std::string error;
-            Configuration * config = loadFile(file_path, error);
-            if (config == NULL)
+            //is this file already loaded ?
+            if (!isLoadedConfigurationFile(file_path))
             {
-              //log an error message
-              ra::logger::log(ra::logger::LOG_ERROR, "Failed loading configuration file '%s'. Error=%s", file_path.c_str(), error.c_str());
-            }
-            else
-            {
-              //add to current list of configurations
-              mConfigurations.addChild(config);
+              //parse the file
+              std::string error;
+              Configuration * config = loadFile(file_path, error);
+              if (config == NULL)
+              {
+                //log an error message
+                ra::logger::log(ra::logger::LOG_ERROR, "Failed loading configuration file '%s'. Error=%s", file_path.c_str(), error.c_str());
+              }
+              else
+              {
+                //add to current list of configurations
+                mConfigurations.addChild(config);
+              }
             }
           }
         }
@@ -183,7 +203,7 @@ namespace shellanything
     {
       //read the beginning of the file
       std::string content;
-      bool readed = readFile(path.c_str(), content);
+      bool readed = peekFile(path.c_str(), 512, content);
       if (readed)
       {
         //and look for special XML tags
@@ -198,6 +218,18 @@ namespace shellanything
           return true;
         }
       }
+    }
+    return false;
+  }
+
+  bool ConfigManager::isLoadedConfigurationFile(const std::string & path) const
+  {
+    for(size_t i=0; i<mConfigurations.size(); i++)
+    {
+      const Node * node = mConfigurations.getChild(i);
+      const Configuration * config = dynamic_cast<const Configuration *>(node);
+      if (config != NULL && config->getFilePath() == path)
+        return true;
     }
     return false;
   }

@@ -36,7 +36,7 @@ namespace shellanything
   std::string getDocumentsDirectory();
   std::string getDesktopDirectory();
 
-  bool readFile(const std::string & path, std::string & content);
+  bool peekFile(const std::string & path, size_t size, std::string & content);
 
 } //namespace shellanything
 
