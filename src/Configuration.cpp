@@ -56,4 +56,10 @@ namespace shellanything
     mFileModifiedDate = iFileModifiedDate;
   }
 
+  Item::ItemPtrList Configuration::getItems()
+  {
+    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
+    return sub_items;
+  }
+
 } //namespace shellanything

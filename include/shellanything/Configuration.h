@@ -26,6 +26,7 @@
 #define SA_CONFIGURATION_H
 
 #include "shellanything/Node.h"
+#include "shellanything/Item.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -44,6 +45,8 @@ namespace shellanything
 
     const uint64_t & getFileModifiedDate() const;
     void setFileModifiedDate(const uint64_t & iFileModifiedDate);
+
+    Item::ItemPtrList getItems();
 
   private:
     uint64_t mFileModifiedDate;

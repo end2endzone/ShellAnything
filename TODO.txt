@@ -1,21 +1,7 @@
 Implement the following:
   ConfigManager::refresh()
     --> Browse through all added "search path" and load all *.xml files.
- 
- 
-Complete Configurator class:
-  Configuration.h:
-    Item::ItemPtrList getItems();
-  Configuration.cpp:
-```cpp
-  Item::ItemPtrList Configuration::getItems()
-  {
-    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
-    return sub_items;
-  }
-```
-   
- 
+
 - Create node Visibility Validity classes. ?? Not sure. Think about Validator and Icon classes that are not Node instances.
 - Move ConfigurationManager::registerContext(c) to Context::registerProperties() and Context::unregisterProperties()
 - Implement Item::isVisible(const Context & c) const;
