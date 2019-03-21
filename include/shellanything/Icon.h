@@ -25,20 +25,22 @@
 #ifndef SA_ICON_H
 #define SA_ICON_H
 
-#include "shellanything/Node.h"
 #include <string>
 #include <vector>
 
 namespace shellanything
 {
 
-  class Icon : public Node
+  class Icon
   {
   public:
-    typedef std::vector<Icon*> IconPtrList;
-
     Icon();
+    Icon(const Icon & icon);
     virtual ~Icon();
+
+    const Icon & operator =(const Icon & icon);
+
+    bool isValid() const;
 
     const std::string & getPath() const;
     void setPath(const std::string & iPath);

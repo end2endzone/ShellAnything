@@ -352,8 +352,8 @@ namespace shellanything
     std::string icon_path;
     if (parseAttribute(element, "icon", true, true, icon_path, error))
     {
-      Icon * icon = new Icon();
-      icon->setPath(icon_path);
+      Icon icon;
+      icon.setPath(icon_path);
       item->setIcon(icon);
     }
 
@@ -428,7 +428,62 @@ namespace shellanything
       item->addChild(subitem);
     }
 
+    //find <icon> node under <item>
+    elements = getChildNodes(element, "icon");
+    for(size_t i=0; i<elements.size(); i++)
+    {
+      Icon icon;
+      if (!NodeFactory::getInstance().parseIcon(elements[i], icon, error))
+      {
+        //failed icon parsing
+        delete item;
+        return NULL;
+      }
+      item->setIcon(icon);
+    }
+
     return item;
+  }
+
+  bool NodeFactory::parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
+  {
+    if (element == NULL)
+    {
+      error = "XMLElement is NULL";
+      return false;
+    }
+
+    //parse path
+    std::string icon_path;
+    if (!parseAttribute(element, "path", false, false, icon_path, error))
+    {
+      //failed parsing
+      return false;
+    }
+
+    Icon result;
+    result.setPath(icon_path);
+
+    //parse index
+    std::string icon_index_str;
+    if (parseAttribute(element, "index", true, true, icon_index_str, error))
+    {
+      //convert string to int
+      int icon_index = -1;
+      if (!ra::strings::parse(icon_index_str, icon_index))
+      {
+        //failed parsing
+        error = "Failed parsing icon index with value '" + icon_index_str + "'.";
+        return false;
+      }
+
+      //valid
+      result.setIndex(icon_index);
+    }
+
+    //success
+    icon = result;
+    return true;
   }
 
   Node * NodeFactory::parseNode(const tinyxml2::XMLElement * element, std::string & error)

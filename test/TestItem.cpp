@@ -159,34 +159,6 @@ namespace shellanything { namespace test
     ASSERT_TRUE(deleted);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestItem, testIconOwnership)
-  {
-    Item * root =   newItem("html");
-    Item * body =   newItem("body");
-    Item * child1 = newItem("h1");
-    Item * child2 = newItem("p");
-    Item * child3 = newItem("p");
-
-    //no children yet
-    bool deleted = false;
-    MyIcon * my_test_icon = new MyIcon(&deleted);
-    ASSERT_FALSE( deleted );
-
-    //build tree
-    root->addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
-    child3->addChild(my_test_icon); //child3 takes ownership of my_test_icon
-
-    //destroy the tree
-    delete root;
-    root = NULL;
-
-    //assert that MyIcon destructor was run
-    ASSERT_TRUE(deleted);
-  }
-  //--------------------------------------------------------------------------------------------------
   TEST_F(TestItem, testFindAllActions)
   {
     Item item;

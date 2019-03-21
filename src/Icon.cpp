@@ -26,13 +26,35 @@
 
 namespace shellanything
 {
-  Icon::Icon() : Node("Icon"),
+  Icon::Icon() :
     mIndex(0)
   {
   }
 
+  Icon::Icon(const Icon & icon)
+  {
+    (*this) = icon;
+  }
+
   Icon::~Icon()
   {
+  }
+
+  const Icon & Icon::operator =(const Icon & icon)
+  {
+    if (this != &icon)
+    {
+    mPath  = icon.mPath;
+    mIndex = icon.mIndex;
+    }
+    return (*this);
+  }
+
+  bool Icon::isValid() const
+  {
+    if (mPath.empty() && mIndex == 0)
+      return true;
+    return false;
   }
 
   const std::string & Icon::getPath() const

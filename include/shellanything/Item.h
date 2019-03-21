@@ -51,8 +51,8 @@ namespace shellanything
     const std::string & getName() const;
     void setName(const std::string & iName);
 
-    Icon * getIcon();
-    void setIcon(Icon * iIcon);
+    const Icon & getIcon() const;
+    void setIcon(const Icon & iIcon);
 
     bool isVisible(const Context & c);
     bool isEnabled(const Context & c);
@@ -67,6 +67,7 @@ namespace shellanything
     Action::ActionPtrList getActions();
 
   private:
+    Icon mIcon;
     bool mSeparator;
     std::string mName;
   };

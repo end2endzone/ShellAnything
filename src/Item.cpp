@@ -62,22 +62,14 @@ namespace shellanything
     mName = iName;
   }
 
-  Icon * Item::getIcon()
+  const Icon & Item::getIcon() const
   {
-    Node * node = this->findFirst("Icon");
-    Icon * icon = dynamic_cast<Icon *>(node);
-    return icon;
+    return mIcon;
   }
 
-  void Item::setIcon(Icon * iIcon)
+  void Item::setIcon(const Icon & icon)
   {
-    Icon * previous_icon = getIcon();
-    if (previous_icon)
-    {
-      this->removeChild(previous_icon);
-      delete previous_icon;
-    }
-    this->addChild(iIcon);
+    mIcon = icon;
   }
 
   bool Item::isVisible(const Context & c)

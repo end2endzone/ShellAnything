@@ -26,6 +26,7 @@
 #define SA_NODEFACTORY_H
 
 #include "shellanything/Node.h"
+#include "shellanything/Icon.h"
 #include "tinyxml2.h"
 
 namespace shellanything
@@ -40,6 +41,7 @@ namespace shellanything
   public:
     static NodeFactory & getInstance();
 
+    bool parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
     Node * parseNode(const tinyxml2::XMLElement * element, std::string & error);
 
   };
