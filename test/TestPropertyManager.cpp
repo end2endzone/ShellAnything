@@ -114,6 +114,21 @@ namespace shellanything { namespace test
     ASSERT_FALSE( value.empty() );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testClearProperty)
+  {
+    PropertyManager & pmgr = PropertyManager::getInstance();
+    pmgr.setProperty("job", "actor");
+    pmgr.setProperty("name", "Brad Pitt");
+    pmgr.setProperty("age", "53");
+    pmgr.setProperty("animal", "fox");
+    
+    ASSERT_TRUE( pmgr.hasProperty("job") );
+    
+    pmgr.clearProperty("job");
+    
+    ASSERT_FALSE( pmgr.hasProperty("job") );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
