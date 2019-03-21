@@ -62,6 +62,8 @@ namespace shellanything
       return NULL;
     }
 
+    uint64_t file_modified_date = ra::filesystem::getFileModifiedDate(path.c_str());
+
     //Parse the xml file
     //http://leethomason.github.io/tinyxml2/
     
@@ -82,6 +84,7 @@ namespace shellanything
 
     Configuration * config = new Configuration();
     config->setFilePath(path);
+    config->setFileModifiedDate(file_modified_date);
 
     //find <item> nodes under <shell>
     const XMLElement* xml_item = xml_shell->FirstChildElement("item");
@@ -113,6 +116,8 @@ namespace shellanything
     for(size_t i=0; i<existing.size(); i++)
     {
       Configuration * config = existing[i];
+
+      //compare the file's date at the load time and the current date
       const std::string & file_path = config->getFilePath();
       const uint64_t & file_date = config->getFileModifiedDate();
       if (ra::filesystem::fileExists(file_path.c_str()) && ra::filesystem::getFileModifiedDate(file_path) == file_date)
