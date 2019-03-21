@@ -80,6 +80,28 @@ namespace shellanything
     this->addChild(iIcon);
   }
 
+  bool Item::isVisible(const Context & c)
+  {
+    Validator * validator = getVisibility();
+    if (validator)
+    {
+      bool validated = validator->isValid(c);
+      return validated;
+    }
+    return true; //visible by default
+  }
+
+  bool Item::isEnabled(const Context & c)
+  {
+    Validator * validator = getValidity();
+    if (validator)
+    {
+      bool validated = validator->isValid(c);
+      return validated;
+    }
+    return true; //enabled by default
+  }
+
   Validator * Item::getValidity()
   {
     Node * node = this->findFirst("Validity");

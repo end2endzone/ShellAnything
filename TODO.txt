@@ -1,6 +1,4 @@
 - Create node Visibility Validity classes. ?? Not sure. Think about Validator and Icon classes that are not Node instances.
-- Implement Item::isVisible(const Context & c) const;
-- Implement Item::isEnabled(const Context & c) const;
  
 - Think about only Item are Node:
   - Modifying Action (ActionClipboard, ActionExecute, ActionOpen, ActionPrompt, ActionProterty), Icon, Validator (Validity, Visibility) to not be defined as "normal classes".

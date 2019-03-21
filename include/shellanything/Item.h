@@ -54,6 +54,9 @@ namespace shellanything
     Icon * getIcon();
     void setIcon(Icon * iIcon);
 
+    bool isVisible(const Context & c);
+    bool isEnabled(const Context & c);
+
     Validator * getValidity();
     void setValidity(Validator * iValidity);
 
