@@ -50,6 +50,7 @@ namespace shellanything
     typedef std::map<std::string /*name*/, std::string /*value*/> PropertyMap;
 
     void clear();
+    void clearProperty(const std::string & name);
     bool hasProperty(const std::string & name) const;
     void setProperty(const std::string & name, const std::string & value);
     const std::string & getProperty(const std::string & name) const;

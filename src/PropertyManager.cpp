@@ -50,6 +50,16 @@ namespace shellanything
     registerEnvironmentVariables();
   }
 
+  void PropertyManager::clearProperty(const std::string & name)
+  {
+    PropertyMap::const_iterator propertyIt = properties.find(name);
+    bool found = (propertyIt != properties.end());
+    if (found)
+    {
+      properties.erase(propertyIt);
+    }
+  }
+
   bool PropertyManager::hasProperty(const std::string & name) const
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
