@@ -51,7 +51,7 @@ namespace shellanything
     mSeparator = iSeparator;
   }
 
-  bool Item::isParent() const
+  bool Item::isParentItem() const
   {
     Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
     bool parent_item = (sub_items.size() != 0);
