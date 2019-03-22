@@ -25,7 +25,12 @@
 #include "TestConfigManager.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
+#include "shellanything/Platform.h"
+
 #include "rapidassist/gtesthelp.h"
+#include "rapidassist/filesystem.h"
+#include "rapidassist/environment.h"
+#include "rapidassist/time_.h"
 
 namespace shellanything { namespace test
 {
@@ -34,6 +39,27 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestConfigManager::SetUp()
   {
+    //Delete the configurations which source files are deleted
+    ConfigManager & cmgr = ConfigManager::getInstance();
+    cmgr.refresh();
+
+    //delete still loaded configuration files
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    for(size_t i=0; i<configs.size(); i++)
+    {
+      Configuration * config = configs[i];
+      if (config)
+      {
+        const std::string & file_path = config->getFilePath();
+        ASSERT_TRUE( ra::filesystem::deleteFile(file_path.c_str()) ) << "Failed deleting file '" << file_path << "'.";
+      }
+    }
+
+    //Now that all configuration files are deleted, refresh again
+    cmgr.refresh();
+
+    //ASSERT that no files are loaded
+    ASSERT_EQ( 0, cmgr.getConfigurations().size() );
   }
   //--------------------------------------------------------------------------------------------------
   void TestConfigManager::TearDown()
@@ -50,6 +76,141 @@ namespace shellanything { namespace test
 
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
     ASSERT_NE( INVALID_CONFIGURATION, config );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testDetectNewFile)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp1.xml";
+    std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp2.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path1);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path1) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path1 << "'.";
+    
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT a single item is available
+    Item::ItemPtrList items = cmgr.getConfigurations()[0]->getItems();
+    ASSERT_EQ( 1, items.size() );
+ 
+    //create another file in the target directory
+    std::string CONFIG_XML = ""
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      "<root>\n"
+      "  <shell>\n"
+      "    <item name=\"Start WordPad\">\n"
+      "      <actions>\n"
+      "        <exec path=\"C:\\windows\\system32\\write.exe\" />\n"
+      "      </actions>\n"
+      "    </item>\n"
+      "  </shell>\n"
+      "</root>\n";
+    static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
+    if (LINE_SEPARATOR != "\n")
+    {
+      ra::strings::replace(CONFIG_XML, "\n", LINE_SEPARATOR);
+    }
+    bool fileWrite = writeFile(template_target_path2, CONFIG_XML);
+    ASSERT_TRUE(fileWrite);
+ 
+    //refresh the ConfigurationManager to see if it picked up the new file
+    cmgr.refresh();
+ 
+    //ASSERT both file is loaded
+    configs = cmgr.getConfigurations();
+    ASSERT_EQ( 2, configs.size() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testFileModifications)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT a single item is available
+    Item::ItemPtrList items = cmgr.getConfigurations()[0]->getItems();
+    ASSERT_EQ( 1, items.size() );
+ 
+    //inject another item in the loaded xml file
+ 
+    //prepare XML content to add
+    std::string ITEM_XML = "<item name=\"Start notepad.exe\">\n"
+      "      <actions>\n"
+      "        <exec path=\"C:\\windows\\system32\\notepad.exe\" />\n"
+      "      </actions>\n"
+      "    </item>";
+    static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
+    if (LINE_SEPARATOR != "\n")
+    {
+      ra::strings::replace(ITEM_XML, "\n", LINE_SEPARATOR);
+    }
+ 
+    //process with file search and replace
+    std::string content;
+    bool fileReaded = readFile(template_target_path, content);
+    ASSERT_TRUE(fileReaded);
+    ra::strings::replace(content, "<!-- CODE INSERT LOCATION -->", ITEM_XML);
+    bool fileWrite = writeFile(template_target_path, content);
+    ASSERT_TRUE(fileWrite);
+ 
+    //refresh the ConfigurationManager to see if it picked up the new file
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT 2 items is available
+    items = cmgr.getConfigurations()[0]->getItems();
+    ASSERT_EQ( 2, items.size() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
  

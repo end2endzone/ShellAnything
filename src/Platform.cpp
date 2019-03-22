@@ -272,4 +272,46 @@ namespace shellanything
     return filenameWE;
   }
 
+  std::string makeRelativePath(const std::string & base_path, const std::string & test_path)
+  {
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    ra::strings::StringVector base_path_parts = ra::strings::split(base_path, path_separator.c_str());
+    ra::strings::StringVector test_path_parts = ra::strings::split(test_path, path_separator.c_str());
+ 
+    bool have_common_base = false; //true if base_path and test_path share a common base
+ 
+    //remove beginning of both parts while they match
+    while(base_path_parts.size() > 1 && test_path_parts.size() > 1 && base_path_parts[0] == test_path_parts[0])
+    {
+      //remove first
+      base_path_parts.erase(base_path_parts.begin());
+      test_path_parts.erase(test_path_parts.begin());
+ 
+      have_common_base = true;
+    }
+ 
+    if (have_common_base)
+    {
+      //resolve:
+      //  from base_path,
+      //  go up as many element in base_path_parts,
+      //  then go through test_path_parts
+ 
+      for(size_t i=0; i<base_path_parts.size(); i++)
+      {
+        base_path_parts[i] = "..";
+      }
+ 
+      std::string new_base_path = ra::strings::join(base_path_parts, path_separator.c_str());
+      std::string new_test_path = ra::strings::join(test_path_parts, path_separator.c_str());
+ 
+      std::string relative_path = new_base_path + path_separator + new_test_path;
+      return relative_path;
+    }
+ 
+    //failed making path relative
+    return "";
+  }
+
 } //namespace shellanything

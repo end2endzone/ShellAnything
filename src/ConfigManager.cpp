@@ -118,8 +118,9 @@ namespace shellanything
 
       //compare the file's date at the load time and the current date
       const std::string & file_path = config->getFilePath();
-      const uint64_t & file_date = config->getFileModifiedDate();
-      if (ra::filesystem::fileExists(file_path.c_str()) && ra::filesystem::getFileModifiedDate(file_path) == file_date)
+      const uint64_t & old_file_date = config->getFileModifiedDate();
+      const uint64_t new_file_date = ra::filesystem::getFileModifiedDate(file_path);
+      if (ra::filesystem::fileExists(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
       }

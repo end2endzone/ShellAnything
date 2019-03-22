@@ -52,6 +52,7 @@ namespace shellanything
   bool copyFile(const std::string & source_path, const std::string & destination_path, ProgressReportCallback progress_function);
 
   std::string getFilenameWithoutExtension(const char * iPath);
+  std::string makeRelativePath(const std::string & base_path, const std::string & test_path);
 
 } //namespace shellanything
 

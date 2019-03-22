@@ -42,7 +42,7 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestValidator, testValidByDEfault)
+  TEST_F(TestValidator, testValidByDefault)
   {
     Context c;
     Validator v;
