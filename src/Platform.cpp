@@ -158,6 +158,27 @@ namespace shellanything
     return success;
   }
 
+  bool readFile(const std::string & path, std::string & content)
+  {
+    uint32_t file_size = ra::filesystem::getFileSize(path.c_str());
+    bool readed = peekFile(path, file_size, content);
+    return readed;
+  }
+
+  bool writeFile(const std::string & path, std::string & content)
+  {
+    FILE * f = fopen(path.c_str(), "wb");
+    if (!f)
+      return false;
+ 
+    size_t size_write = fwrite(content.c_str(), 1, content.size(), f);
+ 
+    fclose(f);
+ 
+    bool success = (content.size() == size_write);
+    return success;
+  }
+
   std::string getFilenameWithoutExtension(const char * iPath)
   {
     if (iPath == NULL)
