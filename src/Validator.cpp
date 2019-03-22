@@ -122,7 +122,7 @@ namespace shellanything
     mFileExtensions = iFileExtensions;
   }
 
-  bool Validator::isValid(const Context & iContext) const
+  bool Validator::validate(const Context & iContext) const
   {
     if (iContext.getNumFiles() > mMaxFiles)
       return false; //too many files selected

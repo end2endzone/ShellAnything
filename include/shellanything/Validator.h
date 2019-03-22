@@ -53,7 +53,7 @@ namespace shellanything
     const std::string & getFileExtensions() const;
     void setFileExtensions(const std::string & iFileExtensions);
 
-    bool isValid(const Context & iContext) const;
+    bool validate(const Context & iContext) const;
 
   private:
     int mMaxFiles;

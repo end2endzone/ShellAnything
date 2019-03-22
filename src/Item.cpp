@@ -80,13 +80,13 @@ namespace shellanything
 
   bool Item::isVisible(const Context & c)
   {
-    bool validated = mVisibility.isValid(c);
+    bool validated = mVisibility.validate(c);
     return validated;
   }
 
   bool Item::isEnabled(const Context & c)
   {
-    bool validated = mValidity.isValid(c);
+    bool validated = mValidity.validate(c);
     return validated;
   }
 
