@@ -25,7 +25,8 @@
 #ifndef SA_NODEFACTORY_H
 #define SA_NODEFACTORY_H
 
-#include "shellanything/Node.h"
+#include "shellanything/Item.h"
+#include "shellanything/Action.h"
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
 #include "tinyxml2.h"
@@ -44,7 +45,8 @@ namespace shellanything
 
     bool parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
     bool parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error);
-    Node * parseNode(const tinyxml2::XMLElement * element, std::string & error);
+    Action * parseAction(const tinyxml2::XMLElement * element, std::string & error);
+    Item * parseItem(const tinyxml2::XMLElement * element, std::string & error);
 
   };
 

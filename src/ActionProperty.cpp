@@ -28,7 +28,7 @@
 namespace shellanything
 {
 
-  ActionProperty::ActionProperty() : Action("ActionProperty")
+  ActionProperty::ActionProperty()
   {
   }
 

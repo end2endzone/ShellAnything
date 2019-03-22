@@ -66,7 +66,7 @@ namespace shellanything { namespace test
     config->addChild(item);
     item->setValidity(validity);
     item->setVisibility(visibility);
-    item->addChild(action);
+    item->addAction(action);
   }
   //--------------------------------------------------------------------------------------------------
 

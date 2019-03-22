@@ -41,6 +41,7 @@ using namespace tinyxml2;
 namespace shellanything
 {
   static const std::string NODE_ITEM = "item";
+  static const std::string NODE_ICON = "icon";
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
@@ -186,7 +187,7 @@ namespace shellanything
     return true;
   }
 
-  Action * parseAction(const XMLElement* element, std::string & error)
+  Action * NodeFactory::parseAction(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -320,11 +321,18 @@ namespace shellanything
     return false;
   }
 
-  Item * parseItem(const XMLElement* element, std::string & error)
+  Item * NodeFactory::parseItem(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
       error = "XMLElement is NULL";
+      return NULL;
+    }
+
+    std::string xml_name = element->Name();
+    if (xml_name != NODE_ITEM)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
@@ -402,8 +410,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Node * parsed = NodeFactory::getInstance().parseNode(xml_action, error);
-        Action * action = dynamic_cast<Action*>(parsed);
+        Action * action = NodeFactory::getInstance().parseAction(xml_action, error);
         if (action == NULL)
         {
           delete item;
@@ -411,7 +418,7 @@ namespace shellanything
         }
 
         //add the new action node
-        item->addChild(action);
+        item->addAction(action);
 
         //next action node
         xml_action = xml_action->NextSiblingElement();
@@ -422,8 +429,7 @@ namespace shellanything
     elements = getChildNodes(element, NODE_ITEM);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Node * parsed = NodeFactory::getInstance().parseNode(elements[i], error);
-      Item * subitem = dynamic_cast<Item *>(parsed);
+      Item * subitem = NodeFactory::getInstance().parseItem(elements[i], error);
       if (subitem == NULL)
       {
         delete item;
@@ -457,6 +463,13 @@ namespace shellanything
       return false;
     }
 
+    std::string xml_name = element->Name();
+    if (xml_name != NODE_ICON)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      return NULL;
+    }
+
     //parse path
     std::string icon_path;
     if (!parseAttribute(element, "path", false, false, icon_path, error))
@@ -478,27 +491,6 @@ namespace shellanything
     //success
     icon = result;
     return true;
-  }
-
-  Node * NodeFactory::parseNode(const tinyxml2::XMLElement * element, std::string & error)
-  {
-    if (element == NULL)
-    {
-      error = "XMLElement is NULL";
-      return NULL;
-    }
-
-    std::string xml_name = element->Name();
-
-    if (xml_name == NODE_ITEM)
-      return parseItem(element, error);
-    else if (xml_name == NODE_ACTION_CLIPBOARD || xml_name == NODE_ACTION_EXEC || xml_name == NODE_ACTION_PROMPT || xml_name == NODE_ACTION_PROPERTY || xml_name == NODE_ACTION_OPEN )
-      return parseAction(element, error);
-    else
-    {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
-      return NULL;
-    }
   }
 
 } //namespace shellanything

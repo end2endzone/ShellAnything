@@ -63,8 +63,10 @@ namespace shellanything
     const Validator & getVisibility();
     void setVisibility(const Validator & iVisibility);
 
+    void addAction(Action * action);
+    const Action::ActionPtrList & getActions() const;
+
     ItemPtrList getSubItems();
-    Action::ActionPtrList getActions();
 
   private:
     Icon mIcon;
@@ -72,6 +74,7 @@ namespace shellanything
     Validator mVisibility;
     bool mSeparator;
     std::string mName;
+    Action::ActionPtrList mActions;
   };
 
 } //namespace shellanything

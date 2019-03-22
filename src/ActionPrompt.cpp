@@ -28,7 +28,7 @@
 namespace shellanything
 {
 
-  ActionPrompt::ActionPrompt() : Action("ActionPrompt")
+  ActionPrompt::ActionPrompt()
   {
   }
 

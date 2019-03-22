@@ -28,7 +28,7 @@
 namespace shellanything
 {
 
-  ActionExecute::ActionExecute() : Action("ActionExecute")
+  ActionExecute::ActionExecute()
   {
   }
 

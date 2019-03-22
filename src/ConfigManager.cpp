@@ -91,8 +91,7 @@ namespace shellanything
     while (xml_item)
     {
       //found a new item node
-      Node * node = NodeFactory::getInstance().parseNode(xml_item, error);
-      Item * item = dynamic_cast<Item*>(node);
+      Item * item = NodeFactory::getInstance().parseItem(xml_item, error);
       if (item == NULL)
       {
         delete config;

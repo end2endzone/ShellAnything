@@ -28,7 +28,7 @@
 namespace shellanything
 {
 
-  ActionOpen::ActionOpen() : Action("ActionOpen")
+  ActionOpen::ActionOpen()
   {
   }
 

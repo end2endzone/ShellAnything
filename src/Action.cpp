@@ -27,7 +27,7 @@
 namespace shellanything
 {
 
-  Action::Action(const std::string & type) : Node(type)
+  Action::Action()
   {
   }
 

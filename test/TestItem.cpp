@@ -55,7 +55,7 @@ namespace shellanything { namespace test
   class MyAction : public Action
   {
   public:
-    MyAction(bool * deleted_flag, bool * executed_flag) : Action("MyAction")
+    MyAction(bool * deleted_flag, bool * executed_flag)
     {
       this->deleted_flag  = deleted_flag;
       this->executed_flag = executed_flag;
@@ -149,7 +149,7 @@ namespace shellanything { namespace test
     body->addChild(child1);
     body->addChild(child2);
     body->addChild(child3);
-    child3->addChild(my_test_action); //child3 takes ownership of my_test_item
+    child3->addAction(my_test_action); //child3 takes ownership of my_test_item
 
     //destroy the tree
     delete root;
@@ -157,40 +157,6 @@ namespace shellanything { namespace test
 
     //assert that MyAction destructor was run
     ASSERT_TRUE(deleted);
-  }
-  //--------------------------------------------------------------------------------------------------
-  TEST_F(TestItem, testFindAllActions)
-  {
-    Item item;
-    item.setName("Open my important directories...");
-    ActionExecute * action1 = new ActionExecute();
-    action1->setPath("C:\\windows\\system32\\cmd.exe");
-    action1->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\"");
-    ActionExecute * action2 = new ActionExecute();
-    action2->setPath("C:\\windows\\system32\\cmd.exe");
-    action2->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\\Documents\"");
-    ActionExecute * action3 = new ActionExecute();
-    action3->setPath("C:\\windows\\system32\\cmd.exe");
-    action3->setArguments("/c start \"\" \"C:\\Users\\MartyMcfly\\Downloads\"");
-    
-    //link everything
-    item.addChild(action1);
-    item.addChild(action2);
-    item.addChild(action3);
-
-    //find all actions
-    Action::ActionPtrList actions = filterNodes<Action*>(item.getChildren());
-    ASSERT_EQ(3, actions.size());
-    ASSERT_EQ( action1, actions[0] );
-    ASSERT_EQ( action2, actions[1] );
-    ASSERT_EQ( action3, actions[2] );
-
-    //validate with getActions()
-    actions = item.getActions();
-    ASSERT_EQ(3, actions.size());
-    ASSERT_EQ( action1, actions[0] );
-    ASSERT_EQ( action2, actions[1] );
-    ASSERT_EQ( action3, actions[2] );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestItem, testSubItems)

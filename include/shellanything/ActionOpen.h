@@ -26,7 +26,6 @@
 #define SA_ACTION_OPEN_H
 
 #include "shellanything/Action.h"
-#include <vector>
 
 namespace shellanything
 {

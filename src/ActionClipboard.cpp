@@ -28,7 +28,7 @@
 namespace shellanything
 {
 
-  ActionClipboard::ActionClipboard() : Action("ActionClipboard")
+  ActionClipboard::ActionClipboard()
   {
   }
 

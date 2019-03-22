@@ -33,6 +33,12 @@ namespace shellanything
 
   Item::~Item()
   {
+    for(size_t i=0; i<mActions.size(); i++)
+    {
+      Action * action = mActions[i];
+      delete action;
+    }
+    mActions.clear();
   }
 
   bool Item::isSeparator() const
@@ -110,11 +116,14 @@ namespace shellanything
     return sub_items;
   }
 
-  Action::ActionPtrList Item::getActions()
+  void Item::addAction(Action * action)
   {
-    //cannot filter using node_type because each action classes have a different type 
-    Action::ActionPtrList actions = filterNodes<Action*>(this->getChildren());
-    return actions;
+    mActions.push_back(action);
+  }
+
+  const Action::ActionPtrList & Item::getActions() const
+  {
+    return mActions;
   }
 
 } //namespace shellanything
