@@ -34,14 +34,14 @@
 namespace shellanything
 {
 
-  class NodeFactory
+  class ObjectFactory
   {
   private:
-    NodeFactory();
-    virtual ~NodeFactory();
+    ObjectFactory();
+    virtual ~ObjectFactory();
 
   public:
-    static NodeFactory & getInstance();
+    static ObjectFactory & getInstance();
 
     bool parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
     bool parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error);

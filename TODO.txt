@@ -1,1 +1,0 @@
-- Rename NodeFactory to ObjectFactory/XmlFactory since it can other type of object (not only Node)

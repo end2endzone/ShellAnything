@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ConfigManager.h"
-#include "shellanything/NodeFactory.h"
+#include "shellanything/ObjectFactory.h"
 #include "shellanything/Item.h"
 #include "shellanything/Platform.h"
 
@@ -91,7 +91,7 @@ namespace shellanything
     while (xml_item)
     {
       //found a new item node
-      Item * item = NodeFactory::getInstance().parseItem(xml_item, error);
+      Item * item = ObjectFactory::getInstance().parseItem(xml_item, error);
       if (item == NULL)
       {
         delete config;

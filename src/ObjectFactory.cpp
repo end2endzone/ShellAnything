@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/NodeFactory.h"
+#include "shellanything/ObjectFactory.h"
 
 #include "shellanything/Configuration.h"
 #include "shellanything/Item.h"
@@ -50,17 +50,17 @@ namespace shellanything
   static const std::string NODE_ACTION_PROPERTY = "property";
   static const std::string NODE_ACTION_OPEN = "open";
 
-  NodeFactory::NodeFactory()
+  ObjectFactory::ObjectFactory()
   {
   }
 
-  NodeFactory::~NodeFactory()
+  ObjectFactory::~ObjectFactory()
   {
   }
 
-  NodeFactory & NodeFactory::getInstance()
+  ObjectFactory & ObjectFactory::getInstance()
   {
-    static NodeFactory _instance;
+    static ObjectFactory _instance;
     return _instance;
   }
 
@@ -138,7 +138,7 @@ namespace shellanything
     return true;
   }
 
-  bool NodeFactory::parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
+  bool ObjectFactory::parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
   {
     if (element == NULL)
     {
@@ -187,7 +187,7 @@ namespace shellanything
     return true;
   }
 
-  Action * NodeFactory::parseAction(const XMLElement* element, std::string & error)
+  Action * ObjectFactory::parseAction(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -321,7 +321,7 @@ namespace shellanything
     return false;
   }
 
-  Item * NodeFactory::parseItem(const XMLElement* element, std::string & error)
+  Item * ObjectFactory::parseItem(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -378,7 +378,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator validity;
-      if (!NodeFactory::getInstance().parseValidator(elements[i], validity, error))
+      if (!ObjectFactory::getInstance().parseValidator(elements[i], validity, error))
       {
         delete item;
         return NULL;
@@ -391,7 +391,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator visibility;
-      if (!NodeFactory::getInstance().parseValidator(elements[i], visibility, error))
+      if (!ObjectFactory::getInstance().parseValidator(elements[i], visibility, error))
       {
         delete item;
         return NULL;
@@ -410,7 +410,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Action * action = NodeFactory::getInstance().parseAction(xml_action, error);
+        Action * action = ObjectFactory::getInstance().parseAction(xml_action, error);
         if (action == NULL)
         {
           delete item;
@@ -429,7 +429,7 @@ namespace shellanything
     elements = getChildNodes(element, NODE_ITEM);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Item * subitem = NodeFactory::getInstance().parseItem(elements[i], error);
+      Item * subitem = ObjectFactory::getInstance().parseItem(elements[i], error);
       if (subitem == NULL)
       {
         delete item;
@@ -443,7 +443,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Icon icon;
-      if (!NodeFactory::getInstance().parseIcon(elements[i], icon, error))
+      if (!ObjectFactory::getInstance().parseIcon(elements[i], icon, error))
       {
         //failed icon parsing
         delete item;
@@ -455,7 +455,7 @@ namespace shellanything
     return item;
   }
 
-  bool NodeFactory::parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
+  bool ObjectFactory::parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
   {
     if (element == NULL)
     {
