@@ -40,6 +40,17 @@ namespace shellanything
   bool readFile(const std::string & path, std::string & content);
   bool writeFile(const std::string & path, std::string & content);
 
+  // copyFile() callback interfaces
+  class IProgressReport
+  {
+  public:
+    virtual void onProgressReport(double progress) = 0;
+  };
+  typedef void (*ProgressReportCallback)(double);
+  bool copyFile(const std::string & source_path, const std::string & destination_path);
+  bool copyFile(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor);
+  bool copyFile(const std::string & source_path, const std::string & destination_path, ProgressReportCallback progress_function);
+
   std::string getFilenameWithoutExtension(const char * iPath);
 
 } //namespace shellanything

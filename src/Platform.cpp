@@ -179,6 +179,82 @@ namespace shellanything
     return success;
   }
 
+  bool copyFileInternal(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor, ProgressReportCallback progress_function)
+  {
+    size_t file_size = ra::filesystem::getFileSize(source_path.c_str());
+
+    FILE* fin = fopen(source_path.c_str(), "rb");
+    if (!fin)
+      return false;
+
+    FILE* fout = fopen(destination_path.c_str(), "wb");
+    if (!fout)
+    {
+      fclose(fin);
+      return false;
+    }
+
+    //publish progress
+    double progress = 0.0;
+    if (progress_functor)
+      progress_functor->onProgressReport(progress);
+    if (progress_function)
+      progress_function(progress);
+
+    const size_t bufferSize = 100*1024; //100k memory buffer
+    uint8_t buffer[bufferSize];
+
+    size_t copied_size = 0;
+
+    while( !feof(fin) )
+    {
+      size_t size_readed = fread(buffer, 1, bufferSize, fin);
+      if (size_readed)
+      {
+        size_t size_writen = fwrite(buffer, 1, size_readed, fout);
+        copied_size += size_writen;
+
+        //publish progress
+        progress = double(copied_size) / double(file_size);
+        if (progress_functor)
+          progress_functor->onProgressReport(progress);
+        if (progress_function)
+          progress_function(progress);
+      }
+    }
+
+    fclose(fin);
+    fclose(fout);
+
+    bool success = (file_size == copied_size);
+
+    if (success && progress < 1.0) //if 100% progress not already sent
+    {
+      //publish progress
+      progress = 1.0;
+      if (progress_functor)
+        progress_functor->onProgressReport(progress);
+      if (progress_function)
+        progress_function(progress);
+    }
+
+    return success;
+  }
+
+  bool copyFile(const std::string & source_path, const std::string & destination_path)
+  {
+    return copyFileInternal(source_path, destination_path, NULL, NULL);
+  }
+
+  bool copyFile(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor)
+  {
+    return copyFileInternal(source_path, destination_path, progress_functor, NULL);
+  }
+
+  bool copyFile(const std::string & source_path, const std::string & destination_path, ProgressReportCallback progress_function)
+  {
+    return copyFileInternal(source_path, destination_path, NULL, progress_function);
+  }
   std::string getFilenameWithoutExtension(const char * iPath)
   {
     if (iPath == NULL)
