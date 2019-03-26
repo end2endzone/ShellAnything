@@ -43,7 +43,7 @@ namespace shellanything { namespace test
     ConfigManager & cmgr = ConfigManager::getInstance();
     cmgr.refresh();
 
-    //delete still loaded configuration files
+    //Delete the source file of all remaining Configuration instance
     Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {

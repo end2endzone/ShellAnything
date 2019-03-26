@@ -9,3 +9,12 @@ ShellForge
 Shell Extension Composer
 FileExplorer Forge
 FileExplorer Composer
+ 
+Extension Composer
+Explorer Extension Depot
+Action Menu Catalog
+
+Context Menu Composer
+Action Menu Composer
+Shell Action Composer
+
