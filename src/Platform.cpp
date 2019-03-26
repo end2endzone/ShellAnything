@@ -33,6 +33,9 @@
 #   endif
 #   include <windows.h> // for GetModuleHandleEx()
 #   include <Shlobj.h>
+#   include <ShellAPI.h>
+#   include <psapi.h>
+#   pragma comment( lib, "psapi.lib" )
 #endif
 
 namespace shellanything
@@ -312,6 +315,90 @@ namespace shellanything
  
     //failed making path relative
     return "";
+  }
+
+  uint32_t startProcess(const std::string & iCommand, const std::string & iDefaultDirectory)
+  {
+    PROCESS_INFORMATION processInfo = {0};
+    
+    STARTUPINFO startupInfo = {0};
+    startupInfo.cb = sizeof(STARTUPINFO);
+    startupInfo.dwFlags = STARTF_USESHOWWINDOW;
+    startupInfo.wShowWindow = SW_SHOWDEFAULT; //SW_SHOW, SW_SHOWNORMAL
+
+    DWORD creationFlags = 0; //EXTENDED_STARTUPINFO_PRESENT
+
+    bool success = (CreateProcess(NULL, (char*)iCommand.c_str(), NULL, NULL, FALSE, creationFlags, NULL, iDefaultDirectory.c_str(), &startupInfo, &processInfo) != 0);
+    if (success)
+    {
+      //Wait for the application to initialize properly
+      WaitForInputIdle(processInfo.hProcess, INFINITE);
+
+      //Extract the program id
+      uint32_t pId = processInfo.dwProcessId;
+      return pId;
+    }
+    return 0;
+  }
+
+  uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory)
+  {
+    //merge iExecPath with iArguments
+    std::string command;
+
+    //handle iExecPath
+    if (!iExecPath.empty())
+    {
+      if (iExecPath.find(" ") != std::string::npos)
+      {
+        command += "\"";
+        command += iExecPath;
+        command += "\"";
+      }
+      else
+        command += iExecPath;
+    }
+
+    if (!iArguments.empty())
+    {
+      command += " ";
+      command += iArguments;
+    }
+
+    if (command.size() > 0)
+    {
+      return startProcess(command, iDefaultDirectory);
+    }
+
+    return 0;
+  }
+
+  uint32_t openDocument(const std::string & iPath)
+  {
+    SHELLEXECUTEINFO info = {0};
+
+    info.cbSize = sizeof(SHELLEXECUTEINFO);
+    
+    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
+    info.fMask |= SEE_MASK_NOASYNC;
+    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+    info.hwnd = HWND_DESKTOP;
+    info.nShow = SW_SHOWDEFAULT;
+    info.lpVerb = "open";
+    info.lpFile = iPath.c_str();
+    info.lpParameters = NULL; //arguments
+    info.lpDirectory = NULL; // default directory
+
+    BOOL success = ShellExecuteEx(&info);
+    if (success)
+    {
+      HANDLE hProcess = info.hProcess;
+      DWORD wPid = GetProcessId(hProcess);
+      return wPid;
+    }
+
+    return 0;
   }
 
 } //namespace shellanything

@@ -54,6 +54,10 @@ namespace shellanything
   std::string getFilenameWithoutExtension(const char * iPath);
   std::string makeRelativePath(const std::string & base_path, const std::string & test_path);
 
+  uint32_t startProcess(const std::string & iCommand, const std::string & iDefaultDirectory);
+  uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory);
+  uint32_t openDocument(const std::string & iPath);
+
 } //namespace shellanything
 
 #endif //SA_ACTION_H

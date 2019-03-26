@@ -24,6 +24,7 @@
 
 #include "shellanything/ActionExecute.h"
 #include "shellanything/PropertyManager.h"
+#include "shellanything/Platform.h"
 
 namespace shellanything
 {
@@ -44,9 +45,11 @@ namespace shellanything
     std::string arguments = pmgr.expand(mArguments);
 
     //debug
-    printf("Running '%s' from directory '%s' with arguments '%s'.\n", path.c_str(), basedir.c_str(), arguments.c_str());
+    //printf("Running '%s' with arguments '%s' from directory '%s'.\n", path.c_str(), arguments.c_str(), basedir.c_str());
 
-    return true;
+    uint32_t pId = startProcess(path, arguments, basedir);
+
+    return pId != 0;
   }
 
   const std::string & ActionExecute::getPath() const
