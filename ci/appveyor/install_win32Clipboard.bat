@@ -8,22 +8,28 @@ if "%APPVEYOR_BUILD_FOLDER%"=="" (
 
 set GTEST_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\googletest\install
 set rapidassist_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\RapidAssist\install
-set tinyxml2_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\tinyxml2\install
-set win32clipboard_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\win32Clipboard\install
-set INSTALL_LOCATION=%APPVEYOR_BUILD_FOLDER%\install
+set INSTALL_LOCATION=%APPVEYOR_BUILD_FOLDER%\third_parties\win32Clipboard\install
 
 echo ============================================================================
-echo Generating...
+echo Cloning win32Clipboard into %APPVEYOR_BUILD_FOLDER%\third_parties\win32Clipboard
 echo ============================================================================
-cd /d %APPVEYOR_BUILD_FOLDER%
-mkdir build >NUL 2>NUL
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% -DSHELLANYTHING_BUILD_TEST=ON -DBUILD_SHARED_LIBS=OFF ..
-if %errorlevel% neq 0 exit /b %errorlevel%
+mkdir %APPVEYOR_BUILD_FOLDER%\third_parties >NUL 2>NUL
+cd %APPVEYOR_BUILD_FOLDER%\third_parties
+git clone "https://github.com/end2endzone/win32Clipboard.git"
+cd win32Clipboard
+echo.
+
+echo Checking out version v0.1.0...
+git checkout 0.1.0
+echo.
 
 echo ============================================================================
 echo Compiling...
 echo ============================================================================
+mkdir build >NUL 2>NUL
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% ..
+if %errorlevel% neq 0 exit /b %errorlevel%
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
@@ -34,20 +40,3 @@ echo ===========================================================================
 cmake --build . --config %Configuration% --target INSTALL
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
-
-echo ============================================================================
-echo Creating install package
-echo ============================================================================
-cmake --build . --config %Configuration% --target PACKAGE
-if %errorlevel% neq 0 exit /b %errorlevel%
-echo.
-
-::Delete all temporary environment variable created
-set GTEST_ROOT=
-set rapidassist_DIR=
-set tinyxml2_DIR=
-set win32clipboard_DIR=
-set INSTALL_LOCATION=
-
-::Return to launch folder
-cd /d %~dp0

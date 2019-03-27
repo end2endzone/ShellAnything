@@ -1,5 +1,6 @@
 find_package(rapidassist REQUIRED)
 find_package(tinyxml2 REQUIRED)
+find_package(win32clipboard REQUIRED)
 
 set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Action.h
@@ -61,8 +62,9 @@ target_include_directories(shellanything
     ${GTEST_INCLUDE_DIR}
     rapidassist
     tinyxml2_static
+    win32clipboard
 )
-target_link_libraries(shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static)
+target_link_libraries(shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
 
 install(TARGETS shellanything
         EXPORT shellanything-targets
