@@ -46,6 +46,14 @@ add_library(shellanything STATIC
   PropertyManager.cpp
 )
 
+add_library(shellanything_adaptor SHARED
+  ${SHELLANYTHING_EXPORT_HEADER}
+  ${SHELLANYTHING_VERSION_HEADER}
+  ${SHELLANYTHING_CONFIG_HEADER}
+  shellext.h
+  shellext.cpp
+)
+
 # Unit test projects requires to link with pthread if also linking with gtest
 if(SHELLANYTHING_BUILD_GTESTHELP)
   if(NOT WIN32)
@@ -54,7 +62,8 @@ if(SHELLANYTHING_BUILD_GTESTHELP)
 endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(shellanything PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(shellanything         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(shellanything_adaptor PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for exported code.
 target_include_directories(shellanything
@@ -66,9 +75,16 @@ target_include_directories(shellanything
     tinyxml2_static
     win32clipboard
 )
-target_link_libraries(shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
+target_link_libraries(shellanything         PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
+target_link_libraries(shellanything_adaptor PRIVATE shellanything rapidassist)
 
 install(TARGETS shellanything
+        EXPORT shellanything-targets
+        ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
+        LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
+        RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
+)
+install(TARGETS shellanything_adaptor
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
