@@ -25,8 +25,67 @@
 #ifndef SA_SHELLEXTENSION_H
 #define SA_SHELLEXTENSION_H
 
-#include "shellanything/Node.h"
+#pragma once
 
-int foo();
+#include "extToolsShellExports.h"
+#include "ShellMenu.h"
+
+//Shell extension GUID
+static const char * CLSID_ShellExtensionStr = "{319D65C7-4D2D-42E9-9EC6-83C1A799CA57}";
+static const GUID CLSID_ShellExtension = { 0X319D65C7, 0X4D2D, 0X42E9, { 0X9E, 0XC6, 0X83, 0XC1, 0XA7, 0X99, 0XCA, 0X57 } };
+static const char * ShellExtensionName = "extToolsShell";
+static const char * ShellExtensionDescription = "extTools Shell extension";
+
+using namespace EXTLIB;
+
+// Prototype de notre interface IClassFactory:
+class CClassFactory : public IClassFactory
+{
+protected:
+  ULONG m_cRef;
+
+public:
+  // Constructeur et destructeur:
+  CClassFactory();
+  ~CClassFactory();
+
+  //Méthodes de l'interface IUnknown:
+  HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
+  ULONG STDMETHODCALLTYPE		AddRef();
+  ULONG STDMETHODCALLTYPE		Release();
+
+  // Méthodes de l'interface IClassFactory:
+  HRESULT STDMETHODCALLTYPE	CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR *);
+  HRESULT STDMETHODCALLTYPE	LockServer(BOOL);
+};
+
+// Prototype de notre interface IContextMenu:
+class EXTTOOLSSHELL_API CContextMenu : public IContextMenu, IShellExtInit
+{
+protected:
+  ULONG           m_cRef;
+  LPDATAOBJECT    m_pDataObj;
+  extListString   mSelectedItems;
+  bool            mIsBackGround;
+  ShellMenu       mMenus;
+
+public:
+  // Constructeur et destructeur:
+  CContextMenu();
+  ~CContextMenu();
+
+  //Méthodes de l'interface IUnknown:
+  HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
+  ULONG STDMETHODCALLTYPE		AddRef();
+  ULONG STDMETHODCALLTYPE		Release();
+
+  // Méthodes de l'interface IContextMenu:
+  HRESULT STDMETHODCALLTYPE	QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
+  HRESULT STDMETHODCALLTYPE	InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
+  HRESULT STDMETHODCALLTYPE	GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
+
+  // Méthodes de l'interface IShellExtInit:
+  HRESULT STDMETHODCALLTYPE	Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
+};
 
 #endif //SA_SHELLEXTENSION_H
