@@ -25,66 +25,61 @@
 #ifndef SA_SHELLEXTENSION_H
 #define SA_SHELLEXTENSION_H
 
-#pragma once
+#include "version.h"
+#include "config.h"
 
-#include "extToolsShellExports.h"
-#include "ShellMenu.h"
+#include "shellext_export.h"
+#include <vector>
 
 //Shell extension GUID
-static const char * CLSID_ShellExtensionStr = "{319D65C7-4D2D-42E9-9EC6-83C1A799CA57}";
-static const GUID CLSID_ShellExtension = { 0X319D65C7, 0X4D2D, 0X42E9, { 0X9E, 0XC6, 0X83, 0XC1, 0XA7, 0X99, 0XCA, 0X57 } };
-static const char * ShellExtensionName = "extToolsShell";
-static const char * ShellExtensionDescription = "extTools Shell extension";
+static const char * CLSID_ShellExtensionStr = "{B0D35103-86A1-471C-A653-E130E3439A3B}";
+static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
+static const char * ShellExtensionName = "ShellAnything";
+static const char * ShellExtensionDescription = "ShellAnything Shell extension";
 
-using namespace EXTLIB;
-
-// Prototype de notre interface IClassFactory:
 class CClassFactory : public IClassFactory
 {
 protected:
   ULONG m_cRef;
 
 public:
-  // Constructeur et destructeur:
   CClassFactory();
   ~CClassFactory();
 
-  //Méthodes de l'interface IUnknown:
+  //IUnknown interface
   HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
   ULONG STDMETHODCALLTYPE		AddRef();
   ULONG STDMETHODCALLTYPE		Release();
 
-  // Méthodes de l'interface IClassFactory:
+  //IClassFactory interface
   HRESULT STDMETHODCALLTYPE	CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR *);
   HRESULT STDMETHODCALLTYPE	LockServer(BOOL);
 };
 
 // Prototype de notre interface IContextMenu:
-class EXTTOOLSSHELL_API CContextMenu : public IContextMenu, IShellExtInit
+class SHELLANYTHING_API CContextMenu : public IContextMenu, IShellExtInit
 {
 protected:
   ULONG           m_cRef;
   LPDATAOBJECT    m_pDataObj;
-  extListString   mSelectedItems;
+  std::vector<std::string> mSelectedItems;
   bool            mIsBackGround;
-  ShellMenu       mMenus;
 
 public:
-  // Constructeur et destructeur:
   CContextMenu();
   ~CContextMenu();
 
-  //Méthodes de l'interface IUnknown:
+  //IUnknown interface
   HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
   ULONG STDMETHODCALLTYPE		AddRef();
   ULONG STDMETHODCALLTYPE		Release();
 
-  // Méthodes de l'interface IContextMenu:
+  //IContextMenu interface
   HRESULT STDMETHODCALLTYPE	QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
   HRESULT STDMETHODCALLTYPE	InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
   HRESULT STDMETHODCALLTYPE	GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
 
-  // Méthodes de l'interface IShellExtInit:
+  //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE	Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 };
 

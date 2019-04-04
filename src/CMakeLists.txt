@@ -75,6 +75,12 @@ target_include_directories(shellanything
     tinyxml2_static
     win32clipboard
 )
+target_include_directories(shellanything_adaptor
+  PUBLIC
+    $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
+  PRIVATE
+    rapidassist
+)
 target_link_libraries(shellanything         PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
 target_link_libraries(shellanything_adaptor PRIVATE shellanything rapidassist)
 
