@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_EXPORT_H
-#define SA_EXPORT_H
+#ifndef SA_ADAPTOR_EXPORT_H
+#define SA_ADAPTOR_EXPORT_H
 
 #ifdef shellanything_adaptor_EXPORTS
   #define SHELLANYTHING_API __declspec(dllexport)
@@ -31,4 +31,4 @@
   #define SHELLANYTHING_API __declspec(dllimport)
 #endif
 
-#endif //SA_EXPORT_H
+#endif //SA_ADAPTOR_EXPORT_H

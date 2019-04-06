@@ -30,6 +30,7 @@
 namespace shellanything
 {
 
+  std::string expand(const std::string & iValue);
   ra::strings::StringVector getEnvironmentVariables();
   std::string getHomeDirectory();
   std::string getApplicationsDataDirectory();

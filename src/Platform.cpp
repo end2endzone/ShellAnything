@@ -41,6 +41,25 @@
 namespace shellanything
 {
 
+  std::string expand(const std::string & iValue)
+  {
+    std::string output = iValue;
+
+    ra::strings::StringVector variables = getEnvironmentVariables();
+    for(size_t i=0; i<variables.size(); i++)
+    {
+      const std::string & name = variables[i];
+
+      std::string pattern = std::string("%") + name + std::string("%");
+      std::string value = ra::environment::getEnvironmentVariable(name.c_str());
+
+      //process with search and replace
+      ra::strings::replace(output, pattern, value);
+    }
+
+    return output;
+  }
+
   ra::strings::StringVector getEnvironmentVariables()
   {
     ra::strings::StringVector vars;
