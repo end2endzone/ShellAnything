@@ -37,7 +37,7 @@ static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0
 static const char * ShellExtensionName = "ShellAnything";
 static const char * ShellExtensionDescription = "ShellAnything Shell extension";
 
-class CClassFactory : public IClassFactory
+class SHELLANYTHING_API CClassFactory : public IClassFactory
 {
 protected:
   ULONG m_cRef;
@@ -47,13 +47,13 @@ public:
   ~CClassFactory();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
-  ULONG STDMETHODCALLTYPE		AddRef();
-  ULONG STDMETHODCALLTYPE		Release();
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID *);
+  ULONG   STDMETHODCALLTYPE AddRef();
+  ULONG   STDMETHODCALLTYPE Release();
 
   //IClassFactory interface
-  HRESULT STDMETHODCALLTYPE	CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR *);
-  HRESULT STDMETHODCALLTYPE	LockServer(BOOL);
+  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR *);
+  HRESULT STDMETHODCALLTYPE LockServer(BOOL);
 };
 
 // Prototype de notre interface IContextMenu:
@@ -70,17 +70,17 @@ public:
   ~CContextMenu();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE	QueryInterface(REFIID, LPVOID FAR *);
-  ULONG STDMETHODCALLTYPE		AddRef();
-  ULONG STDMETHODCALLTYPE		Release();
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID *);
+  ULONG   STDMETHODCALLTYPE AddRef();
+  ULONG   STDMETHODCALLTYPE Release();
 
   //IContextMenu interface
-  HRESULT STDMETHODCALLTYPE	QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
-  HRESULT STDMETHODCALLTYPE	InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
-  HRESULT STDMETHODCALLTYPE	GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
+  HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
+  HRESULT STDMETHODCALLTYPE InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
+  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
 
   //IShellExtInit interface
-  HRESULT STDMETHODCALLTYPE	Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
+  HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 };
 
 #endif //SA_SHELLEXTENSION_H

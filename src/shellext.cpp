@@ -1,182 +1,198 @@
-#include "shellext.h"
-
 //#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-//#include <Rpc.h>
 
-#include "extRegistry\extRegistry.h"
-#include "extBase\extString.h"
-#include "extBase\extStringConverter.h"
-#include "extBase\extFiles.h"
-#include "extBase\extTime.h"
-#include "extBase\extRandom.h"
-#include "extBase\extStringTokenizer.h"
-#include "extBase\extMenuTools.h"
-#include "extBase\extEnv.h"
-#include "extProcess\extProcessHandler.h"
-
-#include "extBase\extWindowsHeader.h"
 #include <initguid.h>
 #include <shlguid.h>
 #include <shlobj.h>
-#include <assert.h>
 
-#include "Logger.h"
+#include "shellext.h"
+#include "win32Registry.h"
 
-#include "ShellMenuLibrary.h"
-#include "extToolsShell.h"
-#include "dllutilLib.h"
-
-using namespace EXTLIB;
-using namespace EXTLIB::registry;
-using namespace EXTLIB::win32;
-using namespace EXTLIB::process;
+#include "rapidassist/strings.h"
 
 //Declarations
-UINT      g_cRefDll = 0;   // Reference counter
+UINT      g_cRefDll = 0;   // Reference counter of this DLL
 HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
-static extILogger * g_Logger = getAppLogger();
 
-// Constructeur de l'interface IContextMenu (incluant IShellExtInit):
+//http://www.codeguru.com/cpp/w-p/dll/tips/article.php/c3635
+#if _MSC_VER >= 1300    // for VC 7.0
+  // from ATL 7.0 sources
+  #ifndef _delayimp_h
+  extern "C" IMAGE_DOS_HEADER __ImageBase;
+  #endif
+#endif
+
+HMODULE GetCurrentModule2000()
+{
+#if _MSC_VER < 1300 // earlier than .NET compiler (VC 6.0)
+  // Here's a trick that will get you the handle of the module
+  // you're running in without any a-priori knowledge:
+  // http://www.dotnet247.com/247reference/msgs/13/65259.aspx
+
+  MEMORY_BASIC_INFORMATION mbi;
+  static int dummy;
+  VirtualQuery( &dummy, &mbi, sizeof(mbi) );
+  return reinterpret_cast<HMODULE>(mbi.AllocationBase);
+#else // VC 7.0
+  // from ATL 7.0 sources
+  return reinterpret_cast<HMODULE>(&__ImageBase);
+#endif
+}
+
+HMODULE GetCurrentModule()
+{
+  return GetCurrentModule2000();
+}
+
+const char * GetCurrentModulePath()
+{
+  static char buffer[MAX_PATH];
+  GetModuleFileName(GetCurrentModule(), buffer, MAX_PATH);
+  return buffer;
+}
+
 CContextMenu::CContextMenu()
 {
   m_cRef = 0L;
   m_pDataObj = NULL;
-  g_cRefDll++;
+
+  // Increment the dll's reference counter.
+  InterlockedIncrement(&g_cRefDll);
 }
 
-// Destructeur de l'interface IContextMenu:
 CContextMenu::~CContextMenu()
 {
-  if (m_pDataObj)  m_pDataObj->Release();
-  g_cRefDll--;
+  if (m_pDataObj) m_pDataObj->Release();
+
+  // Decrement the dll's reference counter.
+  InterlockedDecrement(&g_cRefDll);
 }
 
-// Implémentation de la méthode QueryContextMenu() de l'interface IContextMenu:
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
-  g_Logger->print("begin of QueryContextMenu");
+  //g_Logger->print("begin of QueryContextMenu");
 
   ////Debugging:
   //{
   //  extProcess * currentProcess = extProcessHandler::getCurrentProcess();
-  //  extString message = extStringConverter::format("Attach to process %d and press OK to continue...", currentProcess->getPid());
+  //  std::string message = ra::strings::format("Attach to process %d and press OK to continue...", currentProcess->getPid());
   //  MessageBox(NULL, message.c_str(), "DEBUG!", MB_OK);
   //}
 
   UINT nextCommandId = idCmdFirst;
   long nextSequentialId = 0;
-  extMenuTools::insertMenu(hMenu, indexMenu, mMenus, nextCommandId, nextSequentialId);
+  //extMenuTools::insertMenu(hMenu, indexMenu, mMenus, nextCommandId, nextSequentialId);
 
   indexMenu++;
 
-  g_Logger->print("end of QueryContextMenu");
+  //g_Logger->print("end of QueryContextMenu");
     
   return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
 }
 
-// Implémentation de la méthode InvokeCommand() de l'interface IContextMenu:
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
 {
-  g_Logger->print("begin of InvokeCommand");
+  //g_Logger->print("begin of InvokeCommand");
 
-  if (!HIWORD(lpcmi->lpVerb))
-  {
-    long sequentialId = LOWORD(lpcmi->lpVerb);
+  //if (!HIWORD(lpcmi->lpVerb))
+  //{
+  //  long sequentialId = LOWORD(lpcmi->lpVerb);
 
-    //check for a clicked menu command
-    ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, sequentialId);
-    if (selectedMenu)
-    {
-      runMenu( (*selectedMenu), mSelectedItems );
-    }
-    else
-    {
-      //Build error message
-      extString message = extStringConverter::format("Menu item with system id %d not found!\n\n", sequentialId);
-      MessageBox(NULL, message.c_str(), "Unable to invoke command", MB_OK | MB_ICONERROR);
-    }
-  }
-  g_Logger->print("end of InvokeCommand");
+  //  //check for a clicked menu command
+  //  ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, sequentialId);
+  //  if (selectedMenu)
+  //  {
+  //    runMenu( (*selectedMenu), mSelectedItems );
+  //  }
+  //  else
+  //  {
+  //    //Build error message
+  //    std::string message = ra::strings::format("Menu item with system id %d not found!\n\n", sequentialId);
+  //    MessageBox(NULL, message.c_str(), "Unable to invoke command", MB_OK | MB_ICONERROR);
+  //  }
+  //}
+  //g_Logger->print("end of InvokeCommand");
 
   return E_INVALIDARG;
 }
 
-// Implémentation de la méthode GetCommandString() de l'interface IContextMenu:
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd,  UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
-  g_Logger->print("begin of GetCommandString");
+  //g_Logger->print("begin of GetCommandString");
         
-  long menuSequenceId = idCmd;
-  //check for a menu that matches menuSequenceId
-  ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, menuSequenceId);
+  //long menuSequenceId = idCmd;
+  ////check for a menu that matches menuSequenceId
+  //ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, menuSequenceId);
 
-  if (selectedMenu == NULL)
-  {
-    //Build error message
-    extString message = extStringConverter::format("Menu item with sequential id %d not found!\n\n", menuSequenceId);
-    MessageBox(NULL, message.c_str(), "Unable to process GetCommandString()", MB_OK | MB_ICONERROR);
+  //if (selectedMenu == NULL)
+  //{
+  //  //Build error message
+  //  std::string message = ra::strings::format("Menu item with sequential id %d not found!\n\n", menuSequenceId);
+  //  MessageBox(NULL, message.c_str(), "Unable to process GetCommandString()", MB_OK | MB_ICONERROR);
 
-    g_Logger->print("end #1 of GetCommandString");
-    return S_FALSE;
-  }
+  //  //g_Logger->print("end #1 of GetCommandString");
+  //  return S_FALSE;
+  //}
 
-  //Build up tooltip string
-  const char * tooltip = " ";
-  if (selectedMenu->getDescription().size() > 0)
-    tooltip = selectedMenu->getDescription().c_str();
+  ////Build up tooltip string
+  //const char * tooltip = " ";
+  //if (selectedMenu->getDescription().size() > 0)
+  //  tooltip = selectedMenu->getDescription().c_str();
 
-  //Textes à afficher dans la barre d'état d'une fenêtre de l'explorateur quand
-  //l'un de nos éléments du menu contextuel est pointé par la souris:
-  switch(uFlags)
-  {
-  case GCS_HELPTEXTA:
-    {
-      //ANIS tooltip handling
-      lstrcpynA(pszName, tooltip, cchMax);
-      g_Logger->print("end #2 of GetCommandString");
-      return S_OK;
-    }
-    break;
-  case GCS_HELPTEXTW:
-    {
-      //UNICODE tooltip handling
-      extMemoryBuffer unicodeDescription = extStringConverter::toUnicode(tooltip);
-      bool success = false;
-      if (unicodeDescription.getSize() <= cchMax)
-      {
-        memcpy(pszName, unicodeDescription.getBuffer(), unicodeDescription.getSize());
-        success = true;
-      }
-      g_Logger->print("end #3 of GetCommandString");
-      return success ? S_OK : E_FAIL;
-    }
-    break;
-  case GCS_VERBA:
-    break;
-  case GCS_VERBW:
-    break;
-  case GCS_VALIDATEA:
-  case GCS_VALIDATEW:
-    {
-      //VALIDATE ? already validated, selectedMenu is non-NULL
-      g_Logger->print("end #4 of GetCommandString");
-      return S_OK;
-    }
-    break;
-  }
-  g_Logger->print("end #5 of GetCommandString");
-  return S_OK;
+  ////Textes à afficher dans la barre d'état d'une fenêtre de l'explorateur quand
+  ////l'un de nos éléments du menu contextuel est pointé par la souris:
+  //switch(uFlags)
+  //{
+  //case GCS_HELPTEXTA:
+  //  {
+  //    //ANIS tooltip handling
+  //    lstrcpynA(pszName, tooltip, cchMax);
+  //    //g_Logger->print("end #2 of GetCommandString");
+  //    return S_OK;
+  //  }
+  //  break;
+  //case GCS_HELPTEXTW:
+  //  {
+  //    //UNICODE tooltip handling
+  //    extMemoryBuffer unicodeDescription = extStringConverter::toUnicode(tooltip);
+  //    bool success = false;
+  //    if (unicodeDescription.getSize() <= cchMax)
+  //    {
+  //      memcpy(pszName, unicodeDescription.getBuffer(), unicodeDescription.getSize());
+  //      success = true;
+  //    }
+  //    //g_Logger->print("end #3 of GetCommandString");
+  //    return success ? S_OK : E_FAIL;
+  //  }
+  //  break;
+  //case GCS_VERBA:
+  //  break;
+  //case GCS_VERBW:
+  //  break;
+  //case GCS_VALIDATEA:
+  //case GCS_VALIDATEW:
+  //  {
+  //    //VALIDATE ? already validated, selectedMenu is non-NULL
+  //    //g_Logger->print("end #4 of GetCommandString");
+  //    return S_OK;
+  //  }
+  //  break;
+  //}
+  ////g_Logger->print("end #5 of GetCommandString");
+  //return S_OK;
+
+  return S_FALSE;
 }
 
-// Implémentation de la méthode Initialize() de l'interface IShellExtInit:
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  g_Logger->print("begin of Initialize");
+  //g_Logger->print("begin of Initialize");
 
   if (m_pDataObj) m_pDataObj->Release();
   mSelectedItems.clear();
-  if (pDataObj)//clic droit sur fichier
+
+  //if right-click on a file
+  if (pDataObj)
   {
     mIsBackGround = false;
     m_pDataObj = pDataObj;
@@ -185,288 +201,323 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     FORMATETC fe = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     HRESULT hres = pDataObj->GetData( &fe, &medium );
     
-    // Obtenir le nombre de fichiers sélectionnés:
     UINT numSelectedFiles = DragQueryFile((HDROP)medium.hGlobal, 0xFFFFFFFF, NULL, 0);
 
-    // Récupérer le chemin complet du fichier ou dossier sélectionné:
+    // Extrack the path of the selected files
     for(UINT i=0; i<numSelectedFiles; i++)
     {
       char tmpPath[MAX_PATH];
       DragQueryFile( (HDROP)medium.hGlobal, i, tmpPath, MAX_PATH );
-      extString path = tmpPath;
-      mSelectedItems.add( path );
+      std::string path = tmpPath;
+      mSelectedItems.push_back( path );
     }
 
     ReleaseStgMedium(&medium);
   }
-  else// clic droit sur bureau ou arrière-plan d'une fenêtre de l'explorateur:
+  else// right-click on the desktop or a file explorer's background
   {
     mIsBackGround = true;
     // Récupérer le chemin complet du dossier courant:
-    g_Logger->print("begin of extracting path");
+    //g_Logger->print("begin of extracting path");
     char tmpPath[MAX_PATH];
     SHGetPathFromIDList(pIDFolder,tmpPath);
-    extString path = tmpPath;
-    mSelectedItems.add( path );
-    g_Logger->print("end of extracting path");
+    std::string path = tmpPath;
+    mSelectedItems.push_back( path );
+    //g_Logger->print("end of extracting path");
   }
 
-  if (g_Logger)
+  if (1)
   {
-    g_Logger->print(extStringConverter::format("Num selected files: %d\n", mSelectedItems.size()).c_str());
-    for(uint32 i=0; i<mSelectedItems.size(); i++)
+    //g_Logger->print(ra::strings::format("Num selected files: %d\n", mSelectedItems.size()).c_str());
+    for(size_t i=0; i<mSelectedItems.size(); i++)
     {
-      const extString & itemPath = mSelectedItems[i];
-      g_Logger->printArgs("File %d = %s\n", mSelectedItems.size(), itemPath.c_str());
+      const std::string & itemPath = mSelectedItems[i];
+      //g_Logger->printArgs("File %d = %s\n", mSelectedItems.size(), itemPath.c_str());
     }
   }
 
   //Build command tree
-  g_Logger->print("begin of building command tree");
+  //g_Logger->print("begin of building command tree");
 
-  g_Logger->print("begin of initMenuCommands");
-  initMenuCommands(mMenus);
-  g_Logger->print("end of initMenuCommands");
+  //g_Logger->print("begin of initMenuCommands");
+  //initMenuCommands(mMenus);
+  //g_Logger->print("end of initMenuCommands");
 
   //extract target path attributes
-  MenuFlags selectedItemsFlags = getSelectionFlags(mSelectedItems);
-  if (mIsBackGround)
-  {
-    selectedItemsFlags.setFlags(MenuFlags::SingleFolder, false); //turn off singlefolder from getSelectionFlags()
-    selectedItemsFlags.setFlags(MenuFlags::Background, true);
-  }
+  //MenuFlags selectedItemsFlags = getSelectionFlags(mSelectedItems);
+  //if (mIsBackGround)
+  //{
+  //  selectedItemsFlags.setFlags(MenuFlags::SingleFolder, false); //turn off singlefolder from getSelectionFlags()
+  //  selectedItemsFlags.setFlags(MenuFlags::Background, true);
+  //}
   
   //enable menus based on flags
-  g_Logger->print("begin of enableMenus");
-  enableMenus(selectedItemsFlags, mSelectedItems, mMenus);
-  g_Logger->print("end of enableMenus");
+  //g_Logger->print("begin of enableMenus");
+  //enableMenus(selectedItemsFlags, mSelectedItems, mMenus);
+  //g_Logger->print("end of enableMenus");
 
-  g_Logger->print("end of building command tree");
-  g_Logger->print("end of initialize");
+  //g_Logger->print("end of building command tree");
+  //g_Logger->print("end of initialize");
 
   return NOERROR;
 }
 
-// Implémentation de la méthode QueryInterface() de l'interface IContextMenu:
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *ppv)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
-  *ppv = NULL;
-  if (IsEqualGUID(riid, IID_IShellExtInit) || IsEqualGUID(riid, IID_IUnknown))*ppv = (LPSHELLEXTINIT)this;
-  else if (IsEqualGUID(riid, IID_IContextMenu))*ppv = (LPCONTEXTMENU)this;
-  if (*ppv)
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Always set out parameter to NULL, validating it first.
+  if (!ppvObj)
+    return E_INVALIDARG;
+  *ppvObj = NULL;
+  if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IShellExtInit) || IsEqualGUID(riid, IID_IContextMenu))
   {
-    AddRef();
-    return S_OK;
-  }
-  return E_NOINTERFACE;
-}
-
-// Implémentation de la méthode AddRef() de l'interface IContextMenu:
-ULONG STDMETHODCALLTYPE CContextMenu::AddRef()
-{
-  return ++m_cRef;
-}
-
-// Implémentation de la méthode Release() de l'interface IContextMenu:
-ULONG STDMETHODCALLTYPE CContextMenu::Release()
-{
-  if (--m_cRef)  return m_cRef;
-  delete this;
-  return 0L;
-}
-
-// Constructeur de l'interface IClassFactory:
-CClassFactory::CClassFactory()
-{
-  m_cRef = 0L;
-  g_cRefDll++;
-}
-
-// Destructeur de l'interface IClassFactory:
-CClassFactory::~CClassFactory()
-{
-  g_cRefDll--;
-}
-
-// Implémentation de la méthode QueryInterface() de l'interface IClassFactory:
-HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid,  LPVOID FAR *ppv)
-{
-  *ppv = NULL;
-  // Any interface on this object is the object pointer
-  if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IClassFactory))
-  {
-    *ppv = (LPCLASSFACTORY)this;
+    // Increment the reference count and return the pointer.
+    *ppvObj = (LPVOID)this;
     AddRef();
     return NOERROR;
   }
   return E_NOINTERFACE;
 }
 
-// Implémentation de la méthode Addref() de l'interface IClassFactory:
+ULONG STDMETHODCALLTYPE CContextMenu::AddRef()
+{
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Increment the object's internal counter.
+  InterlockedIncrement(&m_cRef);
+  return m_cRef;
+}
+
+ULONG STDMETHODCALLTYPE CContextMenu::Release()
+{
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Decrement the object's internal counter.
+  ULONG ulRefCount = InterlockedDecrement(&m_cRef);
+  if (0 == m_cRef)
+  {
+    delete this;
+  }
+  return ulRefCount;
+}
+
+// Constructeur de l'interface IClassFactory:
+CClassFactory::CClassFactory()
+{
+  m_cRef = 0L;
+
+  // Increment the dll's reference counter.
+  InterlockedIncrement(&g_cRefDll);
+}
+
+// Destructeur de l'interface IClassFactory:
+CClassFactory::~CClassFactory()
+{
+  // Decrement the dll's reference counter.
+  InterlockedDecrement(&g_cRefDll);
+}
+
+HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * ppvObj)
+{
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Always set out parameter to NULL, validating it first.
+  if (!ppvObj)
+    return E_INVALIDARG;
+  *ppvObj = NULL;
+  if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IClassFactory))
+  {
+    // Increment the reference count and return the pointer.
+    *ppvObj = (LPVOID)this;
+    AddRef();
+    return NOERROR;
+  }
+  return E_NOINTERFACE;
+}
+
 ULONG STDMETHODCALLTYPE CClassFactory::AddRef()
 {
-  return ++m_cRef;
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Increment the object's internal counter.
+  InterlockedIncrement(&m_cRef);
+  return m_cRef;
 }
 
-// Implémentation de la méthode Release() de l'interface IClassFactory:
 ULONG STDMETHODCALLTYPE CClassFactory::Release()
 {
-  if (--m_cRef) return m_cRef;
-  delete this;
-  return 0L;
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Decrement the object's internal counter.
+  ULONG ulRefCount = InterlockedDecrement(&m_cRef);
+  if (0 == m_cRef)
+  {
+    delete this;
+  }
+  return ulRefCount;
 }
 
-// Implémentation de la méthode CreateInstance() de l'interface IClassFactory:
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid,LPVOID *ppvObj)
 {
   *ppvObj = NULL;
-  if (pUnkOuter)  return CLASS_E_NOAGGREGATION;
+  if (pUnkOuter) return CLASS_E_NOAGGREGATION;
   CContextMenu* pContextMenu = new CContextMenu();
   if (!pContextMenu) return E_OUTOFMEMORY;
-  return pContextMenu->QueryInterface(riid, ppvObj);
+  HRESULT hr = pContextMenu->QueryInterface(riid, ppvObj);
+  if (FAILED(hr))
+  {
+    delete pContextMenu;
+    pContextMenu = NULL;
+  }
+  return hr;
 }
 
-// Implémentation de la méthode LockServer() de l'interface IClassFactory:
 HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
 {
   return S_OK;
 }
 
-// Implémentation de la fonction exportée DllGetClassObject:
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, CLSID_ShellExtension))
   {
     CClassFactory *pcf = new CClassFactory;
-    return pcf->QueryInterface(riid, ppvOut);
+    HRESULT hr = pcf->QueryInterface(riid, ppvOut);
+    if (FAILED(hr))
+    {
+      delete pcf;
+      pcf = NULL;
+    }
+    return hr;
   }
   return CLASS_E_CLASSNOTAVAILABLE;
 }
 
-// Implémentation de la fonction exportée DllCanUnloadNow:
 STDAPI DllCanUnloadNow(void)
 {
-  if(g_cRefDll == 0) return S_OK;
-  return  S_FALSE;
+  InterlockedIncrement(&g_cRefDll);
+  ULONG ulRefCount = InterlockedDecrement(&g_cRefDll);
+  if (0 == ulRefCount)
+  {
+    return S_OK;
+  }
+  return S_FALSE;
 }
 
-// Implémentation de la fonction exportée DllRegisterServer:
 STDAPI DllRegisterServer(void)
 {
-  // Ajouter le CLSID de notre DLL COM à la base de registres:
+  // Add the CLSID of this DLL to the registry
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\CLSID\\%s", CLSID_ShellExtensionStr);
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", CLSID_ShellExtensionStr);
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "", ShellExtensionDescription))
+    if (!win32Registry::setValue(key.c_str(), "", ShellExtensionDescription))
       return S_FALSE;
   }
 
-  // Définir le chemin et les paramètres de notre DLL COM:
+  // Define the path and parameters of our DLL:
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "", GetCurrentModulePath() ))
+    if (!win32Registry::setValue(key.c_str(), "", GetCurrentModulePath() ))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
+    if (!win32Registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
       return S_FALSE;
   }
 
-  // Enregistrer notre "Extension Shell" pour tous les types de fichiers:
+  // Register the shell extension for all the file types
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
+    if (!win32Registry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
       return S_FALSE;
   }
 
-  // Enregistrer notre "Extension Shell" pour les dossiers:
+  // Register the shell extension for directories
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
+    if (!win32Registry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
       return S_FALSE;
   }
 
-  // Notifier le Shell pour qu'il prenne en compte la définition de l'icone par défaut:
+  // Notify the Shell to pick the default icon definition change
   SHChangeNotify(SHCNE_ASSOCCHANGED,0,0,0);
 
-  // Enregistrer notre "Extension Shell" pour le bureau ou l'arrière-plan d'une fenêtre de l'explorateur:
+  // Register the shell extension for the desktop or the file explorer's background
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
+    if (!win32Registry::setValue(key.c_str(), "", CLSID_ShellExtensionStr))
       return S_FALSE;
   }
 
-  // Ajouter notre "Extension Shell" à la liste approuvée du système:
+  // Register the shell extension to the system's approved Shell Extensions
   {
-    extString key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!extRegistry::createKey(key.c_str()))
+    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
+    if (!win32Registry::createKey(key.c_str()))
       return S_FALSE;
-    if (!extRegistry::setValue(key.c_str(), CLSID_ShellExtensionStr, ShellExtensionDescription))
+    if (!win32Registry::setValue(key.c_str(), CLSID_ShellExtensionStr, ShellExtensionDescription))
       return S_FALSE;
   }
 
   return S_OK;
 }
 
-// Implémentation de la fonction exportée DllUnregisterServer:
 STDAPI DllUnregisterServer(void)
 {
-  // Retirer notre "Extension Shell" de la liste approuvée du système:
+  // Unregister the shell extension from the system's approved Shell Extensions
   {
-    extString key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!extRegistry::deleteValue(key.c_str(), CLSID_ShellExtensionStr))
+    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
+    if (!win32Registry::deleteValue(key.c_str(), CLSID_ShellExtensionStr))
       return S_FALSE;
   }
 
-  // Retirer notre "Extension Shell" du bureau et de l'arrière-plan des fenêtres de l'explorateur:
+  // Unregister the shell extension for the desktop or the file explorer's background
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::deleteKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::deleteKey(key.c_str()))
       return S_FALSE;
   }
 
-  // Notifier le Shell pour qu'il prenne en compte la suppression de l'icone par défaut:
+  // Notify the Shell to pick the default icon definition change
   SHChangeNotify(SHCNE_ASSOCCHANGED,0,0,0);
 
-  // Retirer notre "Extension Shell" des dossiers:
+  // Unregister the shell extension for directories
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::deleteKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::deleteKey(key.c_str()))
       return S_FALSE;
   }
 
-  // Retirer notre "Extension Shell" pour tous les types de fichiers:
+  // Unregister the shell extension for all the file types
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
-    if (!extRegistry::deleteKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
+    if (!win32Registry::deleteKey(key.c_str()))
       return S_FALSE;
   }
 
-  // Retirer le CLSID de notre DLL COM de la base de registres:
+  // Remove the CLSID of this DLL from the registry
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
-    if (!extRegistry::deleteKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
+    if (!win32Registry::deleteKey(key.c_str()))
       return S_FALSE;
   }
-
   {
-    extString key = extStringConverter::format("HKEY_CLASSES_ROOT\\CLSID\\%s", CLSID_ShellExtensionStr);
-    if (!extRegistry::deleteKey(key.c_str()))
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", CLSID_ShellExtensionStr);
+    if (!win32Registry::deleteKey(key.c_str()))
       return S_FALSE;
   }
 
   return S_OK;
 }
 
-// La fonction d'entrée DllMain:
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
   if (dwReason == DLL_PROCESS_ATTACH)

@@ -200,6 +200,11 @@ namespace win32Registry
     return success;
   }
 
+  bool getDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue)
+  {
+    return getValue(iKeyPath, "", oType, oValue);
+  }
+
   bool createKey(const char* iKeyPath)
   {
     bool result = false;

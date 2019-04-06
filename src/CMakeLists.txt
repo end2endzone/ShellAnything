@@ -50,8 +50,12 @@ add_library(shellanything_adaptor SHARED
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
-  shellext.h
   shellext.cpp
+  shellext.h
+  shellext.def
+  shellext_export.h
+  win32Registry.cpp
+  win32Registry.h
 )
 
 # Unit test projects requires to link with pthread if also linking with gtest
