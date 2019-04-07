@@ -4,6 +4,9 @@
 #include <initguid.h>
 #include <shlguid.h>
 #include <shlobj.h>
+#include <cmnquery.h>
+#include <dsquery.h>
+#include <dsclient.h>
 
 #include <glog/logging.h>
 
@@ -87,15 +90,17 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   //  MessageBox(NULL, message.c_str(), "DEBUG!", MB_OK);
   //}
 
-  UINT nextCommandId = idCmdFirst;
-  long nextSequentialId = 0;
+  //UINT nextCommandId = idCmdFirst;
+  //long nextSequentialId = 0;
   //extMenuTools::insertMenu(hMenu, indexMenu, mMenus, nextCommandId, nextSequentialId);
 
-  indexMenu++;
+  //indexMenu++;
 
   //g_Logger->print("end of QueryContextMenu");
     
-  return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
+  //return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
+
+  return E_INVALIDARG;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
@@ -200,80 +205,72 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 {
   DLOG(INFO) << __FUNCTION__ << "()";
 
-  //g_Logger->print("begin of Initialize");
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
-  if (m_pDataObj) m_pDataObj->Release();
-  mSelectedItems.clear();
+  //https://docs.microsoft.com/en-us/windows/desktop/ad/example-code-for-implementation-of-the-context-menu-com-object
+  STGMEDIUM   stm;
+  FORMATETC   fe;
+  HRESULT     hr;
 
-  //if right-click on a file
-  if (pDataObj)
+  if(NULL == pDataObj)
   {
-    mIsBackGround = false;
-    m_pDataObj = pDataObj;
-    pDataObj->AddRef();
-    STGMEDIUM medium;
-    FORMATETC fe = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-    HRESULT hres = pDataObj->GetData( &fe, &medium );
-    
-    UINT numSelectedFiles = DragQueryFile((HDROP)medium.hGlobal, 0xFFFFFFFF, NULL, 0);
+    return E_INVALIDARG;
+  }
 
-    // Extrack the path of the selected files
-    for(UINT i=0; i<numSelectedFiles; i++)
+  fe.cfFormat = RegisterClipboardFormat(CFSTR_DSOBJECTNAMES);
+  fe.ptd = NULL;
+  fe.dwAspect = DVASPECT_CONTENT;
+  fe.lindex = -1;
+  fe.tymed = TYMED_HGLOBAL;
+  hr = pDataObj->GetData(&fe, &stm);
+  if(SUCCEEDED(hr))
+  {
+    LPDSOBJECTNAMES pdson = (LPDSOBJECTNAMES)GlobalLock(stm.hGlobal);
+
+    if(pdson)
     {
-      char tmpPath[MAX_PATH];
-      DragQueryFile( (HDROP)medium.hGlobal, i, tmpPath, MAX_PATH );
-      std::string path = tmpPath;
-      mSelectedItems.push_back( path );
+      DWORD   dwBytes = GlobalSize(stm.hGlobal);
+
+      DSOBJECTNAMES * m_pObjectNames = (DSOBJECTNAMES*)GlobalAlloc(GPTR, dwBytes);
+      if(m_pObjectNames)
+      {
+        CopyMemory(m_pObjectNames, pdson, dwBytes);
+      }
+
+      GlobalUnlock(stm.hGlobal);
     }
 
-    ReleaseStgMedium(&medium);
-  }
-  else// right-click on the desktop or a file explorer's background
-  {
-    mIsBackGround = true;
-    // Récupérer le chemin complet du dossier courant:
-    //g_Logger->print("begin of extracting path");
-    char tmpPath[MAX_PATH];
-    SHGetPathFromIDList(pIDFolder,tmpPath);
-    std::string path = tmpPath;
-    mSelectedItems.push_back( path );
-    //g_Logger->print("end of extracting path");
+    ReleaseStgMedium(&stm);
   }
 
-  if (1)
+  fe.cfFormat = RegisterClipboardFormat(CFSTR_DS_DISPLAY_SPEC_OPTIONS);
+  fe.ptd = NULL;
+  fe.dwAspect = DVASPECT_CONTENT;
+  fe.lindex = -1;
+  fe.tymed = TYMED_HGLOBAL;
+  hr = pDataObj->GetData(&fe, &stm);
+  if(SUCCEEDED(hr))
   {
-    //g_Logger->print(ra::strings::format("Num selected files: %d\n", mSelectedItems.size()).c_str());
-    for(size_t i=0; i<mSelectedItems.size(); i++)
+    PDSDISPLAYSPECOPTIONS   pdso;
+
+    pdso = (PDSDISPLAYSPECOPTIONS)GlobalLock(stm.hGlobal);
+    if(pdso)
     {
-      const std::string & itemPath = mSelectedItems[i];
-      //g_Logger->printArgs("File %d = %s\n", mSelectedItems.size(), itemPath.c_str());
+      DWORD   dwBytes = GlobalSize(stm.hGlobal);
+
+      PDSDISPLAYSPECOPTIONS m_pDispSpecOpts = (PDSDISPLAYSPECOPTIONS)GlobalAlloc(GPTR, dwBytes);
+      if(m_pDispSpecOpts)
+      {
+        CopyMemory(m_pDispSpecOpts, pdso, dwBytes);
+      }
+
+      GlobalUnlock(stm.hGlobal);
     }
+
+    ReleaseStgMedium(&stm);
   }
 
-  //Build command tree
-  //g_Logger->print("begin of building command tree");
-
-  //g_Logger->print("begin of initMenuCommands");
-  //initMenuCommands(mMenus);
-  //g_Logger->print("end of initMenuCommands");
-
-  //extract target path attributes
-  //MenuFlags selectedItemsFlags = getSelectionFlags(mSelectedItems);
-  //if (mIsBackGround)
-  //{
-  //  selectedItemsFlags.setFlags(MenuFlags::SingleFolder, false); //turn off singlefolder from getSelectionFlags()
-  //  selectedItemsFlags.setFlags(MenuFlags::Background, true);
-  //}
-  
-  //enable menus based on flags
-  //g_Logger->print("begin of enableMenus");
-  //enableMenus(selectedItemsFlags, mSelectedItems, mMenus);
-  //g_Logger->print("end of enableMenus");
-
-  //g_Logger->print("end of building command tree");
-  //g_Logger->print("end of initialize");
-
-  return NOERROR;
+  return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
