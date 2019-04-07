@@ -30,9 +30,13 @@
 
 #include <windows.h>
 #include <comdef.h>
+#include <Shobjidl.h>
 
 namespace shellanything { namespace test
 {
+  static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
+  static const GUID CLSID_INVALID = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
+
   std::string getShellExtensionDllPath()
   {
     std::string cur_process = ra::process::getCurrentProcessPath();
@@ -43,6 +47,112 @@ namespace shellanything { namespace test
     return path;
   }
 
+  class ComHandler
+  {
+  public:
+    ComHandler() :
+      mFailed(false)
+    {
+	    // Initialize COM Library
+	    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	    if ( FAILED(hr) )
+	    {
+        mFailed = true;
+        mErrorMessage = _com_error(hr).ErrorMessage();
+	    }
+    }
+
+    ~ComHandler()
+    {
+      if (!hasFailed())
+      {
+	      // Uninitialize COM Library
+	      CoUninitialize();
+      }
+    }
+
+    bool hasFailed()
+    {
+      return mFailed;
+    }
+
+    const std::string & getErrorMessage()
+    {
+      return mErrorMessage;
+    }
+
+  private:
+    bool mFailed;
+    std::string mErrorMessage;
+  };
+
+  class ShellExtensionLibraryHandler
+  {
+  public:
+ 		typedef HRESULT (__stdcall *DllGetClassObjectFuncPtr)(IN REFCLSID rclsid, IN REFIID riid, OUT LPVOID FAR* ppv);
+ 		typedef HRESULT (__stdcall *DllCanUnloadNowFuncPtr)();
+
+    ShellExtensionLibraryHandler() :
+      mFailed(true),
+      mModule(NULL)
+    {
+      std::string path = getShellExtensionDllPath();
+
+	    // Load the library
+      mModule = ::LoadLibrary(path.c_str());
+      if (mModule)
+      {
+ 		    pfnDllGetClassObject = (DllGetClassObjectFuncPtr)::GetProcAddress(mModule, "DllGetClassObject");
+ 		    pfnDllCanUnloadNow = (DllCanUnloadNowFuncPtr)::GetProcAddress(mModule, "DllCanUnloadNow");
+
+        if (pfnDllGetClassObject == NULL) return;
+        if (pfnDllCanUnloadNow == NULL) return;
+
+        mFailed = false;
+      }
+    }
+
+    ~ShellExtensionLibraryHandler()
+    {
+      if (!hasFailed())
+      {
+	      // Unload the library
+		    ::FreeLibrary(mModule);
+      }
+    }
+
+    HRESULT DllCanUnloadNow()
+    {
+      HRESULT result = pfnDllCanUnloadNow();
+      return result;
+    }
+
+    HRESULT DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
+    {
+      HRESULT result = pfnDllGetClassObject(rclsid, riid, ppvOut);
+      return result;
+    }
+
+    bool hasFailed()
+    {
+      return mFailed;
+    }
+
+    const std::string & getErrorMessage()
+    {
+      return mErrorMessage;
+    }
+
+  private:
+    bool mFailed;
+    std::string mErrorMessage;
+    HMODULE mModule;
+    DllGetClassObjectFuncPtr pfnDllGetClassObject;
+    DllCanUnloadNowFuncPtr pfnDllCanUnloadNow;
+  };
+
+
+
   //--------------------------------------------------------------------------------------------------
   void TestShellExtension::SetUp()
   {
@@ -52,52 +162,92 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestShellExtension, testDefaults)
+  TEST_F(TestShellExtension, testDefaultDllCanUnloadNow)
   {
     std::string path = getShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
- 		typedef HRESULT (__stdcall *pfnDllGetClassObject)(IN REFCLSID rclsid, IN REFIID riid, OUT LPVOID FAR* ppv);
- 		typedef HRESULT (__stdcall *pfnDllCanUnloadNow)();
+    ComHandler com_handler;
+    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
 
-	  // Initialize COM Library
-	  HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-	  if ( FAILED(hr) )
-	  {
-		  std::cout << _com_error(hr).ErrorMessage() << std::endl;
-		  exit(0);
-	  }
+    ShellExtensionLibraryHandler lib_handler;
+    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
 
-	  // Create instance
-    HMODULE hModule = ::LoadLibrary(path.c_str());
-	  if ( hModule != NULL )
-	  {
-		  std::cout << "LoadLibrary Success." << std::endl;
- 		  pfnDllGetClassObject pfDllGetClassObject = (pfnDllGetClassObject)::GetProcAddress(hModule, "DllGetClassObject");
- 		  pfnDllCanUnloadNow pfDllCanUnloadNow = (pfnDllCanUnloadNow)::GetProcAddress(hModule, "DllCanUnloadNow");
- 		  if ( pfDllGetClassObject != NULL )
- 		  {
- 			 // hr = pfn(CLSID_HelloComponent, IID_IHello, (LPVOID *)&pHello);
- 			 // if ( SUCCEEDED(hr) )
- 			 // {
- 				//  if ( pHello != NULL )
- 				//  {
- 				//	  pHello->SayHello(L"CodeSteps");
-					//  pHello->Release();
-				 // }
-			  //}
-		  }
-		  else
-			  std::cout << "DllGetClassObject failed." << std::endl;
+    //assert ok to unload the dll of no classes was instanciated
+    ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestShellExtension, testGetClassFactory)
+  {
+    std::string path = getShellExtensionDllPath();
+    ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
-		  ::FreeLibrary(hModule);
-	  }
-	  else
-		  std::cout << "LoadLibrary Failed." << std::endl;		
+    ComHandler com_handler;
+    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
 
-	  // Uninitialize COM Library
-	  // 
-	  CoUninitialize();
+    ShellExtensionLibraryHandler lib_handler;
+    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
+
+    IClassFactory * pClassFactory = NULL;
+
+    //test with an invalid CLSID query
+    HRESULT hr = lib_handler.DllGetClassObject(CLSID_INVALID, IID_IClassFactory, (LPVOID *)&pClassFactory);
+    ASSERT_EQ( CLASS_E_CLASSNOTAVAILABLE, hr );
+    ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+
+    //test with an invalid IID query
+    hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, CLSID_INVALID, (LPVOID *)&pClassFactory);
+    ASSERT_EQ( E_NOINTERFACE, hr );
+    ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+
+    //get valid class factory
+    hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, IID_IClassFactory, (LPVOID *)&pClassFactory);
+    ASSERT_EQ( NOERROR, hr );
+    ASSERT_TRUE( pClassFactory != NULL );
+
+    //we now have a valid class
+    ASSERT_EQ( S_FALSE, lib_handler.DllCanUnloadNow() );
+    pClassFactory->Release(); //this should automatically destroy the CClassFactory::~CClassFactory()
+    ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+    int a = 0;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestShellExtension, testCreateInstance)
+  {
+    std::string path = getShellExtensionDllPath();
+    ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
+
+    ComHandler com_handler;
+    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
+
+    ShellExtensionLibraryHandler lib_handler;
+    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
+
+    //get IClassFactory interface pointer
+    IClassFactory * pClassFactory = NULL;
+    HRESULT hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, IID_IClassFactory, (LPVOID *)&pClassFactory);
+    ASSERT_EQ( NOERROR, hr );
+    ASSERT_TRUE( pClassFactory != NULL );
+
+    //get IShellExtInit interface pointer
+    IShellExtInit * pShellExtInit = NULL;
+    hr = pClassFactory->CreateInstance(NULL, IID_IShellExtInit, (void**)&pShellExtInit);
+    ASSERT_EQ( NOERROR, hr );
+    ASSERT_TRUE( pShellExtInit != NULL );
+
+    //get IContextMenu interface pointer
+    IContextMenu * pContextMenu = NULL;
+    hr = pClassFactory->CreateInstance(NULL, IID_IContextMenu, (void**)&pContextMenu);
+    ASSERT_EQ( NOERROR, hr );
+    ASSERT_TRUE( pContextMenu != NULL );
+
+    //release everything
+    pContextMenu->Release();
+    pShellExtInit->Release();
+    pClassFactory->Release();
+
+    ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+    int a = 0;
   }
   //--------------------------------------------------------------------------------------------------
 
