@@ -375,6 +375,8 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
 
 HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
 {
+  //https://docs.microsoft.com/en-us/windows/desktop/api/unknwnbase/nf-unknwnbase-iclassfactory-lockserver
+  //https://docs.microsoft.com/en-us/windows/desktop/api/combaseapi/nf-combaseapi-colockobjectexternal
   return S_OK;
 }
 
@@ -384,6 +386,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
   if (IsEqualGUID(rclsid, CLSID_ShellExtension))
   {
     CClassFactory *pcf = new CClassFactory;
+    if (!pcf) return E_OUTOFMEMORY;
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
     {
@@ -397,8 +400,9 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 
 STDAPI DllCanUnloadNow(void)
 {
-  InterlockedIncrement(&g_cRefDll);
-  ULONG ulRefCount = InterlockedDecrement(&g_cRefDll);
+  ULONG ulRefCount = 0;
+  ulRefCount = InterlockedIncrement(&g_cRefDll);
+  ulRefCount = InterlockedDecrement(&g_cRefDll);
   if (0 == ulRefCount)
   {
     return S_OK;
