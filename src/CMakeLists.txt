@@ -46,7 +46,7 @@ add_library(shellanything STATIC
   PropertyManager.cpp
 )
 
-add_library(shellanything_adaptor SHARED
+add_library(shellext SHARED
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
@@ -67,7 +67,7 @@ endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-set_target_properties(shellanything_adaptor PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(shellext PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for exported code.
 target_include_directories(shellanything
@@ -79,14 +79,14 @@ target_include_directories(shellanything
     tinyxml2_static
     win32clipboard
 )
-target_include_directories(shellanything_adaptor
+target_include_directories(shellext
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
 )
 target_link_libraries(shellanything         PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
-target_link_libraries(shellanything_adaptor PRIVATE shellanything rapidassist)
+target_link_libraries(shellext PRIVATE shellanything rapidassist)
 
 install(TARGETS shellanything
         EXPORT shellanything-targets
@@ -94,7 +94,7 @@ install(TARGETS shellanything
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
-install(TARGETS shellanything_adaptor
+install(TARGETS shellext
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
