@@ -25,7 +25,7 @@
 #ifndef SA_ADAPTOR_EXPORT_H
 #define SA_ADAPTOR_EXPORT_H
 
-#ifdef shellanything_adaptor_EXPORTS
+#ifdef shellext_EXPORTS
   #define SHELLANYTHING_API __declspec(dllexport)
 #else
   #define SHELLANYTHING_API __declspec(dllimport)

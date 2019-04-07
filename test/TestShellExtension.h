@@ -22,33 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include <stdio.h>
-#include <iostream>
-#include <stdio.h>
+#ifndef TEST_SA_SHELLEXT_H
+#define TEST_SA_SHELLEXT_H
 
 #include <gtest/gtest.h>
-#include <glog/logging.h>
 
-#include "rapidassist/gtesthelp.h"
-
-using namespace ra;
-
-int main(int argc, char **argv)
+namespace shellanything { namespace test
 {
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
-  LOG(INFO) << "Enabling logging";
+  class TestShellExtension : public ::testing::Test
+  {
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
+  };
 
-  //define default values for xml output report
-  std::string outputXml = "xml:" "shellanything_unittest";
-  outputXml += (ra::gtesthelp::isProcessorX86() ? ".x86" : ".x64");
-  outputXml += (ra::gtesthelp::isDebugCode() ? ".debug" : ".release");
-  outputXml += ".xml";
-  ::testing::GTEST_FLAG(output) = outputXml;
+} //namespace test
+} //namespace shellanything
 
-  ::testing::GTEST_FLAG(filter) = "*";
-  ::testing::InitGoogleTest(&argc, argv);
-
-  int wResult = RUN_ALL_TESTS(); //Find and run all tests
-  return wResult; // returns 0 if all the tests are successful, or 1 otherwise
-}
+#endif //TEST_SA_SHELLEXT_H

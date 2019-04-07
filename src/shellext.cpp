@@ -5,6 +5,8 @@
 #include <shlguid.h>
 #include <shlobj.h>
 
+#include <glog/logging.h>
+
 #include "shellext.h"
 #include "win32Registry.h"
 
@@ -53,6 +55,8 @@ const char * GetCurrentModulePath()
 
 CContextMenu::CContextMenu()
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   m_cRef = 0L;
   m_pDataObj = NULL;
 
@@ -62,6 +66,8 @@ CContextMenu::CContextMenu()
 
 CContextMenu::~CContextMenu()
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   if (m_pDataObj) m_pDataObj->Release();
 
   // Decrement the dll's reference counter.
@@ -70,6 +76,8 @@ CContextMenu::~CContextMenu()
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //g_Logger->print("begin of QueryContextMenu");
 
   ////Debugging:
@@ -92,6 +100,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //g_Logger->print("begin of InvokeCommand");
 
   //if (!HIWORD(lpcmi->lpVerb))
@@ -118,6 +128,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd,  UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //g_Logger->print("begin of GetCommandString");
         
   //long menuSequenceId = idCmd;
@@ -186,6 +198,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd,  UINT u
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //g_Logger->print("begin of Initialize");
 
   if (m_pDataObj) m_pDataObj->Release();
@@ -264,6 +278,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
@@ -305,6 +321,8 @@ ULONG STDMETHODCALLTYPE CContextMenu::Release()
 // Constructeur de l'interface IClassFactory:
 CClassFactory::CClassFactory()
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   m_cRef = 0L;
 
   // Increment the dll's reference counter.
@@ -314,12 +332,16 @@ CClassFactory::CClassFactory()
 // Destructeur de l'interface IClassFactory:
 CClassFactory::~CClassFactory()
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   // Decrement the dll's reference counter.
   InterlockedDecrement(&g_cRefDll);
 }
 
 HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
@@ -360,6 +382,8 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
 
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid,LPVOID *ppvObj)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
   CContextMenu* pContextMenu = new CContextMenu();
@@ -400,6 +424,8 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 
 STDAPI DllCanUnloadNow(void)
 {
+  DLOG(INFO) << __FUNCTION__ << "()";
+
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
   ulRefCount = InterlockedDecrement(&g_cRefDll);

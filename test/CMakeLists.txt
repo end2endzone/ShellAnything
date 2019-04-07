@@ -1,5 +1,6 @@
 find_package(GTest)
 find_package(rapidassist)
+find_package(glog REQUIRED)
 
 add_executable(shellanything_unittest
   ${SHELLANYTHING_EXPORT_HEADER}
@@ -22,6 +23,8 @@ add_executable(shellanything_unittest
   TestPlatform.h
   TestPropertyManager.cpp
   TestPropertyManager.h
+  TestShellExtension.cpp
+  TestShellExtension.h
   TestValidator.cpp
   TestValidator.h
 )
@@ -34,9 +37,9 @@ endif()
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist)
-add_dependencies(shellanything_unittest shellanything)
-target_link_libraries(shellanything_unittest PUBLIC shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist )
+target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog)
+add_dependencies(shellanything_unittest shellanything shellext)
+target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
 
 # Copy test files database to target dir
 add_custom_command( TARGET shellanything_unittest POST_BUILD

@@ -1,6 +1,7 @@
 find_package(rapidassist REQUIRED)
 find_package(tinyxml2 REQUIRED)
 find_package(win32clipboard REQUIRED)
+find_package(glog REQUIRED)
 
 set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Action.h
@@ -78,15 +79,17 @@ target_include_directories(shellanything
     rapidassist
     tinyxml2_static
     win32clipboard
+    glog::glog
 )
 target_include_directories(shellext
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
+    glog::glog
 )
-target_link_libraries(shellanything         PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard)
-target_link_libraries(shellext PRIVATE shellanything rapidassist)
+target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard glog::glog)
+target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog)
 
 install(TARGETS shellanything
         EXPORT shellanything-targets
