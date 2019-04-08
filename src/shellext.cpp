@@ -14,6 +14,8 @@
 #include "win32Registry.h"
 
 #include "rapidassist/strings.h"
+#include "rapidassist/environment.h"
+#include "rapidassist/filesystem.h"
 
 //Declarations
 UINT      g_cRefDll = 0;   // Reference counter of this DLL
@@ -56,9 +58,17 @@ const char * GetCurrentModulePath()
   return buffer;
 }
 
+std::string GuidToString(GUID guid) {
+  std::string output;
+  output.assign(40, 0);
+  sprintf_s((char*)output.c_str(), output.size(), "{%08X-%04hX-%04hX-%02X%02X-%02X%02X%02X%02X%02X%02X}", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+  return output;
+}
+
 CContextMenu::CContextMenu()
 {
   DLOG(INFO) << __FUNCTION__ << "()";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
   m_pDataObj = NULL;
@@ -70,6 +80,7 @@ CContextMenu::CContextMenu()
 CContextMenu::~CContextMenu()
 {
   DLOG(INFO) << __FUNCTION__ << "()";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   if (m_pDataObj) m_pDataObj->Release();
 
@@ -79,7 +90,12 @@ CContextMenu::~CContextMenu()
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  //build function descriptor
+  static const int BUFFER_SIZE = 1024;
+  char menu_name[BUFFER_SIZE];
+  int result = GetMenuStringA(hMenu, 0, menu_name, BUFFER_SIZE, 0);
+  DLOG(INFO) << __FUNCTION__ << "(" << menu_name << "," << (int)indexMenu << "," << (int)idCmdFirst << "," << (int)idCmdLast << "," << (int)uFlags << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of QueryContextMenu");
 
@@ -106,6 +122,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
 {
   DLOG(INFO) << __FUNCTION__ << "()";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of InvokeCommand");
 
@@ -131,9 +148,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   return E_INVALIDARG;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd,  UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
+HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  //build function descriptor
+  DLOG(INFO) << __FUNCTION__ << "(" << idCmd << "," << (int)uFlags << "," << (int)reserved << "," << (int)pszName << "," << (int)cchMax << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of GetCommandString");
         
@@ -204,7 +223,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd,  UINT u
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
   DLOG(INFO) << __FUNCTION__ << "()";
-
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/windows/desktop/ad/example-code-for-implementation-of-the-context-menu-com-object
@@ -275,7 +293,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  //build function descriptor
+  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(riid).c_str() << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -319,6 +339,7 @@ ULONG STDMETHODCALLTYPE CContextMenu::Release()
 CClassFactory::CClassFactory()
 {
   DLOG(INFO) << __FUNCTION__ << "()";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
 
@@ -337,7 +358,9 @@ CClassFactory::~CClassFactory()
 
 HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  //build function descriptor
+  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(riid).c_str() << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -379,7 +402,9 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
 
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid,LPVOID *ppvObj)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  //build function descriptor
+  DLOG(INFO) << __FUNCTION__ << "(" << pUnkOuter << "," << GuidToString(riid).c_str() << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
@@ -403,6 +428,10 @@ HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
 
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
+  //build function descriptor
+  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(rclsid).c_str() << "," << GuidToString(riid).c_str() << ")";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, CLSID_ShellExtension))
   {
@@ -422,6 +451,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 STDAPI DllCanUnloadNow(void)
 {
   DLOG(INFO) << __FUNCTION__ << "()";
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
@@ -435,8 +465,6 @@ STDAPI DllCanUnloadNow(void)
 
 STDAPI DllRegisterServer(void)
 {
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-
   // Add the CLSID of this DLL to the registry
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", CLSID_ShellExtensionStr);
@@ -547,11 +575,52 @@ STDAPI DllUnregisterServer(void)
   return S_OK;
 }
 
+void DeletePreviousLogs()
+{
+  std::string module_path = GetCurrentModulePath();
+  std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
+  std::string temp_var = ra::environment::getEnvironmentVariable("TEMP");
+
+  ra::strings::StringVector files;
+  bool success = ra::filesystem::findFiles(files, temp_var.c_str());
+  if (!success) return;
+
+  std::string pattern_prefix = temp_var + ra::filesystem::getPathSeparatorStr() + module_filename;
+
+  //for each files
+  for(size_t i=0; i<files.size(); i++)
+  {
+    const std::string & path = files[i];
+    if (path.find(pattern_prefix) != std::string::npos)
+    {
+      //that's a log file
+      ra::filesystem::deleteFile(path.c_str());
+    }
+  }
+}
+
+void InitLogger()
+{
+  //delete previous logs for easier debugging
+  DeletePreviousLogs();
+
+  // Initialize Google's logging library.
+  const char * argv[] = {
+    GetCurrentModulePath(),
+    ""
+  };
+  google::InitGoogleLogging(argv[0]);
+  LOG(INFO) << "Enabling logging";
+}
+
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
   if (dwReason == DLL_PROCESS_ATTACH)
   {
     g_hmodDll = hInstance;
+
+    // Initialize Google's logging library.
+    InitLogger();
   }
   return 1; 
 }
