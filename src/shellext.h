@@ -37,6 +37,29 @@ static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0
 static const char * ShellExtensionName = "ShellAnything";
 static const char * ShellExtensionDescription = "ShellAnything Shell extension";
 
+class SHELLANYTHING_API CCriticalSection
+{
+protected:
+  CRITICAL_SECTION mCS;
+
+public:
+  CCriticalSection();
+  virtual ~CCriticalSection();
+
+  void enter();
+  void leave();
+};
+
+class SHELLANYTHING_API CCriticalSectionGuard
+{
+protected:
+  CCriticalSection * mCS;
+
+public:
+  CCriticalSectionGuard(CCriticalSection * cs);
+  ~CCriticalSectionGuard();
+};
+
 class SHELLANYTHING_API CClassFactory : public IClassFactory
 {
 protected:
@@ -47,7 +70,7 @@ public:
   ~CClassFactory();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID *);
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR *);
   ULONG   STDMETHODCALLTYPE AddRef();
   ULONG   STDMETHODCALLTYPE Release();
 
@@ -60,17 +83,27 @@ public:
 class SHELLANYTHING_API CContextMenu : public IContextMenu, IShellExtInit
 {
 protected:
-  ULONG           m_cRef;
-  LPDATAOBJECT    m_pDataObj;
-  std::vector<std::string> mSelectedItems;
-  bool            mIsBackGround;
+  typedef std::vector<std::string> StringVector;
+  struct CustomMenu
+  {
+    std::string title;
+    UINT command_id;
+    UINT insert_pos;
+  };
+  typedef std::vector<CustomMenu> CustomMenuVector;
+  ULONG             m_cRef;
+  CCriticalSection  m_CS; //protects class members
+  LPDATAOBJECT      m_pDataObj;
+  StringVector      m_SelectedItems;
+  CustomMenuVector  m_Menus;
+  bool              m_IsBackGround;
 
 public:
   CContextMenu();
   ~CContextMenu();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID *);
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR *);
   ULONG   STDMETHODCALLTYPE AddRef();
   ULONG   STDMETHODCALLTYPE Release();
 

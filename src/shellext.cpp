@@ -66,10 +66,113 @@ std::string GuidToString(GUID guid) {
   return output;
 }
 
+static const std::string  EMPTY_STRING;
+static const std::wstring EMPTY_WIDE_STRING;
+
+// Convert a wide Unicode string to an UTF8 string
+std::string unicode_to_utf8(const std::wstring & wstr)
+{
+  if (wstr.empty()) return std::string();
+  int num_characters = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+  if (num_characters == 0)
+    return EMPTY_STRING;
+	std::string strTo(num_characters, 0);
+  WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], num_characters, NULL, NULL);
+	return strTo;
+}
+
+// Convert an UTF8 string to a wide Unicode String
+std::wstring utf8_to_unicode(const std::string & str)
+{
+  if (str.empty()) return std::wstring();
+  int num_characters = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+  if (num_characters == 0)
+    return EMPTY_WIDE_STRING;
+	std::wstring wstrTo(num_characters, 0);
+  MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], num_characters);
+	return wstrTo;
+}
+
+// Convert an wide Unicode string to ANSI string
+std::string unicode_to_ansi(const std::wstring & wstr)
+{
+  if (wstr.empty()) return std::string();
+	int num_characters = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+  if (num_characters == 0)
+    return EMPTY_STRING;
+	std::string strTo(num_characters, 0);
+	WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &strTo[0], num_characters, NULL, NULL);
+	return strTo;
+}
+
+// Convert an ANSI string to a wide Unicode String
+std::wstring ansi_to_unicode(const std::string & str)
+{
+  if (str.empty()) return std::wstring();
+	int num_characters = MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), NULL, 0);
+  if (num_characters == 0)
+    return EMPTY_WIDE_STRING;
+	std::wstring wstrTo(num_characters, 0);
+	MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), &wstrTo[0], num_characters);
+	return wstrTo;
+}
+
+std::string utf8_to_ansi(const std::string & str)
+{
+  std::wstring str_unicode = utf8_to_unicode(str);
+  std::string str_ansi = unicode_to_ansi(str_unicode);
+  return str_ansi;
+}
+
+std::string ansi_to_utf8(const std::string & str)
+{
+  std::wstring str_unicode = ansi_to_unicode(str);
+  std::string str_utf8 = unicode_to_utf8(str_unicode);
+  return str_utf8;
+}
+
+CCriticalSection::CCriticalSection()
+{
+  InitializeCriticalSection(&mCS);
+}
+
+CCriticalSection::~CCriticalSection()
+{
+  DeleteCriticalSection(&mCS);
+}
+
+void CCriticalSection::enter()
+{
+  EnterCriticalSection(&mCS);
+}
+
+void CCriticalSection::leave()
+{
+  LeaveCriticalSection(&mCS);
+}
+
+CCriticalSectionGuard::CCriticalSectionGuard(CCriticalSection * cs)
+{
+  mCS = cs;
+  if (mCS)
+  {
+    mCS->enter();
+  }
+}
+
+CCriticalSectionGuard::~CCriticalSectionGuard()
+{
+  if (mCS)
+  {
+    mCS->leave();
+  }
+  mCS = NULL;
+}
+
 CContextMenu::CContextMenu()
 {
   LOG(INFO) << __FUNCTION__ << "(), new";
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
   m_pDataObj = NULL;
@@ -81,7 +184,7 @@ CContextMenu::CContextMenu()
 CContextMenu::~CContextMenu()
 {
   LOG(INFO) << __FUNCTION__ << "(), delete";
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   if (m_pDataObj) m_pDataObj->Release();
 
@@ -89,7 +192,7 @@ CContextMenu::~CContextMenu()
   InterlockedDecrement(&g_cRefDll);
 }
 
-std::string getMenuDescriptor(HMENU hMenu)
+std::string GetMenuDescriptor(HMENU hMenu)
 {
   std::string output;
 
@@ -99,14 +202,27 @@ std::string getMenuDescriptor(HMENU hMenu)
     UINT id = GetMenuItemID(hMenu, i);
 
     static const int BUFFER_SIZE = 1024;
-    char name[BUFFER_SIZE];
-    int result = GetMenuStringA(hMenu, i, name, BUFFER_SIZE, 0);
+    char menu_name[BUFFER_SIZE] = {0};
+    char descriptor[BUFFER_SIZE] = {0};
 
-    char item_desc[BUFFER_SIZE];
-    sprintf(item_desc, "%d:%s", id, name);
+    //try with ansi text
+    if (GetMenuStringA(hMenu, i, menu_name, BUFFER_SIZE, 0))
+    {
+      sprintf(descriptor, "%d:%s", id, menu_name);
+    }
+    else if (GetMenuStringW(hMenu, i, (WCHAR*)menu_name, BUFFER_SIZE/2, 0))
+    {
+      //Can't log unicode characters, convert to ansi.
+      //Assume some characters might get dropped
+      std::wstring wtext = (WCHAR*)menu_name;
+      std::string  atext = unicode_to_ansi(wtext);
+      sprintf(descriptor, "%d:%s", id, atext.c_str());
+    }
+
+    //append the descriptor to the total output
     if (!output.empty())
       output.append(",");
-    output.append(item_desc);
+    output.append(descriptor);
   }
 
   output.insert(0, "MENU{");
@@ -117,136 +233,200 @@ std::string getMenuDescriptor(HMENU hMenu)
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
   //build function descriptor
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << getMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlags;
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlags;
 
-  //g_Logger->print("begin of QueryContextMenu");
+  //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
-  ////Debugging:
-  //{
-  //  extProcess * currentProcess = extProcessHandler::getCurrentProcess();
-  //  std::string message = ra::strings::format("Attach to process %d and press OK to continue...", currentProcess->getPid());
-  //  MessageBox(NULL, message.c_str(), "DEBUG!", MB_OK);
-  //}
+  //filter for unknown flags
+  if (  ((uFlags & CMF_EXPLORE ) != CMF_EXPLORE ) ||
+        ((uFlags & CMF_ITEMMENU) != CMF_ITEMMENU) )
+  {
+    //Don't know what to do with this
+    LOG(INFO) << __FUNCTION__ << "(), unknown uFlags, skipped";
+    return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
+  }
 
-  //UINT nextCommandId = idCmdFirst;
-  //long nextSequentialId = 0;
-  //extMenuTools::insertMenu(hMenu, indexMenu, mMenus, nextCommandId, nextSequentialId);
+  //From this point, it is safe to use class members without other threads interference
+  CCriticalSectionGuard cs_guard(&m_CS);
 
-  //indexMenu++;
+  UINT nextCommandId = idCmdFirst;
+  UINT nextInsertPosition = indexMenu;
 
-  //g_Logger->print("end of QueryContextMenu");
-    
-  //return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
+  //declare menus
+  m_Menus.clear();
 
-  return E_INVALIDARG;
+  {
+    CustomMenu menu;
+    menu.title = "shellanything1";
+    menu.command_id = nextCommandId;
+    menu.insert_pos = nextInsertPosition;
+    m_Menus.push_back(menu);
+  }
+
+  nextCommandId++;
+  nextInsertPosition++;
+
+  {
+    CustomMenu menu;
+    menu.title = "shell.anything2";
+    menu.command_id = nextCommandId;
+    menu.insert_pos = nextInsertPosition;
+    m_Menus.push_back(menu);
+  }
+
+  nextCommandId++;
+  nextInsertPosition++;
+
+  //convert CustomMenu to HMENU
+  for(size_t i=0; i<m_Menus.size(); i++)
+  {
+    CustomMenu & menu = m_Menus[i];
+
+    MENUITEMINFOA menuinfo = {0};
+    menuinfo.cbSize = sizeof(MENUITEMINFOA);
+    menuinfo.fMask = MIIM_TYPE | MIIM_ID;
+    menuinfo.fType = MFT_STRING;
+    menuinfo.fState = MFS_ENABLED;
+    menuinfo.wID = menu.command_id;
+    menuinfo.dwTypeData = (char*)menu.title.c_str();
+    menuinfo.cch = (UINT)menu.title.size();
+
+    BOOL result = InsertMenuItemA(hMenu, menu.insert_pos, TRUE, &menuinfo);
+
+    LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << menu.insert_pos << ", id=" << menuinfo.wID << ", result=" << result;
+  }
+
+  return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
 {
-  LOG(INFO) << __FUNCTION__ << "()";
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
-  //g_Logger->print("begin of InvokeCommand");
+  //define the type of structure pointed by lpcmi
+  const char * struct_name = "UNKNOWN";
+  if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFO))
+    struct_name = "CMINVOKECOMMANDINFO";
+  else if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFOEX))
+    struct_name = "CMINVOKECOMMANDINFOEX";
 
-  //if (!HIWORD(lpcmi->lpVerb))
-  //{
-  //  long sequentialId = LOWORD(lpcmi->lpVerb);
+  //define how we should interpret lpcmi->lpVerb
+  std::string verb;
+  if (IS_INTRESOURCE(lpcmi->lpVerb))
+    verb = ra::strings::toString((int)lpcmi->lpVerb);
+  else
+    verb = lpcmi->lpVerb;
 
-  //  //check for a clicked menu command
-  //  ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, sequentialId);
-  //  if (selectedMenu)
-  //  {
-  //    runMenu( (*selectedMenu), mSelectedItems );
-  //  }
-  //  else
-  //  {
-  //    //Build error message
-  //    std::string message = ra::strings::format("Menu item with system id %d not found!\n\n", sequentialId);
-  //    MessageBox(NULL, message.c_str(), "Unable to invoke command", MB_OK | MB_ICONERROR);
-  //  }
-  //}
-  //g_Logger->print("end of InvokeCommand");
+  LOG(INFO) << __FUNCTION__ << "(), lpcmi->cbSize=" << struct_name << ", lpcmi->fMask=" << lpcmi->fMask << ", lpcmi->lpVerb=" << verb;
 
+  //validate
+  if (!IS_INTRESOURCE(lpcmi->lpVerb))
+    return E_INVALIDARG; //don't know what to do with lpcmi->lpVerb
+    
+  UINT insertPosition = LOWORD(lpcmi->lpVerb);
+
+  //From this point, it is safe to use class members without other threads interference
+  CCriticalSectionGuard cs_guard(&m_CS);
+
+  //find the menu that is requested
+  CustomMenu * menu = NULL;
+  for(size_t i=0; i<m_Menus.size(); i++)
+  {
+    CustomMenu & menu_tmp = m_Menus[i];
+    if (menu_tmp.insert_pos == insertPosition)
+      menu = &menu_tmp;
+  }
+
+  //if an existing menu match is found
+  if (menu != NULL)
+  {
+    //execute menu action
+    LOG(INFO) << __FUNCTION__ << "(), executing action '" << menu->title.c_str() << "'!";
+
+    return S_OK;
+  }
+
+  LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
   return E_INVALIDARG;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
   //build function descriptor
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
-  //g_Logger->print("begin of GetCommandString");
-        
-  //long menuSequenceId = idCmd;
-  ////check for a menu that matches menuSequenceId
-  //ShellMenu * selectedMenu = findMenuBySequentialId(mMenus, menuSequenceId);
+  UINT insertPosition = (UINT)idCmd;
 
-  //if (selectedMenu == NULL)
-  //{
-  //  //Build error message
-  //  std::string message = ra::strings::format("Menu item with sequential id %d not found!\n\n", menuSequenceId);
-  //  MessageBox(NULL, message.c_str(), "Unable to process GetCommandString()", MB_OK | MB_ICONERROR);
+  //From this point, it is safe to use class members without other threads interference
+  CCriticalSectionGuard cs_guard(&m_CS);
 
-  //  //g_Logger->print("end #1 of GetCommandString");
-  //  return S_FALSE;
-  //}
+  //find the menu that is requested
+  CustomMenu * menu = NULL;
+  for(size_t i=0; i<m_Menus.size(); i++)
+  {
+    CustomMenu & menu_tmp = m_Menus[i];
+    if (menu_tmp.insert_pos == insertPosition)
+      menu = &menu_tmp;
+  }
 
-  ////Build up tooltip string
-  //const char * tooltip = " ";
-  //if (selectedMenu->getDescription().size() > 0)
-  //  tooltip = selectedMenu->getDescription().c_str();
+  //fail if no match is found
+  if (menu == NULL)
+  {
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << insertPosition;
+    return S_FALSE;
+  }
 
-  ////Textes à afficher dans la barre d'état d'une fenêtre de l'explorateur quand
-  ////l'un de nos éléments du menu contextuel est pointé par la souris:
-  //switch(uFlags)
-  //{
-  //case GCS_HELPTEXTA:
-  //  {
-  //    //ANIS tooltip handling
-  //    lstrcpynA(pszName, tooltip, cchMax);
-  //    //g_Logger->print("end #2 of GetCommandString");
-  //    return S_OK;
-  //  }
-  //  break;
-  //case GCS_HELPTEXTW:
-  //  {
-  //    //UNICODE tooltip handling
-  //    extMemoryBuffer unicodeDescription = extStringConverter::toUnicode(tooltip);
-  //    bool success = false;
-  //    if (unicodeDescription.getSize() <= cchMax)
-  //    {
-  //      memcpy(pszName, unicodeDescription.getBuffer(), unicodeDescription.getSize());
-  //      success = true;
-  //    }
-  //    //g_Logger->print("end #3 of GetCommandString");
-  //    return success ? S_OK : E_FAIL;
-  //  }
-  //  break;
-  //case GCS_VERBA:
-  //  break;
-  //case GCS_VERBW:
-  //  break;
-  //case GCS_VALIDATEA:
-  //case GCS_VALIDATEW:
-  //  {
-  //    //VALIDATE ? already validated, selectedMenu is non-NULL
-  //    //g_Logger->print("end #4 of GetCommandString");
-  //    return S_OK;
-  //  }
-  //  break;
-  //}
-  ////g_Logger->print("end #5 of GetCommandString");
-  //return S_OK;
+  //Build up tooltip string
+  switch(uFlags)
+  {
+  case GCS_HELPTEXTA:
+    {
+      //ANIS tooltip handling
+      lstrcpynA(pszName, menu->title.c_str(), cchMax);
+      return S_OK;
+    }
+    break;
+  case GCS_HELPTEXTW:
+    {
+      //UNICODE tooltip handling
+      std::wstring title = ansi_to_unicode(menu->title);
+      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
+      return S_OK;
+    }
+    break;
+  case GCS_VERBA:
+    {
+      //ANIS tooltip handling
+      lstrcpynA(pszName, menu->title.c_str(), cchMax);
+      return S_OK;
+    }
+    break;
+  case GCS_VERBW:
+    {
+      //UNICODE tooltip handling
+      std::wstring title = ansi_to_unicode(menu->title);
+      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
+      return S_OK;
+    }
+    break;
+  case GCS_VALIDATEA:
+  case GCS_VALIDATEW:
+    {
+      return S_OK;
+    }
+    break;
+  }
 
+  LOG(ERROR) << __FUNCTION__ << "(), unknown flags for uFlags=" << uFlags;
   return S_FALSE;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  LOG(INFO) << __FUNCTION__ << "()";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  LOG(INFO) << __FUNCTION__ << "()";
 
   //https://docs.microsoft.com/en-us/windows/desktop/ad/example-code-for-implementation-of-the-context-menu-com-object
   STGMEDIUM   stm;
@@ -314,11 +494,20 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR * ppvObj)
 {
   //build function descriptor
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+
+  //Filter out unimplemented know interfaces so they do not show as WARNINGS
+  static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
+  if (  IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+        IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+        IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)      )
+  {
+    return E_NOINTERFACE;
+  }
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -334,7 +523,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppv
     AddRef();
     return NOERROR;
   }
-  LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToString(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -363,8 +552,8 @@ ULONG STDMETHODCALLTYPE CContextMenu::Release()
 // Constructeur de l'interface IClassFactory:
 CClassFactory::CClassFactory()
 {
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), new";
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
 
@@ -381,11 +570,11 @@ CClassFactory::~CClassFactory()
   InterlockedDecrement(&g_cRefDll);
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR * ppvObj)
 {
   //build function descriptor
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -402,7 +591,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * pp
     return NOERROR;
   }
 
-  LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToString(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -428,11 +617,11 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
   return ulRefCount;
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID *ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR *ppvObj)
 {
   //build function descriptor
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToString(riid).c_str();
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
@@ -457,8 +646,8 @@ HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
   //build function descriptor
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToString(rclsid).c_str() << ", riid=" << GuidToString(riid).c_str() << "";
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, CLSID_ShellExtension))
@@ -481,7 +670,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 
 STDAPI DllCanUnloadNow(void)
 {
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
@@ -509,7 +698,7 @@ STDAPI DllRegisterServer(void)
 
   // Define the path and parameters of our DLL:
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", CLSID_ShellExtensionStr);
     if (!win32Registry::createKey(key.c_str()))
       return E_ACCESSDENIED;
     if (!win32Registry::setValue(key.c_str(), "", GetCurrentModulePath() ))
@@ -536,9 +725,6 @@ STDAPI DllRegisterServer(void)
       return E_ACCESSDENIED;
   }
 
-  // Notify the Shell to pick the default icon definition change
-  SHChangeNotify(SHCNE_ASSOCCHANGED,0,0,0);
-
   // Register the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionName);
@@ -556,6 +742,13 @@ STDAPI DllRegisterServer(void)
     if (!win32Registry::setValue(key.c_str(), CLSID_ShellExtensionStr, ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
+
+  // Notify the Shell to pick the changes:
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
 
   return S_OK;
 }
@@ -576,9 +769,6 @@ STDAPI DllUnregisterServer(void)
       return E_ACCESSDENIED;
   }
 
-  // Notify the Shell to pick the default icon definition change
-  SHChangeNotify(SHCNE_ASSOCCHANGED,0,0,0);
-
   // Unregister the shell extension for directories
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionName);
@@ -595,7 +785,7 @@ STDAPI DllUnregisterServer(void)
 
   // Remove the CLSID of this DLL from the registry
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InProcServer32", CLSID_ShellExtensionStr);
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", CLSID_ShellExtensionStr);
     if (!win32Registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
@@ -604,6 +794,13 @@ STDAPI DllUnregisterServer(void)
     if (!win32Registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
+
+  // Notify the Shell to pick the changes:
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
 
   return S_OK;
 }
@@ -673,16 +870,16 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 //  {
 //    HRESULT result = DllRegisterServer();
 //    if (result == S_OK)
-//      MessageBox(NULL, "Manual dll registration successfull", ShellExtensionName, MB_OK | MB_ICONINFORMATION);
+//      //MessageBox(NULL, "Manual dll registration successfull", ShellExtensionName, MB_OK | MB_ICONINFORMATION);
 //    else                                              
-//      MessageBox(NULL, "Manual dll registration FAILED !", ShellExtensionName, MB_OK | MB_ICONERROR);
+//      //MessageBox(NULL, "Manual dll registration FAILED !", ShellExtensionName, MB_OK | MB_ICONERROR);
 //  }
 //
 //  {
 //    HRESULT result = DllUnregisterServer();
 //    if (result == S_OK)
-//      MessageBox(NULL, "Manual dll unregistration successfull", ShellExtensionName, MB_OK | MB_ICONINFORMATION);
+//      //MessageBox(NULL, "Manual dll unregistration successfull", ShellExtensionName, MB_OK | MB_ICONINFORMATION);
 //    else
-//      MessageBox(NULL, "Manual dll unregistration FAILED !", ShellExtensionName, MB_OK | MB_ICONERROR);
+//      //MessageBox(NULL, "Manual dll unregistration FAILED !", ShellExtensionName, MB_OK | MB_ICONERROR);
 //  }
 //}
