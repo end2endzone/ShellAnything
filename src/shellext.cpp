@@ -16,6 +16,7 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
+#include "rapidassist/process.h"
 
 //Declarations
 UINT      g_cRefDll = 0;   // Reference counter of this DLL
@@ -67,7 +68,7 @@ std::string GuidToString(GUID guid) {
 
 CContextMenu::CContextMenu()
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "(), new";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
@@ -79,7 +80,7 @@ CContextMenu::CContextMenu()
 
 CContextMenu::~CContextMenu()
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "(), delete";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   if (m_pDataObj) m_pDataObj->Release();
@@ -88,13 +89,35 @@ CContextMenu::~CContextMenu()
   InterlockedDecrement(&g_cRefDll);
 }
 
+std::string getMenuDescriptor(HMENU hMenu)
+{
+  std::string output;
+
+  int numItems = GetMenuItemCount(hMenu);
+  for(int i=0; i<numItems; i++)
+  {
+    UINT id = GetMenuItemID(hMenu, i);
+
+    static const int BUFFER_SIZE = 1024;
+    char name[BUFFER_SIZE];
+    int result = GetMenuStringA(hMenu, i, name, BUFFER_SIZE, 0);
+
+    char item_desc[BUFFER_SIZE];
+    sprintf(item_desc, "%d:%s", id, name);
+    if (!output.empty())
+      output.append(",");
+    output.append(item_desc);
+  }
+
+  output.insert(0, "MENU{");
+  output.append("}");
+  return output;
+}
+
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
   //build function descriptor
-  static const int BUFFER_SIZE = 1024;
-  char menu_name[BUFFER_SIZE];
-  int result = GetMenuStringA(hMenu, 0, menu_name, BUFFER_SIZE, 0);
-  DLOG(INFO) << __FUNCTION__ << "(" << menu_name << "," << (int)indexMenu << "," << (int)idCmdFirst << "," << (int)idCmdLast << "," << (int)uFlags << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << getMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlags;
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of QueryContextMenu");
@@ -121,7 +144,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "()";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of InvokeCommand");
@@ -151,7 +174,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
   //build function descriptor
-  DLOG(INFO) << __FUNCTION__ << "(" << idCmd << "," << (int)uFlags << "," << (int)reserved << "," << (int)pszName << "," << (int)cchMax << ")";
+  LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //g_Logger->print("begin of GetCommandString");
@@ -222,7 +245,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "()";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/windows/desktop/ad/example-code-for-implementation-of-the-context-menu-com-object
@@ -294,7 +317,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
   //build function descriptor
-  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(riid).c_str() << ")";
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
@@ -306,10 +329,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID * ppv
   if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IShellExtInit) || IsEqualGUID(riid, IID_IContextMenu))
   {
     // Increment the reference count and return the pointer.
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
     *ppvObj = (LPVOID)this;
     AddRef();
     return NOERROR;
   }
+  LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
   return E_NOINTERFACE;
 }
 
@@ -338,7 +363,7 @@ ULONG STDMETHODCALLTYPE CContextMenu::Release()
 // Constructeur de l'interface IClassFactory:
 CClassFactory::CClassFactory()
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "(), new";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
@@ -350,7 +375,7 @@ CClassFactory::CClassFactory()
 // Destructeur de l'interface IClassFactory:
 CClassFactory::~CClassFactory()
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
+  LOG(INFO) << __FUNCTION__ << "(), delete";
 
   // Decrement the dll's reference counter.
   InterlockedDecrement(&g_cRefDll);
@@ -359,7 +384,7 @@ CClassFactory::~CClassFactory()
 HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * ppvObj)
 {
   //build function descriptor
-  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(riid).c_str() << ")";
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
@@ -371,10 +396,13 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID * pp
   if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IClassFactory))
   {
     // Increment the reference count and return the pointer.
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
     *ppvObj = (LPVOID)this;
     AddRef();
     return NOERROR;
   }
+
+  LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
   return E_NOINTERFACE;
 }
 
@@ -400,10 +428,10 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
   return ulRefCount;
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid,LPVOID *ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID *ppvObj)
 {
   //build function descriptor
-  DLOG(INFO) << __FUNCTION__ << "(" << pUnkOuter << "," << GuidToString(riid).c_str() << ")";
+  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToString(riid).c_str();
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   *ppvObj = NULL;
@@ -429,7 +457,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
   //build function descriptor
-  DLOG(INFO) << __FUNCTION__ << "(" << GuidToString(rclsid).c_str() << "," << GuidToString(riid).c_str() << ")";
+  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToString(rclsid).c_str() << ", riid=" << GuidToString(riid).c_str() << "";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   *ppvOut = NULL;
@@ -440,26 +468,31 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
     {
+      LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
       delete pcf;
       pcf = NULL;
     }
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
     return hr;
   }
+  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << GuidToString(rclsid).c_str() << " not found!";
   return CLASS_E_CLASSNOTAVAILABLE;
 }
 
 STDAPI DllCanUnloadNow(void)
 {
-  DLOG(INFO) << __FUNCTION__ << "()";
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
   ulRefCount = InterlockedDecrement(&g_cRefDll);
+
   if (0 == ulRefCount)
   {
+    LOG(INFO) << __FUNCTION__ << "() -> Yes";
     return S_OK;
   }
+  LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instance are still in use.";
   return S_FALSE;
 }
 
@@ -610,7 +643,17 @@ void InitLogger()
     ""
   };
   google::InitGoogleLogging(argv[0]);
+
+  fLI::FLAGS_logbufsecs = 0; //flush logs after each LOG() calls
+
   LOG(INFO) << "Enabling logging";
+  LOG(INFO) << "DLL path: " << GetCurrentModulePath();
+  LOG(INFO) << "EXE path: " << ra::process::getCurrentProcessPath().c_str();
+
+  LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
+  LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
+  LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();
+  LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
