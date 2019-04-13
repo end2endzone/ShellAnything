@@ -176,6 +176,36 @@ namespace shellanything
     }
   }
 
+  Item * ConfigManager::findItemByCommandId(const uint32_t & iCommandId)
+  {
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      Item * match = config->findItemByCommandId(iCommandId);
+      if (match)
+        return match;
+    }
+ 
+    return NULL;
+  }
+ 
+  uint32_t ConfigManager::assignCommandIds(const uint32_t & iFirstCommandId)
+  {
+    uint32_t nextCommandId = iFirstCommandId;
+
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      nextCommandId = config->assignCommandIds(nextCommandId);
+    }
+ 
+    return nextCommandId;
+  }
+ 
   Configuration::ConfigurationPtrList ConfigManager::getConfigurations()
   {
     Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));

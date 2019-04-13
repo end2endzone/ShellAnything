@@ -187,6 +187,85 @@ namespace shellanything { namespace test
     root = NULL;
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestItem, testAssignCommandIds)
+  {
+    Item * root =   newItem("html");
+    Item * body =   newItem("body");
+    Item * child1 = newItem("h1");
+    Item * child2 = newItem("p0");
+    Item * child3 = newItem("p1");
+    Item * child4 = newItem("p1.1");
+    Item * child5 = newItem("p1.2");
+    Item * child6 = newItem("p2");
+ 
+    //build tree
+    root->addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+    child3->addChild(child4);
+    child3->addChild(child5);
+    body->addChild(child6);
+ 
+    //act
+    uint32_t nextAvailableId = root->assignCommandIds(101);
+ 
+    //assert
+    ASSERT_EQ(109, nextAvailableId);
+    ASSERT_EQ(101,   root->getCommandId());
+    ASSERT_EQ(102,   body->getCommandId());
+    ASSERT_EQ(103, child1->getCommandId());
+    ASSERT_EQ(104, child2->getCommandId());
+    ASSERT_EQ(105, child3->getCommandId());
+    ASSERT_EQ(106, child4->getCommandId());
+    ASSERT_EQ(107, child5->getCommandId());
+    ASSERT_EQ(108, child6->getCommandId());
+ 
+    //destroy the tree
+    delete root;
+    root = NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestItem, testFindItemByCommandId)
+  {
+    Item * root =   newItem("html");
+    Item * body =   newItem("body");
+    Item * child1 = newItem("h1");
+    Item * child2 = newItem("p0");
+    Item * child3 = newItem("p1");
+    Item * child4 = newItem("p1.1");
+    Item * child5 = newItem("p1.2");
+    Item * child6 = newItem("p2");
+ 
+    //build tree
+    root->addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+    child3->addChild(child4);
+    child3->addChild(child5);
+    body->addChild(child6);
+ 
+    //act
+    uint32_t nextAvailableId = root->assignCommandIds(101);
+ 
+    //assert
+    ASSERT_EQ( (Item*)NULL, root->findItemByCommandId(9999999));
+ 
+    ASSERT_EQ(  root, root->findItemByCommandId(101));
+    ASSERT_EQ(  body, root->findItemByCommandId(102));
+    ASSERT_EQ(child1, root->findItemByCommandId(103));
+    ASSERT_EQ(child2, root->findItemByCommandId(104));
+    ASSERT_EQ(child3, root->findItemByCommandId(105));
+    ASSERT_EQ(child4, root->findItemByCommandId(106));
+    ASSERT_EQ(child5, root->findItemByCommandId(107));
+    ASSERT_EQ(child6, root->findItemByCommandId(108));
+ 
+    //destroy the tree
+    delete root;
+    root = NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

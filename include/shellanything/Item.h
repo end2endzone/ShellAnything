@@ -31,6 +31,7 @@
 #include "shellanything/Action.h"
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 namespace shellanything
 {
@@ -54,6 +55,12 @@ namespace shellanything
     const Icon & getIcon() const;
     void setIcon(const Icon & iIcon);
 
+    Item * findItemByCommandId(const uint32_t & iCommandId);
+    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+
+    const uint32_t & getCommandId() const;
+    void setCommandId(const uint32_t & iCommandId);
+
     bool isVisible(const Context & c);
     bool isEnabled(const Context & c);
 
@@ -73,6 +80,7 @@ namespace shellanything
     Validator mValidity;
     Validator mVisibility;
     bool mSeparator;
+    uint32_t mCommandId;
     std::string mName;
     Action::ActionPtrList mActions;
   };

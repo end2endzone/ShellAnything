@@ -213,6 +213,56 @@ namespace shellanything { namespace test
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testAssignCommandId)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path1 = std::string("test_files") + path_separator + test_name + ".1.xml";
+    std::string template_source_path2 = std::string("test_files") + path_separator + test_name + ".2.xml";
+    std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.1.xml";
+    std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.2.xml";
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path1);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    //copy the files
+    ASSERT_TRUE( copyFile(template_source_path1, template_target_path1) ) << "Failed copying file '" << template_source_path1 << "' to file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( copyFile(template_source_path2, template_target_path2) ) << "Failed copying file '" << template_source_path2 << "' to file '" << template_target_path2 << "'.";
+   
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+ 
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+    //ASSERT the files are loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 2, configs.size() );
+    //assign unique command ids
+    uint32_t nextCommandId = cmgr.assignCommandIds(101);
+    ASSERT_EQ( 112, nextCommandId ); //assert 11 Item(s) loaded by ConfigManager
+ 
+    //assert invalid command id
+    ASSERT_EQ( (Item*)NULL, cmgr.findItemByCommandId(99999999) );
+ 
+    //find known Item by known command id
+    Item * wFooServiceItem = cmgr.findItemByCommandId(101);
+    Item *    wRestartItem = cmgr.findItemByCommandId(104);
+    Item *     wWinzipItem = cmgr.findItemByCommandId(108);
+    ASSERT_TRUE( wFooServiceItem != NULL );
+    ASSERT_TRUE(    wRestartItem != NULL );
+    ASSERT_TRUE(     wWinzipItem != NULL );
+    ASSERT_EQ( std::string("Foo Service"),  wFooServiceItem->getName() );
+    ASSERT_EQ( std::string("Restart"),      wRestartItem->getName() );
+    ASSERT_EQ( std::string("Winzip"),       wWinzipItem->getName() );
+ 
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
  
 } //namespace test
 } //namespace shellanything

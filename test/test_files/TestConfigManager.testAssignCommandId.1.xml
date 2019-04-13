@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <item name="Foo Service">
+      <!--Note: validity is not specified, the item is always valid-->
+
+      <item name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+        </actions>
+      </item>
+      <item name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+        </actions>
+      </item>
+      <item name="Restart">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+        </actions>
+      </item>
+
+      <!--Split commands that are for the same purpose-->
+      <item separator="true" />
+
+      <item name="Connect">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/connect" />
+        </actions>
+      </item>
+      <item name="Update">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/update" />
+        </actions>
+      </item>
+    </item>
+  </shell>
+</root>

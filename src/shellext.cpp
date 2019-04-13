@@ -843,7 +843,7 @@ std::string CreateLogDirectory()
   //Now add our custom path to it
   log_dir.append("\\ShellAnything\\Logs");
 
-  return log_dir
+  return log_dir;
 }
 
 void InitLogger()

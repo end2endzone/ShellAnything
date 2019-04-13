@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <item name="Winzip">
+      <item name="Add ${selection.filename}.zip" icon="auto">
+        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+        <validity folder="true" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-a -r &quot;${selection.path}\${selection.filename}.zip&quot; &quot;${selection.path}&quot;" />
+        </actions>
+      </item>
+      <item name="Extract to folder ${selection.filename}" icon="auto">
+        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+        <validity fileextensions="zip" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}\${selection.filename_noext}&quot;" />
+        </actions>
+      </item>
+      <item name="Extract here" icon="auto">
+        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+        <validity fileextensions="zip" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}&quot;" />
+        </actions>
+      </item>
+    </item>
+  </shell>
+</root>

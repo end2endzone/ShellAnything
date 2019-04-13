@@ -46,6 +46,9 @@ namespace shellanything
     const uint64_t & getFileModifiedDate() const;
     void setFileModifiedDate(const uint64_t & iFileModifiedDate);
 
+    Item * findItemByCommandId(const uint32_t & iCommandId);
+    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+
     Item::ItemPtrList getItems();
 
   private:

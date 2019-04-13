@@ -27,7 +27,8 @@
 namespace shellanything
 {
   Item::Item() : Node("Item"),
-    mSeparator(false)
+    mSeparator(false),
+    mCommandId(0)
   {
   }
 
@@ -78,6 +79,51 @@ namespace shellanything
     mIcon = icon;
   }
 
+  Item * Item::findItemByCommandId(const uint32_t & iCommandId)
+  {
+    if (mCommandId == iCommandId)
+      return this;
+ 
+    //for each child
+    Item::ItemPtrList children = getSubItems();
+    for(size_t i=0; i<children.size(); i++)
+    {
+      Item * child = children[i];
+      Item * match = child->findItemByCommandId(iCommandId);
+      if (match)
+        return match;
+    }
+ 
+    return NULL;
+  }
+ 
+  uint32_t Item::assignCommandIds(const uint32_t & iFirstCommandId)
+  {
+    uint32_t nextCommandId = iFirstCommandId;
+    this->setCommandId(nextCommandId);
+    nextCommandId++;
+ 
+    //for each child
+    Item::ItemPtrList children = getSubItems();
+    for(size_t i=0; i<children.size(); i++)
+    {
+      Item * child = children[i];
+      nextCommandId = child->assignCommandIds(nextCommandId);
+    }
+ 
+    return nextCommandId;
+  }
+ 
+  const uint32_t & Item::getCommandId() const
+  {
+    return mCommandId;
+  }
+ 
+  void Item::setCommandId(const uint32_t & iCommandId)
+  {
+    mCommandId = iCommandId;
+  }
+ 
   bool Item::isVisible(const Context & c)
   {
     bool validated = mVisibility.validate(c);
