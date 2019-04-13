@@ -10,6 +10,7 @@
 
 #include <glog/logging.h>
 
+#include "shellanything/Platform.h"
 #include "shellext.h"
 #include "win32Registry.h"
 
@@ -829,20 +830,61 @@ void DeletePreviousLogs()
   }
 }
 
+std::string CreateLogDirectory()
+{
+  //By default, GLOG will output log files in %TEMP% directory.
+  //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
+
+  std::string log_dir = shellanything::getHomeDirectory();
+  if (log_dir.empty())
+    return log_dir; //FAILED getting HOME directory.
+
+  //We got the %USERPROFILE% directory.
+  //Now add our custom path to it
+  log_dir.append("\\ShellAnything\\Logs");
+
+  return log_dir
+}
+
 void InitLogger()
 {
   //delete previous logs for easier debugging
   DeletePreviousLogs();
+
+  //Create and define the LOG directory
+  std::string log_dir = CreateLogDirectory();
 
   // Initialize Google's logging library.
   const char * argv[] = {
     GetCurrentModulePath(),
     ""
   };
-  google::InitGoogleLogging(argv[0]);
 
+  //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
+  google::InitGoogleLogging(argv[0]); //log in %TEMP% directory
+
+  fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
+  fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'
+  fLI::FLAGS_stderrthreshold = INT_MAX; //disable console output
   fLI::FLAGS_logbufsecs = 0; //flush logs after each LOG() calls
+  fLI::FLAGS_minloglevel = google::GLOG_INFO;
+  fLI::FLAGS_v = 4; //disables vlog(2), vlog(3), vlog(4)
 
+  //if a log directory is specified, configure it now
+  if (!log_dir.empty())
+  {
+    fLS::FLAGS_log_dir = log_dir;
+  }
+ 
+  //Do not change the default output files...
+  //google::SetLogDestination(google::GLOG_INFO,    "shellext.dll.INFO");
+  //google::SetLogDestination(google::GLOG_WARNING, "shellext.dll.WARNING");
+  //google::SetLogDestination(google::GLOG_ERROR,   "shellext.dll.ERROR");
+ 
+  const std::vector<std::string> dirs = google::GetLoggingDirectories();
+ 
+  google::SetLogFilenameExtension(".log");
+ 
   LOG(INFO) << "Enabling logging";
   LOG(INFO) << "DLL path: " << GetCurrentModulePath();
   LOG(INFO) << "EXE path: " << ra::process::getCurrentProcessPath().c_str();

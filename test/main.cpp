@@ -29,6 +29,8 @@
 #include <gtest/gtest.h>
 #include <glog/logging.h>
 
+#include "shellanything/Platform.h"
+
 #include "rapidassist/gtesthelp.h"
 
 using namespace ra;
