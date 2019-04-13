@@ -28,7 +28,6 @@
 #include "version.h"
 #include "config.h"
 
-#include "shellext_export.h"
 #include <vector>
 
 //Shell extension GUID
@@ -37,7 +36,7 @@ static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0
 static const char * ShellExtensionName = "ShellAnything";
 static const char * ShellExtensionDescription = "ShellAnything Shell extension";
 
-class SHELLANYTHING_API CCriticalSection
+class CCriticalSection
 {
 protected:
   CRITICAL_SECTION mCS;
@@ -50,7 +49,7 @@ public:
   void leave();
 };
 
-class SHELLANYTHING_API CCriticalSectionGuard
+class CCriticalSectionGuard
 {
 protected:
   CCriticalSection * mCS;
@@ -60,7 +59,7 @@ public:
   ~CCriticalSectionGuard();
 };
 
-class SHELLANYTHING_API CClassFactory : public IClassFactory
+class CClassFactory : public IClassFactory
 {
 protected:
   ULONG m_cRef;
@@ -80,7 +79,7 @@ public:
 };
 
 // Prototype de notre interface IContextMenu:
-class SHELLANYTHING_API CContextMenu : public IContextMenu, IShellExtInit
+class CContextMenu : public IContextMenu, IShellExtInit
 {
 protected:
   typedef std::vector<std::string> StringVector;
