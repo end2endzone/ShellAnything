@@ -28,15 +28,17 @@
 #include <stdio.h>
 
 #ifdef WIN32
-#   ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-#   endif
+//#   ifndef WIN32_LEAN_AND_MEAN
+//#   define WIN32_LEAN_AND_MEAN 1
+//#   endif
 #   include <windows.h> // for GetModuleHandleEx()
 #   include <Shlobj.h>
 #   include <ShellAPI.h>
 #   include <psapi.h>
 #   pragma comment( lib, "psapi.lib" )
 #endif
+
+#include <Shlobj.h>
 
 namespace shellanything
 {
@@ -90,15 +92,31 @@ namespace shellanything
     return vars;
   }
 
-  std::string getHomeDirectory()
-  {
 #ifdef _WIN32
+  inline std::string getWin32Directory(int csidl)
+  {
+    // https://stackoverflow.com/questions/18493484/shgetfolderpath-deprecated-what-is-alternative-to-retrieve-path-for-windows-fol
+    // https://superuser.com/questions/150012/what-is-the-difference-between-local-and-roaming-folders
+    // CSIDL_PROFILE          matches "C:\Users\JohnSmith"
+    // CSIDL_PERSONAL         matches "C:\Users\JohnSmith\Documents"
+    // CSIDL_APPDATA          matches "C:\Users\JohnSmith\AppData\Roaming"
+    // CSIDL_LOCAL_APPDATA    matches "C:\Users\JohnSmith\AppData\Local"
+    // CSIDL_COMMON_APPDATA   matches "C:\ProgramData"
+    // CSIDL_COMMON_DOCUMENTS matches "C:\Users\Public\Documents"
     CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, 0, szPath)))
+    if(SUCCEEDED(SHGetSpecialFolderPath(NULL, szPath, csidl, FALSE)))
     {
       return szPath;
     }
     return "";
+  }
+#endif
+
+  std::string getHomeDirectory()
+  {
+#ifdef _WIN32
+    std::string dir = getWin32Directory(CSIDL_PROFILE);
+    return dir;
 #else
     return "/~";
 #endif
@@ -107,37 +125,24 @@ namespace shellanything
   std::string getApplicationsDataDirectory()
   {
 #ifdef _WIN32
-    // https://superuser.com/questions/150012/what-is-the-difference-between-local-and-roaming-folders
-    // CSIDL_APPDATA matches "C:\Users\beauchamp.a3\AppData\Roaming"
-    // CSIDL_COMMON_APPDATA matches "C:\ProgramData"
-    // CSIDL_LOCAL_APPDATA matches "C:\Users\beauchamp.a3\AppData\Local"
-    CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA , NULL, 0, szPath)))
-    {
-      return szPath;
-    }
-    return "";
+    std::string dir = getWin32Directory(CSIDL_LOCAL_APPDATA);
+    return dir;
 #endif
   }
 
   std::string getDocumentsDirectory()
   {
 #ifdef _WIN32
-    CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS , NULL, 0, szPath)))
-    {
-      return szPath;
-    }
-    return "";
+    std::string dir = getWin32Directory(CSIDL_PERSONAL);
+    return dir;
 #endif
   }
 
   std::string getDesktopDirectory()
   {
 #ifdef _WIN32
-    std::string userprofile = ra::environment::getEnvironmentVariable("USERPROFILE");
-    std::string dektop_dir = userprofile + "\\Desktop";
-    return dektop_dir;
+    std::string dir = getWin32Directory(CSIDL_DESKTOPDIRECTORY);
+    return dir;
 #endif
   }
 
