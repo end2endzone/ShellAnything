@@ -362,6 +362,13 @@ namespace shellanything
     }
     item->setName(item_name);
 
+    //parse description
+    std::string item_desc;
+    if (!parseAttribute(element, "description", true, true, item_desc, error))
+    {
+      item->setDescription(item_desc);
+    }
+
     //parse icon
     std::string icon_path;
     if (parseAttribute(element, "icon", true, true, icon_path, error))

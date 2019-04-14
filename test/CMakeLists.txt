@@ -2,10 +2,19 @@ find_package(GTest)
 find_package(rapidassist)
 find_package(glog REQUIRED)
 
+set(CONFIGURATION_TEST_FILES ""
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/demo.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testDetectNewFile.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
+)
+
 add_executable(shellanything_unittest
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  ${CONFIGURATION_TEST_FILES}
   main.cpp
   TestConfigManager.cpp
   TestConfigManager.h

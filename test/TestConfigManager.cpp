@@ -76,6 +76,9 @@ namespace shellanything { namespace test
 
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
     ASSERT_NE( INVALID_CONFIGURATION, config );
+
+    //cleanup
+    delete config;
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testDetectNewFile)
@@ -261,6 +264,40 @@ namespace shellanything { namespace test
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testDescription)
+  {
+    ConfigManager & mgr = ConfigManager::getInstance();
+    
+    const std::string path = "test_files/demo.xml";
+    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
+    Configuration * config = mgr.loadFile(path, error_message);
+
+    ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
+    ASSERT_NE( INVALID_CONFIGURATION, config );
+
+    //search for an item with "Run" and "parameters" in title
+    Item::ItemPtrList items = config->getItems();
+    Item * run_with_params = NULL;
+    for(size_t i=0; i<items.size(); i++)
+    {
+      Item * item = items[i];
+      const std::string & name = item->getName();
+      if (name.find("Run") != std::string::npos && name.find("parameters") != std::string::npos)
+      {
+        //found our Item
+        run_with_params = item;
+      }
+    }
+    ASSERT_TRUE( run_with_params != NULL );
+
+    //look for a description
+    const std::string & desc = run_with_params->getDescription();
+    ASSERT_EQ(std::string(""), desc);
+
+    //cleanup
+    delete config;
   }
   //--------------------------------------------------------------------------------------------------
  

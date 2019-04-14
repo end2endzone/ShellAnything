@@ -53,7 +53,7 @@ Help:
       </actions>
     </item>
     
-    <item name="Run with parameters...">
+    <item name="Run with parameters..." description="Run the selected executable with parameters">
       <validity fileextensions="com;exe;bat;cmd" />
       <actions>
         <prompt name="myarguments" title="Please enter the command line parameters" />

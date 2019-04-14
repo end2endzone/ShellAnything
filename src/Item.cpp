@@ -69,6 +69,16 @@ namespace shellanything
     mName = iName;
   }
 
+  const std::string & Item::getDescription() const
+  {
+    return mDescription;
+  }
+
+  void Item::setDescription(const std::string & iDescription)
+  {
+    mDescription = iDescription;
+  }
+
   const Icon & Item::getIcon() const
   {
     return mIcon;

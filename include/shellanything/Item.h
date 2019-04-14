@@ -52,6 +52,9 @@ namespace shellanything
     const std::string & getName() const;
     void setName(const std::string & iName);
 
+    const std::string & getDescription() const;
+    void setDescription(const std::string & iDescription);
+
     const Icon & getIcon() const;
     void setIcon(const Icon & iIcon);
 
@@ -82,6 +85,7 @@ namespace shellanything
     bool mSeparator;
     uint32_t mCommandId;
     std::string mName;
+    std::string mDescription;
     Action::ActionPtrList mActions;
   };
 
