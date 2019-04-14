@@ -29,6 +29,8 @@
 #include "rapidassist/process.h"
 #include "rapidassist/time_.h"
 
+#include <glog/logging.h>
+
 #include <windows.h>
 #include <comdef.h>
 #include <Shobjidl.h>

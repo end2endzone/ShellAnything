@@ -23,41 +23,30 @@
 UINT      g_cRefDll = 0;   // Reference counter of this DLL
 HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
 
-//http://www.codeguru.com/cpp/w-p/dll/tips/article.php/c3635
-#if _MSC_VER >= 1300    // for VC 7.0
-  // from ATL 7.0 sources
-  #ifndef _delayimp_h
-  extern "C" IMAGE_DOS_HEADER __ImageBase;
-  #endif
-#endif
+static const std::string  EMPTY_STRING;
+static const std::wstring EMPTY_WIDE_STRING;
 
-HMODULE GetCurrentModule2000()
+std::string GetCurrentModulePath()
 {
-#if _MSC_VER < 1300 // earlier than .NET compiler (VC 6.0)
-  // Here's a trick that will get you the handle of the module
-  // you're running in without any a-priori knowledge:
-  // http://www.dotnet247.com/247reference/msgs/13/65259.aspx
+  std::string path;
+  char buffer[MAX_PATH] = {0};
+  HMODULE hModule = NULL;
+  if (!GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                          (LPCSTR) __FUNCTION__,
+                          &hModule))
+  {
+    int ret = GetLastError();
+    return EMPTY_STRING;
+  }
 
-  MEMORY_BASIC_INFORMATION mbi;
-  static int dummy;
-  VirtualQuery( &dummy, &mbi, sizeof(mbi) );
-  return reinterpret_cast<HMODULE>(mbi.AllocationBase);
-#else // VC 7.0
-  // from ATL 7.0 sources
-  return reinterpret_cast<HMODULE>(&__ImageBase);
-#endif
-}
-
-HMODULE GetCurrentModule()
-{
-  return GetCurrentModule2000();
-}
-
-const char * GetCurrentModulePath()
-{
-  static char buffer[MAX_PATH];
-  GetModuleFileName(GetCurrentModule(), buffer, MAX_PATH);
-  return buffer;
+  /*get the path of this DLL*/
+  GetModuleFileName(hModule, buffer, sizeof(buffer));
+  if (buffer[0] != '\0')
+  {
+    path = buffer;
+  }
+  return path;
 }
 
 std::string GuidToString(GUID guid) {
@@ -66,9 +55,6 @@ std::string GuidToString(GUID guid) {
   sprintf_s((char*)output.c_str(), output.size(), "{%08X-%04hX-%04hX-%02X%02X-%02X%02X%02X%02X%02X%02X}", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
   return output;
 }
-
-static const std::string  EMPTY_STRING;
-static const std::wstring EMPTY_WIDE_STRING;
 
 // Convert a wide Unicode string to an UTF8 string
 std::string unicode_to_utf8(const std::wstring & wstr)
@@ -702,7 +688,7 @@ STDAPI DllRegisterServer(void)
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str());
     if (!win32Registry::createKey(key.c_str()))
       return E_ACCESSDENIED;
-    if (!win32Registry::setValue(key.c_str(), "", GetCurrentModulePath() ))
+    if (!win32Registry::setValue(key.c_str(), "", GetCurrentModulePath().c_str() ))
       return E_ACCESSDENIED;
     if (!win32Registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
       return E_ACCESSDENIED;
@@ -865,8 +851,9 @@ void InitLogger()
   DeletePreviousLogs(log_dir);
 
   // Initialize Google's logging library.
+  std::string dll_path = GetCurrentModulePath();
   const char * argv[] = {
-    GetCurrentModulePath(),
+    dll_path.c_str(),
     ""
   };
 
@@ -914,7 +901,12 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     // Initialize Google's logging library.
     InitLogger();
   }
-  return 1; 
+  else if (dwReason == DLL_PROCESS_DETACH)
+  {
+    // Shutdown Google's logging library.
+    google::ShutdownGoogleLogging();
+  }
+  return 1;
 }
 
 //int main(int argc, char* argv[])
