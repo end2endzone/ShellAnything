@@ -56,6 +56,129 @@ std::string GuidToString(GUID guid) {
   return output;
 }
 
+SIZE GetIconSize(HICON hIcon)
+{
+  SIZE size = {0};
+
+  ICONINFO IconInfo = {0};
+  if(!GetIconInfo(hIcon, &IconInfo))
+    return size;
+   
+  BITMAP bmpMask={0};
+  GetObject(IconInfo.hbmMask, sizeof(BITMAP), &bmpMask);
+   
+  size.cx = bmpMask.bmWidth;
+  size.cy = bmpMask.bmHeight;
+   
+  //cleanup
+  DeleteObject(IconInfo.hbmColor);
+  DeleteObject(IconInfo.hbmMask);
+
+  return size;
+}
+
+HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall)
+{
+  SIZE large_size = GetIconSize(hIconLarge);
+  SIZE small_size = GetIconSize(hIconSmall);
+
+  SIZE menu_size;
+  menu_size.cx = GetSystemMetrics(SM_CXSMICON);
+	menu_size.cy = GetSystemMetrics(SM_CYSMICON);
+  
+  //compute total number of pixels for each icons
+  const long menu_pixels  = menu_size.cx * menu_size.cy;
+  const long large_pixels = large_size.cx * large_size.cy;
+  const long small_pixels = small_size.cx * small_size.cy;
+
+  //compute distance to menu_pixels
+  const long large_diff = abs(large_pixels - menu_pixels);
+  const long small_diff = abs(small_pixels - menu_pixels);
+
+  if (small_diff <= large_diff)
+    return hIconSmall;
+  return hIconLarge;
+}
+
+RGBQUAD toRGBQUAD(const DWORD & iColor)
+{
+  RGBQUAD output = {0};
+  output.rgbRed = (iColor&0x000000FF);
+  output.rgbGreen = (iColor&0x0000FF00)>>8;
+  output.rgbBlue = (iColor&0x00FF0000)>>16;
+  output.rgbReserved = 255;
+  return output;
+}
+
+HBITMAP CopyAsBitmap(HICON hIcon)
+{
+  //Get properties related to Windows Menu
+	const int icon_width = GetSystemMetrics(SM_CXSMICON);
+	const int icon_height = GetSystemMetrics(SM_CYSMICON);
+  const RGBQUAD menu_background_color = toRGBQUAD( GetSysColor(COLOR_MENU) );
+
+  static const int BITS_PER_PIXEL = 32;
+  size_t image_size = icon_width * icon_height * BITS_PER_PIXEL;
+
+  //Create a buffer to hold the mask pixels
+  std::string mask_pixels;
+  mask_pixels.assign((size_t)image_size, 0);
+  if (mask_pixels.size() != image_size)
+    return NULL;
+
+  //Create a buffer to hold the color pixels
+  std::string color_pixels;
+  color_pixels.assign((size_t)image_size, 0);
+  if (color_pixels.size() != image_size)
+    return NULL;
+
+  HWND hWndDesktop = GetDesktopWindow(); 
+  HDC hdcDesktop = GetDC(hWndDesktop); 
+  HDC hDcMem = CreateCompatibleDC(hdcDesktop); 
+
+  // Create a 32bbp bitmap and select it. 
+  HBITMAP hBitmap = CreateBitmap(icon_width, icon_height, 1, BITS_PER_PIXEL, NULL);
+  HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
+
+  //DrawIconEx does not support transparency. To fix that, we first render the mask in the bitmap
+  //and we "remember" the transparent pixels (white pixels needs to be transparent).
+  DrawIconEx(hDcMem, 0, 0, hIcon, icon_width, icon_height, 0, NULL, DI_MASK);
+  GetBitmapBits(hBitmap, (LONG)mask_pixels.size(), (void*)mask_pixels.c_str());
+    
+  //Then we draw the "color" part of the icon on the bitmap
+  DrawIconEx(hDcMem, 0, 0, hIcon, icon_width, icon_height, 0, NULL, DI_IMAGE);
+  GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.c_str());
+  
+  //Finally, we set the alpha channel in the bitmap
+  static const RGBQUAD white = {255,255,255,255};
+  RGBQUAD * colorPixel = (RGBQUAD *)color_pixels.c_str();
+  RGBQUAD * maskPixel =  (RGBQUAD *)mask_pixels.c_str();
+  for(size_t i=0; i<image_size; i=i+(BITS_PER_PIXEL/8))
+  {
+    colorPixel->rgbReserved = 255;
+
+    //each white pixels in the mask bits needs to be replaced by the background color
+    if (maskPixel->rgbRed       == white.rgbRed   &&
+        maskPixel->rgbGreen     == white.rgbGreen &&
+        maskPixel->rgbBlue      == white.rgbBlue )
+    {
+      (*colorPixel) = menu_background_color;
+      colorPixel->rgbReserved = 0; //in case HMENU starts supporting transparency
+    }
+    colorPixel++;
+    maskPixel++;
+  }
+  
+  SetBitmapBits(hBitmap, (DWORD)color_pixels.size(), (void*)color_pixels.c_str());
+
+  // Clean up. 
+  SelectObject(hDcMem, hbmOld);
+  DeleteDC(hDcMem);
+  ReleaseDC(hWndDesktop, hdcDesktop);
+
+  return hBitmap;
+}
+
 // Convert a wide Unicode string to an UTF8 string
 std::string unicode_to_utf8(const std::wstring & wstr)
 {
@@ -234,6 +357,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
     return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
   }
 
+  //MessageBox(NULL, "ATTACH NOW!", __FUNCTION__, MB_OK);
+
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
@@ -265,6 +390,39 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   nextCommandId++;
   nextInsertPosition++;
 
+  {
+    CustomMenu menu;
+    menu.title = "sa.3";
+    menu.command_id = nextCommandId;
+    menu.insert_pos = nextInsertPosition;
+    m_Menus.push_back(menu);
+  }
+
+  nextCommandId++;
+  nextInsertPosition++;
+
+  {
+    CustomMenu menu;
+    menu.title = "sa.4";
+    menu.command_id = nextCommandId;
+    menu.insert_pos = nextInsertPosition;
+    m_Menus.push_back(menu);
+  }
+
+  nextCommandId++;
+  nextInsertPosition++;
+
+  {
+    CustomMenu menu;
+    menu.title = "sa.5";
+    menu.command_id = nextCommandId;
+    menu.insert_pos = nextInsertPosition;
+    m_Menus.push_back(menu);
+  }
+
+  nextCommandId++;
+  nextInsertPosition++;
+
   //convert CustomMenu to HMENU
   for(size_t i=0; i<m_Menus.size(); i++)
   {
@@ -272,12 +430,35 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
     MENUITEMINFOA menuinfo = {0};
     menuinfo.cbSize = sizeof(MENUITEMINFOA);
-    menuinfo.fMask = MIIM_TYPE | MIIM_ID;
+    menuinfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
     menuinfo.fType = MFT_STRING;
     menuinfo.fState = MFS_ENABLED;
     menuinfo.wID = menu.command_id;
     menuinfo.dwTypeData = (char*)menu.title.c_str();
     menuinfo.cch = (UINT)menu.title.size();
+
+    //add an icon
+    {
+      HICON hIconLarge = NULL;
+      HICON hIconSmall = NULL;
+      //
+      UINT numIconLoaded = ExtractIconEx( "c:\\Windows\\system32\\SHELL32.dll", 0+(int)i, &hIconLarge, &hIconSmall, 1 );
+      if (numIconLoaded >= 1)
+      {
+        //Find the best icon
+        HICON hIcon = GetBestIconForMenu(hIconLarge, hIconSmall);
+
+        //enable bitmap handling for the menu
+        menuinfo.fMask |= MIIM_BITMAP; 
+
+        HBITMAP hBitmap = CopyAsBitmap(hIcon);
+        DestroyIcon(hIconLarge);
+        DestroyIcon(hIconSmall);
+
+        //assign the HBITMAP to the HMENU
+        menuinfo.hbmpItem = hBitmap;
+      }
+    }
 
     BOOL result = InsertMenuItemA(hMenu, menu.insert_pos, TRUE, &menuinfo);
 
