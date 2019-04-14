@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 #include <glog/logging.h>
 
-#include "shellanything/Platform.h"
+#include "Platform.h"
 
 #include "rapidassist/gtesthelp.h"
 

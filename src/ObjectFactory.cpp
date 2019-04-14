@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ObjectFactory.h"
+#include "ObjectFactory.h"
 
 #include "shellanything/Configuration.h"
 #include "shellanything/Menu.h"

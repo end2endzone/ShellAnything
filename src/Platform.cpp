@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/Platform.h"
+#include "Platform.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
 #include <stdio.h>

@@ -25,7 +25,7 @@
 #include "TestConfigManager.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
-#include "shellanything/Platform.h"
+#include "Platform.h"
 
 #include "rapidassist/gtesthelp.h"
 #include "rapidassist/filesystem.h"

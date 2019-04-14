@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestPlatform.h"
-#include "shellanything/Platform.h"
+#include "Platform.h"
 #include "rapidassist/filesystem.h"
 
 namespace shellanything { namespace test

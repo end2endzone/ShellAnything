@@ -25,7 +25,7 @@
 #include <string>
 #include <limits>
 #include "shellanything/Validator.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 

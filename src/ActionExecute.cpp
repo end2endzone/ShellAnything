@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "shellanything/ActionExecute.h"
-#include "shellanything/PropertyManager.h"
-#include "shellanything/Platform.h"
+#include "PropertyManager.h"
+#include "Platform.h"
 
 namespace shellanything
 {

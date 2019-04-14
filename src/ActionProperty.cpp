@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionProperty.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 
 namespace shellanything
 {

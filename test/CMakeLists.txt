@@ -10,11 +10,20 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
 )
 
+# Include files from shellanything library which are not public
+set(SHELLANYTHING_PRIVATE_FILES ""
+  ${CMAKE_SOURCE_DIR}/src/Platform.h
+  ${CMAKE_SOURCE_DIR}/src/Platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
+  ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
+)
+
 add_executable(shellanything_unittest
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
+  ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
   TestConfigManager.cpp
   TestConfigManager.h
@@ -46,7 +55,7 @@ endif()
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog)
+target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog ${CMAKE_SOURCE_DIR}/src)
 add_dependencies(shellanything_unittest shellanything shellext)
 target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
 

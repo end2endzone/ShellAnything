@@ -26,7 +26,7 @@
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
-#include "shellanything/Platform.h"
+#include "Platform.h"
 
 //#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>

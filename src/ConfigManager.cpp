@@ -23,9 +23,9 @@
  *********************************************************************************/
 
 #include "shellanything/ConfigManager.h"
-#include "shellanything/ObjectFactory.h"
+#include "ObjectFactory.h"
 #include "shellanything/Menu.h"
-#include "shellanything/Platform.h"
+#include "Platform.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"

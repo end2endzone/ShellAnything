@@ -10,7 +10,7 @@
 
 #include <glog/logging.h>
 
-#include "shellanything/Platform.h"
+#include "Platform.h"
 #include "shellext.h"
 #include "win32Registry.h"
 

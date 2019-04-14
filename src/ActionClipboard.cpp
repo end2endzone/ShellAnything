@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionClipboard.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 
 #include "win32clipboard/win32clipboard.h"
 

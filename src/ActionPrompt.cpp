@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "shellanything/ActionPrompt.h"
-#include "shellanything/PropertyManager.h"
-#include "shellanything/InputBox.h"
+#include "PropertyManager.h"
+#include "InputBox.h"
 
 namespace shellanything
 {

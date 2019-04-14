@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestPropertyManager.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 
 namespace shellanything { namespace test
 {

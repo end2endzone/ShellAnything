@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/InputBox.h"
+#include "InputBox.h"
 
 #define DEFAULT_INPUTBOX_WIDTH  400
 #define DEFAULT_INPUTBOX_HEIGHT 150

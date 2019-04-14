@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/PropertyManager.h"
-#include "shellanything/Platform.h"
+#include "PropertyManager.h"
+#include "Platform.h"
 #include "rapidassist/environment.h"
 
 namespace shellanything

@@ -14,13 +14,9 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Icon.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/InputBox.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/ObjectFactory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/Platform.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/PropertyManager.h
 )
 
 add_library(shellanything STATIC
@@ -38,12 +34,16 @@ add_library(shellanything STATIC
   ConfigManager.cpp
   Context.cpp
   Icon.cpp
+  InputBox.h
   InputBox.cpp
   Menu.cpp
   Node.cpp
+  ObjectFactory.h
   ObjectFactory.cpp
   Validator.cpp
+  Platform.h
   Platform.cpp
+  PropertyManager.h
   PropertyManager.cpp
 )
 
