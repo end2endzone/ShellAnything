@@ -27,6 +27,7 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/process.h"
+#include "rapidassist/time_.h"
 
 #include <windows.h>
 #include <comdef.h>
@@ -160,6 +161,8 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestShellExtension::TearDown()
   {
+    //Sleep betwwen tests to allow GLOG to generate different log filenames.
+    ra::time::millisleep(1500);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestShellExtension, testDefaultDllCanUnloadNow)

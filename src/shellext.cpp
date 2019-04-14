@@ -806,17 +806,16 @@ STDAPI DllUnregisterServer(void)
   return S_OK;
 }
 
-void DeletePreviousLogs()
+void DeletePreviousLogs(const std::string & iDirectory)
 {
   std::string module_path = GetCurrentModulePath();
   std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
-  std::string temp_var = ra::environment::getEnvironmentVariable("TEMP");
 
   ra::strings::StringVector files;
-  bool success = ra::filesystem::findFiles(files, temp_var.c_str());
+  bool success = ra::filesystem::findFiles(files, iDirectory.c_str());
   if (!success) return;
 
-  std::string pattern_prefix = temp_var + ra::filesystem::getPathSeparatorStr() + module_filename;
+  std::string pattern_prefix = iDirectory + ra::filesystem::getPathSeparatorStr() + module_filename;
 
   //for each files
   for(size_t i=0; i<files.size(); i++)
@@ -843,16 +842,27 @@ std::string CreateLogDirectory()
   //Now add our custom path to it
   log_dir.append("\\ShellAnything\\Logs");
 
+  //Try to create the directory
+  bool created = shellanything::createFolder(log_dir.c_str());
+  if (!created)
+  {
+    //failed creating directory.
+    //fallback to %TEMP%
+    return EMPTY_STRING;
+  }
+
   return log_dir;
 }
 
 void InitLogger()
 {
-  //delete previous logs for easier debugging
-  DeletePreviousLogs();
-
   //Create and define the LOG directory
   std::string log_dir = CreateLogDirectory();
+
+  //delete previous logs for easier debugging
+  const std::string temp_dir = ra::environment::getEnvironmentVariable("TEMP");
+  DeletePreviousLogs(temp_dir);
+  DeletePreviousLogs(log_dir);
 
   // Initialize Google's logging library.
   const char * argv[] = {
