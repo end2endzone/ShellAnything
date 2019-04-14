@@ -26,6 +26,7 @@
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
 #include <stdio.h>
+#include <direct.h>
 
 #ifdef WIN32
 //#   ifndef WIN32_LEAN_AND_MEAN
@@ -204,6 +205,70 @@ namespace shellanything
  
     bool success = (content.size() == size_write);
     return success;
+  }
+
+  bool createFolder(const char * iPath)
+  {
+    if (iPath == NULL)
+      return false;
+
+    if (ra::filesystem::folderExists(iPath))
+      return true;
+
+    //folder does not already exists and must be created
+
+    //inspired from https://stackoverflow.com/a/675193
+    char *pp;
+    char *sp;
+    int   status;
+    char separator = ra::filesystem::getPathSeparator();
+#ifdef _WIN32
+    char *copypath = _strdup(iPath);
+#else
+    char *copypath = strdup(iPath);
+    static const mode_t mode = 0755;
+#endif
+
+    status = 0;
+    pp = copypath;
+    while (status == 0 && (sp = strchr(pp, separator)) != 0)
+    {
+      if (sp != pp)
+      {
+        /* Neither root nor double slash in path */
+        *sp = '\0';
+#ifdef _WIN32
+        status = _mkdir(copypath);
+        if (status == -1 && strlen(copypath) == 2 && copypath[1] == ':') //issue #27
+          status = 0; //fix for _mkdir("C:") like
+        int errno_copy = errno;
+        if (status == -1 && errno == EEXIST)
+          status = 0; //File already exist
+#else
+        status = mkdir(copypath, mode);
+#endif
+        if (status != 0)
+        {
+          //folder already exists?
+          if (ra::filesystem::folderExists(copypath))
+          {
+            status = 0;
+          }
+        }
+        *sp = separator;
+      }
+      pp = sp + 1;
+    }
+    if (status == 0)
+    {
+#ifdef _WIN32
+      status = _mkdir(iPath);
+#else
+      status = mkdir(iPath, mode);
+#endif
+    }
+    free(copypath);
+    return (status == 0);      
   }
 
   bool copyFileInternal(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor, ProgressReportCallback progress_function)

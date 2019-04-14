@@ -41,6 +41,7 @@ namespace shellanything
   bool peekFile(const std::string & path, size_t size, std::string & content);
   bool readFile(const std::string & path, std::string & content);
   bool writeFile(const std::string & path, std::string & content);
+  bool createFolder(const char * iPath);
 
   // copyFile() callback interfaces
   class IProgressReport
