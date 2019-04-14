@@ -31,10 +31,9 @@
 #include <vector>
 
 //Shell extension GUID
-static const char * CLSID_ShellExtensionStr = "{B0D35103-86A1-471C-A653-E130E3439A3B}";
-static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
-static const char * ShellExtensionName = "ShellAnything";
-static const char * ShellExtensionDescription = "ShellAnything Shell extension";
+static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
+static const char * ShellExtensionHandlerName = "ShellAnything";
+static const char * ShellExtensionDescription = "ShellAnything Shell Extension";
 
 class CCriticalSection
 {

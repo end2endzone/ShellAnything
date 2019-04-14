@@ -35,7 +35,7 @@
 
 namespace shellanything { namespace test
 {
-  static const GUID CLSID_ShellExtension = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
+  static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
   static const GUID CLSID_INVALID = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
 
   std::string getShellExtensionDllPath()
@@ -199,12 +199,12 @@ namespace shellanything { namespace test
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
 
     //test with an invalid IID query
-    hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, CLSID_INVALID, (LPVOID *)&pClassFactory);
+    hr = lib_handler.DllGetClassObject(SHELLANYTHING_SHELLEXTENSION_CLSID, CLSID_INVALID, (LPVOID *)&pClassFactory);
     ASSERT_EQ( E_NOINTERFACE, hr );
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
 
     //get valid class factory
-    hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, IID_IClassFactory, (LPVOID *)&pClassFactory);
+    hr = lib_handler.DllGetClassObject(SHELLANYTHING_SHELLEXTENSION_CLSID, IID_IClassFactory, (LPVOID *)&pClassFactory);
     ASSERT_EQ( NOERROR, hr );
     ASSERT_TRUE( pClassFactory != NULL );
 
@@ -228,7 +228,7 @@ namespace shellanything { namespace test
 
     //get IClassFactory interface pointer
     IClassFactory * pClassFactory = NULL;
-    HRESULT hr = lib_handler.DllGetClassObject(CLSID_ShellExtension, IID_IClassFactory, (LPVOID *)&pClassFactory);
+    HRESULT hr = lib_handler.DllGetClassObject(SHELLANYTHING_SHELLEXTENSION_CLSID, IID_IClassFactory, (LPVOID *)&pClassFactory);
     ASSERT_EQ( NOERROR, hr );
     ASSERT_TRUE( pClassFactory != NULL );
 
