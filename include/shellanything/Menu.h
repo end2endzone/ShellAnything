@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ITEM_H
-#define SA_ITEM_H
+#ifndef SA_MENU_H
+#define SA_MENU_H
 
 #include "shellanything/Node.h"
 #include "shellanything/Icon.h"
@@ -36,18 +36,18 @@
 namespace shellanything
 {
 
-  class Item : public Node
+  class Menu : public Node
   {
   public:
-    typedef std::vector<Item*> ItemPtrList;
+    typedef std::vector<Menu*> MenuPtrList;
 
-    Item();
-    virtual ~Item();
+    Menu();
+    virtual ~Menu();
 
     bool isSeparator() const;
     void setSeparator(bool iSeparator);
 
-    bool isParentItem() const;
+    bool isParentMenu() const;
 
     const std::string & getName() const;
     void setName(const std::string & iName);
@@ -58,7 +58,7 @@ namespace shellanything
     const Icon & getIcon() const;
     void setIcon(const Icon & iIcon);
 
-    Item * findItemByCommandId(const uint32_t & iCommandId);
+    Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
 
     const uint32_t & getCommandId() const;
@@ -76,7 +76,7 @@ namespace shellanything
     void addAction(Action * action);
     const Action::ActionPtrList & getActions() const;
 
-    ItemPtrList getSubItems();
+    MenuPtrList getSubMenus();
 
   private:
     Icon mIcon;
@@ -91,4 +91,4 @@ namespace shellanything
 
 } //namespace shellanything
 
-#endif //SA_ITEM_H
+#endif //SA_MENU_H

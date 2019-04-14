@@ -24,7 +24,7 @@
 
 #include "TestConfiguration.h"
 #include "shellanything/Configuration.h"
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 #include "shellanything/ActionExecute.h"
 
 namespace shellanything { namespace test
@@ -45,15 +45,15 @@ namespace shellanything { namespace test
     Configuration * config = new Configuration();
     config->setFilePath("C:\\Users\\MartyMcfly\\Documents\\ShellAnything\\default.xml");
     
-    // <item name="Command line from here...">
+    // <menu name="Command line from here...">
     //   <icon path="C:\Windows\System32\shell32.dll" index="3" />
     //   <validity folder="true" />
     //   <actions>
     //     <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" />
     //   </actions>
-    // </item>
-    Item * item = new Item();
-    item->setName("Command line from here...");
+    // </menu>
+    Menu * menu = new Menu();
+    menu->setName("Command line from here...");
     Validator validity;
     validity.setMaxFiles(0); //no files accepted
     validity.setMaxDirectories(1); //a single directory is accepted
@@ -63,10 +63,10 @@ namespace shellanything { namespace test
     action->setBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
-    config->addChild(item);
-    item->setValidity(validity);
-    item->setVisibility(visibility);
-    item->addAction(action);
+    config->addChild(menu);
+    menu->setValidity(validity);
+    menu->setVisibility(visibility);
+    menu->addAction(action);
   }
   //--------------------------------------------------------------------------------------------------
 

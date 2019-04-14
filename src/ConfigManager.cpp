@@ -24,7 +24,7 @@
 
 #include "shellanything/ConfigManager.h"
 #include "shellanything/ObjectFactory.h"
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 #include "shellanything/Platform.h"
 
 #include "rapidassist/filesystem.h"
@@ -86,23 +86,23 @@ namespace shellanything
     config->setFilePath(path);
     config->setFileModifiedDate(file_modified_date);
 
-    //find <item> nodes under <shell>
-    const XMLElement* xml_item = xml_shell->FirstChildElement("item");
-    while (xml_item)
+    //find <menu> nodes under <shell>
+    const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
+    while (xml_menu)
     {
-      //found a new item node
-      Item * item = ObjectFactory::getInstance().parseItem(xml_item, error);
-      if (item == NULL)
+      //found a new menu node
+      Menu * menu = ObjectFactory::getInstance().parseMenu(xml_menu, error);
+      if (menu == NULL)
       {
         delete config;
         return NULL;
       }
 
-      //add the new item to the current configuration
-      config->addChild(item);
+      //add the new menu to the current configuration
+      config->addChild(menu);
 
-      //next item node
-      xml_item = xml_item->NextSiblingElement("item");
+      //next menu node
+      xml_menu = xml_menu->NextSiblingElement("menu");
     }
 
     return config;
@@ -176,14 +176,14 @@ namespace shellanything
     }
   }
 
-  Item * ConfigManager::findItemByCommandId(const uint32_t & iCommandId)
+  Menu * ConfigManager::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
     Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      Item * match = config->findItemByCommandId(iCommandId);
+      Menu * match = config->findMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -236,10 +236,10 @@ namespace shellanything
         //and look for special XML tags
         size_t rootPos = content.find("<root>", 0);
         size_t shellPos = content.find("<shell>", rootPos);
-        size_t itemPos = content.find("<item", shellPos);
+        size_t menuPos = content.find("<menu", shellPos);
         if (rootPos != std::string::npos &&
             shellPos != std::string::npos &&
-            itemPos != std::string::npos)
+            menuPos != std::string::npos)
         {
           //found the required tags
           return true;

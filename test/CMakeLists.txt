@@ -24,8 +24,8 @@ add_executable(shellanything_unittest
   TestContext.h
   TestDemoSamples.cpp
   TestDemoSamples.h
-  TestItem.cpp
-  TestItem.h
+  TestMenu.cpp
+  TestMenu.h
   TestNode.cpp
   TestNode.h
   TestPlatform.cpp

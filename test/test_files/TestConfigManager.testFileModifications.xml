@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <shell>
-    <item name="Start cmd.exe">
+    <menu name="Start cmd.exe">
       <actions>
         <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" />
       </actions>
-    </item>
+    </menu>
     <!-- CODE INSERT LOCATION -->
   </shell>
 </root>

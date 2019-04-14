@@ -15,7 +15,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Icon.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/InputBox.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/Item.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/Menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ObjectFactory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h
@@ -39,7 +39,7 @@ add_library(shellanything STATIC
   Context.cpp
   Icon.cpp
   InputBox.cpp
-  Item.cpp
+  Menu.cpp
   Node.cpp
   ObjectFactory.cpp
   Validator.cpp

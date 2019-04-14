@@ -56,14 +56,14 @@ namespace shellanything
     mFileModifiedDate = iFileModifiedDate;
   }
 
-  Item * Configuration::findItemByCommandId(const uint32_t & iCommandId)
+  Menu * Configuration::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
-    Item::ItemPtrList children = getItems();
+    Menu::MenuPtrList children = getMenus();
     for(size_t i=0; i<children.size(); i++)
     {
-      Item * child = children[i];
-      Item * match = child->findItemByCommandId(iCommandId);
+      Menu * child = children[i];
+      Menu * match = child->findMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -76,20 +76,20 @@ namespace shellanything
     uint32_t nextCommandId = iFirstCommandId;
 
     //for each child
-    Item::ItemPtrList children = getItems();
+    Menu::MenuPtrList children = getMenus();
     for(size_t i=0; i<children.size(); i++)
     {
-      Item * child = children[i];
+      Menu * child = children[i];
       nextCommandId = child->assignCommandIds(nextCommandId);
     }
  
     return nextCommandId;
   }
  
-  Item::ItemPtrList Configuration::getItems()
+  Menu::MenuPtrList Configuration::getMenus()
   {
-    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
-    return sub_items;
+    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    return sub_menus;
   }
 
 } //namespace shellanything

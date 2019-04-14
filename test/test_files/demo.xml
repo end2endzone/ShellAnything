@@ -19,124 +19,124 @@ Help:
     
   </configuration>
   <shell>
-    <item name="Copy to clipboard...">
+    <menu name="Copy to clipboard...">
       <!--TODO: update the visibility tag to support a maxfiles="1" attribute or maxfolders="1" instead of -->
       <validity folder="true" file="true" maxfiles="1" maxfolders="1" />
-      <item name="Full Path" description="Copy the selected file path(s) to the clipboard">
+      <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
         <actions>
           <!--TODO: update clipboard tag to support multiple selection-->
           <clipboard value="${selection.path}"/>
         </actions>
-      </item>
-      <item name="Filename" description="Copy the selected filename(s) to the clipboard">
+      </menu>
+      <menu name="Filename" description="Copy the selected filename(s) to the clipboard">
         <actions>
           <clipboard value="${selection.filename}"/>
         </actions>
-      </item>
-      <item name="Filename (without extension)" description="Copy the selected filename(s) (without extension) to the clipboard">
+      </menu>
+      <menu name="Filename (without extension)" description="Copy the selected filename(s) (without extension) to the clipboard">
         <actions>
           <clipboard value="${selection.filename_noext}"/>
         </actions>
-      </item>
-      <item name="Parent Folder">
+      </menu>
+      <menu name="Parent Folder">
         <actions>
           <clipboard value="${selection.parent.path}"/>
         </actions>
-      </item>
-    </item>
+      </menu>
+    </menu>
     
-    <item name="Command line from here...">
+    <menu name="Command line from here...">
       <icon path="C:\Windows\System32\shell32.dll" index="3" />
       <validity folder="true" />
       <actions>
         <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" />
       </actions>
-    </item>
+    </menu>
     
-    <item name="Run with parameters..." description="Run the selected executable with parameters">
+    <menu name="Run with parameters..." description="Run the selected executable with parameters">
       <validity fileextensions="com;exe;bat;cmd" />
       <actions>
         <prompt name="myarguments" title="Please enter the command line parameters" />
         <exec path="${selection.path}" arguments="${myarguments}" />
       </actions>
-    </item>
+    </menu>
 
-    <item separator="true" />
+    <menu separator="true" />
 
-    <item name="Foo Service">
-      <!--Note: validity is not specified, the item is always valid-->
+    <menu name="Foo Service">
+      <!--Note: validity is not specified, the menu is always valid-->
       
-      <item name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
+      <menu name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
         </actions>
-      </item>
-      <item name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
+      </menu>
+      <menu name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
         </actions>
-      </item>
-      <item name="Restart">
+      </menu>
+      <menu name="Restart">
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
         </actions>
-      </item>
+      </menu>
       
       <!--Split commands that are for the same purpose-->
-      <item separator="true" />
+      <menu separator="true" />
       
-      <item name="Connect">
+      <menu name="Connect">
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/connect" />
         </actions>
-      </item>
-      <item name="Update">
+      </menu>
+      <menu name="Update">
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/update" />
         </actions>
-      </item>
-    </item>
+      </menu>
+    </menu>
 
     <!--Split before winzip commands-->
-    <item separator="true" />
-    <item name="Winzip">
-      <item name="Add ${selection.filename}.zip" icon="auto">
-        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+    <menu separator="true" />
+    <menu name="Winzip">
+      <menu name="Add ${selection.filename}.zip" icon="auto">
+        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
         <validity folder="true" />
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-a -r &quot;${selection.path}\${selection.filename}.zip&quot; &quot;${selection.path}&quot;" />
         </actions>
-      </item>
-      <item name="Extract to folder ${selection.filename}" icon="auto">
-        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+      </menu>
+      <menu name="Extract to folder ${selection.filename}" icon="auto">
+        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
         <validity fileextensions="zip" />
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}\${selection.filename_noext}&quot;" />
         </actions>
-      </item>
-      <item name="Extract here" icon="auto">
-        <!-- Note that icon attribute is set to auto for this item which should use the first icon of the item's first shell command -->
+      </menu>
+      <menu name="Extract here" icon="auto">
+        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
         <validity fileextensions="zip" />
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}&quot;" />
         </actions>
-      </item>
-    </item>
+      </menu>
+    </menu>
 
 
     <!--Show file selection or compare capabilities-->
-    <item separator="true" />
-    <item name="Compare">
-      <item name="Binary compare">
-        <item name="Select first item">
+    <menu separator="true" />
+    <menu name="Compare">
+      <menu name="Binary compare">
+        <menu name="Select first menu">
           <actions>
             <property name="compare.first.selection.path"     value="${selection.path}" />
             <property name="compare.first.selection.filename" value="${selection.filename}" />
           </actions>
-        </item>
-        <item name="Compare with ${compare.first.selection.filename}">
-          <!--Note: this item is always enabled but can be invisible if the visibility tag is not respected-->
+        </menu>
+        <menu name="Compare with ${compare.first.selection.filename}">
+          <!--Note: this menu is always enabled but can be invisible if the visibility tag is not respected-->
           <visibility properties="compare.first.selection.filename" />
           <actions>
             <exec path="C:\windows\system32\cmd.exe" arguments="/K FC &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
@@ -145,21 +145,21 @@ Help:
             <property name="compare.first.selection.path"     value="" />
             <property name="compare.first.selection.filename" value="" />
           </actions>
-        </item>
-      </item>
-    </item>
+        </menu>
+      </menu>
+    </menu>
 
     <!--Low level find file-->
-    <item separator="true" />
-    <item name="Find file...">
+    <menu separator="true" />
+    <menu name="Find file...">
       <validity folder="true" maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="findpattern" title="Please enter the find wildcard pattern..." />
         <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" arguments="/K dir /a /s /b &quot;${findpattern}&quot;" />
         <property name="findpattern" value="" />
       </actions>
-    </item>
-    <item name="Find in files...">
+    </menu>
+    <menu name="Find in files...">
       <validity folder="true" maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="filepattern" title="Please enter the file wildcard pattern..." />
@@ -168,90 +168,90 @@ Help:
         <property name="filepattern" value="" />
         <property name="textpattern" value="" />
       </actions>
-    </item>
+    </menu>
 
     <!-- Open files that are not executables -->
-    <item separator="true" />
-    <item name="MySoftware">
-      <item name="README">
+    <menu separator="true" />
+    <menu name="MySoftware">
+      <menu name="README">
         <actions>
           <open path="C:\Program Files (x86)\MySoftware\README.pdf" />
         </actions>
-      </item>
-      <item name="About">
+      </menu>
+      <menu name="About">
         <actions>
           <open path="C:\Program Files (x86)\MySoftware\about.htm" />
         </actions>
-      </item>
-    </item>
+      </menu>
+    </menu>
     
     <!-- Open files that are not executables -->
-    <item separator="true" />
-    <item name="Checksum">
+    <menu separator="true" />
+    <menu name="Checksum">
       <validity file="true" maxfiles="1" maxfolders="0" />
-      <item name="MD5">
+      <menu name="MD5">
         <actions>
           <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; MD5" />
         </actions>
-      </item>
-      <item name="SHA1">
+      </menu>
+      <menu name="SHA1">
         <actions>
           <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA1" />
         </actions>
-      </item>
-      <item name="SHA256">
+      </menu>
+      <menu name="SHA256">
         <actions>
           <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA256" />
         </actions>
-      </item>
-      <item name="SHA512">
+      </menu>
+      <menu name="SHA512">
         <actions>
           <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
         </actions>
-      </item>
-    </item>
+      </menu>
+    </menu>
 
     <!-- symbolic links -->
-    <item separator="true" />
-    <item name="Symbolic Links ">
+    <menu separator="true" />
+    <menu name="Symbolic Links ">
       <!-- See also https://stackoverflow.com/questions/19098101/how-to-open-an-elevated-cmd-using-command-line-for-windows -->
       <validity file="false" maxfiles="0" maxfolders="1" />
-      <item name="Set as target">
+      <menu name="Set as target">
         <actions>
           <property name="symbolic.target.path"     value="${selection.path}" />
           <property name="symbolic.target.filename" value="${selection.filename}" />
         </actions>
-      </item>
-      <item name="Cancel link creation." description="">
+      </menu>
+      <menu name="Cancel link creation." description="">
         <visibility properties="symbolic.target.path" />
         <actions>
           <property name="symbolic.target.path"     value="" />
           <property name="symbolic.target.filename" value="" />
         </actions>
-      </item>
-      <item name="Create link to ${symbolic.target.filename} as..." description="Creates a symbolic link.">
+      </menu>
+      <menu name="Create link to ${symbolic.target.filename} as..." description="Creates a symbolic link.">
         <visibility properties="symbolic.target.path" />
-        <item name="Symbolic Link" description="Creates a directory symbolic link.">
+        <menu name="Symbolic Link" description="Creates a directory symbolic link.">
           <visibility properties="symbolic.target.path" />
           <actions>
             <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /D &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
           </actions>
-        </item>
-        <item name="Hard Link" description="Creates a directory hard link.">
+        </menu>
+        <menu name="Hard Link" description="Creates a directory hard link.">
           <visibility properties="symbolic.target.path" />
           <actions>
             <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /H &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
           </actions>
-        </item>
-        <item name="Junction" description="Creates a directory junction.">
+        </menu>
+        <menu name="Junction" description="Creates a directory junction.">
           <visibility properties="symbolic.target.path" />
           <actions>
             <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /J &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
           </actions>
-        </item>
-      </item>
+        </menu>
+      </menu>
 
-    </item>
+    </menu>
 
   </shell>
 </root>

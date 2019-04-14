@@ -109,20 +109,20 @@ namespace shellanything { namespace test
     Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT a single item is available
-    Item::ItemPtrList items = cmgr.getConfigurations()[0]->getItems();
-    ASSERT_EQ( 1, items.size() );
+    //ASSERT a single menu is available
+    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 1, menus.size() );
  
     //create another file in the target directory
     std::string CONFIG_XML = ""
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
       "<root>\n"
       "  <shell>\n"
-      "    <item name=\"Start WordPad\">\n"
+      "    <menu name=\"Start WordPad\">\n"
       "      <actions>\n"
       "        <exec path=\"C:\\windows\\system32\\write.exe\" />\n"
       "      </actions>\n"
-      "    </item>\n"
+      "    </menu>\n"
       "  </shell>\n"
       "</root>\n";
     static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
@@ -175,29 +175,29 @@ namespace shellanything { namespace test
     Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT a single item is available
-    Item::ItemPtrList items = cmgr.getConfigurations()[0]->getItems();
-    ASSERT_EQ( 1, items.size() );
+    //ASSERT a single menu is available
+    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 1, menus.size() );
  
-    //inject another item in the loaded xml file
+    //inject another menu in the loaded xml file
  
     //prepare XML content to add
-    std::string ITEM_XML = "<item name=\"Start notepad.exe\">\n"
+    std::string MENU_XML = "<menu name=\"Start notepad.exe\">\n"
       "      <actions>\n"
       "        <exec path=\"C:\\windows\\system32\\notepad.exe\" />\n"
       "      </actions>\n"
-      "    </item>";
+      "    </menu>";
     static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
     if (LINE_SEPARATOR != "\n")
     {
-      ra::strings::replace(ITEM_XML, "\n", LINE_SEPARATOR);
+      ra::strings::replace(MENU_XML, "\n", LINE_SEPARATOR);
     }
  
     //process with file search and replace
     std::string content;
     bool fileReaded = readFile(template_target_path, content);
     ASSERT_TRUE(fileReaded);
-    ra::strings::replace(content, "<!-- CODE INSERT LOCATION -->", ITEM_XML);
+    ra::strings::replace(content, "<!-- CODE INSERT LOCATION -->", MENU_XML);
     bool fileWrite = writeFile(template_target_path, content);
     ASSERT_TRUE(fileWrite);
  
@@ -208,9 +208,9 @@ namespace shellanything { namespace test
     configs = cmgr.getConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT 2 items is available
-    items = cmgr.getConfigurations()[0]->getItems();
-    ASSERT_EQ( 2, items.size() );
+    //ASSERT 2 menus is available
+    menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 2, menus.size() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -245,21 +245,21 @@ namespace shellanything { namespace test
     ASSERT_EQ( 2, configs.size() );
     //assign unique command ids
     uint32_t nextCommandId = cmgr.assignCommandIds(101);
-    ASSERT_EQ( 112, nextCommandId ); //assert 11 Item(s) loaded by ConfigManager
+    ASSERT_EQ( 112, nextCommandId ); //assert 11 Menu(s) loaded by ConfigManager
  
     //assert invalid command id
-    ASSERT_EQ( (Item*)NULL, cmgr.findItemByCommandId(99999999) );
+    ASSERT_EQ( (Menu*)NULL, cmgr.findMenuByCommandId(99999999) );
  
-    //find known Item by known command id
-    Item * wFooServiceItem = cmgr.findItemByCommandId(101);
-    Item *    wRestartItem = cmgr.findItemByCommandId(104);
-    Item *     wWinzipItem = cmgr.findItemByCommandId(108);
-    ASSERT_TRUE( wFooServiceItem != NULL );
-    ASSERT_TRUE(    wRestartItem != NULL );
-    ASSERT_TRUE(     wWinzipItem != NULL );
-    ASSERT_EQ( std::string("Foo Service"),  wFooServiceItem->getName() );
-    ASSERT_EQ( std::string("Restart"),      wRestartItem->getName() );
-    ASSERT_EQ( std::string("Winzip"),       wWinzipItem->getName() );
+    //find known Menu by known command id
+    Menu * wFooServiceMenu = cmgr.findMenuByCommandId(101);
+    Menu *    wRestartMenu = cmgr.findMenuByCommandId(104);
+    Menu *     wWinzipMenu = cmgr.findMenuByCommandId(108);
+    ASSERT_TRUE( wFooServiceMenu != NULL );
+    ASSERT_TRUE(    wRestartMenu != NULL );
+    ASSERT_TRUE(     wWinzipMenu != NULL );
+    ASSERT_EQ( std::string("Foo Service"),  wFooServiceMenu->getName() );
+    ASSERT_EQ( std::string("Restart"),      wRestartMenu->getName() );
+    ASSERT_EQ( std::string("Winzip"),       wWinzipMenu->getName() );
  
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
@@ -277,17 +277,17 @@ namespace shellanything { namespace test
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
     ASSERT_NE( INVALID_CONFIGURATION, config );
 
-    //search for an item with "Run" and "parameters" in title
-    Item::ItemPtrList items = config->getItems();
-    Item * run_with_params = NULL;
-    for(size_t i=0; i<items.size(); i++)
+    //search for an menu with "Run" and "parameters" in title
+    Menu::MenuPtrList menus = config->getMenus();
+    Menu * run_with_params = NULL;
+    for(size_t i=0; i<menus.size(); i++)
     {
-      Item * item = items[i];
-      const std::string & name = item->getName();
+      Menu * menu = menus[i];
+      const std::string & name = menu->getName();
       if (name.find("Run") != std::string::npos && name.find("parameters") != std::string::npos)
       {
-        //found our Item
-        run_with_params = item;
+        //found our Menu
+        run_with_params = menu;
       }
     }
     ASSERT_TRUE( run_with_params != NULL );

@@ -22,17 +22,17 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 
 namespace shellanything
 {
-  Item::Item() : Node("Item"),
+  Menu::Menu() : Node("Menu"),
     mSeparator(false),
     mCommandId(0)
   {
   }
 
-  Item::~Item()
+  Menu::~Menu()
   {
     for(size_t i=0; i<mActions.size(); i++)
     {
@@ -42,64 +42,64 @@ namespace shellanything
     mActions.clear();
   }
 
-  bool Item::isSeparator() const
+  bool Menu::isSeparator() const
   {
     return mSeparator;
   }
 
-  void Item::setSeparator(bool iSeparator)
+  void Menu::setSeparator(bool iSeparator)
   {
     mSeparator = iSeparator;
   }
 
-  bool Item::isParentItem() const
+  bool Menu::isParentMenu() const
   {
-    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
-    bool parent_item = (sub_items.size() != 0);
-    return parent_item;
+    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    bool parent_menu = (sub_menus.size() != 0);
+    return parent_menu;
   }
 
-  const std::string & Item::getName() const
+  const std::string & Menu::getName() const
   {
     return mName;
   }
 
-  void Item::setName(const std::string & iName)
+  void Menu::setName(const std::string & iName)
   {
     mName = iName;
   }
 
-  const std::string & Item::getDescription() const
+  const std::string & Menu::getDescription() const
   {
     return mDescription;
   }
 
-  void Item::setDescription(const std::string & iDescription)
+  void Menu::setDescription(const std::string & iDescription)
   {
     mDescription = iDescription;
   }
 
-  const Icon & Item::getIcon() const
+  const Icon & Menu::getIcon() const
   {
     return mIcon;
   }
 
-  void Item::setIcon(const Icon & icon)
+  void Menu::setIcon(const Icon & icon)
   {
     mIcon = icon;
   }
 
-  Item * Item::findItemByCommandId(const uint32_t & iCommandId)
+  Menu * Menu::findMenuByCommandId(const uint32_t & iCommandId)
   {
     if (mCommandId == iCommandId)
       return this;
  
     //for each child
-    Item::ItemPtrList children = getSubItems();
+    Menu::MenuPtrList children = getSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
-      Item * child = children[i];
-      Item * match = child->findItemByCommandId(iCommandId);
+      Menu * child = children[i];
+      Menu * match = child->findMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -107,77 +107,77 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t Item::assignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t Menu::assignCommandIds(const uint32_t & iFirstCommandId)
   {
     uint32_t nextCommandId = iFirstCommandId;
     this->setCommandId(nextCommandId);
     nextCommandId++;
  
     //for each child
-    Item::ItemPtrList children = getSubItems();
+    Menu::MenuPtrList children = getSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
-      Item * child = children[i];
+      Menu * child = children[i];
       nextCommandId = child->assignCommandIds(nextCommandId);
     }
  
     return nextCommandId;
   }
  
-  const uint32_t & Item::getCommandId() const
+  const uint32_t & Menu::getCommandId() const
   {
     return mCommandId;
   }
  
-  void Item::setCommandId(const uint32_t & iCommandId)
+  void Menu::setCommandId(const uint32_t & iCommandId)
   {
     mCommandId = iCommandId;
   }
  
-  bool Item::isVisible(const Context & c)
+  bool Menu::isVisible(const Context & c)
   {
     bool validated = mVisibility.validate(c);
     return validated;
   }
 
-  bool Item::isEnabled(const Context & c)
+  bool Menu::isEnabled(const Context & c)
   {
     bool validated = mValidity.validate(c);
     return validated;
   }
 
-  const Validator & Item::getValidity()
+  const Validator & Menu::getValidity()
   {
     return mValidity;
   }
 
-  void Item::setValidity(const Validator & iValidity)
+  void Menu::setValidity(const Validator & iValidity)
   {
     mValidity = iValidity;
   }
 
-  const Validator & Item::getVisibility()
+  const Validator & Menu::getVisibility()
   {
     return mVisibility;
   }
 
-  void Item::setVisibility(const Validator & iVisibility)
+  void Menu::setVisibility(const Validator & iVisibility)
   {
     mVisibility = iVisibility;
   }
 
-  Item::ItemPtrList Item::getSubItems()
+  Menu::MenuPtrList Menu::getSubMenus()
   {
-    Item::ItemPtrList sub_items = filterNodes<Item*>(this->findChildren("Item"));
-    return sub_items;
+    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    return sub_menus;
   }
 
-  void Item::addAction(Action * action)
+  void Menu::addAction(Action * action)
   {
     mActions.push_back(action);
   }
 
-  const Action::ActionPtrList & Item::getActions() const
+  const Action::ActionPtrList & Menu::getActions() const
   {
     return mActions;
   }

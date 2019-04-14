@@ -26,7 +26,7 @@
 #define SA_CONFIGURATION_H
 
 #include "shellanything/Node.h"
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -46,10 +46,10 @@ namespace shellanything
     const uint64_t & getFileModifiedDate() const;
     void setFileModifiedDate(const uint64_t & iFileModifiedDate);
 
-    Item * findItemByCommandId(const uint32_t & iCommandId);
+    Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
 
-    Item::ItemPtrList getItems();
+    Menu::MenuPtrList getMenus();
 
   private:
     uint64_t mFileModifiedDate;
