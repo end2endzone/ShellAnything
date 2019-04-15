@@ -103,9 +103,9 @@ HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall)
 RGBQUAD toRGBQUAD(const DWORD & iColor)
 {
   RGBQUAD output = {0};
-  output.rgbRed = (iColor&0x000000FF);
-  output.rgbGreen = (iColor&0x0000FF00)>>8;
-  output.rgbBlue = (iColor&0x00FF0000)>>16;
+  output.rgbRed   = (BYTE)((iColor&0x000000FF)    );
+  output.rgbGreen = (BYTE)((iColor&0x0000FF00)>> 8);
+  output.rgbBlue  = (BYTE)((iColor&0x00FF0000)>>16);
   output.rgbReserved = 255;
   return output;
 }
@@ -177,6 +177,91 @@ HBITMAP CopyAsBitmap(HICON hIcon)
   ReleaseDC(hWndDesktop, hdcDesktop);
 
   return hBitmap;
+}
+
+CContextMenu::CustomMenu * FindMenuByCommandOffset(CContextMenu::CustomMenuVector & menus, int first_command_id, int target_command_offset)
+{
+  for(size_t i=0; i<menus.size(); i++)
+  {
+    CContextMenu::CustomMenu * menu = &menus[i];
+    int current_command_id_offset = menu->command_id - first_command_id;
+    if (current_command_id_offset == target_command_offset)
+      return menu;
+
+    for(size_t j=0; j<menu->children.size(); j++)
+    {
+      CContextMenu::CustomMenu * match = FindMenuByCommandOffset(menu->children, first_command_id, target_command_offset);
+      if (match)
+        return match;
+    }
+  }
+
+  return NULL;
+}
+
+void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset)
+{
+  MENUITEMINFOA menuinfo = {0};
+
+  menuinfo.cbSize = sizeof(MENUITEMINFOA);
+  menuinfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+  menuinfo.fType = MFT_STRING;
+  menuinfo.fState = MFS_ENABLED;
+  menuinfo.wID = menu.command_id;
+  menuinfo.dwTypeData = (char*)menu.title.c_str();
+  menuinfo.cch = (UINT)menu.title.size();
+
+  //add an icon
+  {
+    HICON hIconLarge = NULL;
+    HICON hIconSmall = NULL;
+    //
+    UINT numIconLoaded = ExtractIconEx( "c:\\Windows\\system32\\SHELL32.dll", debug_icon_offset, &hIconLarge, &hIconSmall, 1 );
+    debug_icon_offset++;
+    if (numIconLoaded >= 1)
+    {
+      //Find the best icon
+      HICON hIcon = GetBestIconForMenu(hIconLarge, hIconSmall);
+
+      //enable bitmap handling for the menu
+      menuinfo.fMask |= MIIM_BITMAP; 
+
+      HBITMAP hBitmap = CopyAsBitmap(hIcon);
+      DestroyIcon(hIconLarge);
+      DestroyIcon(hIconSmall);
+
+      //assign the HBITMAP to the HMENU
+      menuinfo.hbmpItem = hBitmap;
+    }
+  }
+
+  if (menu.children.size())
+  {
+    menuinfo.fMask |= MIIM_SUBMENU;
+    HMENU hSubMenu = CreatePopupMenu();
+
+    for(size_t i=0; i<menu.children.size(); i++)
+    {
+      CContextMenu::CustomMenu & submenu = menu.children[i];
+      BuildMenuTree(hSubMenu, submenu, (UINT)i, debug_icon_offset);
+    }
+
+    menuinfo.hSubMenu = hSubMenu;
+  }
+
+  BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
+
+  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << insert_pos << ", id=" << menuinfo.wID << ", result=" << result;
+}
+
+void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus)
+{
+  int debug_icon_offset = 0;
+  for(size_t i=0; i<menus.size(); i++)
+  {
+    CContextMenu::CustomMenu & menu = menus[i];
+    BuildMenuTree(hMenu, menu, (UINT)i, debug_icon_offset);
+  }
 }
 
 // Convert a wide Unicode string to an UTF8 string
@@ -363,7 +448,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   CCriticalSectionGuard cs_guard(&m_CS);
 
   UINT nextCommandId = idCmdFirst;
-  UINT nextInsertPosition = indexMenu;
 
   //declare menus
   m_Menus.clear();
@@ -372,98 +456,71 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
     CustomMenu menu;
     menu.title = "shellanything1";
     menu.command_id = nextCommandId;
-    menu.insert_pos = nextInsertPosition;
     m_Menus.push_back(menu);
   }
 
   nextCommandId++;
-  nextInsertPosition++;
 
   {
     CustomMenu menu;
     menu.title = "shell.anything2";
     menu.command_id = nextCommandId;
-    menu.insert_pos = nextInsertPosition;
     m_Menus.push_back(menu);
   }
 
   nextCommandId++;
-  nextInsertPosition++;
 
   {
     CustomMenu menu;
-    menu.title = "sa.3";
+    menu.title = "sa.parent";
     menu.command_id = nextCommandId;
-    menu.insert_pos = nextInsertPosition;
     m_Menus.push_back(menu);
+
   }
 
   nextCommandId++;
-  nextInsertPosition++;
+
+  CustomMenu * parent = NULL;
+  parent = &m_Menus[m_Menus.size()-1];
 
   {
     CustomMenu menu;
-    menu.title = "sa.4";
+    menu.title = "sa.child.1";
     menu.command_id = nextCommandId;
-    menu.insert_pos = nextInsertPosition;
-    m_Menus.push_back(menu);
+    parent->children.push_back(menu);
   }
 
   nextCommandId++;
-  nextInsertPosition++;
 
   {
     CustomMenu menu;
-    menu.title = "sa.5";
+    menu.title = "sa.child.2";
     menu.command_id = nextCommandId;
-    menu.insert_pos = nextInsertPosition;
+    parent->children.push_back(menu);
+  }
+
+  nextCommandId++;
+
+  {
+    CustomMenu menu;
+    menu.title = "sa.child.3";
+    menu.command_id = nextCommandId;
+    parent->children.push_back(menu);
+  }
+
+  nextCommandId++;
+
+  {
+    CustomMenu menu;
+    menu.title = "sa.last";
+    menu.command_id = nextCommandId;
     m_Menus.push_back(menu);
   }
 
   nextCommandId++;
-  nextInsertPosition++;
 
-  //convert CustomMenu to HMENU
-  for(size_t i=0; i<m_Menus.size(); i++)
-  {
-    CustomMenu & menu = m_Menus[i];
-
-    MENUITEMINFOA menuinfo = {0};
-    menuinfo.cbSize = sizeof(MENUITEMINFOA);
-    menuinfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
-    menuinfo.fType = MFT_STRING;
-    menuinfo.fState = MFS_ENABLED;
-    menuinfo.wID = menu.command_id;
-    menuinfo.dwTypeData = (char*)menu.title.c_str();
-    menuinfo.cch = (UINT)menu.title.size();
-
-    //add an icon
-    {
-      HICON hIconLarge = NULL;
-      HICON hIconSmall = NULL;
-      //
-      UINT numIconLoaded = ExtractIconEx( "c:\\Windows\\system32\\SHELL32.dll", 0+(int)i, &hIconLarge, &hIconSmall, 1 );
-      if (numIconLoaded >= 1)
-      {
-        //Find the best icon
-        HICON hIcon = GetBestIconForMenu(hIconLarge, hIconSmall);
-
-        //enable bitmap handling for the menu
-        menuinfo.fMask |= MIIM_BITMAP; 
-
-        HBITMAP hBitmap = CopyAsBitmap(hIcon);
-        DestroyIcon(hIconLarge);
-        DestroyIcon(hIconSmall);
-
-        //assign the HBITMAP to the HMENU
-        menuinfo.hbmpItem = hBitmap;
-      }
-    }
-
-    BOOL result = InsertMenuItemA(hMenu, menu.insert_pos, TRUE, &menuinfo);
-
-    LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << menu.insert_pos << ", id=" << menuinfo.wID << ", result=" << result;
-  }
+  //convert CustomMenu instances to HMENU intances
+  BuildMenuTree(hMenu, m_Menus);
 
   return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
 }
@@ -492,31 +549,23 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   if (!IS_INTRESOURCE(lpcmi->lpVerb))
     return E_INVALIDARG; //don't know what to do with lpcmi->lpVerb
     
-  UINT insertPosition = LOWORD(lpcmi->lpVerb);
+  UINT target_command_offset = LOWORD(lpcmi->lpVerb); //matches the command_id offset (command id of the selected menu - command id of the first menu)
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = NULL;
-  for(size_t i=0; i<m_Menus.size(); i++)
+  CustomMenu * menu = FindMenuByCommandOffset(m_Menus, m_Menus[0].command_id, target_command_offset);
+  if (menu == NULL)
   {
-    CustomMenu & menu_tmp = m_Menus[i];
-    if (menu_tmp.insert_pos == insertPosition)
-      menu = &menu_tmp;
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
+    return E_INVALIDARG;
   }
 
-  //if an existing menu match is found
-  if (menu != NULL)
-  {
-    //execute menu action
-    LOG(INFO) << __FUNCTION__ << "(), executing action '" << menu->title.c_str() << "'!";
+  //found a menu match, execute menu action
+  LOG(INFO) << __FUNCTION__ << "(), executing action '" << menu->title.c_str() << "'!";
 
-    return S_OK;
-  }
-
-  LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
-  return E_INVALIDARG;
+  return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
@@ -525,24 +574,16 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
 
-  UINT insertPosition = (UINT)idCmd;
+  UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu - command id of the first menu)
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = NULL;
-  for(size_t i=0; i<m_Menus.size(); i++)
-  {
-    CustomMenu & menu_tmp = m_Menus[i];
-    if (menu_tmp.insert_pos == insertPosition)
-      menu = &menu_tmp;
-  }
-
-  //fail if no match is found
+  CustomMenu * menu = FindMenuByCommandOffset(m_Menus, m_Menus[0].command_id, target_command_offset);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << insertPosition;
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset;
     return S_FALSE;
   }
 
@@ -618,7 +659,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
     if(pdson)
     {
-      DWORD   dwBytes = GlobalSize(stm.hGlobal);
+      DWORD dwBytes = (DWORD)GlobalSize(stm.hGlobal);
 
       DSOBJECTNAMES * m_pObjectNames = (DSOBJECTNAMES*)GlobalAlloc(GPTR, dwBytes);
       if(m_pObjectNames)
@@ -645,7 +686,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     pdso = (PDSDISPLAYSPECOPTIONS)GlobalLock(stm.hGlobal);
     if(pdso)
     {
-      DWORD   dwBytes = GlobalSize(stm.hGlobal);
+      DWORD dwBytes = (DWORD)GlobalSize(stm.hGlobal);
 
       PDSDISPLAYSPECOPTIONS m_pDispSpecOpts = (PDSDISPLAYSPECOPTIONS)GlobalAlloc(GPTR, dwBytes);
       if(m_pDispSpecOpts)

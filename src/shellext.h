@@ -80,15 +80,16 @@ public:
 // Prototype de notre interface IContextMenu:
 class CContextMenu : public IContextMenu, IShellExtInit
 {
-protected:
+public:
   typedef std::vector<std::string> StringVector;
   struct CustomMenu
   {
     std::string title;
     UINT command_id;
-    UINT insert_pos;
+    std::vector<CustomMenu> children;
   };
   typedef std::vector<CustomMenu> CustomMenuVector;
+protected:
   ULONG             m_cRef;
   CCriticalSection  m_CS; //protects class members
   LPDATAOBJECT      m_pDataObj;
