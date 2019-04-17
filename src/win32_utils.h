@@ -26,6 +26,7 @@
 #define WIN32_UTILS_H
 
 #include <Windows.h>
+#include <string>
 
 namespace win32_utils
 {
@@ -37,6 +38,8 @@ namespace win32_utils
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
   HBITMAP CopyAsBitmap(HICON hIcon);
   void CreateBMPFile(const char * path, HBITMAP hBitmap);
+  BOOL IsFullyTransparent(HBITMAP hBitmap);
+  BOOL IsFullyTransparent(const std::string & buffer);
 } //namespace win32_utils
 
 #endif //WIN32_UTILS_H

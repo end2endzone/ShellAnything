@@ -40,7 +40,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestWin32Utils, testIconToBitmapConversion)
   {
-    for(int i=0; i<50; i++)
+    for(int i=0; i<305; i++)
     {
       HICON hIconLarge = NULL;
       HICON hIconSmall = NULL;
@@ -54,7 +54,7 @@ namespace shellanything { namespace test
       HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
       //Remove the invisible background and replace by red color
-      COLORREF background_color = RGB(255,0,0);
+      COLORREF background_color = RGB(255,0,255); //pink
       win32_utils::FillTransparentPixels(hBitmap, background_color);
 
       DestroyIcon(hIconLarge);

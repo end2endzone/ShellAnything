@@ -6,6 +6,9 @@
 
 namespace win32_utils
 {
+  static const size_t BITS_PER_PIXEL = 32;
+  static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
+
   SIZE GetIconSize(HICON hIcon)
   {
     SIZE size = {0};
@@ -17,6 +20,9 @@ namespace win32_utils
     BITMAP bmpMask={0};
     GetObject(IconInfo.hbmMask, sizeof(BITMAP), &bmpMask);
    
+    BITMAP bmpColor={0};
+    GetObject(IconInfo.hbmColor, sizeof(BITMAP), &bmpColor);
+
     size.cx = bmpMask.bmWidth;
     size.cy = bmpMask.bmHeight;
    
@@ -92,9 +98,6 @@ namespace win32_utils
  
     const RGBQUAD BACKGROUND_COLOR = toRGBQUAD(background_color);
  
-    static const size_t BITS_PER_PIXEL = 32;
-    static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
- 
     SIZE bitmap_size = GetBitmapSize(hBitmap);
     const LONG num_pixels = bitmap_size.cx * bitmap_size.cy;
     const LONG image_size = num_pixels * BYTES_PER_PIXEL;
@@ -156,18 +159,26 @@ namespace win32_utils
     //See FillTransparentPixels() for converting the bitmap to a fully opaque image.
     //
  
-    static const size_t BITS_PER_PIXEL = 32;
-    static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
     const size_t num_pixels = bitmap_width * bitmap_height;
     const size_t image_size = num_pixels * BYTES_PER_PIXEL;
  
-  #if 0
+    //Create a buffer to reset everything
+    std::string blank_pixels;
+    blank_pixels.assign((size_t)image_size, 0);
+    if (blank_pixels.size() != image_size)
+      return NULL;
+
     //Create a buffer to hold the color pixels for debugging the bitmap's content
     std::string color_pixels;
     color_pixels.assign((size_t)image_size, 0);
     if (color_pixels.size() != image_size)
       return NULL;
-  #endif
+
+    //Create a buffer to hold the mask pixels for debugging the bitmap's content
+    std::string mask_pixels;
+    mask_pixels.assign((size_t)image_size, 0);
+    if (mask_pixels.size() != image_size)
+      return NULL;
  
     HWND hWndDesktop = GetDesktopWindow();
     HDC hdcDesktop = GetDC(hWndDesktop);
@@ -184,26 +195,52 @@ namespace win32_utils
     dumpString("c:\\temp\\destination_bitmap.data", color_pixels);
   #endif
  
+    //Extract the mask first in case something goes wrong with DI_NORMAL
+    DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_MASK);
+    LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)mask_pixels.size(), (void*)mask_pixels.data());
+
+    //Reset the hDcMem to no-color, no-alpha
+    LONG numPixelsWrite = SetBitmapBits(hBitmap, (LONG)blank_pixels.size(), (void*)blank_pixels.data());
+
     //Draw the icon, blending with the fully transparent destination image.
     //The result is a HBITMAP with an 8-bit alpha channel that matches the icon's 8-bit alpha channel.
     DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_NORMAL);
+
+    //Verify if the DrawIconEx() failed to copy alpha channel properly
+    numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
+    bool isFullyTransparent = (IsFullyTransparent(color_pixels) == TRUE);
+    if (isFullyTransparent)
+    {
+      //yeah, something went wrong with DI_NORMAL.
+      //Try to fix the alpha channel as best as we can.
+      static const RGBQUAD WHITE_PIXEL = {255,255,255,255};
+      RGBQUAD * colorPixel = (RGBQUAD *)color_pixels.data();
+      RGBQUAD * maskPixel =  (RGBQUAD *)mask_pixels.data();
+      for(size_t i=0; i<num_pixels; i++)
+      {
+        colorPixel->rgbReserved = 255; //make pixel fully opaque by default
  
+        //each white pixels in the mask bits needs to be be fully transparent
+        if (maskPixel->rgbRed       == WHITE_PIXEL.rgbRed   &&
+            maskPixel->rgbGreen     == WHITE_PIXEL.rgbGreen &&
+            maskPixel->rgbBlue      == WHITE_PIXEL.rgbBlue )
+        {
+          colorPixel->rgbReserved = 0; //in case HMENU starts supporting transparency
+        }
+        colorPixel++;
+        maskPixel++;
+      }
+      SetBitmapBits(hBitmap, (DWORD)color_pixels.size(), (void*)color_pixels.data());
+    }
+
   #if 0
     //Output the bitmap pixels to a file in the "DATA image format" for debugging.
     numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
     assert(numPixelsRead == image_size);
 
     //for GIMP, if all pixels are invisible, the color information is lost
-    bool isFullyTransparent = true;
-    for(size_t i=0; i<num_pixels && isFullyTransparent == true; i++)
-    {
-      RGBQUAD * first_pixels = (RGBQUAD*)color_pixels.data();
-      RGBQUAD & pixel = first_pixels[i];
-      if (pixel.rgbReserved > 0)
-        isFullyTransparent = false;
-    }
-
     //if fully transparent, make it opaque
+    bool isFullyTransparent = IsFullyTransparent(hBitmap);
     if (isFullyTransparent)
     {
       for(size_t i=0; i<num_pixels && isFullyTransparent == true; i++)
@@ -369,6 +406,41 @@ namespace win32_utils
 
     // Free memory.  
     GlobalFree((HGLOBAL)lpBits);
+  }
+
+  BOOL IsFullyTransparent(HBITMAP hBitmap)
+  {
+    SIZE bitmap_size = GetBitmapSize(hBitmap);
+    LONG num_pixels = bitmap_size.cx * bitmap_size.cy;
+    LONG image_size = num_pixels * BYTES_PER_PIXEL;
+
+    //Create a buffer to hold the color pixels for debugging the bitmap's content
+    std::string color_pixels;
+    color_pixels.assign((size_t)image_size, 0);
+    if (color_pixels.size() != image_size)
+      return FALSE;
+
+    UINT numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
+
+    BOOL transparent = IsFullyTransparent(color_pixels);
+    return transparent;
+  }
+
+  BOOL IsFullyTransparent(const std::string & buffer)
+  {
+    size_t image_size = buffer.size();
+    size_t num_pixels = image_size / BYTES_PER_PIXEL;
+
+    BOOL isFullyTransparent = TRUE;
+    for(size_t i=0; i<num_pixels && isFullyTransparent == TRUE; i++)
+    {
+      RGBQUAD * first_pixels = (RGBQUAD*)buffer.data();
+      RGBQUAD & pixel = first_pixels[i];
+      if (pixel.rgbReserved > 0)
+        isFullyTransparent = FALSE;
+    }
+
+    return isFullyTransparent;
   }
 
 } //namespace win32_utils
