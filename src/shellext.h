@@ -93,7 +93,7 @@ protected:
   ULONG             m_cRef;
   CCriticalSection  m_CS; //protects class members
   LPDATAOBJECT      m_pDataObj;
-  StringVector      m_SelectedMenus;
+  UINT              m_FirstCommandId;
   CustomMenuVector  m_Menus;
   bool              m_IsBackGround;
 

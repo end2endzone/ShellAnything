@@ -19,6 +19,8 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/process.h"
 
+#include <assert.h>
+
 //Declarations
 UINT      g_cRefDll = 0;   // Reference counter of this DLL
 HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
@@ -62,7 +64,7 @@ SIZE GetIconSize(HICON hIcon)
 
   ICONINFO IconInfo = {0};
   if(!GetIconInfo(hIcon, &IconInfo))
-    return size;
+    return size; //failed getting the icon's size
    
   BITMAP bmpMask={0};
   GetObject(IconInfo.hbmMask, sizeof(BITMAP), &bmpMask);
@@ -210,18 +212,17 @@ HBITMAP CopyAsBitmap(HICON hIcon)
   return CopyAsBitmap(hIcon, icon_width, icon_height);
 }
 
-CContextMenu::CustomMenu * FindMenuByCommandOffset(CContextMenu::CustomMenuVector & menus, int first_command_id, int target_command_offset)
+CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, int target_command_id)
 {
   for(size_t i=0; i<menus.size(); i++)
   {
     CContextMenu::CustomMenu * menu = &menus[i];
-    int current_command_id_offset = menu->command_id - first_command_id;
-    if (current_command_id_offset == target_command_offset)
+    if (target_command_id == menu->command_id)
       return menu;
 
     for(size_t j=0; j<menu->children.size(); j++)
     {
-      CContextMenu::CustomMenu * match = FindMenuByCommandOffset(menu->children, first_command_id, target_command_offset);
+      CContextMenu::CustomMenu * match = FindMenuByCommandId(menu->children, target_command_id);
       if (match)
         return match;
     }
@@ -402,6 +403,7 @@ CContextMenu::CContextMenu()
 
   m_cRef = 0L;
   m_pDataObj = NULL;
+  m_FirstCommandId=0;
 
   // Increment the dll's reference counter.
   InterlockedIncrement(&g_cRefDll);
@@ -479,6 +481,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   CCriticalSectionGuard cs_guard(&m_CS);
 
   UINT nextCommandId = idCmdFirst;
+  m_FirstCommandId = idCmdFirst;
 
   //declare menus
   m_Menus.clear();
@@ -581,12 +584,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
     return E_INVALIDARG; //don't know what to do with lpcmi->lpVerb
     
   UINT target_command_offset = LOWORD(lpcmi->lpVerb); //matches the command_id offset (command id of the selected menu - command id of the first menu)
+  UINT target_command_id = m_FirstCommandId + target_command_offset;
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = FindMenuByCommandOffset(m_Menus, m_Menus[0].command_id, target_command_offset);
+  CustomMenu * menu = FindMenuByCommandId(m_Menus, target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
@@ -606,12 +610,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
 
   UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu - command id of the first menu)
+  UINT target_command_id = m_FirstCommandId + target_command_offset;
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = FindMenuByCommandOffset(m_Menus, m_Menus[0].command_id, target_command_offset);
+  CustomMenu * menu = FindMenuByCommandId(m_Menus, target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset;
