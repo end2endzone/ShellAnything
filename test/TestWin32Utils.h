@@ -22,21 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef WIN32_UTILS_H
-#define WIN32_UTILS_H
+#ifndef TEST_WIN32_UTILS_H
+#define TEST_WIN32_UTILS_H
 
-#include <Windows.h>
+#include <gtest/gtest.h>
 
-namespace win32_utils
+namespace shellanything { namespace test
 {
-  SIZE GetIconSize(HICON hIcon);
-  HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
-  RGBQUAD toRGBQUAD(const DWORD & iColor);
-  SIZE GetBitmapSize(HBITMAP hBitmap);
-  BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
-  HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
-  HBITMAP CopyAsBitmap(HICON hIcon);
-  void CreateBMPFile(const char * path, HBITMAP hBitmap);
-} //namespace win32_utils
+  class TestWin32Utils : public ::testing::Test
+  {
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
+  };
 
-#endif //WIN32_UTILS_H
+} //namespace test
+} //namespace shellanything
+
+#endif //TEST_WIN32_UTILS_H

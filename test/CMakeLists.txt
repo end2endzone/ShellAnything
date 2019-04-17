@@ -16,6 +16,8 @@ set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/win32_utils.h
+  ${CMAKE_SOURCE_DIR}/src/win32_utils.cpp
 )
 
 add_executable(shellanything_unittest
@@ -45,6 +47,8 @@ add_executable(shellanything_unittest
   TestShellExtension.h
   TestValidator.cpp
   TestValidator.h
+  TestWin32Utils.cpp
+  TestWin32Utils.h
 )
 
 # Unit test projects requires to link with pthread if also linking with gtest
