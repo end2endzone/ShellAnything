@@ -135,6 +135,16 @@ namespace win32_utils
     return TRUE;
   }
  
+  void dumpString(const std::string file_path, const std::string & buffer)
+  {
+    FILE * f = fopen(file_path.c_str(), "wb");
+    if (!f)
+      return;
+
+    fwrite(buffer.data(), 1, buffer.size(), f);
+    fclose(f);
+  }
+
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
   {
     //According to https://devblogs.microsoft.com/oldnewthing/20101021-00/?p=12483, using DrawIconEx()
@@ -143,7 +153,7 @@ namespace win32_utils
     //The result is a HBITMAP with an 8-bit alpha channel that matches the icon's 8-bit alpha channel.
     //Note: Using the bitmap in other API which does not support transparency may result in alpha related artifacts.
     //Note: Saving the bitmap to a *.bmp file does not support transparency, may also result in alpha related artifacts. Usually, the transparent pixels are displayed as WHITE opaque pixels.
-    //See RemoveAlphaChannel() for converting the bitmap to a fully opaque image
+    //See FillTransparentPixels() for converting the bitmap to a fully opaque image.
     //
  
     static const size_t BITS_PER_PIXEL = 32;
@@ -182,6 +192,28 @@ namespace win32_utils
     //Output the bitmap pixels to a file in the "DATA image format" for debugging.
     numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
     assert(numPixelsRead == image_size);
+
+    //for GIMP, if all pixels are invisible, the color information is lost
+    bool isFullyTransparent = true;
+    for(size_t i=0; i<num_pixels && isFullyTransparent == true; i++)
+    {
+      RGBQUAD * first_pixels = (RGBQUAD*)color_pixels.data();
+      RGBQUAD & pixel = first_pixels[i];
+      if (pixel.rgbReserved > 0)
+        isFullyTransparent = false;
+    }
+
+    //if fully transparent, make it opaque
+    if (isFullyTransparent)
+    {
+      for(size_t i=0; i<num_pixels && isFullyTransparent == true; i++)
+      {
+        RGBQUAD * first_pixels = (RGBQUAD*)color_pixels.data();
+        RGBQUAD & pixel = first_pixels[i];
+        pixel.rgbReserved = 0xFF;
+      }
+    }
+
     dumpString("c:\\temp\\blended_bitmap.data", color_pixels);
   #endif
  
