@@ -110,73 +110,104 @@ RGBQUAD toRGBQUAD(const DWORD & iColor)
   return output;
 }
 
-HBITMAP CopyAsBitmap(HICON hIcon)
+HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
 {
-  //Get properties related to Windows Menu
-	const int icon_width = GetSystemMetrics(SM_CXSMICON);
-	const int icon_height = GetSystemMetrics(SM_CYSMICON);
-  const RGBQUAD menu_background_color = toRGBQUAD( GetSysColor(COLOR_MENU) );
-
-  static const int BITS_PER_PIXEL = 32;
-  size_t image_size = icon_width * icon_height * BITS_PER_PIXEL;
-
+  const RGBQUAD MENU_BACKGROUND_COLOR = toRGBQUAD( GetSysColor(COLOR_MENU) );
+ 
+  static const size_t BITS_PER_PIXEL = 32;
+  static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
+  const size_t num_pixels = bitmap_width * bitmap_height;
+  const size_t image_size = num_pixels * BYTES_PER_PIXEL;
+ 
   //Create a buffer to hold the mask pixels
   std::string mask_pixels;
   mask_pixels.assign((size_t)image_size, 0);
   if (mask_pixels.size() != image_size)
     return NULL;
-
+ 
   //Create a buffer to hold the color pixels
   std::string color_pixels;
   color_pixels.assign((size_t)image_size, 0);
   if (color_pixels.size() != image_size)
     return NULL;
-
-  HWND hWndDesktop = GetDesktopWindow(); 
-  HDC hdcDesktop = GetDC(hWndDesktop); 
-  HDC hDcMem = CreateCompatibleDC(hdcDesktop); 
-
-  // Create a 32bbp bitmap and select it. 
-  HBITMAP hBitmap = CreateBitmap(icon_width, icon_height, 1, BITS_PER_PIXEL, NULL);
+ 
+  HWND hWndDesktop = GetDesktopWindow();
+  HDC hdcDesktop = GetDC(hWndDesktop);
+  HDC hDcMem = CreateCompatibleDC(hdcDesktop);
+ 
+  // Create a 32bbp bitmap and select it.
+  HBITMAP hBitmap = CreateBitmap(bitmap_width, bitmap_height, 1, BITS_PER_PIXEL, NULL);
   HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
-
+ 
   //DrawIconEx does not support transparency. To fix that, we first render the mask in the bitmap
   //and we "remember" the transparent pixels (white pixels needs to be transparent).
-  DrawIconEx(hDcMem, 0, 0, hIcon, icon_width, icon_height, 0, NULL, DI_MASK);
-  GetBitmapBits(hBitmap, (LONG)mask_pixels.size(), (void*)mask_pixels.c_str());
-    
+  //Retrieve the bitmap's pixels into mask_pixels for future use
+  DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_MASK);
+  LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)mask_pixels.size(), (void*)mask_pixels.data());
+  assert(numPixelsRead == image_size);
+ 
+#if 0
+  //Output the mask bitmap to a file in the "DATA image format" for debugging.
+  //Image in "DATA image format" needs to be opaque (alpha=255) to be properly displayed in GIMP.
+  //The mask of the icon is drawn into the rgb layers of the bitmap.
+  for(size_t i=0; i<num_pixels; i++)
+  {
+    RGBQUAD * first_pixel = (RGBQUAD *)mask_pixels.data();
+    RGBQUAD & pixel = first_pixel[i];
+    pixel.rgbReserved = 0xFF;
+  }
+  dumpString("c:\\temp\\mask_pixels.data", mask_pixels);
+#endif
+ 
   //Then we draw the "color" part of the icon on the bitmap
-  DrawIconEx(hDcMem, 0, 0, hIcon, icon_width, icon_height, 0, NULL, DI_IMAGE);
-  GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.c_str());
-  
+  //Retrieve the bitmap's pixels into color_pixels for future use
+  DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_IMAGE);
+  numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
+  assert(numPixelsRead == image_size);
+ 
+#if 0
+  //Output the color bitmap to a file in the "DATA image format" for debugging.
+  dumpString("c:\\temp\\color_pixels.data", color_pixels);
+#endif
+ 
   //Finally, we set the alpha channel in the bitmap
+  //Replace fully transparent pixels (white pixels in the mask) by the HMENU background color
   static const RGBQUAD white = {255,255,255,255};
-  RGBQUAD * colorPixel = (RGBQUAD *)color_pixels.c_str();
-  RGBQUAD * maskPixel =  (RGBQUAD *)mask_pixels.c_str();
-  for(size_t i=0; i<image_size; i=i+(BITS_PER_PIXEL/8))
+  RGBQUAD * colorPixel = (RGBQUAD *)color_pixels.data();
+  RGBQUAD * maskPixel =  (RGBQUAD *)mask_pixels.data();
+  for(size_t i=0; i<num_pixels; i++)
   {
     colorPixel->rgbReserved = 255;
-
+ 
     //each white pixels in the mask bits needs to be replaced by the background color
     if (maskPixel->rgbRed       == white.rgbRed   &&
         maskPixel->rgbGreen     == white.rgbGreen &&
         maskPixel->rgbBlue      == white.rgbBlue )
     {
-      (*colorPixel) = menu_background_color;
+      (*colorPixel) = MENU_BACKGROUND_COLOR;
       colorPixel->rgbReserved = 0; //in case HMENU starts supporting transparency
     }
     colorPixel++;
     maskPixel++;
   }
-  
-  SetBitmapBits(hBitmap, (DWORD)color_pixels.size(), (void*)color_pixels.c_str());
-
-  // Clean up. 
+  SetBitmapBits(hBitmap, (DWORD)color_pixels.size(), (void*)color_pixels.data());
+ 
+  // Clean up.
   SelectObject(hDcMem, hbmOld);
   DeleteDC(hDcMem);
   ReleaseDC(hWndDesktop, hdcDesktop);
-
+ 
   return hBitmap;
+}
+ 
+HBITMAP CopyAsBitmap(HICON hIcon)
+{
+  //Get properties related to Windows Menu
+  SIZE icon_size = GetIconSize(hIcon);
+  const int icon_width  = icon_size.cx;
+  const int icon_height = icon_size.cy;
+ 
+  return CopyAsBitmap(hIcon, icon_width, icon_height);
 }
 
 CContextMenu::CustomMenu * FindMenuByCommandOffset(CContextMenu::CustomMenuVector & menus, int first_command_id, int target_command_offset)
