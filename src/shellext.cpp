@@ -112,26 +112,104 @@ RGBQUAD toRGBQUAD(const DWORD & iColor)
   return output;
 }
 
+template <typename T> inline static T interpolate_color( const T& a, const T& b, const double factor /* from 0.0 to 1.0 */)
+{
+  if (factor <= 0.0)
+    return a;
+  else if (factor >= 1.0)
+    return b;
+  else
+    return ( a + (T)((b-a)*factor) );
+}
+ 
+SIZE GetBitmapSize(HBITMAP hBitmap)
+{
+  SIZE size = {0};
+ 
+  BITMAP b = {0};
+  GetObject(hBitmap, sizeof(BITMAP), &b);
+ 
+  size.cx = b.bmWidth;
+  size.cy = b.bmHeight;
+ 
+  return size;
+}
+ 
+bool FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color)
+{
+  //FillTransparentPixels() blends every pixels of the given bitmap with the given background_color.
+  //The result is a fully opaque bitmap which makes it usable in most win32 API.
+  //It also allows the bitmap to be properly saved to *.bmp file format.
+  //Note: The alpha channel is still available but all values are 0xFF (fully opaque).
+ 
+  const RGBQUAD BACKGROUND_COLOR = toRGBQUAD(background_color);
+ 
+  static const size_t BITS_PER_PIXEL = 32;
+  static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
+ 
+  SIZE bitmap_size = GetBitmapSize(hBitmap);
+  const LONG num_pixels = bitmap_size.cx * bitmap_size.cy;
+  const LONG image_size = num_pixels * BYTES_PER_PIXEL;
+ 
+  //Create a buffer to hold the pixels for updating the bitmap's content
+  std::string pixel_buffer;
+  pixel_buffer.assign((size_t)image_size, 0);
+  if (pixel_buffer.size() != image_size)
+    return false;
+ 
+  //Make a temporary copy of the bitmap pixel buffer
+  LONG size_read = GetBitmapBits(hBitmap, (LONG)pixel_buffer.size(), (void*)pixel_buffer.data());
+  if (size_read != image_size)
+    return false;
+ 
+  //For each pixels with transparency...
+  static const BYTE full_opacity = 0xFF;
+  for(LONG i=0; i<num_pixels; i++)
+  {
+    RGBQUAD * first_pixel = (RGBQUAD *)pixel_buffer.data();
+    RGBQUAD & pixel = first_pixel[i];
+    if (pixel.rgbReserved != full_opacity)
+    {
+      //blend pixel with the given background color
+      double alpha_factor = (double)pixel.rgbReserved / 255.0;
+      pixel.rgbRed    = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbRed,    pixel.rgbRed,   alpha_factor);
+      pixel.rgbGreen  = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbGreen,  pixel.rgbGreen, alpha_factor);
+      pixel.rgbBlue   = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbBlue,   pixel.rgbBlue,  alpha_factor);
+      pixel.rgbReserved = full_opacity;
+    }
+  }
+ 
+  //Assign our temporary pixel buffer as the new bitmap pixel buffer
+  LONG size_write = SetBitmapBits(hBitmap, (DWORD)pixel_buffer.size(), (void*)pixel_buffer.data());
+  if (size_write != image_size)
+    return false;
+ 
+  return true;
+}
+ 
 HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
 {
-  const RGBQUAD MENU_BACKGROUND_COLOR = toRGBQUAD( GetSysColor(COLOR_MENU) );
+  //According to https://devblogs.microsoft.com/oldnewthing/20101021-00/?p=12483, using DrawIconEx()
+  //with diFlags=DI_NORMAL is supposed to blend the icon color and transparency with the content of the destination.
+  //This function uses a fully transparent bitmap as destination image.
+  //The result is a HBITMAP with an 8-bit alpha channel that matches the icon's 8-bit alpha channel.
+  //Note: Using the bitmap in other API which does not support transparency may result in alpha related artifacts.
+  //Note: Saving the bitmap to a *.bmp file does not support transparency, may also result in alpha related artifacts. Usually, the transparent pixels are displayed as WHITE opaque pixels.
+  //See RemoveAlphaChannel() for converting the bitmap to a fully opaque image
+  //
  
   static const size_t BITS_PER_PIXEL = 32;
   static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
   const size_t num_pixels = bitmap_width * bitmap_height;
   const size_t image_size = num_pixels * BYTES_PER_PIXEL;
  
-  //Create a buffer to hold the mask pixels
-  std::string mask_pixels;
-  mask_pixels.assign((size_t)image_size, 0);
-  if (mask_pixels.size() != image_size)
-    return NULL;
- 
-  //Create a buffer to hold the color pixels
+#if 0
+  //Create a buffer to hold the color pixels for debugging the bitmap's content
   std::string color_pixels;
   color_pixels.assign((size_t)image_size, 0);
   if (color_pixels.size() != image_size)
     return NULL;
+#endif
  
   HWND hWndDesktop = GetDesktopWindow();
   HDC hdcDesktop = GetDC(hWndDesktop);
@@ -141,58 +219,23 @@ HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_heigh
   HBITMAP hBitmap = CreateBitmap(bitmap_width, bitmap_height, 1, BITS_PER_PIXEL, NULL);
   HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
  
-  //DrawIconEx does not support transparency. To fix that, we first render the mask in the bitmap
-  //and we "remember" the transparent pixels (white pixels needs to be transparent).
-  //Retrieve the bitmap's pixels into mask_pixels for future use
-  DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_MASK);
-  LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)mask_pixels.size(), (void*)mask_pixels.data());
-  assert(numPixelsRead == image_size);
- 
 #if 0
-  //Output the mask bitmap to a file in the "DATA image format" for debugging.
-  //Image in "DATA image format" needs to be opaque (alpha=255) to be properly displayed in GIMP.
-  //The mask of the icon is drawn into the rgb layers of the bitmap.
-  for(size_t i=0; i<num_pixels; i++)
-  {
-    RGBQUAD * first_pixel = (RGBQUAD *)mask_pixels.data();
-    RGBQUAD & pixel = first_pixel[i];
-    pixel.rgbReserved = 0xFF;
-  }
-  dumpString("c:\\temp\\mask_pixels.data", mask_pixels);
+  // Make sure the destination bitmap is fully transparent by default
+  LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
+  assert(numPixelsRead == image_size);
+  dumpString("c:\\temp\\destination_bitmap.data", color_pixels);
 #endif
  
-  //Then we draw the "color" part of the icon on the bitmap
-  //Retrieve the bitmap's pixels into color_pixels for future use
-  DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_IMAGE);
+  //Draw the icon, blending with the fully transparent destination image.
+  //The result is a HBITMAP with an 8-bit alpha channel that matches the icon's 8-bit alpha channel.
+  DrawIconEx(hDcMem, 0, 0, hIcon, bitmap_width, bitmap_height, 0, NULL, DI_NORMAL);
+ 
+#if 0
+  //Output the bitmap pixels to a file in the "DATA image format" for debugging.
   numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
   assert(numPixelsRead == image_size);
- 
-#if 0
-  //Output the color bitmap to a file in the "DATA image format" for debugging.
-  dumpString("c:\\temp\\color_pixels.data", color_pixels);
+  dumpString("c:\\temp\\blended_bitmap.data", color_pixels);
 #endif
- 
-  //Finally, we set the alpha channel in the bitmap
-  //Replace fully transparent pixels (white pixels in the mask) by the HMENU background color
-  static const RGBQUAD white = {255,255,255,255};
-  RGBQUAD * colorPixel = (RGBQUAD *)color_pixels.data();
-  RGBQUAD * maskPixel =  (RGBQUAD *)mask_pixels.data();
-  for(size_t i=0; i<num_pixels; i++)
-  {
-    colorPixel->rgbReserved = 255;
- 
-    //each white pixels in the mask bits needs to be replaced by the background color
-    if (maskPixel->rgbRed       == white.rgbRed   &&
-        maskPixel->rgbGreen     == white.rgbGreen &&
-        maskPixel->rgbBlue      == white.rgbBlue )
-    {
-      (*colorPixel) = MENU_BACKGROUND_COLOR;
-      colorPixel->rgbReserved = 0; //in case HMENU starts supporting transparency
-    }
-    colorPixel++;
-    maskPixel++;
-  }
-  SetBitmapBits(hBitmap, (DWORD)color_pixels.size(), (void*)color_pixels.data());
  
   // Clean up.
   SelectObject(hDcMem, hbmOld);
@@ -205,13 +248,13 @@ HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_heigh
 HBITMAP CopyAsBitmap(HICON hIcon)
 {
   //Get properties related to Windows Menu
-  SIZE icon_size = GetIconSize(hIcon);
-  const int icon_width  = icon_size.cx;
-  const int icon_height = icon_size.cy;
+  SIZE menu_icon_size = GetIconSize(hIcon);
+  const int menu_icon_width  = menu_icon_size.cx;
+  const int menu_icon_height = menu_icon_size.cy;
  
-  return CopyAsBitmap(hIcon, icon_width, icon_height);
+  return CopyAsBitmap(hIcon, menu_icon_width, menu_icon_height);
 }
-
+ 
 CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, int target_command_id)
 {
   for(size_t i=0; i<menus.size(); i++)
@@ -258,7 +301,13 @@ void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos
       //enable bitmap handling for the menu
       menuinfo.fMask |= MIIM_BITMAP; 
 
+      //Convert the icon to a bitmap (with invisible background)
       HBITMAP hBitmap = CopyAsBitmap(hIcon);
+
+      //Remove the invisible background and replace by the default popup menu color
+      COLORREF menu_background_color = GetSysColor(COLOR_MENU);
+      FillTransparentPixels(hBitmap, menu_background_color);
+
       DestroyIcon(hIconLarge);
       DestroyIcon(hIconSmall);
 
