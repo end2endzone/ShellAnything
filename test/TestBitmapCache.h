@@ -22,47 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_BITMAPCACHE_H
-#define SA_BITMAPCACHE_H
+#ifndef TEST_SA_BITMAPVALIDATOR_H
+#define TEST_SA_BITMAPVALIDATOR_H
 
-#include <map>
-#include <string>
-#include <Windows.h>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-
-  class BitmapCache
+  class TestBitmapCache : public ::testing::Test
   {
   public:
-    BitmapCache();
-    virtual ~BitmapCache();
-   
-    static const HBITMAP INVALID_BITMAP_HANDLE;
-   
-    // Typedef
-    struct USAGE
-    {
-      HBITMAP hBitmap;
-      int count;
-    };
-   
-    // Typedef
-    typedef std::map<int          /*index*/,    USAGE> IndexMap;
-    typedef std::map<std::string  /*filename*/, IndexMap> FilenameMap;
-   
-    void clear();
-    void clear_and_destroy();
-    void reset_counters();
-    int destroy_old_handles();
-    void add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
-    HBITMAP find_handle(const std::string & iFilename, const int & iIndex);
-    int get_usage(const std::string & iFilename, const int & iIndex);
-   
-  private:
-    FilenameMap mFiles;
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_BITMAPCACHE_H
+#endif //TEST_SA_BITMAPVALIDATOR_H

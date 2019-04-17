@@ -12,6 +12,8 @@ set(CONFIGURATION_TEST_FILES ""
 
 # Include files from shellanything library which are not public
 set(SHELLANYTHING_PRIVATE_FILES ""
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
   ${CMAKE_SOURCE_DIR}/src/Platform.h
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
@@ -27,6 +29,8 @@ add_executable(shellanything_unittest
   ${CONFIGURATION_TEST_FILES}
   ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
+  TestBitmapCache.cpp
+  TestBitmapCache.h
   TestConfigManager.cpp
   TestConfigManager.h
   TestConfiguration.cpp

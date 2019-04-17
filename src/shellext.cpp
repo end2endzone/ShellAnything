@@ -95,7 +95,7 @@ void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos
     HICON hIconLarge = NULL;
     HICON hIconSmall = NULL;
     //
-    UINT numIconLoaded = ExtractIconEx( "c:\\Windows\\system32\\SHELL32.dll", debug_icon_offset, &hIconLarge, &hIconSmall, 1 );
+    UINT numIconLoaded = ExtractIconEx( "c:\\windows\\system32\\shell32.dll", debug_icon_offset, &hIconLarge, &hIconSmall, 1 );
     debug_icon_offset++;
     if (numIconLoaded >= 1)
     {

@@ -45,7 +45,7 @@ namespace shellanything { namespace test
       HICON hIconLarge = NULL;
       HICON hIconSmall = NULL;
 
-      UINT numIconLoaded = ExtractIconEx( "c:\\Windows\\system32\\SHELL32.dll", i, &hIconLarge, &hIconSmall, 1 );
+      UINT numIconLoaded = ExtractIconEx( "c:\\windows\\system32\\shell32.dll", i, &hIconLarge, &hIconSmall, 1 );
       ASSERT_GE( numIconLoaded, 1); //at least 1 icon loaded
       ASSERT_TRUE( hIconLarge != NULL );
 

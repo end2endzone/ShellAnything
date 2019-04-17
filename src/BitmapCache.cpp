@@ -85,8 +85,10 @@ namespace shellanything
     }
   }
    
-  void BitmapCache::destroy_old_elements()
+  int BitmapCache::destroy_old_handles()
   {
+    int num_destroyed = 0;
+
     struct DELETE_ELEMENT
     {
       std::string filename;
@@ -118,7 +120,7 @@ namespace shellanything
           //remember this element for deletion
           DELETE_ELEMENT del;
           del.filename = filename;
-         del.index = index;
+          del.index = index;
           deletions.push_back(del);
         }
       }
@@ -148,6 +150,7 @@ namespace shellanything
           continue; //should not happend
    
         //delete the record
+        num_destroyed++;
         indice_map.erase(wIndiceIterator);
         if (indice_map.size() == 0)
         {
@@ -161,9 +164,11 @@ namespace shellanything
         mFiles.erase(wFilesIterator);
       }
     }
+
+    return num_destroyed;
   }
    
-  void BitmapCache::addHandle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap)
+  void BitmapCache::add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap)
   {
     USAGE usage;
     usage.hBitmap = hBitmap;
@@ -172,7 +177,7 @@ namespace shellanything
     mFiles[iFilename][iIndex] = usage;
   }
    
-  HBITMAP BitmapCache::findHandle(const std::string & iFilename, const int & iIndex)
+  HBITMAP BitmapCache::find_handle(const std::string & iFilename, const int & iIndex)
   {
     //search within 1st map level
     FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);
@@ -194,6 +199,27 @@ namespace shellanything
     usage.count++;
    
     return usage.hBitmap;
+  }
+
+  int BitmapCache::get_usage(const std::string & iFilename, const int & iIndex)
+  {
+    //search within 1st map level
+    FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);
+    bool hasFoundFile = (wFilesIterator != mFiles.end());
+    if (!hasFoundFile)
+      return -1;
+   
+    IndexMap & indice_map = wFilesIterator->second;
+   
+    //search within 2nd map level
+    IndexMap::iterator wIndiceIterator = indice_map.find(iIndex);
+    bool hasFoundIndex = (wIndiceIterator != indice_map.end());
+    if (!hasFoundIndex)
+      return -1;
+   
+    USAGE & usage = wIndiceIterator->second;
+   
+    return usage.count;
   }
 
 } //namespace shellanything
