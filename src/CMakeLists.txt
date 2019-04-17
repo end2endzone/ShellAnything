@@ -51,6 +51,8 @@ add_library(shellext SHARED
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  BitmapCache.cpp
+  BitmapCache.h
   shellext.cpp
   shellext.h
   shellext.def
