@@ -28,6 +28,8 @@
 #include "version.h"
 #include "config.h"
 
+#include "BitmapCache.h"
+
 #include <vector>
 
 //Shell extension GUID
@@ -96,6 +98,7 @@ protected:
   UINT              m_FirstCommandId;
   CustomMenuVector  m_Menus;
   bool              m_IsBackGround;
+  shellanything::BitmapCache m_BitmapCache;
 
 public:
   CContextMenu();
@@ -113,6 +116,10 @@ public:
 
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
+
+private:
+  void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus);
+  void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset);
 };
 
 #endif //SA_SHELLEXTENSION_H

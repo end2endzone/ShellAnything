@@ -78,7 +78,7 @@ CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & 
   return NULL;
 }
 
-void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset)
+void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset)
 {
   MENUITEMINFOA menuinfo = {0};
 
@@ -92,28 +92,47 @@ void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos
 
   //add an icon
   {
-    HICON hIconLarge = NULL;
-    HICON hIconSmall = NULL;
-    //
-    UINT numIconLoaded = ExtractIconEx( "c:\\windows\\system32\\shell32.dll", debug_icon_offset, &hIconLarge, &hIconSmall, 1 );
-    debug_icon_offset++;
-    if (numIconLoaded >= 1)
-    {
-      //Find the best icon
-      HICON hIcon = win32_utils::GetBestIconForMenu(hIconLarge, hIconSmall);
+    const std::string icon_filename = "c:\\windows\\system32\\shell32.dll";
+    const int icon_index = debug_icon_offset;
 
+    //next menu shall use another icon
+    debug_icon_offset++;
+
+    //ask the cache for an existing icon
+    HBITMAP hBitmap = m_BitmapCache.find_handle(icon_filename, icon_index);
+
+    //if nothing in cache, create a new one
+    if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+    {
+      HICON hIconLarge = NULL;
+      HICON hIconSmall = NULL;
+      //
+      UINT numIconLoaded = ExtractIconEx( icon_filename.c_str(), icon_index, &hIconLarge, &hIconSmall, 1 );
+      if (numIconLoaded >= 1)
+      {
+        //Find the best icon
+        HICON hIcon = win32_utils::GetBestIconForMenu(hIconLarge, hIconSmall);
+
+        //Convert the icon to a bitmap (with invisible background)
+        hBitmap = win32_utils::CopyAsBitmap(hIcon);
+
+        //Remove the invisible background and replace by the default popup menu color
+        COLORREF menu_background_color = GetSysColor(COLOR_MENU);
+        win32_utils::FillTransparentPixels(hBitmap, menu_background_color);
+
+        DestroyIcon(hIconLarge);
+        DestroyIcon(hIconSmall);
+
+        //add the bitmap to the cache for future use
+        m_BitmapCache.add_handle( icon_filename.c_str(), icon_index, hBitmap );
+      }
+    }
+
+    //if a bitmap is created
+    if (hBitmap != shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+    {
       //enable bitmap handling for the menu
       menuinfo.fMask |= MIIM_BITMAP; 
-
-      //Convert the icon to a bitmap (with invisible background)
-      HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIcon);
-
-      //Remove the invisible background and replace by the default popup menu color
-      COLORREF menu_background_color = GetSysColor(COLOR_MENU);
-      win32_utils::FillTransparentPixels(hBitmap, menu_background_color);
-
-      DestroyIcon(hIconLarge);
-      DestroyIcon(hIconSmall);
 
       //assign the HBITMAP to the HMENU
       menuinfo.hbmpItem = hBitmap;
@@ -139,7 +158,7 @@ void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos
   LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << insert_pos << ", id=" << menuinfo.wID << ", result=" << result;
 }
 
-void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus)
+void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus)
 {
   int debug_icon_offset = 0;
   for(size_t i=0; i<menus.size(); i++)
