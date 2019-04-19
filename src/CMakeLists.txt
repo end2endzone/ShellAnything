@@ -58,8 +58,8 @@ add_library(shellext SHARED
   shellext.def
   win32_utils.cpp
   win32_utils.h
-  win32Registry.cpp
-  win32Registry.h
+  win32_registry.cpp
+  win32_registry.h
 )
 
 # Unit test projects requires to link with pthread if also linking with gtest

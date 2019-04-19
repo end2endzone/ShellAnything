@@ -12,7 +12,7 @@
 
 #include "Platform.h"
 #include "shellext.h"
-#include "win32Registry.h"
+#include "win32_registry.h"
 #include "win32_utils.h"
 
 #include "rapidassist/strings.h"

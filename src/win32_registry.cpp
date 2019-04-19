@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "win32Registry.h"
+#include "win32_registry.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
