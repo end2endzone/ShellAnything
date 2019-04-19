@@ -160,6 +160,17 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, U
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus)
 {
+  //handle destruction of old bitmap in the cache
+  m_BuildMenuTreeCount++;
+  if (m_BuildMenuTreeCount > 0 && m_BuildMenuTreeCount%10 == 0)
+  {
+    //every 10 calls, refresh the cache
+    m_BitmapCache.destroy_old_handles();
+ 
+    //reset counters
+    m_BitmapCache.reset_counters();
+  }
+
   int debug_icon_offset = 0;
   for(size_t i=0; i<menus.size(); i++)
   {
@@ -276,6 +287,8 @@ CContextMenu::CContextMenu()
   m_cRef = 0L;
   m_pDataObj = NULL;
   m_FirstCommandId = 0;
+  m_IsBackGround = false;
+  m_BuildMenuTreeCount = 0;
 
   // Increment the dll's reference counter.
   InterlockedIncrement(&g_cRefDll);
