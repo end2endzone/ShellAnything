@@ -59,7 +59,7 @@ std::string GuidToString(GUID guid) {
   return output;
 }
  
-CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, int target_command_id)
+CContextMenu::CustomMenu * CContextMenu::FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, UINT target_command_id)
 {
   for(size_t i=0; i<menus.size(); i++)
   {
@@ -275,7 +275,7 @@ CContextMenu::CContextMenu()
 
   m_cRef = 0L;
   m_pDataObj = NULL;
-  m_FirstCommandId=0;
+  m_FirstCommandId = 0;
 
   // Increment the dll's reference counter.
   InterlockedIncrement(&g_cRefDll);

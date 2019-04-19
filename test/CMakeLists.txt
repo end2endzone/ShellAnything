@@ -55,6 +55,10 @@ add_executable(shellanything_unittest
   TestWin32Utils.h
 )
 
+# Group external files as filster for Visual Studio
+source_group("Test Files"                     FILES ${CONFIGURATION_TEST_FILES})
+source_group("ShellAnything Library Files"    FILES ${SHELLANYTHING_PRIVATE_FILES})
+
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)
   set(PTHREAD_LIBRARIES -pthread)

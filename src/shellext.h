@@ -118,6 +118,7 @@ public:
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
 private:
+  CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, UINT target_command_id);
   void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus);
   void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset);
 };
