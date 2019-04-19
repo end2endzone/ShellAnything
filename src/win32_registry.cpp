@@ -33,7 +33,7 @@
 
 #include <assert.h>
 
-namespace win32Registry
+namespace win32_registry
 {
   REGISTRY_ICON NULL_ICON = {
     std::string(),
@@ -709,4 +709,233 @@ namespace win32Registry
     return NULL_ICON;
   }
 
-} //namespace win32Registry
+  std::string toString(const RGS_ENTRY & entry)
+  {
+    std::string output;
+
+    if (entry.isKey)
+      output.append("  KEY ");
+    else
+      output.append("VALUE ");
+
+    if (entry.isNoRemove)
+      output.append("NoRemove ");
+    else
+      output.append("         ");
+
+    if (entry.isForceRemove)
+      output.append("ForceRemove ");
+    else
+      output.append("            ");
+
+    static const int BUFFER_SIZE = 1024;
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "path='%s', value='%s'",
+        entry.path.c_str(),
+        entry.value.c_str() );
+    output.append(buffer);
+
+    return output;
+  }
+
+  bool parse_rgs_flag(std::string & line, const std::string & flag)
+  {
+    if (line.find(flag) != std::string::npos)
+    {
+      //flag found.
+      //cleanup
+      ra::strings::replace(line, flag, "");
+      
+      return true;
+    }
+
+    //flag not found
+    return false;
+  }
+
+  bool extract_name_value_pair(const std::string & line, std::string & name, std::string & value)
+  {
+    const std::string pattern = " = s ";
+    size_t pattern_pos = line.find(pattern);
+    if (pattern_pos != std::string::npos)
+    {
+      size_t name_length = pattern_pos;
+      size_t value_length = line.size() - pattern_pos + pattern.size();
+      name = line.substr(0, name_length);
+      value = line.substr(pattern_pos + pattern.size(), value_length);
+      return true;
+    }
+    return false;
+  }
+
+  const std::string & get_last_parent_key(const ra::strings::StringVector & keys)
+  {
+    static const std::string EMPTY_KEY;
+    if (keys.size() == 0)
+      return EMPTY_KEY;
+    
+    const std::string & last = keys[keys.size()-1];
+    return last;
+  }
+
+  bool isSubDirectory(const std::string & base_path, const std::string & test_path)
+  {
+    if (test_path.size() < base_path.size())
+      return false;
+    if (test_path.substr(0, base_path.size()) == base_path)
+      return true;
+    return false;
+  }
+
+  void rgs_validate_integrity(RGS_ENTRY_LIST & entries)
+  {
+    for(size_t i=0; i<entries.size(); i++)
+    {
+      RGS_ENTRY & entry = entries[i];
+      if (entry.isForceRemove)
+      {
+        //make sure all subdirectories are also set to ForceRemove
+        //for each other entries
+        const std::string & base_path = entry.path;
+        for(size_t j=i+1; j<entries.size(); j++)
+        {
+          RGS_ENTRY & sub_entry = entries[j];
+
+          const std::string & sub_entry_path = sub_entry.path;
+          if (isSubDirectory(base_path, sub_entry_path))
+          {
+            //this is a direct child
+            sub_entry.isForceRemove = true;
+          }
+        }
+      }
+    }
+  }
+
+  bool parseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries)
+  {
+    entries.clear();
+
+    ra::strings::StringVector parent_keys;
+    std::string previous_key_name;
+
+    //split rgs code in lines
+    ra::strings::StringVector lines = ra::strings::split(rgs, "\n");
+
+    //process each lines
+    for(size_t i=0; i<lines.size(); i++)
+    {
+      std::string line = lines[i];
+
+      //trim
+      line = ra::strings::trimLeft(line, '\t');
+
+      //extract flags
+      bool isNoRemove     = parse_rgs_flag(line, "NoRemove ");
+      bool isForceRemove  = parse_rgs_flag(line, "ForceRemove ");
+      bool isValue        = parse_rgs_flag(line, "val ");
+      bool isKey          = !isValue;
+
+      if (isValue)
+      {
+        std::string name;
+        std::string value;
+        if (!extract_name_value_pair(line, name, value))
+          return false; //failed parsing rgs code
+
+        //trim
+        value = ra::strings::trim(value, '\'');
+
+        std::string parent_key = get_last_parent_key(parent_keys);
+
+        //build a new entry
+        RGS_ENTRY entry;
+        entry.isKey = isKey;
+        entry.isNoRemove = isNoRemove;
+        entry.isForceRemove = isForceRemove;
+        entry.path = parent_key + "\\" + name;
+        entry.value = value;
+
+        entries.push_back(entry);
+      }
+
+      //process root key acronyms for win32_registry functions
+      else if (line == "HKCR")
+        previous_key_name = "HKEY_CLASSES_ROOT";
+      else if (line == "HKCU")
+        previous_key_name = "HKEY_CURRENT_USER";
+      else if (line == "HKLM")
+        previous_key_name = "HKEY_LOCAL_MACHINE";
+      else if (line == "HKCC")
+        previous_key_name = "HKEY_CURRENT_CONFIG";
+      else if (line == "{")
+      {
+        //the previous key is a parent key
+        parent_keys.push_back(previous_key_name);
+      }
+      else if (line == "}")
+      {
+        //go up 1 parent key
+        if (parent_keys.size() > 0)
+          parent_keys.pop_back();
+      }
+      else if (line.empty())
+      {
+        //skip
+      }
+      else if (isKey)
+      {
+        //is there a default value for the key?
+        std::string name;
+        std::string default_value;
+        if (!extract_name_value_pair(line, name, default_value))
+        {
+          //there is not a default value
+          name = line; //the key is the line itself
+        }
+
+        //trim
+        name          = ra::strings::trim(name,           '\'');
+        default_value = ra::strings::trim(default_value,  '\'');
+
+        //build key full path
+        std::string parent_key = get_last_parent_key(parent_keys);
+        std::string key_path;
+        if (!parent_key.empty())
+          key_path.append(parent_key + "\\");
+        key_path.append(name);
+
+        //process with search and replace
+        {
+          const std::string module_pattern = "%MODULE%";
+          if (default_value.find(module_pattern) != std::string::npos)
+          {
+            ra::strings::replace(default_value, module_pattern, module_path);
+          }
+        }
+
+        //remember the key path if we run into a { character on next line
+        previous_key_name = key_path;
+
+        //build a new entry
+        RGS_ENTRY entry;
+        entry.isKey = isKey;
+        entry.isNoRemove = isNoRemove;
+        entry.isForceRemove = isForceRemove;
+        entry.path = key_path;
+        entry.value = default_value;
+
+        entries.push_back(entry);
+      }
+      else
+      {
+        //unknown data
+        return false;
+      }
+    }
+
+    rgs_validate_integrity(entries);
+    return true;
+  }
+
+} //namespace win32_registry

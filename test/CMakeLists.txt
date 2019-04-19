@@ -18,6 +18,8 @@ set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/win32_registry.h
+  ${CMAKE_SOURCE_DIR}/src/win32_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/win32_utils.h
   ${CMAKE_SOURCE_DIR}/src/win32_utils.cpp
 )
@@ -43,14 +45,16 @@ add_executable(shellanything_unittest
   TestMenu.h
   TestNode.cpp
   TestNode.h
-  TestPlatform.cpp
-  TestPlatform.h
+  TestWin32Registry.cpp
+  TestWin32Registry.h
   TestPropertyManager.cpp
   TestPropertyManager.h
   TestShellExtension.cpp
   TestShellExtension.h
   TestValidator.cpp
   TestValidator.h
+  TestWin32Registry.cpp
+  TestWin32Registry.h
   TestWin32Utils.cpp
   TestWin32Utils.h
 )

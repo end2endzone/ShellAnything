@@ -24,8 +24,10 @@
 
 #include "rapidassist/strings.h"
 #include <stdint.h>
+#include <vector>
+#include <string>
 
-namespace win32Registry
+namespace win32_registry
 {
   enum REGISTRY_TYPE
   {
@@ -41,8 +43,22 @@ namespace win32Registry
     int index;
   };
   
+  struct RGS_ENTRY
+  {
+    bool isKey; //true is the entry is a key, false if the entry is a value
+    bool isNoRemove;
+    bool isForceRemove;
+    std::string path;
+    std::string value;
+  };
+
+  typedef std::vector<RGS_ENTRY> RGS_ENTRY_LIST;
+
   typedef std::string MemoryBuffer;
   
+  std::string toString(const RGS_ENTRY & entry);
+  bool parseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries);
+
   bool getValue( const char * iKeyPath,
                  const char * iValueName,
                  REGISTRY_TYPE & oType,
