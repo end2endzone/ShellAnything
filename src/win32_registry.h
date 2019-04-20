@@ -58,6 +58,8 @@ namespace win32_registry
   
   std::string toString(const RGS_ENTRY & entry);
   bool parseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries);
+  bool createRegistry(const RGS_ENTRY_LIST & entries);
+  bool deleteRegistry(const RGS_ENTRY_LIST & entries);
 
   bool getValue( const char * iKeyPath,
                  const char * iValueName,

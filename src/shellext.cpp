@@ -14,6 +14,7 @@
 #include "shellext.h"
 #include "win32_registry.h"
 #include "win32_utils.h"
+#include "shellext_registry_script.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/environment.h"
@@ -817,64 +818,20 @@ STDAPI DllCanUnloadNow(void)
 
 STDAPI DllRegisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
-  const char * guid_str = guid_str_tmp.c_str();
+  const std::string module_path = GetCurrentModulePath();
 
-  // Add the CLSID of this DLL to the registry
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
+  //get the registry script for the shell extension
+  const std::string registry_script = bin2cpp::getRegistryScriptFile().getBuffer();
 
-  // Define the path and parameters of our DLL:
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", GetCurrentModulePath().c_str() ))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
-      return E_ACCESSDENIED;
-  }
+  //Parse the RGS file
+  win32_registry::RGS_ENTRY_LIST entries;
+  bool result = win32_registry::parseRgsRegistry(registry_script, module_path.c_str(), entries);
+  if (!result)
+    return E_INVALIDARG;
 
-  // Register the shell extension for all the file types
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for directories
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for the desktop or the file explorer's background
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension to the system's approved Shell Extensions
-  {
-    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), guid_str, ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
+  //create the registry
+  if (!win32_registry::createRegistry(entries))
+    return E_ACCESSDENIED;
 
   // Notify the Shell to pick the changes:
   // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
@@ -888,48 +845,23 @@ STDAPI DllRegisterServer(void)
 
 STDAPI DllUnregisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
-  const char * guid_str = guid_str_tmp.c_str();
+  //const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
+  //const char * guid_str = guid_str_tmp.c_str();
 
-  // Unregister the shell extension from the system's approved Shell Extensions
-  {
-    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!win32_registry::deleteValue(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
+  const std::string module_path = GetCurrentModulePath();
 
-  // Unregister the shell extension for the desktop or the file explorer's background
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::deleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
+  //get the registry script for the shell extension
+  const std::string registry_script = bin2cpp::getRegistryScriptFile().getBuffer();
 
-  // Unregister the shell extension for directories
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::deleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
+  //Parse the RGS file
+  win32_registry::RGS_ENTRY_LIST entries;
+  bool result = win32_registry::parseRgsRegistry(registry_script, module_path.c_str(), entries);
+  if (!result)
+    return E_INVALIDARG;
 
-  // Unregister the shell extension for all the file types
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::deleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Remove the CLSID of this DLL from the registry
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
-    if (!win32_registry::deleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!win32_registry::deleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
+  //delete the registry
+  if (!win32_registry::deleteRegistry(entries))
+    return E_ACCESSDENIED;
 
   // Notify the Shell to pick the changes:
   // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects

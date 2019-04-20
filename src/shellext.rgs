@@ -1,0 +1,107 @@
+HKCR
+{
+	ForceRemove ShellExtension.ShellAnything.1 = s 'ShellAnything Class'
+	{
+		CLSID = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+	}
+	ForceRemove ShellExtension.ShellAnything = s 'ShellAnything Class'
+	{
+		CLSID = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+		CurVer = s 'ShellExtension.ShellAnything.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {B0D35103-86A1-471C-A653-E130E3439A3B} = s 'ShellAnything Class'
+		{
+			ProgID = s 'ShellExtension.ShellAnything.1'
+			VersionIndependentProgID = s 'ShellExtension.ShellAnything'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{C0F6D726-56D2-4FF2-A0B7-A50BB10F6EC4}'
+		}
+	}
+	NoRemove *
+	{
+		NoRemove ShellEx
+		{
+			NoRemove ContextMenuHandlers
+			{
+				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+			}
+		}
+	}
+
+	NoRemove Directory
+	{
+		NoRemove ShellEx
+		{
+			NoRemove ContextMenuHandlers
+			{
+				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+			}
+			NoRemove DragDropHandlers
+			{
+				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+			}
+		}
+	}
+
+	NoRemove Directory
+	{
+		NoRemove Background
+		{
+			NoRemove ShellEx
+			{
+				NoRemove ContextMenuHandlers
+				{
+					ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+				}
+				NoRemove DragDropHandlers
+				{
+					ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+				}
+			}
+		}
+	}
+
+	NoRemove Drive
+	{
+		NoRemove ShellEx
+		{
+			NoRemove ContextMenuHandlers
+			{
+				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+			}
+			NoRemove DragDropHandlers
+			{
+				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
+			}
+		}
+	}
+}
+
+HKLM
+{
+	NoRemove Software
+	{
+		NoRemove Microsoft
+		{
+			NoRemove Windows
+			{
+				NoRemove CurrentVersion
+				{
+					NoRemove 'Shell Extensions'
+					{
+						NoRemove Approved
+						{
+							ForceRemove val {B0D35103-86A1-471C-A653-E130E3439A3B} = s 'ShellAnything Class'
+						}
+					}
+				}
+			}
+		}
+	}
+}

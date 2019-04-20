@@ -32,6 +32,7 @@
 #include <windows.h>
 
 #include <assert.h>
+#include <algorithm>
 
 namespace win32_registry
 {
@@ -820,7 +821,10 @@ namespace win32_registry
     std::string previous_key_name;
 
     //split rgs code in lines
-    ra::strings::StringVector lines = ra::strings::split(rgs, "\n");
+    std::string tmp = rgs;
+    ra::strings::replace(tmp, ra::environment::getLineSeparator(), "\n");
+    ra::strings::replace(tmp, "\r\n", "\n");
+    ra::strings::StringVector lines = ra::strings::split(tmp, "\n");
 
     //process each lines
     for(size_t i=0; i<lines.size(); i++)
@@ -935,6 +939,111 @@ namespace win32_registry
     }
 
     rgs_validate_integrity(entries);
+    return true;
+  }
+
+  struct less_than_key
+  {
+    inline bool operator() (const RGS_ENTRY& struct1, const RGS_ENTRY& struct2)
+    {
+      if (struct1.path == struct2.path)
+        return struct1.value < struct2.value;
+      return (struct1.path < struct2.path);
+    }
+  };
+
+  bool createRegistry(const RGS_ENTRY_LIST & tmp)
+  {
+    RGS_ENTRY_LIST entries = tmp;
+    rgs_validate_integrity(entries);
+
+    //sort in acsending order to make sure that a parent entry is created before its children
+    std::sort(entries.begin(), entries.end(), less_than_key());
+
+    for(size_t i=0; i<entries.size(); i++)
+    {
+      const win32_registry::RGS_ENTRY & entry = entries[i];
+      if (entry.isKey)
+      {
+        //std::string debug_message;
+        //debug_message += "key=" + entry.path + "\n";
+        //debug_message += "default=" + entry.value + "\n";
+        //MessageBox(NULL, debug_message.c_str(), "CREATE KEY", MB_OK);
+
+        //create a new key
+        if (!createKey(entry.path.c_str()))
+          return false;
+
+        //set a default value if applicable
+        if (!entry.value.empty())
+        {
+          if (!setValue(entry.path.c_str(), "", entry.value.c_str()))
+            return false;
+        }
+      }
+      else
+      {
+        //create a new string value
+        std::string parent_path;
+        std::string filename;
+        ra::filesystem::splitPath(entry.path, parent_path, filename);
+
+        //std::string debug_message;
+        //debug_message += "parent=" + parent_path + "\n";
+        //debug_message += "filename=" + filename + "\n";
+        //debug_message += "value=" + entry.value + "\n";
+        //MessageBox(NULL, debug_message.c_str(), "CREATE VALUE", MB_OK);
+
+        if (!setValue(parent_path.c_str(), filename.c_str(), entry.value.c_str()))
+          return false;
+      }
+    }
+
+    return true;
+  }
+
+  bool deleteRegistry(const RGS_ENTRY_LIST & tmp)
+  {
+    RGS_ENTRY_LIST entries = tmp;
+    rgs_validate_integrity(entries);
+
+    //sort in descending order to make sure that a child entry is deleted before his parent
+    std::sort(entries.rbegin(), entries.rend(), less_than_key());
+
+    for(size_t i=0; i<entries.size(); i++)
+    {
+      const win32_registry::RGS_ENTRY & entry = entries[i];
+      if (entry.isNoRemove)
+        continue;
+
+      if (entry.isForceRemove)
+      {
+        if (entry.isKey)
+        {
+          //MessageBox(NULL, entry.path.c_str(), "DELETE KEY", MB_OK);
+
+          //delete the key
+          if (!deleteKey(entry.path.c_str()))
+            return false;
+        }
+        else
+        {
+          //delete the string value
+          std::string parent_path;
+          std::string filename;
+          ra::filesystem::splitPath(entry.path, parent_path, filename);
+
+          //std::string debug_message;
+          //debug_message += "parent=" + parent_path + "\n";
+          //debug_message += "filename=" + filename + "\n";
+          //MessageBox(NULL, debug_message.c_str(), "DELETE VALUE", MB_OK);
+
+          if (!deleteValue(parent_path.c_str(), filename.c_str()))
+            return false;
+        }
+      }
+    }
+
     return true;
   }
 
