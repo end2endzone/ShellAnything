@@ -227,6 +227,22 @@ namespace win32_registry
     return result;
   }
 
+  bool createKey(const char* iKeyPath, const char* iDefaultValue)
+  {
+    bool key_result = createKey(iKeyPath);
+    if (!key_result)
+      return false;
+
+    //set default value
+    if (iDefaultValue)
+    {
+      if (!win32_registry::setValue(iKeyPath, "", iDefaultValue))
+        return false;
+    }
+
+    return true;
+  }
+
   bool deleteKey(const char* iKeyPath)
   {
     bool result = false;

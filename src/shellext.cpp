@@ -819,22 +819,64 @@ STDAPI DllRegisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
   const char * guid_str = guid_str_tmp.c_str();
+  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
+  const std::string module_path = GetCurrentModulePath();
+
+  //Register version 1 of our class
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  //Register current version of our class
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
+      return E_ACCESSDENIED;
+  }
 
   // Add the CLSID of this DLL to the registry
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", ShellExtensionDescription))
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
 
   // Define the path and parameters of our DLL:
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
+    if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionClassName))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
     if (!win32_registry::createKey(key.c_str()))
       return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", GetCurrentModulePath().c_str() ))
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
+    if (!win32_registry::createKey(key.c_str(), module_path.c_str() ))
       return E_ACCESSDENIED;
     if (!win32_registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
       return E_ACCESSDENIED;
@@ -843,27 +885,43 @@ STDAPI DllRegisterServer(void)
   // Register the shell extension for all the file types
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
+    if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for directories
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
+    if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\DragDropHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::createKey(key.c_str()))
+    if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
-    if (!win32_registry::setValue(key.c_str(), "", guid_str))
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\DragDropHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for drives
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\DragDropHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
@@ -890,11 +948,24 @@ STDAPI DllUnregisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
   const char * guid_str = guid_str_tmp.c_str();
+  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
 
   // Unregister the shell extension from the system's approved Shell Extensions
   {
     std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
     if (!win32_registry::deleteValue(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for drives
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\shellex\\DragDropHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
@@ -904,10 +975,20 @@ STDAPI DllUnregisterServer(void)
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\DragDropHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
 
   // Unregister the shell extension for directories
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\DragDropHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
@@ -921,12 +1002,19 @@ STDAPI DllUnregisterServer(void)
 
   // Remove the CLSID of this DLL from the registry
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister current and version 1 of our extension
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
