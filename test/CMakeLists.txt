@@ -18,8 +18,6 @@ set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/shellext_registry_script.cpp
-  ${CMAKE_SOURCE_DIR}/src/shellext_registry_script.h
   ${CMAKE_SOURCE_DIR}/src/win32_registry.h
   ${CMAKE_SOURCE_DIR}/src/win32_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/win32_utils.h

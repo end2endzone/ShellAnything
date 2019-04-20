@@ -33,8 +33,9 @@
 #include <vector>
 
 //Shell extension GUID
-static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID  = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID  (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
-static const GUID SHELLANYTHING_SHELLEXTENSION_TYPEID = { 0xc0f6d726, 0x56d2, 0x4ff2, { 0xa0, 0xb7, 0xa5, 0x0b, 0xb1, 0x0f, 0x6e, 0xc4 } }; //this is the TYPEID (GUID) or our Shell Extension, {C0F6D726-56D2-4FF2-A0B7-A50BB10F6EC4}
+static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
+static const char * ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
+static const char * ShellExtensionDescription = "ShellAnything Class";
 
 class CCriticalSection
 {

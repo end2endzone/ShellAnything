@@ -56,9 +56,6 @@ add_library(shellext SHARED
   shellext.cpp
   shellext.h
   shellext.def
-  shellext.rgs
-  shellext_registry_script.cpp
-  shellext_registry_script.h
   win32_utils.cpp
   win32_utils.h
   win32_registry.cpp
