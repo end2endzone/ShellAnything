@@ -285,7 +285,6 @@ CContextMenu::CContextMenu()
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   m_cRef = 0L;
-  m_pDataObj = NULL;
   m_FirstCommandId = 0;
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
@@ -298,8 +297,6 @@ CContextMenu::~CContextMenu()
 {
   LOG(INFO) << __FUNCTION__ << "(), delete";
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-
-  if (m_pDataObj) m_pDataObj->Release();
 
   // Decrement the dll's reference counter.
   InterlockedDecrement(&g_cRefDll);
@@ -364,6 +361,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
+
+  //Log what is selected by the user
+  const shellanything::Context::ElementList & elements = m_Context.getElements();
+  size_t num_selected_total = elements.size();
+  int num_directories = m_Context.getNumFiles();
+  int num_files       = m_Context.getNumDirectories();
+  LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   UINT nextCommandId = idCmdFirst;
   m_FirstCommandId = idCmdFirst;
@@ -555,73 +559,87 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
+  LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder;
   MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "()";
 
-  //https://docs.microsoft.com/en-us/windows/desktop/ad/example-code-for-implementation-of-the-context-menu-com-object
-  STGMEDIUM   stm;
-  FORMATETC   fe;
-  HRESULT     hr;
+  //From this point, it is safe to use class members without other threads interference
+  CCriticalSectionGuard cs_guard(&m_CS);
 
-  if(NULL == pDataObj)
+  shellanything::Context::ElementList files;
+
+  // Cleanup
+  m_Context.setElements(files);
+  m_IsBackGround = false;
+
+  // Did we clicked on a folder's background or the desktop directory?
+  if (pIDFolder)
   {
-    return E_INVALIDARG;
+    LOG(INFO) << "User right-clicked on a background directory.";
+
+    char szPath[MAX_PATH] = {0};
+
+    if (SHGetPathFromIDListA(pIDFolder, szPath))
+    {
+      if (szPath[0] != '\0')
+      {
+        LOG(INFO) << "Found directory '" << szPath << "'.";
+        m_IsBackGround = true;
+        files.push_back(std::string(szPath));
+      }
+      else
+        return E_INVALIDARG;
+    }
+    else
+    {
+      return E_INVALIDARG;
+    }
   }
 
-  fe.cfFormat = RegisterClipboardFormat(CFSTR_DSOBJECTNAMES);
-  fe.ptd = NULL;
-  fe.dwAspect = DVASPECT_CONTENT;
-  fe.lindex = -1;
-  fe.tymed = TYMED_HGLOBAL;
-  hr = pDataObj->GetData(&fe, &stm);
-  if(SUCCEEDED(hr))
+  // User clicked on one or more file or directory
+  if (pDataObj)
   {
-    LPDSOBJECTNAMES pdson = (LPDSOBJECTNAMES)GlobalLock(stm.hGlobal);
+    LOG(INFO) << "User right-clicked on selected files/directories.";
 
-    if(pdson)
+    FORMATETC fmt = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    STGMEDIUM stg = {TYMED_HGLOBAL};
+    HDROP hDropInfo;
+
+    // The selected files are expected to be in HDROP format.
+    if (FAILED(pDataObj->GetData(&fmt, &stg)))
+      return E_INVALIDARG;
+
+    // Get a locked pointer to the files data.
+    hDropInfo = (HDROP)GlobalLock(stg.hGlobal);
+    if (NULL == hDropInfo)
     {
-      DWORD dwBytes = (DWORD)GlobalSize(stm.hGlobal);
-
-      DSOBJECTNAMES * m_pObjectNames = (DSOBJECTNAMES*)GlobalAlloc(GPTR, dwBytes);
-      if(m_pObjectNames)
-      {
-        CopyMemory(m_pObjectNames, pdson, dwBytes);
-      }
-
-      GlobalUnlock(stm.hGlobal);
+      ReleaseStgMedium(&stg);
+      return E_INVALIDARG;
     }
 
-    ReleaseStgMedium(&stm);
-  }
+    UINT num_files = DragQueryFileA(hDropInfo, 0xFFFFFFFF, NULL, 0);
+    LOG(INFO) << "User right-clicked on " << num_files << " files/directories.";
 
-  fe.cfFormat = RegisterClipboardFormat(CFSTR_DS_DISPLAY_SPEC_OPTIONS);
-  fe.ptd = NULL;
-  fe.dwAspect = DVASPECT_CONTENT;
-  fe.lindex = -1;
-  fe.tymed = TYMED_HGLOBAL;
-  hr = pDataObj->GetData(&fe, &stm);
-  if(SUCCEEDED(hr))
-  {
-    PDSDISPLAYSPECOPTIONS   pdso;
-
-    pdso = (PDSDISPLAYSPECOPTIONS)GlobalLock(stm.hGlobal);
-    if(pdso)
+    // For each files
+    for (UINT i=0; i<num_files; i++)
     {
-      DWORD dwBytes = (DWORD)GlobalSize(stm.hGlobal);
+      UINT path_size = DragQueryFileA(hDropInfo, i, NULL, 0);
 
-      PDSDISPLAYSPECOPTIONS m_pDispSpecOpts = (PDSDISPLAYSPECOPTIONS)GlobalAlloc(GPTR, dwBytes);
-      if(m_pDispSpecOpts)
-      {
-        CopyMemory(m_pDispSpecOpts, pdso, dwBytes);
-      }
+      std::string path(path_size, '\0');
+      if (path.size() != path_size)
+        continue;
 
-      GlobalUnlock(stm.hGlobal);
+      //add the new file
+      LOG(INFO) << "Found file/directory " << ra::strings::format("%02d",i) << ": '" << path << "'.";
+      files.push_back(path);
     }
-
-    ReleaseStgMedium(&stm);
+    GlobalUnlock(stg.hGlobal);
+    ReleaseStgMedium(&stg);
   }
 
-  return hr;
+  //update the selection context
+  m_Context.setElements(files);
+
+  return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR * ppvObj)

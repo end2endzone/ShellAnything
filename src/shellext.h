@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include "BitmapCache.h"
+#include "shellanything/Context.h"
 
 #include <vector>
 
@@ -92,14 +93,14 @@ public:
   };
   typedef std::vector<CustomMenu> CustomMenuVector;
 protected:
-  CCriticalSection  m_CS; //protects class members
-  ULONG             m_cRef;
-  LPDATAOBJECT      m_pDataObj;
-  UINT              m_FirstCommandId;
-  CustomMenuVector  m_Menus;
-  bool              m_IsBackGround;
-  int               m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
-  shellanything::BitmapCache m_BitmapCache;
+  CCriticalSection            m_CS; //protects class members
+  ULONG                       m_cRef;
+  UINT                        m_FirstCommandId;
+  CustomMenuVector            m_Menus;
+  bool                        m_IsBackGround;
+  int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
+  shellanything::BitmapCache  m_BitmapCache;
+  shellanything::Context      m_Context;
 
 public:
   CContextMenu();
