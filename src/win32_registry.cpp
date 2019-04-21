@@ -206,6 +206,25 @@ namespace win32_registry
     return getValue(iKeyPath, "", oType, oValue);
   }
 
+  bool hasKey(const char* iKeyPath)
+  {
+    bool result = false;
+
+    HKEY_T* rootKey = findKeyInPath(iKeyPath);
+    if (rootKey)
+    {
+      const char* keyShortPath = getShortKeyPath(iKeyPath);
+
+      HKEY keyHandle;
+      if ( !RegOpenKey(rootKey->key, keyShortPath, &keyHandle))
+      {
+        result = true;
+        RegCloseKey(keyHandle);
+      }
+    }
+    return result;
+  }
+
   bool createKey(const char* iKeyPath)
   {
     bool result = false;
@@ -245,6 +264,9 @@ namespace win32_registry
 
   bool deleteKey(const char* iKeyPath)
   {
+    if (!hasKey(iKeyPath))
+      return true; //return a success if the key cannot be found
+
     bool result = false;
 
     HKEY_T* rootKey = findKeyInPath(iKeyPath);
@@ -252,19 +274,11 @@ namespace win32_registry
     {
       const char* keyShortPath = getShortKeyPath(iKeyPath);
 
-      //Split the full key path
-      std::string parentKeyPath = ra::filesystem::getParentPath(keyShortPath);
-      std::string keyName       = ra::filesystem::getFilename(keyShortPath);
-
-      HKEY keyHandle = NULL;
-      if ( !RegOpenKeyEx(rootKey->key, parentKeyPath.c_str(), 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &keyHandle))
+      LSTATUS status = RegDeleteTreeA(rootKey->key, keyShortPath);
+      if (status == ERROR_SUCCESS || status == ERROR_PATH_NOT_FOUND)
       {
-        if ( !RegDeleteKey(keyHandle, keyName.c_str()))
-        {
-          result = true;
-        }
+        result = true;
       }
-      RegCloseKey(keyHandle);
     }
 
     return result;
@@ -288,6 +302,9 @@ namespace win32_registry
 
   bool deleteValue(const char* iKeyPath, const char* iValueName)
   {
+    if (!hasKey(iKeyPath))
+      return true; //return a success if the key cannot be found
+
     bool result = false;
 
     HKEY_T* rootKey = findKeyInPath(iKeyPath);
@@ -298,7 +315,8 @@ namespace win32_registry
       HKEY keyHandle = NULL;
       if ( !RegOpenKeyEx(rootKey->key, keyShortPath, 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &keyHandle))
       {
-        if ( !RegDeleteValueA(keyHandle, iValueName))
+        LSTATUS status = RegDeleteValueA(keyHandle, iValueName);
+        if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND)
         {
           result = true;
         }

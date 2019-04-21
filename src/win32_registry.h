@@ -67,6 +67,7 @@ namespace win32_registry
                  MemoryBuffer & oValue);
   bool getDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue);
   
+  bool hasKey(const char* iKeyPath);
   bool createKey(const char* iKeyPath);
   bool createKey(const char* iKeyPath, const char* iDefaultValue);
   bool deleteKey(const char* iKeyPath);

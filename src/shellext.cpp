@@ -866,6 +866,8 @@ STDAPI DllRegisterServer(void)
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
   const std::string module_path = GetCurrentModulePath();
 
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+
   //Register version 1 of our class
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
@@ -993,6 +995,8 @@ STDAPI DllUnregisterServer(void)
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
   const char * guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
+
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
 
   // Unregister the shell extension from the system's approved Shell Extensions
   {
