@@ -235,7 +235,7 @@ namespace win32_registry
       const char* keyShortPath = getShortKeyPath(iKeyPath);
 
       HKEY keyHandle = NULL;
-      printf("RegCreateKeyA(%s, %s, 0x%08x)\n", rootKey->name, keyShortPath, keyHandle);
+      //printf("RegCreateKeyA(%s, %s, 0x%08x)\n", rootKey->name, keyShortPath, keyHandle);
       if ( !RegCreateKey(rootKey->key, keyShortPath, &keyHandle))
       {
         result = true;
@@ -405,11 +405,11 @@ namespace win32_registry
     success = createKey(extentionKey.c_str());
     if (!success)
     {
-      printf("1 Unable to create key: %s\n", extentionKey.c_str());
+      //printf("1 Unable to create key: %s\n", extentionKey.c_str());
       return false;
     }
 
-    printf("step #1\n");
+    //printf("step #1\n");
 
     //Create the key for the file type
     std::string typeKey = "HKEY_CLASSES_ROOT\\";
@@ -417,26 +417,26 @@ namespace win32_registry
     success = createKey(typeKey.c_str());
     if (!success)
     {
-      printf("2 Unable to create key: %s\n", typeKey.c_str());
+      //printf("2 Unable to create key: %s\n", typeKey.c_str());
       return false;
     }
 
-    printf("step #2\n");
+    //printf("step #2\n");
 
     //Create the extention key's default value. (extention file type)
     success = setValue(extentionKey.c_str(), "", extentionFileType.c_str());
     if (!success)
     {
-      printf("3 Unable to set value. key=%s, name=%s\n", extentionKey.c_str(), extentionFileType.c_str());
+      //printf("3 Unable to set value. key=%s, name=%s\n", extentionKey.c_str(), extentionFileType.c_str());
       return false;
     }
 
-    printf("step #3\n");
+    //printf("step #3\n");
 
     //Create the filetype key's default value (friendly name) 
     setValue(extentionFileType.c_str(), "", iFileType);
 
-    printf("step #4\n");
+    //printf("step #4\n");
 
     //Create the shell, open and command sub keys
     const char* subKeys[] = {"shell", "open", "command"};
@@ -450,26 +450,26 @@ namespace win32_registry
       subKey.append(currentSubKey);
 
       //create this key
-      printf("debug: trying to create key: %s\n", subKey.c_str());
+      //printf("debug: trying to create key: %s\n", subKey.c_str());
       success = createKey(subKey.c_str());
       if (!success)
       {
-        printf("4 Unable to create key: %s\n", subKey.c_str());
+        //printf("4 Unable to create key: %s\n", subKey.c_str());
         return false;
       }
     }
 
-    printf("step #5\n");
+    //printf("step #5\n");
 
     //Define the default value for the command's key
     success = setValue(subKey.c_str(), "", iCmdLine);
     if (!success)
     {
-      printf("5 Unable to set value. key=%s, name=%s\n", subKey.c_str(), iCmdLine);
+      //printf("5 Unable to set value. key=%s, name=%s\n", subKey.c_str(), iCmdLine);
       return false;
     }
 
-    printf("step #6\n");
+    //printf("step #6\n");
 
     //char sShell[100];
     //sprintf(sShell,"%s_auto_file\\shell",ext);
