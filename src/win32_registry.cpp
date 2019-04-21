@@ -133,7 +133,7 @@ namespace win32_registry
     HKEY_T* rootKey = findKeyInPath(iKeyPath);
     if (rootKey)
     {
-      int keyPathIndex = strlen(rootKey->name)+1;
+      size_t keyPathIndex = strlen(rootKey->name)+1;
       return &iKeyPath[keyPathIndex];
     }
     return NULL;
@@ -186,7 +186,7 @@ namespace win32_registry
         {
           //Read the actual data of the value
           valueType = 0;
-          valueSize = oValue.size();
+          valueSize = (DWORD)oValue.size();
           RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, (LPBYTE)oValue.c_str(), &valueSize);
           
           oType = convertType(valueType);
@@ -282,7 +282,8 @@ namespace win32_registry
 
   bool setValue(const char* iKeyPath, const char* iValueName, const char *iValue)
   {
-    return setRegistryValue(iKeyPath, iValueName, REG_SZ, iValue, strlen(iValue) + 1);
+    uint32_t size = (uint32_t)strlen(iValue) + 1;
+    return setRegistryValue(iKeyPath, iValueName, REG_SZ, iValue, size);
   }
 
   bool deleteValue(const char* iKeyPath, const char* iValueName)

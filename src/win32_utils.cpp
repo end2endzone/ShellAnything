@@ -299,6 +299,8 @@ namespace win32_utils
     // contains a BITMAPINFOHEADER structure and an array of RGBQUAD  
     // data structures.)  
 
+#pragma warning( push )
+#pragma warning( disable: 4334 ) //warning C4334: '<<' : result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
     if (cClrBits < 24) 
       pbmi = (PBITMAPINFO) LocalAlloc(LPTR, 
                                       sizeof(BITMAPINFOHEADER) + 
@@ -309,6 +311,7 @@ namespace win32_utils
     else 
       pbmi = (PBITMAPINFO) LocalAlloc(LPTR, 
       sizeof(BITMAPINFOHEADER)); 
+#pragma warning( pop )
 
     // Initialize the fields in the BITMAPINFO structure.  
 

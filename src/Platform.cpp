@@ -153,8 +153,8 @@ namespace shellanything
     content = "";
 
     //allocate a buffer which can hold the content of the file
-    uint32_t file_size = ra::filesystem::getFileSize(path.c_str());
-    uint32_t max_read_size = (file_size < size ? file_size : size);
+    size_t file_size = ra::filesystem::getFileSize(path.c_str());
+    size_t max_read_size = (file_size < size ? file_size : size);
 
     FILE * f = fopen(path.c_str(), "rb");
     if (!f)
