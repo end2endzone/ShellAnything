@@ -652,7 +652,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
   static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
   if (  IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
         IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
-        IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)      )
+        IsEqualGUID(riid, CLSID_UNDOCUMENTED_01) ||
+        IsEqualGUID(riid, IID_IContextMenu2) || //{000214f4-0000-0000-c000-000000000046}
+        IsEqualGUID(riid, IID_IContextMenu3)    //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+        )
   {
     return E_NOINTERFACE;
   }
@@ -662,15 +665,29 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
   // Always set out parameter to NULL, validating it first.
   if (!ppvObj)
     return E_INVALIDARG;
+
   *ppvObj = NULL;
-  if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IShellExtInit) || IsEqualGUID(riid, IID_IContextMenu))
+  if (IsEqualGUID(riid, IID_IUnknown))
+  {
+    *ppvObj = (LPVOID)this;
+  }
+  else if (IsEqualGUID(riid, IID_IShellExtInit))
+  {
+    *ppvObj = (LPSHELLEXTINIT)this;
+  }
+  else if (IsEqualGUID(riid, IID_IContextMenu))
+  {
+    *ppvObj = (LPCONTEXTMENU)this;
+  }
+
+  if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
     LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
-    *ppvObj = (LPVOID)this;
     AddRef();
     return NOERROR;
   }
+
   LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToString(riid).c_str();
   return E_NOINTERFACE;
 }
@@ -730,11 +747,20 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR 
   if (!ppvObj)
     return E_INVALIDARG;
   *ppvObj = NULL;
-  if (IsEqualGUID(riid, IID_IUnknown) || IsEqualGUID(riid, IID_IClassFactory))
+
+  if (IsEqualGUID(riid, IID_IUnknown))
+  {
+    *ppvObj = (LPVOID)this;
+  }
+  else if (IsEqualGUID(riid, IID_IClassFactory))
+  {
+    *ppvObj = (LPCLASSFACTORY)this;
+  }
+
+  if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
     LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
-    *ppvObj = (LPVOID)this;
     AddRef();
     return NOERROR;
   }
@@ -1145,6 +1171,8 @@ void InitLogger()
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
   LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();
   LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
+  LOG(INFO) << "IID_IContextMenu2 : " << GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
+  LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
