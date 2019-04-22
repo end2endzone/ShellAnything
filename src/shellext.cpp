@@ -622,14 +622,19 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     // For each files
     for (UINT i=0; i<num_files; i++)
     {
-      UINT path_size = DragQueryFileA(hDropInfo, i, NULL, 0);
+      UINT length = DragQueryFileA(hDropInfo, i, NULL, 0);
 
-      std::string path(path_size, '\0');
-      if (path.size() != path_size)
+      // Allocate a temporary buffer
+      std::string path(length, '\0');
+      if (path.size() != length)
         continue;
+      size_t buffer_size = length+1;
+
+      // Copy the element into the temporary buffer
+      DragQueryFile(hDropInfo, i, (char*)path.data(), (UINT)buffer_size);
 
       //add the new file
-      LOG(INFO) << "Found file/directory " << ra::strings::format("%02d",i) << ": '" << path << "'.";
+      LOG(INFO) << "Found file/directory #" << ra::strings::format("%03d",i) << ": '" << path << "'.";
       files.push_back(path);
     }
     GlobalUnlock(stg.hGlobal);
