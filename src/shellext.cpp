@@ -29,6 +29,21 @@ HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
 
+std::string GetLastErrorAsString(DWORD dwError)
+{
+  LPSTR buffer = NULL;
+  size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                NULL, dwError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buffer, 0, NULL);
+
+  //Make a copy
+  std::string message(buffer, size);
+
+  //Free the buffer.
+  LocalFree(buffer);
+
+  return message;
+}
+
 std::string GetCurrentModulePath()
 {
   std::string path;
@@ -39,7 +54,17 @@ std::string GetCurrentModulePath()
                           (LPCSTR) __FUNCTION__,
                           &hModule))
   {
-    int ret = GetLastError();
+    DWORD dwError = GetLastError();
+    std::string desc = GetLastErrorAsString(dwError);
+    std::string message = std::string() +
+      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::toString(__LINE__) + ".\n" +
+      "\n" +
+      "Failed getting the file path of the current module.\n" +
+      "The following error code was returned:\n" +
+      "\n" +
+      ra::strings::format("0x%08x", dwError) + ": " + desc;
+    MessageBox(NULL, message.c_str(), "ShellAnything Error", MB_OK | MB_ICONERROR);
+
     return EMPTY_STRING;
   }
 
@@ -560,7 +585,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
   LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder;
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
