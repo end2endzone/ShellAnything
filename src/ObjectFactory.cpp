@@ -154,10 +154,6 @@ namespace shellanything
 
     Validator result;
 
-    //temporary parsed attribute values
-    std::string tmp_str;
-    int tmp_int = -1;
-
     //parse maxfiles
     int maxfiles = -1;
     if (parseAttribute(element, "maxfiles", true, true, maxfiles, error))
@@ -178,7 +174,17 @@ namespace shellanything
     {
       if (!fileextensions.empty())
       {
-        result.setFileExtensions(tmp_str);
+        result.setFileExtensions(fileextensions);
+      }
+    }
+
+    //parse properties
+    std::string properties;
+    if (parseAttribute(element, "properties", true, true, properties, error))
+    {
+      if (!fileextensions.empty())
+      {
+        result.setProperties(properties);
       }
     }
 
