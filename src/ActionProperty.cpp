@@ -25,6 +25,8 @@
 #include "shellanything/ActionProperty.h"
 #include "PropertyManager.h"
 
+#include <glog/logging.h>
+
 namespace shellanything
 {
 
@@ -43,7 +45,7 @@ namespace shellanything
     std::string value = pmgr.expand(mValue);
 
     //debug
-    printf("Setting property '%s' to '%s'\n", name.c_str(), value.c_str());
+    LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'";
     pmgr.setProperty(name, value);
 
     return true;

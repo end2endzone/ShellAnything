@@ -29,8 +29,9 @@
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
-#include "rapidassist/logger.h"
 #include "tinyxml2.h"
+
+#include <glog/logging.h>
 
 using namespace tinyxml2;
 
@@ -110,6 +111,8 @@ namespace shellanything
 
   void ConfigManager::refresh()
   {
+    LOG(INFO) << __FUNCTION__ << "()";
+    
     //validate existing configurations
     Configuration::ConfigurationPtrList existing = getConfigurations();
     for(size_t i=0; i<existing.size(); i++)
@@ -123,11 +126,13 @@ namespace shellanything
       if (ra::filesystem::fileExists(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
+        LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
       }
       else
       {
         //file is missing or current configuration is out of date
         //forget about existing config
+        LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
         mConfigurations.removeChild(config);
       }
     }
@@ -137,6 +142,8 @@ namespace shellanything
     {
       const std::string & path = mPaths[i];
  
+      LOG(INFO) << "Searching configuration files in directory '" << path << "'";
+
       //search files in each directory
       ra::strings::StringVector files;
       bool dir_found = ra::filesystem::findFiles(files, path.c_str());
@@ -151,13 +158,15 @@ namespace shellanything
             //is this file already loaded ?
             if (!isLoadedConfigurationFile(file_path))
             {
+              LOG(INFO) << "Found configuration file '" << file_path << "'";
+
               //parse the file
               std::string error;
               Configuration * config = loadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
-                ra::logger::log(ra::logger::LOG_ERROR, "Failed loading configuration file '%s'. Error=%s", file_path.c_str(), error.c_str());
+                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
               }
               else
               {
@@ -165,13 +174,17 @@ namespace shellanything
                 mConfigurations.addChild(config);
               }
             }
+            else
+            {
+              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
+            }
           }
         }
       }
       else
       {
         //log an error message
-        ra::logger::log(ra::logger::LOG_WARNING, "Failed looking for configuration files in directory '%s'.", path.c_str() );
+        LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
       }
     }
   }

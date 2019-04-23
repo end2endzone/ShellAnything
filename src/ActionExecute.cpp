@@ -26,6 +26,8 @@
 #include "PropertyManager.h"
 #include "Platform.h"
 
+#include <glog/logging.h>
+
 namespace shellanything
 {
 
@@ -45,7 +47,7 @@ namespace shellanything
     std::string arguments = pmgr.expand(mArguments);
 
     //debug
-    //printf("Running '%s' with arguments '%s' from directory '%s'.\n", path.c_str(), arguments.c_str(), basedir.c_str());
+    LOG(INFO) << "Running '" << path << "' with arguments '" << arguments << "' from directory '" << basedir << "'";
 
     uint32_t pId = startProcess(path, arguments, basedir);
 

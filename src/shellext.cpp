@@ -460,7 +460,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
+  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
 
   UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu - command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
