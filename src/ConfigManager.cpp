@@ -230,7 +230,7 @@ namespace shellanything
     {
       //read the beginning of the file
       std::string content;
-      bool readed = peekFile(path.c_str(), 512, content);
+      bool readed = peekFile(path.c_str(), 1024, content);
       if (readed)
       {
         //and look for special XML tags
