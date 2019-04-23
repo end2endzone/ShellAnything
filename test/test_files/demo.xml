@@ -15,30 +15,32 @@ Help:
   
 -->
 <root>
-  <configuration>
-    
-  </configuration>
   <shell>
     <menu name="Copy to clipboard...">
+      <icon path="C:\Windows\System32\shell32.dll" index="68" />
       <!--TODO: update the visibility tag to support a maxfiles="1" attribute or maxfolders="1" instead of -->
       <validity folder="true" file="true" maxfiles="1" maxfolders="1" />
       <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
+        <icon path="C:\Windows\System32\shell32.dll" index="165" />
         <actions>
           <!--TODO: update clipboard tag to support multiple selection-->
           <clipboard value="${selection.path}"/>
         </actions>
       </menu>
       <menu name="Filename" description="Copy the selected filename(s) to the clipboard">
+        <icon path="C:\Windows\System32\shell32.dll" index="2" />
         <actions>
           <clipboard value="${selection.filename}"/>
         </actions>
       </menu>
       <menu name="Filename (without extension)" description="Copy the selected filename(s) (without extension) to the clipboard">
+        <icon path="C:\Windows\System32\shell32.dll" index="0" />
         <actions>
           <clipboard value="${selection.filename_noext}"/>
         </actions>
       </menu>
       <menu name="Parent Folder">
+        <icon path="C:\Windows\System32\shell32.dll" index="3" />
         <actions>
           <clipboard value="${selection.parent.path}"/>
         </actions>
@@ -46,7 +48,7 @@ Help:
     </menu>
     
     <menu name="Command line from here...">
-      <icon path="C:\Windows\System32\shell32.dll" index="3" />
+      <icon path="C:\Windows\System32\cmd.exe" index="0" />
       <validity folder="true" />
       <actions>
         <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" />
@@ -54,6 +56,7 @@ Help:
     </menu>
     
     <menu name="Run with parameters..." description="Run the selected executable with parameters">
+      <icon path="C:\Windows\System32\shell32.dll" index="76" />
       <validity fileextensions="com;exe;bat;cmd" />
       <actions>
         <prompt name="myarguments" title="Please enter the command line parameters" />
@@ -65,18 +68,25 @@ Help:
 
     <menu name="Foo Service">
       <!--Note: validity is not specified, the menu is always valid-->
+      <icon path="C:\Windows\System32\cmmon32.exe" index="0" />
       
       <menu name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
+        <!--<icon path="C:\Windows\System32\shell32.dll" index="109" />-->
+        <icon path="C:\Windows\System32\imageres.dll" index="100" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
         </actions>
       </menu>
       <menu name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
+        <!--<icon path="C:\Windows\System32\shell32.dll" index="137" />-->
+        <icon path="C:\Windows\System32\imageres.dll" index="101" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
         </actions>
       </menu>
       <menu name="Restart">
+        <!--<icon path="C:\Windows\System32\shell32.dll" index="238" />-->
+        <icon path="C:\Windows\System32\wmploc.dll" index="151" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
@@ -87,11 +97,14 @@ Help:
       <menu separator="true" />
       
       <menu name="Connect">
+        <icon path="C:\Windows\System32\shell32.dll" index="44" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/connect" />
         </actions>
       </menu>
       <menu name="Update">
+        <!--<icon path="C:\Windows\System32\imageres.dll" index="194" />-->
+        <icon path="C:\Windows\System32\shell32.dll" index="46" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/update" />
         </actions>
@@ -101,6 +114,7 @@ Help:
     <!--Split before winzip commands-->
     <menu separator="true" />
     <menu name="Winzip">
+      <icon path="C:\Windows\System32\zipfldr.dll" index="0" />
       <menu name="Add ${selection.filename}.zip" icon="auto">
         <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
         <validity folder="true" />
@@ -128,18 +142,20 @@ Help:
     <!--Show file selection or compare capabilities-->
     <menu separator="true" />
     <menu name="Compare">
+      <icon path="C:\Windows\System32\dsuiext.dll" index="32" />
       <menu name="Binary compare">
-        <menu name="Select first menu">
+        <icon path="C:\Windows\System32\compstui.dll" index="39" />
+        <menu name="Select file '${selection.filename}'">
           <actions>
             <property name="compare.first.selection.path"     value="${selection.path}" />
             <property name="compare.first.selection.filename" value="${selection.filename}" />
           </actions>
         </menu>
-        <menu name="Compare with ${compare.first.selection.filename}">
+        <menu name="Compare with '${compare.first.selection.filename}'">
           <!--Note: this menu is always enabled but can be invisible if the visibility tag is not respected-->
           <visibility properties="compare.first.selection.filename" />
           <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K FC &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+            <exec path="C:\windows\system32\cmd.exe" arguments="/K FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
 
             <!--Reset the properties now that compare is complete-->
             <property name="compare.first.selection.path"     value="" />
@@ -152,6 +168,7 @@ Help:
     <!--Low level find file-->
     <menu separator="true" />
     <menu name="Find file...">
+      <icon path="C:\Windows\System32\shell32.dll" index="22" />
       <validity folder="true" maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="findpattern" title="Please enter the find wildcard pattern..." />
@@ -160,6 +177,7 @@ Help:
       </actions>
     </menu>
     <menu name="Find in files...">
+      <icon path="C:\Windows\System32\shell32.dll" index="55" />
       <validity folder="true" maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="filepattern" title="Please enter the file wildcard pattern..." />
@@ -173,12 +191,16 @@ Help:
     <!-- Open files that are not executables -->
     <menu separator="true" />
     <menu name="MySoftware">
+      <icon path="C:\windows\system32\dccw.exe" index="0" />
       <menu name="README">
+        <!--<icon path="C:\Program Files\Windows NT\Accessories\wordpad.exe" index="0" />-->
+        <icon path="C:\windows\system32\write.exe" index="0" />
         <actions>
           <open path="C:\Program Files (x86)\MySoftware\README.pdf" />
         </actions>
       </menu>
       <menu name="About">
+        <icon path="C:\Windows\System32\imageres.dll" index="102" />
         <actions>
           <open path="C:\Program Files (x86)\MySoftware\about.htm" />
         </actions>
@@ -188,6 +210,7 @@ Help:
     <!-- Open files that are not executables -->
     <menu separator="true" />
     <menu name="Checksum">
+      <icon path="C:\Windows\System32\shell32.dll" index="104" />
       <validity file="true" maxfiles="1" maxfolders="0" />
       <menu name="MD5">
         <actions>
@@ -214,6 +237,7 @@ Help:
     <!-- symbolic links -->
     <menu separator="true" />
     <menu name="Symbolic Links ">
+      <icon path="C:\Windows\System32\imageres.dll" index="154" />
       <!-- See also https://stackoverflow.com/questions/19098101/how-to-open-an-elevated-cmd-using-command-line-for-windows -->
       <validity file="false" maxfiles="0" maxfolders="1" />
       <menu name="Set as target">
