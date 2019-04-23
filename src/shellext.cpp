@@ -21,6 +21,9 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/process.h"
 
+#include "shellanything/ConfigManager.h"
+#include "PropertyManager.h"
+
 #include <assert.h>
 
 //Declarations
@@ -85,44 +88,41 @@ std::string GuidToString(GUID guid) {
   return output;
 }
  
-CContextMenu::CustomMenu * CContextMenu::FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, UINT target_command_id)
+void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos)
 {
-  for(size_t i=0; i<menus.size(); i++)
-  {
-    CContextMenu::CustomMenu * menu = &menus[i];
-    if (target_command_id == menu->command_id)
-      return menu;
+  //Expanded the menu's strings
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  std::string title       = pmgr.expand(menu->getName());
+  std::string description = pmgr.expand(menu->getDescription());
 
-    for(size_t j=0; j<menu->children.size(); j++)
-    {
-      CContextMenu::CustomMenu * match = FindMenuByCommandId(menu->children, target_command_id);
-      if (match)
-        return match;
-    }
+  //Get visible/enable properties based on current context.
+  bool menu_visible   = menu->isVisible(m_Context);
+  bool menu_enabled   = menu->isEnabled(m_Context);
+  bool menu_separator = menu->isSeparator();
+
+  //Skip this menu if not visible
+  if (!menu_visible)
+  {
+    LOG(INFO) << __FUNCTION__ << "(), skipped menu '" << title << "', not visible.";
+    return;
   }
 
-  return NULL;
-}
-
-void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset)
-{
   MENUITEMINFOA menuinfo = {0};
 
   menuinfo.cbSize = sizeof(MENUITEMINFOA);
   menuinfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
-  menuinfo.fType = MFT_STRING;
-  menuinfo.fState = MFS_ENABLED;
-  menuinfo.wID = menu.command_id;
-  menuinfo.dwTypeData = (char*)menu.title.c_str();
-  menuinfo.cch = (UINT)menu.title.size();
+  menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
+  menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
+  menuinfo.wID = menu->getCommandId();
+  menuinfo.dwTypeData = (char*)title.c_str();
+  menuinfo.cch = (UINT)title.size();
 
   //add an icon
+  const shellanything::Icon & icon = menu->getIcon();
+  if (!menu_separator && icon.isValid())
   {
-    const std::string icon_filename = "c:\\windows\\system32\\shell32.dll";
-    const int icon_index = debug_icon_offset;
-
-    //next menu shall use another icon
-    debug_icon_offset++;
+    const std::string & icon_filename = icon.getPath();
+    const int icon_index = icon.getIndex();
 
     //ask the cache for an existing icon
     HBITMAP hBitmap = m_BitmapCache.find_handle(icon_filename, icon_index);
@@ -165,26 +165,30 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, U
     }
   }
 
-  if (menu.children.size())
+  //handle submenus
+  if (menu->isParentMenu())
   {
     menuinfo.fMask |= MIIM_SUBMENU;
     HMENU hSubMenu = CreatePopupMenu();
 
-    for(size_t i=0; i<menu.children.size(); i++)
+    shellanything::Menu::MenuPtrList subs = menu->getSubMenus();
+    UINT sub_insert_pos = 0;
+    for(size_t i=0; i<subs.size(); i++)
     {
-      CContextMenu::CustomMenu & submenu = menu.children[i];
-      BuildMenuTree(hSubMenu, submenu, (UINT)i, debug_icon_offset);
+      shellanything::Menu * submenu = subs[i];
+      BuildMenuTree(hSubMenu, submenu, sub_insert_pos);
     }
 
     menuinfo.hSubMenu = hSubMenu;
   }
 
   BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
+  insert_pos++; //next menu is below this one
 
-  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << insert_pos << ", id=" << menuinfo.wID << ", result=" << result;
+  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << insert_pos << ", id=" << menuinfo.wID << ", result=" << result << ", title=" << title;
 }
 
-void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus)
+void CContextMenu::BuildMenuTree(HMENU hMenu)
 {
   //handle destruction of old bitmap in the cache
   m_BuildMenuTreeCount++;
@@ -197,13 +201,28 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & m
     m_BitmapCache.reset_counters();
   }
 
-  int debug_icon_offset = 0;
-  for(size_t i=0; i<menus.size(); i++)
+  //get all available configurations
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  shellanything::Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+  UINT insert_pos = 0;
+  for(size_t i=0; i<configs.size(); i++)
   {
-    CContextMenu::CustomMenu & menu = menus[i];
-    BuildMenuTree(hMenu, menu, (UINT)i, debug_icon_offset);
+    shellanything::Configuration * config = configs[i];
+    if (config)
+    {
+      //for each menu child
+      shellanything::Menu::MenuPtrList menus = config->getMenus();
+      for(size_t j=0; j<menus.size(); j++)
+      {
+        shellanything::Menu * menu = menus[j];
+
+        //Add this menu to the tree
+        BuildMenuTree(hMenu, menu, insert_pos);
+      }
+    }
   }
 }
+
 
 CCriticalSection::CCriticalSection()
 {
@@ -321,7 +340,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
     return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
   }
 
-  //MessageBox(NULL, "ATTACH NOW!", __FUNCTION__, MB_OK);
+  //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
@@ -336,78 +355,15 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   UINT nextCommandId = idCmdFirst;
   m_FirstCommandId = idCmdFirst;
 
-  //declare menus
-  m_Menus.clear();
+  //Refresh the list of loaded configuration files
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  cmgr.refresh();
 
-  {
-    CustomMenu menu;
-    menu.title = "shellanything1";
-    menu.command_id = nextCommandId;
-    m_Menus.push_back(menu);
-  }
+  //Assign unique command id to all available menus (even the one that will not be visible)
+  nextCommandId = cmgr.assignCommandIds(m_FirstCommandId);
 
-  nextCommandId++;
-
-  {
-    CustomMenu menu;
-    menu.title = "shell.anything2";
-    menu.command_id = nextCommandId;
-    m_Menus.push_back(menu);
-  }
-
-  nextCommandId++;
-
-  {
-    CustomMenu menu;
-    menu.title = "sa.parent";
-    menu.command_id = nextCommandId;
-    m_Menus.push_back(menu);
-
-  }
-
-  nextCommandId++;
-
-  CustomMenu * parent = NULL;
-  parent = &m_Menus[m_Menus.size()-1];
-
-  {
-    CustomMenu menu;
-    menu.title = "sa.child.1";
-    menu.command_id = nextCommandId;
-    parent->children.push_back(menu);
-  }
-
-  nextCommandId++;
-
-  {
-    CustomMenu menu;
-    menu.title = "sa.child.2";
-    menu.command_id = nextCommandId;
-    parent->children.push_back(menu);
-  }
-
-  nextCommandId++;
-
-  {
-    CustomMenu menu;
-    menu.title = "sa.child.3";
-    menu.command_id = nextCommandId;
-    parent->children.push_back(menu);
-  }
-
-  nextCommandId++;
-
-  {
-    CustomMenu menu;
-    menu.title = "sa.last";
-    menu.command_id = nextCommandId;
-    m_Menus.push_back(menu);
-  }
-
-  nextCommandId++;
-
-  //convert CustomMenu instances to HMENU intances
-  BuildMenuTree(hMenu, m_Menus);
+  //Build the menus
+  BuildMenuTree(hMenu);
 
   return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
 }
@@ -443,15 +399,34 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = FindMenuByCommandId(m_Menus, target_command_id);
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  shellanything::Menu * menu = cmgr.findMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
     return E_INVALIDARG;
   }
 
+  //compute the visual menu title
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  std::string title = pmgr.expand(menu->getName());
+
   //found a menu match, execute menu action
-  LOG(INFO) << __FUNCTION__ << "(), executing action '" << menu->title.c_str() << "'!";
+  LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
+
+  //execute actions
+  const shellanything::Action::ActionPtrList & actions = menu->getActions();
+  for(size_t i=0; i<actions.size(); i++)
+  {
+    LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
+    const shellanything::Action * action = actions[i];
+    if (action)
+    {
+      action->execute(m_Context);
+    }
+  }
+
+  LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "' completed.";
 
   return S_OK;
 }
@@ -469,12 +444,17 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  CustomMenu * menu = FindMenuByCommandId(m_Menus, target_command_id);
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  shellanything::Menu * menu = cmgr.findMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset;
-    return S_FALSE;
+    return E_INVALIDARG;
   }
+
+  //compute the visual menu description
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  std::string description = pmgr.expand(menu->getDescription());
 
   //Build up tooltip string
   switch(uFlags)
@@ -482,14 +462,14 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_HELPTEXTA:
     {
       //ANIS tooltip handling
-      lstrcpynA(pszName, menu->title.c_str(), cchMax);
+      lstrcpynA(pszName, description.c_str(), cchMax);
       return S_OK;
     }
     break;
   case GCS_HELPTEXTW:
     {
       //UNICODE tooltip handling
-      std::wstring title = shellanything::ansi_to_unicode(menu->title);
+      std::wstring title = shellanything::ansi_to_unicode(description);
       lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }
@@ -497,14 +477,14 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_VERBA:
     {
       //ANIS tooltip handling
-      lstrcpynA(pszName, menu->title.c_str(), cchMax);
+      lstrcpynA(pszName, description.c_str(), cchMax);
       return S_OK;
     }
     break;
   case GCS_VERBW:
     {
       //UNICODE tooltip handling
-      std::wstring title = shellanything::ansi_to_unicode(menu->title);
+      std::wstring title = shellanything::ansi_to_unicode(description);
       lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }
@@ -532,6 +512,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   shellanything::Context::ElementList files;
 
   // Cleanup
+  m_Context.unregisterProperties(); //Unregister the previous context properties
   m_Context.setElements(files);
   m_IsBackGround = false;
 
@@ -607,6 +588,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
   //update the selection context
   m_Context.setElements(files);
+
+  //Register the current context properties so that menus can display the right caption
+  m_Context.registerProperties();
 
   return S_OK;
 }
@@ -1148,6 +1132,22 @@ void InitLogger()
   LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
 }
 
+void InitConfigManager()
+{
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+
+  //get home directory of the user
+  std::string home_dir = shellanything::getHomeDirectory();
+  std::string config_dir = home_dir + "\\ShellAnything";
+  LOG(INFO) << "HOME   directory : " << home_dir.c_str();
+  LOG(INFO) << "Config directory : " << config_dir.c_str();
+
+  //setup ConfigManager to read files from config_dir
+  cmgr.clearSearchPath();
+  cmgr.addSearchPath(config_dir);
+  cmgr.refresh();
+}
+
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
   if (dwReason == DLL_PROCESS_ATTACH)
@@ -1156,6 +1156,9 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     // Initialize Google's logging library.
     InitLogger();
+
+    //Initialize the configuration manager
+    InitConfigManager();
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {

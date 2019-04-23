@@ -30,6 +30,7 @@
 
 #include "BitmapCache.h"
 #include "shellanything/Context.h"
+#include "shellanything/Menu.h"
 
 #include <vector>
 
@@ -83,20 +84,10 @@ public:
 // Prototype de notre interface IContextMenu:
 class CContextMenu : public IContextMenu, IShellExtInit
 {
-public:
-  typedef std::vector<std::string> StringVector;
-  struct CustomMenu
-  {
-    std::string title;
-    UINT command_id;
-    std::vector<CustomMenu> children;
-  };
-  typedef std::vector<CustomMenu> CustomMenuVector;
 protected:
   CCriticalSection            m_CS; //protects class members
   ULONG                       m_cRef;
   UINT                        m_FirstCommandId;
-  CustomMenuVector            m_Menus;
   bool                        m_IsBackGround;
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
   shellanything::BitmapCache  m_BitmapCache;
@@ -120,9 +111,8 @@ public:
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
 private:
-  CContextMenu::CustomMenu * FindMenuByCommandId(CContextMenu::CustomMenuVector & menus, UINT target_command_id);
-  void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenuVector & menus);
-  void BuildMenuTree(HMENU hMenu, CContextMenu::CustomMenu & menu, UINT insert_pos, int & debug_icon_offset);
+  void BuildMenuTree(HMENU hMenu);
+  void BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos);
 };
 
 #endif //SA_SHELLEXTENSION_H
