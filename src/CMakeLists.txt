@@ -56,6 +56,8 @@ add_library(shellext SHARED
   shellext.cpp
   shellext.h
   shellext.def
+  utf_strings.cpp
+  utf_strings.h
   win32_utils.cpp
   win32_utils.h
   win32_registry.cpp
