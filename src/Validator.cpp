@@ -137,12 +137,15 @@ namespace shellanything
       //split
       ra::strings::StringVector properties = ra::strings::split(mProperties, ";");
 
-      //each property specified must exists
+      //each property specified must exists and be non-empty
       for(size_t i=0; i<properties.size(); i++)
       {
         const std::string & p = properties[i];
         if (!pmgr.hasProperty(p))
           return false; //missing property
+        const std::string & p_value = pmgr.getProperty(p);
+        if (p_value.empty())
+          return false; //empty
       }
     }
 
