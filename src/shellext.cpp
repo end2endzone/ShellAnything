@@ -409,7 +409,24 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
     const shellanything::Action * action = actions[i];
     if (action)
     {
-      action->execute(m_Context);
+      SetLastError(0); //reset win32 error code in case the action fails.
+      bool success = action->execute(m_Context);
+
+      if (!success)
+      {
+        //try to get an error mesage from win32
+        uint32_t dwError = shellanything::GetSystemErrorCode();
+        if (dwError)
+        {
+          std::string error_message = shellanything::GetSystemErrorDescription(dwError);
+          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed: " << error_message;
+        }
+        else
+        {
+          //simply log an error
+          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed.";
+        }
+      }
     }
   }
 
