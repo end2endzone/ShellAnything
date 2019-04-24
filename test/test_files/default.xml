@@ -18,12 +18,10 @@ Help:
   <shell>
     <menu name="Copy to clipboard...">
       <icon path="C:\Windows\System32\shell32.dll" index="68" />
-      <!--TODO: update the visibility tag to support a maxfiles="1" attribute or maxfolders="1" instead of -->
       <validity folder="true" file="true" maxfiles="1" maxfolders="1" />
       <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
         <icon path="C:\Windows\System32\shell32.dll" index="165" />
         <actions>
-          <!--TODO: update clipboard tag to support multiple selection-->
           <clipboard value="${selection.path}"/>
         </actions>
       </menu>
@@ -67,11 +65,9 @@ Help:
     <menu separator="true" />
 
     <menu name="Foo Service">
-      <!--Note: validity is not specified, the menu is always valid-->
       <icon path="C:\Windows\System32\cmmon32.exe" index="0" />
       
       <menu name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
-        <!--<icon path="C:\Windows\System32\shell32.dll" index="109" />-->
         <icon path="C:\Windows\System32\imageres.dll" index="100" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
