@@ -33,21 +33,6 @@ HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
 
-std::string GetLastErrorAsString(DWORD dwError)
-{
-  LPSTR buffer = NULL;
-  size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                NULL, dwError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buffer, 0, NULL);
-
-  //Make a copy
-  std::string message(buffer, size);
-
-  //Free the buffer.
-  LocalFree(buffer);
-
-  return message;
-}
-
 std::string GetCurrentModulePath()
 {
   std::string path;
@@ -59,7 +44,7 @@ std::string GetCurrentModulePath()
                           &hModule))
   {
     DWORD dwError = GetLastError();
-    std::string desc = GetLastErrorAsString(dwError);
+    std::string desc = shellanything::GetSystemErrorDescription(dwError);
     std::string message = std::string() +
       "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::toString(__LINE__) + ".\n" +
       "\n" +
@@ -67,7 +52,9 @@ std::string GetCurrentModulePath()
       "The following error code was returned:\n" +
       "\n" +
       ra::strings::format("0x%08x", dwError) + ": " + desc;
-    MessageBox(NULL, message.c_str(), "ShellAnything Error", MB_OK | MB_ICONERROR);
+
+    //display an error on 
+    shellanything::ShowErrorMessage("ShellAnything Error", message);
 
     return EMPTY_STRING;
   }
@@ -185,7 +172,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
   insert_pos++; //next menu is below this one
 
-  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << insert_pos << ", id=" << menuinfo.wID << ", result=" << result << ", title=" << title;
+  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::format("%03d", insert_pos) << ", id=" << ra::strings::format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
 }
 
 void CContextMenu::BuildMenuTree(HMENU hMenu)

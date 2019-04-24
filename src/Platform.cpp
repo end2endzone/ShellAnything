@@ -490,4 +490,31 @@ namespace shellanything
     return 0;
   }
 
+  uint32_t GetSystemErrorCode()
+  {
+    DWORD dwError = GetLastError();
+    return dwError;
+  }
+
+  std::string GetSystemErrorDescription(uint32_t dwError)
+  {
+    LPSTR buffer = NULL;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                  NULL, dwError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buffer, 0, NULL);
+
+    //Make a copy
+    std::string message(buffer, size);
+
+    //Free the buffer.
+    LocalFree(buffer);
+
+    return message;
+  }
+
+  void ShowErrorMessage(const std::string & title, const std::string & message)
+  {
+    HWND hWnd = GetDesktopWindow();
+    MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+  }
+
 } //namespace shellanything

@@ -61,6 +61,10 @@ namespace shellanything
   uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory);
   uint32_t openDocument(const std::string & iPath);
 
+  uint32_t GetSystemErrorCode();
+  std::string GetSystemErrorDescription(uint32_t dwError);
+  void ShowErrorMessage(const std::string & title, const std::string & message);
+
 } //namespace shellanything
 
 #endif //SA_ACTION_H
