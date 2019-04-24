@@ -70,7 +70,7 @@ namespace shellanything { namespace test
   {
     ConfigManager & mgr = ConfigManager::getInstance();
     
-    const std::string path = "test_files/demo.xml";
+    const std::string path = "test_files/default.xml";
     std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = mgr.loadFile(path, error_message);
 
@@ -270,7 +270,7 @@ namespace shellanything { namespace test
   {
     ConfigManager & mgr = ConfigManager::getInstance();
     
-    const std::string path = "test_files/demo.xml";
+    const std::string path = "test_files/default.xml";
     std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = mgr.loadFile(path, error_message);
 
