@@ -49,7 +49,7 @@ namespace shellanything
     LOG(INFO) << "Setting clipboard to '" << value << "'";
 
     win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::getInstance();
-    bool result = clipboard.setText(mValue);
+    bool result = clipboard.setText(value);
 
     return result;
   }
