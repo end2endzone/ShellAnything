@@ -155,7 +155,7 @@ Help:
           <!--Note: this menu is always enabled but can be invisible if the visibility tag is not respected-->
           <visibility properties="compare.first.selection.filename" />
           <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+            <exec path="C:\windows\system32\cmd.exe" arguments="/K START &quot;&quot; C:\windows\system32\cmd.exe FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
 
             <!--Reset the properties now that compare is complete-->
             <property name="compare.first.selection.path"     value="" />
