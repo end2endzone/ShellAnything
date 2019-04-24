@@ -74,14 +74,12 @@ Help:
         </actions>
       </menu>
       <menu name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
-        <!--<icon path="C:\Windows\System32\shell32.dll" index="137" />-->
         <icon path="C:\Windows\System32\imageres.dll" index="101" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
         </actions>
       </menu>
       <menu name="Restart">
-        <!--<icon path="C:\Windows\System32\shell32.dll" index="238" />-->
         <icon path="C:\Windows\System32\wmploc.dll" index="151" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
