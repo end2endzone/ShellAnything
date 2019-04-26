@@ -1161,7 +1161,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     // Initialize Google's logging library.
     InitLogger();
 
-    //Initialize the configuration manager
+    // Initialize the configuration manager
     InitConfigManager();
   }
   else if (dwReason == DLL_PROCESS_DETACH)

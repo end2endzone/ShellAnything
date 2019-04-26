@@ -81,7 +81,6 @@ public:
   HRESULT STDMETHODCALLTYPE LockServer(BOOL);
 };
 
-// Prototype de notre interface IContextMenu:
 class CContextMenu : public IContextMenu, IShellExtInit
 {
 protected:
