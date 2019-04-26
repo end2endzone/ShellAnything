@@ -74,7 +74,65 @@ std::string GuidToString(GUID guid) {
   sprintf_s((char*)output.c_str(), output.size(), "{%08X-%04hX-%04hX-%02X%02X-%02X%02X%02X%02X%02X%02X}", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
   return output;
 }
+
+template <class T> class FlagDescriptor
+{
+public:
+  struct FLAGS
+  {
+    T value;
+    const char * name;
+  };
  
+  static std::string toBitString(T value, const FLAGS * flags)
+  {
+    std::string desc;
+ 
+    size_t index = 0;
+    while(flags[index].name)
+    {
+      const T & flag = flags[index].value;
+      const char * name = flags[index].name;
+ 
+      //if flag is set
+      if ((value & flag) == flag)
+      {
+        if (!desc.empty())
+          desc.append("|");
+        desc.append(name);
+      }
+ 
+      //next flag
+      index++;
+    }
+    return desc;
+  }
+
+  static std::string toValueString(T value, const FLAGS * flags)
+  {
+    std::string desc;
+ 
+    size_t index = 0;
+    while(flags[index].name)
+    {
+      const T & flag = flags[index].value;
+      const char * name = flags[index].name;
+ 
+      //if flag is set
+      if (value == flag)
+      {
+        if (!desc.empty())
+          desc.append(",");
+        desc.append(name);
+      }
+ 
+      //next flag
+      index++;
+    }
+    return desc;
+  }
+};
+
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos)
 {
   //Expanded the menu's strings
@@ -313,8 +371,28 @@ std::string GetMenuDescriptor(HMENU hMenu)
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
 {
   //build function descriptor
+  static const FlagDescriptor<UINT>::FLAGS flags[] = {
+    {CMF_NORMAL           , "CMF_NORMAL"           },
+    {CMF_DEFAULTONLY      , "CMF_DEFAULTONLY"      },
+    {CMF_VERBSONLY        , "CMF_VERBSONLY"        },
+    {CMF_EXPLORE          , "CMF_EXPLORE"          },
+    {CMF_NOVERBS          , "CMF_NOVERBS"          },
+    {CMF_CANRENAME        , "CMF_CANRENAME"        },
+    {CMF_NODEFAULT        , "CMF_NODEFAULT"        },
+    {CMF_ITEMMENU         , "CMF_ITEMMENU"         },
+    {CMF_EXTENDEDVERBS    , "CMF_EXTENDEDVERBS"    },
+    {CMF_DISABLEDVERBS    , "CMF_DISABLEDVERBS"    },
+    {CMF_ASYNCVERBSTATE   , "CMF_ASYNCVERBSTATE"   },
+    {CMF_OPTIMIZEFORINVOKE, "CMF_OPTIMIZEFORINVOKE"},
+    {CMF_SYNCCASCADEMENU  , "CMF_SYNCCASCADEMENU"  },
+    {CMF_DONOTPICKDEFAULT , "CMF_DONOTPICKDEFAULT" },
+    {NULL, NULL},
+  };
+  std::string uFlagsStr = FlagDescriptor<UINT>::toBitString(uFlags, flags);
+  std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
+
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlags;
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=" << uFlags << "(dec)=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -438,10 +516,24 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
   //build function descriptor
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", uFlags=" << uFlags << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax;
+  static const FlagDescriptor<UINT>::FLAGS flags[] = {
+    {GCS_VERBA    , "GCS_VERBA"    },
+    {GCS_HELPTEXTA, "GCS_HELPTEXTA"},
+    {GCS_VALIDATEA, "GCS_VALIDATEA"},
+    {GCS_VERBW    , "GCS_VERBW"    },
+    {GCS_HELPTEXTW, "GCS_HELPTEXTW"},
+    {GCS_VALIDATEW, "GCS_VALIDATEW"},
+    {GCS_VERBICONW, "GCS_VERBICONW"},
+    {GCS_UNICODE  , "GCS_UNICODE"  },
+    {NULL, NULL},
+  };
+  std::string uFlagsStr = FlagDescriptor<UINT>::toValueString(uFlags, flags);
+  std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
-  UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu - command id of the first menu)
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", uFlags=" << uFlagsHex << "=" << uFlags << "(dec)=(" << uFlagsStr << ")";
+
+  UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
 
   //From this point, it is safe to use class members without other threads interference
