@@ -30,7 +30,9 @@
 namespace shellanything
 {
 
+  std::string expand(const std::string & iValue);
   ra::strings::StringVector getEnvironmentVariables();
+
   std::string getHomeDirectory();
   std::string getApplicationsDataDirectory();
   std::string getDocumentsDirectory();
@@ -39,6 +41,7 @@ namespace shellanything
   bool peekFile(const std::string & path, size_t size, std::string & content);
   bool readFile(const std::string & path, std::string & content);
   bool writeFile(const std::string & path, std::string & content);
+  bool createFolder(const char * iPath);
 
   // copyFile() callback interfaces
   class IProgressReport
@@ -57,6 +60,10 @@ namespace shellanything
   uint32_t startProcess(const std::string & iCommand, const std::string & iDefaultDirectory);
   uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory);
   uint32_t openDocument(const std::string & iPath);
+
+  uint32_t GetSystemErrorCode();
+  std::string GetSystemErrorDescription(uint32_t dwError);
+  void ShowErrorMessage(const std::string & title, const std::string & message);
 
 } //namespace shellanything
 

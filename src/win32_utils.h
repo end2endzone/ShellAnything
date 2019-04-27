@@ -22,34 +22,24 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_NODEFACTORY_H
-#define SA_NODEFACTORY_H
+#ifndef WIN32_UTILS_H
+#define WIN32_UTILS_H
 
-#include "shellanything/Item.h"
-#include "shellanything/Action.h"
-#include "shellanything/Icon.h"
-#include "shellanything/Validator.h"
-#include "tinyxml2.h"
+#include <Windows.h>
+#include <string>
 
-namespace shellanything
+namespace win32_utils
 {
+  SIZE GetIconSize(HICON hIcon);
+  HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
+  RGBQUAD toRGBQUAD(const DWORD & iColor);
+  SIZE GetBitmapSize(HBITMAP hBitmap);
+  BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
+  HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
+  HBITMAP CopyAsBitmap(HICON hIcon);
+  void CreateBMPFile(const char * path, HBITMAP hBitmap);
+  BOOL IsFullyTransparent(HBITMAP hBitmap);
+  BOOL IsFullyTransparent(const std::string & buffer);
+} //namespace win32_utils
 
-  class ObjectFactory
-  {
-  private:
-    ObjectFactory();
-    virtual ~ObjectFactory();
-
-  public:
-    static ObjectFactory & getInstance();
-
-    bool parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
-    bool parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error);
-    Action * parseAction(const tinyxml2::XMLElement * element, std::string & error);
-    Item * parseItem(const tinyxml2::XMLElement * element, std::string & error);
-
-  };
-
-} //namespace shellanything
-
-#endif //SA_NODEFACTORY_H
+#endif //WIN32_UTILS_H

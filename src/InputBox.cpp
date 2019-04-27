@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/InputBox.h"
+#include "InputBox.h"
 
 #define DEFAULT_INPUTBOX_WIDTH  400
 #define DEFAULT_INPUTBOX_HEIGHT 150
@@ -527,7 +527,7 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
           m_Text.assign(length, 0);
           if (m_Text.size() == length && length > 0)
           {
-            GetWindowText(m_hTextBoxAnswer, &m_Text[0], length+1); //GetWindowText() expect length to also include the NULL terminating character
+            GetWindowText(m_hTextBoxAnswer, &m_Text[0], (int)length+1); //GetWindowText() expect length to also include the NULL terminating character
           }
 
           //Exit the window like if user have pressed OK button
@@ -561,11 +561,11 @@ BOOL CInputBox::UpdateWindowStyle(HWND hWnd, LONG new_styles)
 
   //Get current values for debugging
 #ifndef NDEBUG //if DEBUG MODE
-  LONG styles   = GetWindowLongPtr(hWnd, GWL_STYLE);
-  LONG stylesex = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+  LONG styles   = (LONG)GetWindowLongPtr(hWnd, GWL_STYLE);
+  LONG stylesex = (LONG)GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 #endif
 
-  LONG result = SetWindowLongPtr(hWnd, GWL_EXSTYLE, new_styles);
+  LONG result = (LONG)SetWindowLongPtr(hWnd, GWL_EXSTYLE, new_styles);
 
   //Notify the window of the change
   BOOL success=SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);

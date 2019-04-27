@@ -22,15 +22,16 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/Platform.h"
+#include "Platform.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
 #include <stdio.h>
+#include <direct.h>
 
 #ifdef WIN32
-#   ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-#   endif
+//#   ifndef WIN32_LEAN_AND_MEAN
+//#   define WIN32_LEAN_AND_MEAN 1
+//#   endif
 #   include <windows.h> // for GetModuleHandleEx()
 #   include <Shlobj.h>
 #   include <ShellAPI.h>
@@ -38,8 +39,29 @@
 #   pragma comment( lib, "psapi.lib" )
 #endif
 
+#include <Shlobj.h>
+
 namespace shellanything
 {
+
+  std::string expand(const std::string & iValue)
+  {
+    std::string output = iValue;
+
+    ra::strings::StringVector variables = getEnvironmentVariables();
+    for(size_t i=0; i<variables.size(); i++)
+    {
+      const std::string & name = variables[i];
+
+      std::string pattern = std::string("%") + name + std::string("%");
+      std::string value = ra::environment::getEnvironmentVariable(name.c_str());
+
+      //process with search and replace
+      ra::strings::replace(output, pattern, value);
+    }
+
+    return output;
+  }
 
   ra::strings::StringVector getEnvironmentVariables()
   {
@@ -71,15 +93,31 @@ namespace shellanything
     return vars;
   }
 
-  std::string getHomeDirectory()
-  {
 #ifdef _WIN32
+  inline std::string getWin32Directory(int csidl)
+  {
+    // https://stackoverflow.com/questions/18493484/shgetfolderpath-deprecated-what-is-alternative-to-retrieve-path-for-windows-fol
+    // https://superuser.com/questions/150012/what-is-the-difference-between-local-and-roaming-folders
+    // CSIDL_PROFILE          matches "C:\Users\JohnSmith"
+    // CSIDL_PERSONAL         matches "C:\Users\JohnSmith\Documents"
+    // CSIDL_APPDATA          matches "C:\Users\JohnSmith\AppData\Roaming"
+    // CSIDL_LOCAL_APPDATA    matches "C:\Users\JohnSmith\AppData\Local"
+    // CSIDL_COMMON_APPDATA   matches "C:\ProgramData"
+    // CSIDL_COMMON_DOCUMENTS matches "C:\Users\Public\Documents"
     CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, 0, szPath)))
+    if(SUCCEEDED(SHGetSpecialFolderPath(NULL, szPath, csidl, FALSE)))
     {
       return szPath;
     }
     return "";
+  }
+#endif
+
+  std::string getHomeDirectory()
+  {
+#ifdef _WIN32
+    std::string dir = getWin32Directory(CSIDL_PROFILE);
+    return dir;
 #else
     return "/~";
 #endif
@@ -88,37 +126,24 @@ namespace shellanything
   std::string getApplicationsDataDirectory()
   {
 #ifdef _WIN32
-    // https://superuser.com/questions/150012/what-is-the-difference-between-local-and-roaming-folders
-    // CSIDL_APPDATA matches "C:\Users\beauchamp.a3\AppData\Roaming"
-    // CSIDL_COMMON_APPDATA matches "C:\ProgramData"
-    // CSIDL_LOCAL_APPDATA matches "C:\Users\beauchamp.a3\AppData\Local"
-    CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA , NULL, 0, szPath)))
-    {
-      return szPath;
-    }
-    return "";
+    std::string dir = getWin32Directory(CSIDL_LOCAL_APPDATA);
+    return dir;
 #endif
   }
 
   std::string getDocumentsDirectory()
   {
 #ifdef _WIN32
-    CHAR szPath[MAX_PATH];
-    if(SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS , NULL, 0, szPath)))
-    {
-      return szPath;
-    }
-    return "";
+    std::string dir = getWin32Directory(CSIDL_PERSONAL);
+    return dir;
 #endif
   }
 
   std::string getDesktopDirectory()
   {
 #ifdef _WIN32
-    std::string userprofile = ra::environment::getEnvironmentVariable("USERPROFILE");
-    std::string dektop_dir = userprofile + "\\Desktop";
-    return dektop_dir;
+    std::string dir = getWin32Directory(CSIDL_DESKTOPDIRECTORY);
+    return dir;
 #endif
   }
 
@@ -128,8 +153,8 @@ namespace shellanything
     content = "";
 
     //allocate a buffer which can hold the content of the file
-    uint32_t file_size = ra::filesystem::getFileSize(path.c_str());
-    uint32_t max_read_size = (file_size < size ? file_size : size);
+    size_t file_size = ra::filesystem::getFileSize(path.c_str());
+    size_t max_read_size = (file_size < size ? file_size : size);
 
     FILE * f = fopen(path.c_str(), "rb");
     if (!f)
@@ -180,6 +205,70 @@ namespace shellanything
  
     bool success = (content.size() == size_write);
     return success;
+  }
+
+  bool createFolder(const char * iPath)
+  {
+    if (iPath == NULL)
+      return false;
+
+    if (ra::filesystem::folderExists(iPath))
+      return true;
+
+    //folder does not already exists and must be created
+
+    //inspired from https://stackoverflow.com/a/675193
+    char *pp;
+    char *sp;
+    int   status;
+    char separator = ra::filesystem::getPathSeparator();
+#ifdef _WIN32
+    char *copypath = _strdup(iPath);
+#else
+    char *copypath = strdup(iPath);
+    static const mode_t mode = 0755;
+#endif
+
+    status = 0;
+    pp = copypath;
+    while (status == 0 && (sp = strchr(pp, separator)) != 0)
+    {
+      if (sp != pp)
+      {
+        /* Neither root nor double slash in path */
+        *sp = '\0';
+#ifdef _WIN32
+        status = _mkdir(copypath);
+        if (status == -1 && strlen(copypath) == 2 && copypath[1] == ':') //issue #27
+          status = 0; //fix for _mkdir("C:") like
+        int errno_copy = errno;
+        if (status == -1 && errno == EEXIST)
+          status = 0; //File already exist
+#else
+        status = mkdir(copypath, mode);
+#endif
+        if (status != 0)
+        {
+          //folder already exists?
+          if (ra::filesystem::folderExists(copypath))
+          {
+            status = 0;
+          }
+        }
+        *sp = separator;
+      }
+      pp = sp + 1;
+    }
+    if (status == 0)
+    {
+#ifdef _WIN32
+      status = _mkdir(iPath);
+#else
+      status = mkdir(iPath, mode);
+#endif
+    }
+    free(copypath);
+    return (status == 0);      
   }
 
   bool copyFileInternal(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor, ProgressReportCallback progress_function)
@@ -399,6 +488,33 @@ namespace shellanything
     }
 
     return 0;
+  }
+
+  uint32_t GetSystemErrorCode()
+  {
+    DWORD dwError = GetLastError();
+    return dwError;
+  }
+
+  std::string GetSystemErrorDescription(uint32_t dwError)
+  {
+    LPSTR buffer = NULL;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                  NULL, dwError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buffer, 0, NULL);
+
+    //Make a copy
+    std::string message(buffer, size);
+
+    //Free the buffer.
+    LocalFree(buffer);
+
+    return message;
+  }
+
+  void ShowErrorMessage(const std::string & title, const std::string & message)
+  {
+    HWND hWnd = GetDesktopWindow();
+    MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
   }
 
 } //namespace shellanything

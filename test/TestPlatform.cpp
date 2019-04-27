@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestPlatform.h"
-#include "shellanything/Platform.h"
+#include "Platform.h"
 #include "rapidassist/filesystem.h"
 
 namespace shellanything { namespace test
@@ -49,6 +49,11 @@ namespace shellanything { namespace test
     ASSERT_FALSE(    apps_dir.empty() );
     ASSERT_FALSE(    docs_dir.empty() );
     ASSERT_FALSE( desktop_dir.empty() );
+
+    printf("   home_dir=%s\n",    home_dir.c_str());
+    printf("   apps_dir=%s\n",    apps_dir.c_str());
+    printf("   docs_dir=%s\n",    docs_dir.c_str());
+    printf("desktop_dir=%s\n", desktop_dir.c_str());
 
     ASSERT_TRUE( ra::filesystem::folderExists(   home_dir.c_str()) ) << "   home_dir='" <<    home_dir << "'";
     ASSERT_TRUE( ra::filesystem::folderExists(   apps_dir.c_str()) ) << "   apps_dir='" <<    apps_dir << "'";

@@ -22,10 +22,10 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ObjectFactory.h"
+#include "ObjectFactory.h"
 
 #include "shellanything/Configuration.h"
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 #include "shellanything/Validator.h"
 #include "shellanything/ActionClipboard.h"
 #include "shellanything/ActionExecute.h"
@@ -40,7 +40,7 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
-  static const std::string NODE_ITEM = "item";
+  static const std::string NODE_MENU = "menu";
   static const std::string NODE_ICON = "icon";
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
@@ -154,10 +154,6 @@ namespace shellanything
 
     Validator result;
 
-    //temporary parsed attribute values
-    std::string tmp_str;
-    int tmp_int = -1;
-
     //parse maxfiles
     int maxfiles = -1;
     if (parseAttribute(element, "maxfiles", true, true, maxfiles, error))
@@ -178,7 +174,17 @@ namespace shellanything
     {
       if (!fileextensions.empty())
       {
-        result.setFileExtensions(tmp_str);
+        result.setFileExtensions(fileextensions);
+      }
+    }
+
+    //parse properties
+    std::string properties;
+    if (parseAttribute(element, "properties", true, true, properties, error))
+    {
+      if (!fileextensions.empty())
+      {
+        result.setProperties(properties);
       }
     }
 
@@ -321,7 +327,7 @@ namespace shellanything
     return false;
   }
 
-  Item * ObjectFactory::parseItem(const XMLElement* element, std::string & error)
+  Menu * ObjectFactory::parseMenu(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -330,37 +336,44 @@ namespace shellanything
     }
 
     std::string xml_name = element->Name();
-    if (xml_name != NODE_ITEM)
+    if (xml_name != NODE_MENU)
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
-    //at this step the <item> is valid
-    Item * item = new Item();
+    //at this step the <menu> is valid
+    Menu * menu = new Menu();
 
     //parse separator
-    std::string item_separator;
-    bool have_separetor = parseAttribute(element, "separator", true, true, item_separator, error);
+    std::string menu_separator;
+    bool have_separetor = parseAttribute(element, "separator", true, true, menu_separator, error);
     bool is_separator = false;
     if (have_separetor)
     {
-      is_separator = parseBoolean(item_separator);
+      is_separator = parseBoolean(menu_separator);
       if (is_separator)
       {
-        item->setSeparator(true);
-        return item;
+        menu->setSeparator(true);
+        return menu;
       }
     }
 
     //parse name
-    std::string item_name;
-    if (!parseAttribute(element, "name", false, false, item_name, error))
+    std::string menu_name;
+    if (!parseAttribute(element, "name", false, false, menu_name, error))
     {
-      delete item;
+      delete menu;
       return NULL;
     }
-    item->setName(item_name);
+    menu->setName(menu_name);
+
+    //parse description
+    std::string menu_desc;
+    if (!parseAttribute(element, "description", true, true, menu_desc, error))
+    {
+      menu->setDescription(menu_desc);
+    }
 
     //parse icon
     std::string icon_path;
@@ -368,38 +381,38 @@ namespace shellanything
     {
       Icon icon;
       icon.setPath(icon_path);
-      item->setIcon(icon);
+      menu->setIcon(icon);
     }
 
     ElementPtrList elements; //temporary xml element containers
 
-    //find <validity> node under <item>
+    //find <validity> node under <menu>
     elements = getChildNodes(element, NODE_VALIDITY);
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator validity;
       if (!ObjectFactory::getInstance().parseValidator(elements[i], validity, error))
       {
-        delete item;
+        delete menu;
         return NULL;
       }
-      item->setValidity(validity);
+      menu->setValidity(validity);
     }
 
-    //find <visibility> node under <item>
+    //find <visibility> node under <menu>
     elements = getChildNodes(element, NODE_VISIBILITY);
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator visibility;
       if (!ObjectFactory::getInstance().parseValidator(elements[i], visibility, error))
       {
-        delete item;
+        delete menu;
         return NULL;
       }
-      item->setVisibility(visibility);
+      menu->setVisibility(visibility);
     }
 
-    //find <actions> node under <item>
+    //find <actions> node under <menu>
     const XMLElement* xml_actions = element->FirstChildElement("actions");
     if (xml_actions)
     {
@@ -413,32 +426,32 @@ namespace shellanything
         Action * action = ObjectFactory::getInstance().parseAction(xml_action, error);
         if (action == NULL)
         {
-          delete item;
+          delete menu;
           return NULL;
         }
 
         //add the new action node
-        item->addAction(action);
+        menu->addAction(action);
 
         //next action node
         xml_action = xml_action->NextSiblingElement();
       }
     }
 
-    //find <item> node under <item>
-    elements = getChildNodes(element, NODE_ITEM);
+    //find <menu> node under <menu>
+    elements = getChildNodes(element, NODE_MENU);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Item * subitem = ObjectFactory::getInstance().parseItem(elements[i], error);
-      if (subitem == NULL)
+      Menu * submenu = ObjectFactory::getInstance().parseMenu(elements[i], error);
+      if (submenu == NULL)
       {
-        delete item;
+        delete menu;
         return NULL;
       }
-      item->addChild(subitem);
+      menu->addChild(submenu);
     }
 
-    //find <icon> node under <item>
+    //find <icon> node under <menu>
     elements = getChildNodes(element, "icon");
     for(size_t i=0; i<elements.size(); i++)
     {
@@ -446,13 +459,13 @@ namespace shellanything
       if (!ObjectFactory::getInstance().parseIcon(elements[i], icon, error))
       {
         //failed icon parsing
-        delete item;
+        delete menu;
         return NULL;
       }
-      item->setIcon(icon);
+      menu->setIcon(icon);
     }
 
-    return item;
+    return menu;
   }
 
   bool ObjectFactory::parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)

@@ -23,9 +23,11 @@
  *********************************************************************************/
 
 #include "shellanything/ActionClipboard.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 
 #include "win32clipboard/win32clipboard.h"
+
+#include <glog/logging.h>
 
 namespace shellanything
 {
@@ -44,10 +46,10 @@ namespace shellanything
     std::string value = pmgr.expand(mValue);
 
     //debug
-    //printf("Setting clipboard to '%s'\n", value.c_str());
+    LOG(INFO) << "Setting clipboard to '" << value << "'";
 
     win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::getInstance();
-    bool result = clipboard.setText(mValue);
+    bool result = clipboard.setText(value);
 
     return result;
   }

@@ -23,14 +23,15 @@
  *********************************************************************************/
 
 #include "shellanything/ConfigManager.h"
-#include "shellanything/ObjectFactory.h"
-#include "shellanything/Item.h"
-#include "shellanything/Platform.h"
+#include "ObjectFactory.h"
+#include "shellanything/Menu.h"
+#include "Platform.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
-#include "rapidassist/logger.h"
 #include "tinyxml2.h"
+
+#include <glog/logging.h>
 
 using namespace tinyxml2;
 
@@ -86,23 +87,23 @@ namespace shellanything
     config->setFilePath(path);
     config->setFileModifiedDate(file_modified_date);
 
-    //find <item> nodes under <shell>
-    const XMLElement* xml_item = xml_shell->FirstChildElement("item");
-    while (xml_item)
+    //find <menu> nodes under <shell>
+    const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
+    while (xml_menu)
     {
-      //found a new item node
-      Item * item = ObjectFactory::getInstance().parseItem(xml_item, error);
-      if (item == NULL)
+      //found a new menu node
+      Menu * menu = ObjectFactory::getInstance().parseMenu(xml_menu, error);
+      if (menu == NULL)
       {
         delete config;
         return NULL;
       }
 
-      //add the new item to the current configuration
-      config->addChild(item);
+      //add the new menu to the current configuration
+      config->addChild(menu);
 
-      //next item node
-      xml_item = xml_item->NextSiblingElement("item");
+      //next menu node
+      xml_menu = xml_menu->NextSiblingElement("menu");
     }
 
     return config;
@@ -110,6 +111,8 @@ namespace shellanything
 
   void ConfigManager::refresh()
   {
+    LOG(INFO) << __FUNCTION__ << "()";
+    
     //validate existing configurations
     Configuration::ConfigurationPtrList existing = getConfigurations();
     for(size_t i=0; i<existing.size(); i++)
@@ -123,11 +126,13 @@ namespace shellanything
       if (ra::filesystem::fileExists(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
+        LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
       }
       else
       {
         //file is missing or current configuration is out of date
         //forget about existing config
+        LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
         mConfigurations.removeChild(config);
       }
     }
@@ -137,6 +142,8 @@ namespace shellanything
     {
       const std::string & path = mPaths[i];
  
+      LOG(INFO) << "Searching configuration files in directory '" << path << "'";
+
       //search files in each directory
       ra::strings::StringVector files;
       bool dir_found = ra::filesystem::findFiles(files, path.c_str());
@@ -151,13 +158,15 @@ namespace shellanything
             //is this file already loaded ?
             if (!isLoadedConfigurationFile(file_path))
             {
+              LOG(INFO) << "Found configuration file '" << file_path << "'";
+
               //parse the file
               std::string error;
               Configuration * config = loadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
-                ra::logger::log(ra::logger::LOG_ERROR, "Failed loading configuration file '%s'. Error=%s", file_path.c_str(), error.c_str());
+                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
               }
               else
               {
@@ -165,17 +174,51 @@ namespace shellanything
                 mConfigurations.addChild(config);
               }
             }
+            else
+            {
+              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
+            }
           }
         }
       }
       else
       {
         //log an error message
-        ra::logger::log(ra::logger::LOG_WARNING, "Failed looking for configuration files in directory '%s'.", path.c_str() );
+        LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
       }
     }
   }
 
+  Menu * ConfigManager::findMenuByCommandId(const uint32_t & iCommandId)
+  {
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      Menu * match = config->findMenuByCommandId(iCommandId);
+      if (match)
+        return match;
+    }
+ 
+    return NULL;
+  }
+ 
+  uint32_t ConfigManager::assignCommandIds(const uint32_t & iFirstCommandId)
+  {
+    uint32_t nextCommandId = iFirstCommandId;
+
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      nextCommandId = config->assignCommandIds(nextCommandId);
+    }
+ 
+    return nextCommandId;
+  }
+ 
   Configuration::ConfigurationPtrList ConfigManager::getConfigurations()
   {
     Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));
@@ -200,16 +243,16 @@ namespace shellanything
     {
       //read the beginning of the file
       std::string content;
-      bool readed = peekFile(path.c_str(), 512, content);
+      bool readed = peekFile(path.c_str(), 1024, content);
       if (readed)
       {
         //and look for special XML tags
         size_t rootPos = content.find("<root>", 0);
         size_t shellPos = content.find("<shell>", rootPos);
-        size_t itemPos = content.find("<item", shellPos);
+        size_t menuPos = content.find("<menu", shellPos);
         if (rootPos != std::string::npos &&
             shellPos != std::string::npos &&
-            itemPos != std::string::npos)
+            menuPos != std::string::npos)
         {
           //found the required tags
           return true;

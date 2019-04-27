@@ -23,8 +23,10 @@
  *********************************************************************************/
 
 #include "shellanything/ActionPrompt.h"
-#include "shellanything/PropertyManager.h"
-#include "shellanything/InputBox.h"
+#include "PropertyManager.h"
+#include "InputBox.h"
+
+#include <glog/logging.h>
 
 namespace shellanything
 {
@@ -44,17 +46,20 @@ namespace shellanything
     std::string title = pmgr.expand(mTitle);
 
     //debug
-    //std::string value = "bar";
-    //printf("%s ? %s\n", title.c_str(), value.c_str());
+    LOG(INFO) << "Prompt: '" << title << "' ?";
 
     CInputBox box(NULL);
     bool result = box.DoModal("Question / Prompt", title);
     if (!result)
+    {
+      LOG(INFO) << "Prompt: user has cancelled the action.";
       return false;
+    }
 
     const std::string & value = box.getText();
 
-    //printf("Setting property '%s' to '%s'\n", name.c_str(), value.c_str());
+    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << value << "'";
+
     pmgr.setProperty(name, value);
 
     return true;

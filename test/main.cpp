@@ -27,6 +27,9 @@
 #include <stdio.h>
 
 #include <gtest/gtest.h>
+#include <glog/logging.h>
+
+#include "Platform.h"
 
 #include "rapidassist/gtesthelp.h"
 
@@ -34,6 +37,10 @@ using namespace ra;
 
 int main(int argc, char **argv)
 {
+  // Initialize Google's logging library.
+  google::InitGoogleLogging(argv[0]);
+  LOG(INFO) << "Starting unit tests";
+
   //define default values for xml output report
   std::string outputXml = "xml:" "shellanything_unittest";
   outputXml += (ra::gtesthelp::isProcessorX86() ? ".x86" : ".x64");

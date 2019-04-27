@@ -10,6 +10,7 @@ set GTEST_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\googletest\install
 set rapidassist_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\RapidAssist\install
 set tinyxml2_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\tinyxml2\install
 set win32clipboard_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\win32Clipboard\install
+set glog_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\glog\install_dir
 set INSTALL_LOCATION=%APPVEYOR_BUILD_FOLDER%\install
 
 echo ============================================================================
@@ -18,7 +19,7 @@ echo ===========================================================================
 cd /d %APPVEYOR_BUILD_FOLDER%
 mkdir build >NUL 2>NUL
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% -DSHELLANYTHING_BUILD_TEST=ON -DBUILD_SHARED_LIBS=OFF ..
+cmake -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% -DSHELLANYTHING_BUILD_TEST=ON -DBUILD_SHARED_LIBS=OFF ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ============================================================================
@@ -47,6 +48,7 @@ set GTEST_ROOT=
 set rapidassist_DIR=
 set tinyxml2_DIR=
 set win32clipboard_DIR=
+set glog_DIR=
 set INSTALL_LOCATION=
 
 ::Return to launch folder

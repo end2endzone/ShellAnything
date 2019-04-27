@@ -22,14 +22,14 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef TEST_SA_ITEM_H
-#define TEST_SA_ITEM_H
+#ifndef TEST_SA_SHELLEXT_H
+#define TEST_SA_SHELLEXT_H
 
 #include <gtest/gtest.h>
 
 namespace shellanything { namespace test
 {
-  class TestItem : public ::testing::Test
+  class TestShellExtension : public ::testing::Test
   {
   public:
     virtual void SetUp();
@@ -39,4 +39,4 @@ namespace shellanything { namespace test
 } //namespace test
 } //namespace shellanything
 
-#endif //TEST_SA_ITEM_H
+#endif //TEST_SA_SHELLEXT_H

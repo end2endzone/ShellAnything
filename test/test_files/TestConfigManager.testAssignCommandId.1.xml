@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Foo Service">
+      <!--Note: validity is not specified, the menu is always valid-->
+
+      <menu name="Stop" icon="C:\Program Files (x86)\FooSoftwares\stop.exe">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+        </actions>
+      </menu>
+      <menu name="Start" icon="C:\Program Files (x86)\FooSoftwares\start.exe">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+        </actions>
+      </menu>
+      <menu name="Restart">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+        </actions>
+      </menu>
+
+      <!--Split commands that are for the same purpose-->
+      <menu separator="true" />
+
+      <menu name="Connect">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/connect" />
+        </actions>
+      </menu>
+      <menu name="Update">
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/update" />
+        </actions>
+      </menu>
+    </menu>
+  </shell>
+</root>

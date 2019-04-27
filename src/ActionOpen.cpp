@@ -23,8 +23,10 @@
  *********************************************************************************/
 
 #include "shellanything/ActionOpen.h"
-#include "shellanything/PropertyManager.h"
-#include "shellanything/Platform.h"
+#include "PropertyManager.h"
+#include "Platform.h"
+
+#include <glog/logging.h>
 
 namespace shellanything
 {
@@ -43,7 +45,7 @@ namespace shellanything
     std::string path = pmgr.expand(mPath);
 
     //debug
-    //printf("Open file '%s'.\n", path.c_str());
+    LOG(INFO) << "Open file '" << path << "'";
 
     uint32_t pId = openDocument(path);
 

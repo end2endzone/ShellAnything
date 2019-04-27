@@ -52,9 +52,9 @@ namespace shellanything
 
   bool Icon::isValid() const
   {
-    if (mPath.empty() && mIndex == 0)
-      return true;
-    return false;
+    if (mPath.empty())
+      return false;
+    return true;
   }
 
   const std::string & Icon::getPath() const

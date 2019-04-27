@@ -1,11 +1,38 @@
 find_package(GTest)
 find_package(rapidassist)
+find_package(glog REQUIRED)
+
+set(CONFIGURATION_TEST_FILES ""
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/default.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testDetectNewFile.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
+)
+
+# Include files from shellanything library which are not public
+set(SHELLANYTHING_PRIVATE_FILES ""
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
+  ${CMAKE_SOURCE_DIR}/src/Platform.h
+  ${CMAKE_SOURCE_DIR}/src/Platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
+  ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/win32_registry.h
+  ${CMAKE_SOURCE_DIR}/src/win32_registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/win32_utils.h
+  ${CMAKE_SOURCE_DIR}/src/win32_utils.cpp
+)
 
 add_executable(shellanything_unittest
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  ${CONFIGURATION_TEST_FILES}
+  ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
+  TestBitmapCache.cpp
+  TestBitmapCache.h
   TestConfigManager.cpp
   TestConfigManager.h
   TestConfiguration.cpp
@@ -14,17 +41,27 @@ add_executable(shellanything_unittest
   TestContext.h
   TestDemoSamples.cpp
   TestDemoSamples.h
-  TestItem.cpp
-  TestItem.h
+  TestMenu.cpp
+  TestMenu.h
   TestNode.cpp
   TestNode.h
-  TestPlatform.cpp
-  TestPlatform.h
+  TestWin32Registry.cpp
+  TestWin32Registry.h
   TestPropertyManager.cpp
   TestPropertyManager.h
+  TestShellExtension.cpp
+  TestShellExtension.h
   TestValidator.cpp
   TestValidator.h
+  TestWin32Registry.cpp
+  TestWin32Registry.h
+  TestWin32Utils.cpp
+  TestWin32Utils.h
 )
+
+# Group external files as filster for Visual Studio
+source_group("Test Files"                     FILES ${CONFIGURATION_TEST_FILES})
+source_group("ShellAnything Library Files"    FILES ${SHELLANYTHING_PRIVATE_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)
@@ -34,9 +71,9 @@ endif()
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist)
-add_dependencies(shellanything_unittest shellanything)
-target_link_libraries(shellanything_unittest PUBLIC shellanything PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist )
+target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog ${CMAKE_SOURCE_DIR}/src)
+add_dependencies(shellanything_unittest shellanything shellext)
+target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
 
 # Copy test files database to target dir
 add_custom_command( TARGET shellanything_unittest POST_BUILD

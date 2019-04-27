@@ -22,29 +22,29 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestItem.h"
+#include "TestMenu.h"
 #include "shellanything/Icon.h"
-#include "shellanything/Item.h"
+#include "shellanything/Menu.h"
 #include "shellanything/ActionExecute.h"
 
 namespace shellanything { namespace test
 {
-  Item * newItem(const std::string & name)
+  Menu * newMenu(const std::string & name)
   {
-    Item * item = new Item();
-    item->setName(name);
-    return item;
+    Menu * menu = new Menu();
+    menu->setName(name);
+    return menu;
   }
 
-  class MyItem : public Item
+  class MyMenu : public Menu
   {
   public:
-    MyItem(bool * deleted_flag)
+    MyMenu(bool * deleted_flag)
     {
       this->deleted_flag = deleted_flag;
       (*deleted_flag) = false;
     }
-    virtual ~MyItem()
+    virtual ~MyMenu()
     {
       (*deleted_flag) = true;
     }
@@ -94,25 +94,25 @@ namespace shellanything { namespace test
 
 
   //--------------------------------------------------------------------------------------------------
-  void TestItem::SetUp()
+  void TestMenu::SetUp()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  void TestItem::TearDown()
+  void TestMenu::TearDown()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestItem, testItemOwnership)
+  TEST_F(TestMenu, testMenuOwnership)
   {
-    Item * root =   newItem("html");
-    Item * body =   newItem("body");
-    Item * child1 = newItem("h1");
-    Item * child2 = newItem("p");
-    Item * child3 = newItem("p");
+    Menu * root =   newMenu("html");
+    Menu * body =   newMenu("body");
+    Menu * child1 = newMenu("h1");
+    Menu * child2 = newMenu("p");
+    Menu * child3 = newMenu("p");
 
     //no children yet
     bool deleted = false;
-    MyItem * my_test_item = new MyItem(&deleted);
+    MyMenu * my_test_menu = new MyMenu(&deleted);
     ASSERT_FALSE( deleted );
 
     //build tree
@@ -120,23 +120,23 @@ namespace shellanything { namespace test
     body->addChild(child1);
     body->addChild(child2);
     body->addChild(child3);
-    child3->addChild(my_test_item); //root takes ownership of my_test_item
+    child3->addChild(my_test_menu); //root takes ownership of my_test_menu
 
     //destroy the tree
     delete root;
     root = NULL;
 
-    //assert that MyItem destructor was run
+    //assert that MyMenu destructor was run
     ASSERT_TRUE(deleted);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestItem, testActionOwnership)
+  TEST_F(TestMenu, testActionOwnership)
   {
-    Item * root =   newItem("html");
-    Item * body =   newItem("body");
-    Item * child1 = newItem("h1");
-    Item * child2 = newItem("p");
-    Item * child3 = newItem("p");
+    Menu * root =   newMenu("html");
+    Menu * body =   newMenu("body");
+    Menu * child1 = newMenu("h1");
+    Menu * child2 = newMenu("p");
+    Menu * child3 = newMenu("p");
 
     //no children yet
     bool deleted = false;
@@ -149,7 +149,7 @@ namespace shellanything { namespace test
     body->addChild(child1);
     body->addChild(child2);
     body->addChild(child3);
-    child3->addAction(my_test_action); //child3 takes ownership of my_test_item
+    child3->addAction(my_test_action); //child3 takes ownership of my_test_menu
 
     //destroy the tree
     delete root;
@@ -159,16 +159,16 @@ namespace shellanything { namespace test
     ASSERT_TRUE(deleted);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestItem, testSubItems)
+  TEST_F(TestMenu, testSubMenus)
   {
-    Item * root =   newItem("html");
-    Item * body =   newItem("body");
-    Item * child1 = newItem("h1");
-    Item * child2 = newItem("p");
-    Item * child3 = newItem("p");
+    Menu * root =   newMenu("html");
+    Menu * body =   newMenu("body");
+    Menu * child1 = newMenu("h1");
+    Menu * child2 = newMenu("p");
+    Menu * child3 = newMenu("p");
 
     //no children yet
-    ASSERT_TRUE( root->getSubItems().empty() );
+    ASSERT_TRUE( root->getSubMenus().empty() );
 
     //build tree
     root->addChild(body);
@@ -176,12 +176,91 @@ namespace shellanything { namespace test
     body->addChild(child2);
     body->addChild(child3);
 
-    Item::ItemPtrList subs = body->getSubItems();
+    Menu::MenuPtrList subs = body->getSubMenus();
     ASSERT_EQ(3, subs.size());
     ASSERT_EQ( child1, subs[0] );
     ASSERT_EQ( child2, subs[1] );
     ASSERT_EQ( child3, subs[2] );
 
+    //destroy the tree
+    delete root;
+    root = NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestMenu, testAssignCommandIds)
+  {
+    Menu * root =   newMenu("html");
+    Menu * body =   newMenu("body");
+    Menu * child1 = newMenu("h1");
+    Menu * child2 = newMenu("p0");
+    Menu * child3 = newMenu("p1");
+    Menu * child4 = newMenu("p1.1");
+    Menu * child5 = newMenu("p1.2");
+    Menu * child6 = newMenu("p2");
+ 
+    //build tree
+    root->addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+    child3->addChild(child4);
+    child3->addChild(child5);
+    body->addChild(child6);
+ 
+    //act
+    uint32_t nextAvailableId = root->assignCommandIds(101);
+ 
+    //assert
+    ASSERT_EQ(109, nextAvailableId);
+    ASSERT_EQ(101,   root->getCommandId());
+    ASSERT_EQ(102,   body->getCommandId());
+    ASSERT_EQ(103, child1->getCommandId());
+    ASSERT_EQ(104, child2->getCommandId());
+    ASSERT_EQ(105, child3->getCommandId());
+    ASSERT_EQ(106, child4->getCommandId());
+    ASSERT_EQ(107, child5->getCommandId());
+    ASSERT_EQ(108, child6->getCommandId());
+ 
+    //destroy the tree
+    delete root;
+    root = NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestMenu, testFindMenuByCommandId)
+  {
+    Menu * root =   newMenu("html");
+    Menu * body =   newMenu("body");
+    Menu * child1 = newMenu("h1");
+    Menu * child2 = newMenu("p0");
+    Menu * child3 = newMenu("p1");
+    Menu * child4 = newMenu("p1.1");
+    Menu * child5 = newMenu("p1.2");
+    Menu * child6 = newMenu("p2");
+ 
+    //build tree
+    root->addChild(body);
+    body->addChild(child1);
+    body->addChild(child2);
+    body->addChild(child3);
+    child3->addChild(child4);
+    child3->addChild(child5);
+    body->addChild(child6);
+ 
+    //act
+    uint32_t nextAvailableId = root->assignCommandIds(101);
+ 
+    //assert
+    ASSERT_EQ( (Menu*)NULL, root->findMenuByCommandId(9999999));
+ 
+    ASSERT_EQ(  root, root->findMenuByCommandId(101));
+    ASSERT_EQ(  body, root->findMenuByCommandId(102));
+    ASSERT_EQ(child1, root->findMenuByCommandId(103));
+    ASSERT_EQ(child2, root->findMenuByCommandId(104));
+    ASSERT_EQ(child3, root->findMenuByCommandId(105));
+    ASSERT_EQ(child4, root->findMenuByCommandId(106));
+    ASSERT_EQ(child5, root->findMenuByCommandId(107));
+    ASSERT_EQ(child6, root->findMenuByCommandId(108));
+ 
     //destroy the tree
     delete root;
     root = NULL;

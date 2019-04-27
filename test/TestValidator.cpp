@@ -25,7 +25,7 @@
 #include "TestValidator.h"
 #include "shellanything/Validator.h"
 #include "shellanything/Context.h"
-#include "shellanything/PropertyManager.h"
+#include "PropertyManager.h"
 #include "rapidassist/gtesthelp.h"
 
 namespace shellanything { namespace test

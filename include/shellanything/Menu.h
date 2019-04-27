@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ITEM_H
-#define SA_ITEM_H
+#ifndef SA_MENU_H
+#define SA_MENU_H
 
 #include "shellanything/Node.h"
 #include "shellanything/Icon.h"
@@ -31,28 +31,38 @@
 #include "shellanything/Action.h"
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 namespace shellanything
 {
 
-  class Item : public Node
+  class Menu : public Node
   {
   public:
-    typedef std::vector<Item*> ItemPtrList;
+    typedef std::vector<Menu*> MenuPtrList;
 
-    Item();
-    virtual ~Item();
+    Menu();
+    virtual ~Menu();
 
     bool isSeparator() const;
     void setSeparator(bool iSeparator);
 
-    bool isParentItem() const;
+    bool isParentMenu() const;
 
     const std::string & getName() const;
     void setName(const std::string & iName);
 
+    const std::string & getDescription() const;
+    void setDescription(const std::string & iDescription);
+
     const Icon & getIcon() const;
     void setIcon(const Icon & iIcon);
+
+    Menu * findMenuByCommandId(const uint32_t & iCommandId);
+    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+
+    const uint32_t & getCommandId() const;
+    void setCommandId(const uint32_t & iCommandId);
 
     bool isVisible(const Context & c);
     bool isEnabled(const Context & c);
@@ -66,17 +76,19 @@ namespace shellanything
     void addAction(Action * action);
     const Action::ActionPtrList & getActions() const;
 
-    ItemPtrList getSubItems();
+    MenuPtrList getSubMenus();
 
   private:
     Icon mIcon;
     Validator mValidity;
     Validator mVisibility;
     bool mSeparator;
+    uint32_t mCommandId;
     std::string mName;
+    std::string mDescription;
     Action::ActionPtrList mActions;
   };
 
 } //namespace shellanything
 
-#endif //SA_ITEM_H
+#endif //SA_MENU_H

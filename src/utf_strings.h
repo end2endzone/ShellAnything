@@ -22,22 +22,33 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_VISIBILITY_H
-#define SA_VISIBILITY_H
+#ifndef SA_UTF_STRINGS_H
+#define SA_UTF_STRINGS_H
 
-#include "shellanything/Validity.h"
 #include <string>
+#include <vector>
 
 namespace shellanything
 {
 
-  class Visibility : Validity
-  {
-  public:
-    Visibility();
-    virtual ~Visibility();
-  };
+  // Convert a wide Unicode string to an UTF8 string
+  std::string unicode_to_utf8(const std::wstring & wstr);
+
+  // Convert an UTF8 string to a wide Unicode String
+  std::wstring utf8_to_unicode(const std::string & str);
+
+  // Convert an wide Unicode string to ANSI string
+  std::string unicode_to_ansi(const std::wstring & wstr);
+
+  // Convert an ANSI string to a wide Unicode String
+  std::wstring ansi_to_unicode(const std::string & str);
+
+  std::string utf8_to_ansi(const std::string & str);
+
+  std::string ansi_to_utf8(const std::string & str);
 
 } //namespace shellanything
 
-#endif //SA_VISIBILITY_H
+#endif //SA_UTF_STRINGS_H
+
+

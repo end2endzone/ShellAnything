@@ -47,6 +47,9 @@ namespace shellanything
     
     void refresh();
 
+    Menu * findMenuByCommandId(const uint32_t & iCommandId);
+    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+
     Configuration::ConfigurationPtrList getConfigurations();
 
     void clearSearchPath();
