@@ -28,6 +28,8 @@
 
 #include <glog/logging.h>
 
+#include "rapidassist/filesystem.h"
+
 namespace shellanything
 {
 
@@ -45,6 +47,47 @@ namespace shellanything
     std::string path = pmgr.expand(mPath);
     std::string basedir = pmgr.expand(mBaseDir);
     std::string arguments = pmgr.expand(mArguments);
+
+    bool basedir_missing = basedir.empty();
+
+    //Note: the startProcess() function requires basedir to be valid.
+    //If not specified try to fill basedir with the best option available
+    if (basedir.empty())
+    {
+      const shellanything::Context::ElementList & elements = iContext.getElements();
+      size_t num_dir    = iContext.getNumDirectories();
+      size_t num_files  = iContext.getNumFiles();
+      if (num_dir == 1 && elements.size() == 1)
+      {
+        //if a single directory was selected
+        basedir = elements[0];
+      }
+      else if (num_files == 1 && elements.size() == 1)
+      {
+        //if a single file was selected
+        const std::string & selected_file = elements[0];
+        const std::string parent_dir = ra::filesystem::getParentPath(selected_file);
+        basedir = parent_dir;
+      }
+      else if (num_dir == 0 && num_files >= 2 && elements.size() >= 1)
+      {
+        //if a multiple files was selected
+        const std::string & first_selected_file = elements[0];
+        const std::string first_parent_dir = ra::filesystem::getParentPath(first_selected_file);
+        basedir = first_parent_dir;
+      }
+    }
+
+    //warn the user if basedir was modified
+    if (basedir_missing && !basedir.empty())
+    {
+      LOG(INFO) << "Warning: 'basedir' not specified. Setting basedir to '" << basedir << "'.";
+    }
+
+    if (basedir.empty())
+    {
+      LOG(WARNING) << "attribute 'basedir' not specified.";
+    }
 
     //debug
     LOG(INFO) << "Running '" << path << "' with arguments '" << arguments << "' from directory '" << basedir << "'";
