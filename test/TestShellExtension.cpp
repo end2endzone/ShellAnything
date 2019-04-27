@@ -169,6 +169,8 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestShellExtension, testDefaultDllCanUnloadNow)
   {
+    LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+
     std::string path = getShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
@@ -180,10 +182,14 @@ namespace shellanything { namespace test
 
     //assert ok to unload the dll of no classes was instanciated
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
+
+    LOG(INFO) << __FUNCTION__ << "() - END";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestShellExtension, testGetClassFactory)
   {
+    LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+
     std::string path = getShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
@@ -215,10 +221,14 @@ namespace shellanything { namespace test
     pClassFactory->Release(); //this should automatically destroy the CClassFactory::~CClassFactory()
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
     int a = 0;
+
+    LOG(INFO) << __FUNCTION__ << "() - END";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestShellExtension, testCreateInstance)
   {
+    LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+
     std::string path = getShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
@@ -253,6 +263,8 @@ namespace shellanything { namespace test
 
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
     int a = 0;
+
+    LOG(INFO) << __FUNCTION__ << "() - END";
   }
   //--------------------------------------------------------------------------------------------------
 

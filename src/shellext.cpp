@@ -1186,14 +1186,7 @@ void InitLogger()
   DeletePreviousLogs(temp_dir);
   DeletePreviousLogs(log_dir);
 
-  // Initialize Google's logging library.
-  std::string dll_path = GetCurrentModulePath();
-  memset(g_Path, 0, sizeof(g_Path));
-  strcpy(g_Path, dll_path.c_str());
-
-  //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
-  google::InitGoogleLogging(g_argv[0]); //log in %TEMP% directory
-
+  // Prepare Google's logging library.
   fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
   fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'
   fLI::FLAGS_stderrthreshold = INT_MAX; //disable console output
@@ -1215,7 +1208,18 @@ void InitLogger()
   const std::vector<std::string> dirs = google::GetLoggingDirectories();
  
   google::SetLogFilenameExtension(".log");
- 
+
+  // Initialize Google's logging library.
+  std::string dll_path = GetCurrentModulePath();
+  memset(g_Path, 0, sizeof(g_Path));
+  strcpy(g_Path, dll_path.c_str());
+
+  //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
+  google::InitGoogleLogging(g_argv[0]); //log in %TEMP% directory
+}
+
+void LogEnvironment()
+{
   LOG(INFO) << "Enabling logging";
   LOG(INFO) << "DLL path: " << GetCurrentModulePath();
   LOG(INFO) << "EXE path: " << ra::process::getCurrentProcessPath().c_str();
@@ -1252,6 +1256,8 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     // Initialize Google's logging library.
     InitLogger();
+
+    LogEnvironment();
 
     // Initialize the configuration manager
     InitConfigManager();
