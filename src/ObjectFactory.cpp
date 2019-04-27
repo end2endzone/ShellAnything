@@ -182,7 +182,7 @@ namespace shellanything
     std::string properties;
     if (parseAttribute(element, "properties", true, true, properties, error))
     {
-      if (!fileextensions.empty())
+      if (!properties.empty())
       {
         result.setProperties(properties);
       }
