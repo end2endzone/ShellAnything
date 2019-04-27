@@ -27,8 +27,10 @@
 #include <assert.h>
 
 //Declarations
-UINT      g_cRefDll = 0;   // Reference counter of this DLL
-HINSTANCE g_hmodDll = 0;   // HINSTANCE of the DLL
+UINT      g_cRefDll = 0;            // Reference counter of this DLL
+HINSTANCE g_hmodDll = 0;            // HINSTANCE of the DLL
+char      g_Path[MAX_PATH];         // Path to this DLL. 
+char *    g_argv[] = {g_Path, ""};  //simulate 'main(int argc, char **argv)' for google::InitGoogleLogging()
 
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
@@ -1186,13 +1188,11 @@ void InitLogger()
 
   // Initialize Google's logging library.
   std::string dll_path = GetCurrentModulePath();
-  const char * argv[] = {
-    dll_path.c_str(),
-    ""
-  };
+  memset(g_Path, 0, sizeof(g_Path));
+  strcpy(g_Path, dll_path.c_str());
 
   //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
-  google::InitGoogleLogging(argv[0]); //log in %TEMP% directory
+  google::InitGoogleLogging(g_argv[0]); //log in %TEMP% directory
 
   fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
   fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'
