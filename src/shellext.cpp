@@ -34,6 +34,7 @@ char *    g_argv[] = {g_Path, ""};  //simulate 'main(int argc, char **argv)' for
 
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
+static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
 std::string GetCurrentModulePath()
 {
@@ -70,11 +71,28 @@ std::string GetCurrentModulePath()
   return path;
 }
 
-std::string GuidToString(GUID guid) {
+std::string GuidToString(GUID guid)
+{
   std::string output;
   output.assign(40, 0);
   sprintf_s((char*)output.c_str(), output.size(), "{%08X-%04hX-%04hX-%02X%02X-%02X%02X%02X%02X%02X%02X}", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
   return output;
+}
+
+std::string GuidToInterfaceName(GUID guid)
+{
+  if (IsEqualGUID(guid, IID_IUnknown))                  return "IID_IUnknown";              //{00000000-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IClassFactory))             return "IID_IClassFactory";         //{00000001-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IShellExtInit))             return "IID_IShellExtInit";         //{000214E8-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu))              return "IID_IContextMenu";          //{000214E4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu2))             return "IID_IContextMenu2";         //{000214F4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu3))             return "IID_IContextMenu3";         //{BCFCE0A0-EC17-11D0-8D10-00A0C90F2719}
+  if (IsEqualGUID(guid, IID_IObjectWithSite))           return "IObjectWithSite";           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+  if (IsEqualGUID(guid, IID_IInternetSecurityManager))  return "IInternetSecurityManager";  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+
+  //unknown GUID, return the string representation:
+  //ie: CLSID_UNDOCUMENTED_01, {924502A7-CC8E-4F60-AE1F-F70C0A2B7A7C}
+  return GuidToString(guid);
 }
 
 template <class T> class FlagDescriptor
@@ -704,10 +722,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
 
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
-  static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
   if (  IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
         IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
         IsEqualGUID(riid, CLSID_UNDOCUMENTED_01) ||
@@ -741,12 +758,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToString(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -797,7 +814,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR 
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToString(riid).c_str() << ", ppvObj=" << ppvObj;
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -818,12 +835,12 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR 
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToString(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -853,7 +870,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToString(riid).c_str();
+  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToInterfaceName(riid).c_str();
 
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
@@ -879,7 +896,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToString(rclsid).c_str() << ", riid=" << GuidToString(riid).c_str() << "";
+  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToInterfaceName(rclsid).c_str() << ", riid=" << GuidToInterfaceName(riid).c_str() << "";
 
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, SHELLANYTHING_SHELLEXTENSION_CLSID))
@@ -889,14 +906,14 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
     {
-      LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToString(riid).c_str() << " not found!";
+      LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToInterfaceName(riid).c_str() << " not found!";
       delete pcf;
       pcf = NULL;
     }
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToString(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     return hr;
   }
-  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << GuidToString(rclsid).c_str() << " not found!";
+  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << GuidToInterfaceName(rclsid).c_str() << " not found!";
   return CLASS_E_CLASSNOTAVAILABLE;
 }
 
