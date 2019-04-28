@@ -398,6 +398,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
+  //From this point, it is safe to use class members without other threads interference
+  CCriticalSectionGuard cs_guard(&m_CS);
+
   //Note on uFlags...
   //Right-click on a file or directory with Windows Explorer on the right area:  uFlags=0x00020494=132244(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
   //Right-click on the empty area      with Windows Explorer on the right area:  uFlags=0x00020424=132132(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
@@ -406,18 +409,15 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   //Right-click on the empty area      on the Desktop:                           uFlags=0x00020420=132128(dec)=(CMF_NORMAL|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
   //Right-click on a directory         on the Desktop:                           uFlags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
 
-  //Filter out queries that are not from Windows Explorer
-  if ( (uFlags & CMF_EXPLORE) != CMF_EXPLORE )
+  //Filter out queries that have nothing selected
+  if ( m_Context.getElements().size() == 0 )
   {
     //Don't know what to do with this
-    LOG(INFO) << __FUNCTION__ << "(), unknown uFlags, skipped";
+    LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
     return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
   }
 
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
-
-  //From this point, it is safe to use class members without other threads interference
-  CCriticalSectionGuard cs_guard(&m_CS);
 
   //Log what is selected by the user
   const shellanything::Context::ElementList & elements = m_Context.getElements();
