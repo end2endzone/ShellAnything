@@ -440,8 +440,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   //Log what is selected by the user
   const shellanything::Context::ElementList & elements = m_Context.getElements();
   size_t num_selected_total = elements.size();
-  int num_directories = m_Context.getNumFiles();
-  int num_files       = m_Context.getNumDirectories();
+  int num_files       = m_Context.getNumFiles();
+  int num_directories = m_Context.getNumDirectories();
   LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   UINT nextCommandId = idCmdFirst;
