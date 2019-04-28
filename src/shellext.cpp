@@ -398,9 +398,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
-  //filter for unknown flags
-  if (  ((uFlags & CMF_EXPLORE ) != CMF_EXPLORE ) ||
-        ((uFlags & CMF_ITEMMENU) != CMF_ITEMMENU) )
+  //Filter out queries that are not from Windows Explorer
+  if ( (uFlags & CMF_EXPLORE) != CMF_EXPLORE )
   {
     //Don't know what to do with this
     LOG(INFO) << __FUNCTION__ << "(), unknown uFlags, skipped";
