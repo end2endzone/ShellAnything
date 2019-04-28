@@ -394,9 +394,17 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=" << uFlags << "(dec)=(" << uFlagsStr << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
+
+  //Note on uFlags...
+  //Right-click on a file or directory with Windows Explorer on the right area:  uFlags=0x00020494=132244(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
+  //Right-click on the empty area      with Windows Explorer on the right area:  uFlags=0x00020424=132132(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
+  //Right-click on a directory         with Windows Explorer on the left area:   uFlags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
+  //Right-click on a drive             with Windows Explorer on the left area:   uFlags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
+  //Right-click on the empty area      on the Desktop:                           uFlags=0x00020420=132128(dec)=(CMF_NORMAL|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
+  //Right-click on a directory         on the Desktop:                           uFlags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
 
   //Filter out queries that are not from Windows Explorer
   if ( (uFlags & CMF_EXPLORE) != CMF_EXPLORE )
@@ -532,7 +540,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", uFlags=" << uFlagsHex << "=" << uFlags << "(dec)=(" << uFlagsStr << ")";
+  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
@@ -1214,7 +1222,7 @@ void InitLogger()
   strcpy(g_Path, dll_path.c_str());
 
   //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
-  google::InitGoogleLogging(g_argv[0]); //log in %TEMP% directory
+  google::InitGoogleLogging(g_argv[0]);
 }
 
 void LogEnvironment()
