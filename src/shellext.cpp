@@ -531,6 +531,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
           //simply log an error
           LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed.";
         }
+
+        //stop executing the next actions
+        i = actions.size();
       }
     }
   }
