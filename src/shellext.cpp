@@ -175,7 +175,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   MENUITEMINFOA menuinfo = {0};
 
   menuinfo.cbSize = sizeof(MENUITEMINFOA);
-  menuinfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+  menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
   menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
   menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
   menuinfo.wID = menu->getCommandId();
@@ -411,7 +411,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   std::string uFlagsStr = FlagDescriptor<UINT>::toBitString(uFlags, flags);
   std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
