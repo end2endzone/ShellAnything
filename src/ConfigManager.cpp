@@ -158,7 +158,7 @@ namespace shellanything
             //is this file already loaded ?
             if (!isLoadedConfigurationFile(file_path))
             {
-              LOG(INFO) << "Found configuration file '" << file_path << "'";
+              LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
               //parse the file
               std::string error;

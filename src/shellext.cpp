@@ -355,6 +355,7 @@ std::string GetMenuDescriptor(HMENU hMenu)
   std::string output;
 
   int numItems = GetMenuItemCount(hMenu);
+  /*
   for(int i=0; i<numItems; i++)
   {
     UINT id = GetMenuItemID(hMenu, i);
@@ -382,13 +383,16 @@ std::string GetMenuDescriptor(HMENU hMenu)
       output.append(",");
     output.append(descriptor);
   }
+  */
 
   output.insert(0, "MENU{");
+  output.append("GetMenuItemCount()=");
+  output.append(ra::strings::toString(numItems));
   output.append("}");
   return output;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT indexMenu,  UINT idCmdFirst,  UINT idCmdLast, UINT uFlags)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
   //build function descriptor
   static const FlagDescriptor<UINT>::FLAGS flags[] = {
@@ -428,6 +432,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu,  UINT inde
   //Right-click on a directory         on the Desktop:                           uFlags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
 
   //Filter out queries that have nothing selected
+  //This can happend if user is copy & pasting files (using CTRL+C and CTRL+V)
   if ( m_Context.getElements().size() == 0 )
   {
     //Don't know what to do with this

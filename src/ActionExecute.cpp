@@ -90,7 +90,7 @@ namespace shellanything
     }
 
     //debug
-    LOG(INFO) << "Running '" << path << "' with arguments '" << arguments << "' from directory '" << basedir << "'";
+    LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
 
     uint32_t pId = startProcess(path, arguments, basedir);
 
