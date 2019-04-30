@@ -415,7 +415,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   std::string uFlagsStr = FlagDescriptor<UINT>::toBitString(uFlags, flags);
   std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
-  MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
