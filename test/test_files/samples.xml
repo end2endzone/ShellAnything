@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Help:
+  ${selection.path} is the full path of the clicked element
+  ${selection.parent.path} is the full path of the parent element
+  ${selection.parent.filename} is the filename of the parent element
+  ${selection.filename} is selection.filename (including file extension)
+  ${selection.filename.noext} is selection.filename without file extension
+  
+  ${env.XYZ} refers to environment variable XYZ
+  
+  Property names must not contain spaces
+  Property lists must be separated by ';' character
+  File extension lists must be separated by ';' character
+  
+-->
+<root>
+  <shell>
+  
+    <menu separator="true" />
+    
+    <menu name="Foo Service">
+      <icon path="C:\Windows\System32\cmmon32.exe" index="0" />
+      <menu name="Stop">
+        <validity properties="services.foo.started" />
+        <icon path="C:\Windows\System32\imageres.dll" index="100" />
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+        </actions>
+      </menu>
+      <menu name="Start">
+        <validity properties="services.foo.stopped" />
+        <icon path="C:\Windows\System32\imageres.dll" index="101" />
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+          <property name="services.foo.started" value="true" />
+        </actions>
+      </menu>
+      <menu name="Restart">
+        <icon path="C:\Windows\System32\wmploc.dll" index="151" />
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
+          <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+          <property name="services.foo.started" value="true" />
+          <property name="services.foo.stopped" value="" />
+        </actions>
+      </menu>
+      
+      <!--Split commands that are for the same purpose-->
+      <menu separator="true" />
+      
+      <menu name="Connect">
+        <icon path="C:\Windows\System32\shell32.dll" index="44" />
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/connect" />
+        </actions>
+      </menu>
+      <menu name="Update">
+        <!--<icon path="C:\Windows\System32\imageres.dll" index="194" />-->
+        <icon path="C:\Windows\System32\shell32.dll" index="46" />
+        <actions>
+          <exec path="C:\Program Files (x86)\FooSoftwares\foo.exe" arguments="/update" />
+        </actions>
+      </menu>
+    </menu>
+
+    <menu name="Winzip">
+      <icon path="C:\Windows\System32\zipfldr.dll" index="0" />
+      <menu name="Compress to '${selection.filename}.zip'">
+        <visibility maxfiles="1" maxfolders="1" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-a -r &quot;${selection.path}\${selection.filename}.zip&quot; &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Extract to folder ${selection.filename}">
+        <visibility maxfiles="1" maxfolders="0" fileextensions="zip" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}\${selection.filename.noext}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Extract here">
+        <visibility maxfiles="1" maxfolders="0" fileextensions="zip" />
+        <actions>
+          <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}&quot;" />
+        </actions>
+      </menu>
+    </menu>
+
+    <!-- Open files that are not executables -->
+    <menu name="MySoftware">
+      <icon path="C:\windows\system32\dccw.exe" index="0" />
+      <menu name="README">
+        <!--<icon path="C:\Program Files\Windows NT\Accessories\wordpad.exe" index="0" />-->
+        <icon path="C:\windows\system32\write.exe" index="0" />
+        <actions>
+          <open path="C:\Program Files (x86)\MySoftware\README.pdf" />
+        </actions>
+      </menu>
+      <menu name="About">
+        <icon path="C:\Windows\System32\imageres.dll" index="102" />
+        <actions>
+          <open path="C:\Program Files (x86)\MySoftware\about.htm" />
+        </actions>
+      </menu>
+    </menu>
+    
+    <menu separator="true" />
+    
+  </shell>
+</root>
