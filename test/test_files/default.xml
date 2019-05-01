@@ -16,6 +16,9 @@ Help:
 -->
 <root>
   <shell>
+  
+    <menu separator="true" />
+    
     <menu name="Copy to clipboard...">
       <icon path="C:\Windows\System32\shell32.dll" index="68" />
       <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
@@ -48,7 +51,7 @@ Help:
       <icon path="C:\Windows\System32\cmd.exe" index="0" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
-        <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" />
+        <exec path="${env.ComSpec}" basedir="&quot;${selection.path}&quot;" />
       </actions>
     </menu>
     
@@ -56,7 +59,7 @@ Help:
       <icon path="C:\Program Files (x86)\WinDirStat\windirstat.exe" index="0" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
-        <exec path="C:\Program Files (x86)\WinDirStat\windirstat.exe" arguments="${selection.path}" />
+        <exec path="C:\Program Files (x86)\WinDirStat\windirstat.exe" arguments="&quot;${selection.path}&quot;" />
       </actions>
     </menu>
     
@@ -69,21 +72,21 @@ Help:
       </actions>
     </menu>
 
-    <menu separator="true" />
-
     <menu name="Foo Service">
       <icon path="C:\Windows\System32\cmmon32.exe" index="0" />
-      
       <menu name="Stop">
+        <validity properties="services.foo.started" />
         <icon path="C:\Windows\System32\imageres.dll" index="100" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
         </actions>
       </menu>
       <menu name="Start">
+        <validity properties="services.foo.stopped" />
         <icon path="C:\Windows\System32\imageres.dll" index="101" />
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+          <property name="services.foo.started" value="true" />
         </actions>
       </menu>
       <menu name="Restart">
@@ -91,6 +94,8 @@ Help:
         <actions>
           <exec path="C:\Program Files (x86)\FooSoftwares\stop.exe" />
           <exec path="C:\Program Files (x86)\FooSoftwares\start.exe" />
+          <property name="services.foo.started" value="true" />
+          <property name="services.foo.stopped" value="" />
         </actions>
       </menu>
       
@@ -113,7 +118,6 @@ Help:
     </menu>
 
     <!--Split before winzip commands-->
-    <menu separator="true" />
     <menu name="Winzip">
       <icon path="C:\Windows\System32\zipfldr.dll" index="0" />
       <menu name="Compress to '${selection.filename}.zip'">
@@ -138,38 +142,46 @@ Help:
 
 
     <!--Show file selection or compare capabilities-->
-    <menu separator="true" />
     <menu name="Compare">
+      <visibility maxfiles="1" maxfolders="1" />
       <icon path="C:\Windows\System32\dsuiext.dll" index="32" />
-      <menu name="Binary compare">
-        <icon path="C:\Windows\System32\compstui.dll" index="39" />
-        <menu name="Select file '${selection.filename}'">
-          <actions>
-            <property name="compare.first.selection.path"     value="${selection.path}" />
-            <property name="compare.first.selection.filename" value="${selection.filename}" />
-          </actions>
-        </menu>
-        <menu name="Compare with '${compare.first.selection.filename}'">
-          <visibility properties="compare.first.selection.filename" />
-          <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K START &quot;&quot; C:\windows\system32\cmd.exe FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+      <menu name="Select file '${selection.filename}'">
+        <actions>
+          <property name="compare.first.selection.path"     value="${selection.path}" />
+          <property name="compare.first.selection.filename" value="${selection.filename}" />
+        </actions>
+      </menu>
+      <menu name="Compare with '${compare.first.selection.filename}' (text)">
+        <icon path="C:\Windows\System32\imageres.dll" index="14" />
+        <visibility properties="compare.first.selection.filename" />
+        <actions>
+          <exec path="${env.ComSpec}" arguments="/K FC /L &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
 
-            <!--Reset the properties now that compare is complete-->
-            <property name="compare.first.selection.path"     value="" />
-            <property name="compare.first.selection.filename" value="" />
-          </actions>
-        </menu>
+          <!--Reset the properties now that compare is complete-->
+          <property name="compare.first.selection.path"     value="" />
+          <property name="compare.first.selection.filename" value="" />
+        </actions>
+      </menu>
+      <menu name="Compare with '${compare.first.selection.filename}' (binary)">
+        <icon path="C:\Windows\System32\compstui.dll" index="39" />
+        <visibility properties="compare.first.selection.filename" />
+        <actions>
+          <exec path="${env.ComSpec}" arguments="/K FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+
+          <!--Reset the properties now that compare is complete-->
+          <property name="compare.first.selection.path"     value="" />
+          <property name="compare.first.selection.filename" value="" />
+        </actions>
       </menu>
     </menu>
 
     <!--Low level find file-->
-    <menu separator="true" />
     <menu name="Find file...">
       <icon path="C:\Windows\System32\shell32.dll" index="22" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="findpattern" title="Please enter the find wildcard pattern..." />
-        <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" arguments="/K dir /a /s /b &quot;${findpattern}&quot;" />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K dir /a /s /b &quot;${findpattern}&quot;" />
         <property name="findpattern" value="" />
       </actions>
     </menu>
@@ -179,14 +191,13 @@ Help:
       <actions>
         <prompt name="filepattern" title="Please enter the file wildcard pattern..." />
         <prompt name="textpattern" title="Please enter the searched text..." />
-        <exec path="C:\windows\system32\cmd.exe" basedir="${selection.path}" arguments="/K FINDSTR /S &quot;/C:${textpattern}&quot; ${filepattern}" />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K FINDSTR /S &quot;/C:${textpattern}&quot; ${filepattern}" />
         <property name="filepattern" value="" />
         <property name="textpattern" value="" />
       </actions>
     </menu>
 
     <!-- Open files that are not executables -->
-    <menu separator="true" />
     <menu name="MySoftware">
       <icon path="C:\windows\system32\dccw.exe" index="0" />
       <menu name="README">
@@ -204,75 +215,122 @@ Help:
       </menu>
     </menu>
     
-    <!-- Open files that are not executables -->
-    <menu separator="true" />
+    <!-- Different type of checksum -->
     <menu name="Checksum">
       <icon path="C:\Windows\System32\shell32.dll" index="104" />
       <visibility maxfiles="1" maxfolders="0" />
       <menu name="MD5">
         <actions>
-          <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; MD5" />
+          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; MD5" />
         </actions>
       </menu>
       <menu name="SHA1">
         <actions>
-          <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA1" />
+          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA1" />
         </actions>
       </menu>
       <menu name="SHA256">
         <actions>
-          <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA256" />
+          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA256" />
         </actions>
       </menu>
       <menu name="SHA512">
         <actions>
-          <exec path="C:\windows\system32\cmd.exe" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
+          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
         </actions>
       </menu>
     </menu>
 
     <!-- symbolic links -->
-    <menu separator="true" />
     <menu name="Symbolic Links ">
       <icon path="C:\Windows\System32\imageres.dll" index="154" />
       <!-- See also https://stackoverflow.com/questions/19098101/how-to-open-an-elevated-cmd-using-command-line-for-windows -->
       <visibility maxfiles="0" maxfolders="1" />
-      <menu name="Set as target">
-        <actions>
-          <property name="symbolic.target.path"     value="${selection.path}" />
-          <property name="symbolic.target.filename" value="${selection.filename}" />
-        </actions>
-      </menu>
       <menu name="Cancel link creation." description="">
-        <visibility properties="symbolic.target.path" />
+        <visibility properties="symbolic.source.path" />
         <actions>
-          <property name="symbolic.target.path"     value="" />
-          <property name="symbolic.target.filename" value="" />
+          <property name="symbolic.source.path"     value="" />
+          <property name="symbolic.source.filename" value="" />
         </actions>
       </menu>
-      <menu name="Create link to ${symbolic.target.filename} as..." description="Creates a symbolic link.">
-        <visibility properties="symbolic.target.path" />
+      <menu name="Set as source...">
+        <actions>
+          <property name="symbolic.source.path"     value="${selection.path}" />
+          <property name="symbolic.source.filename" value="${selection.filename}" />
+        </actions>
+      </menu>
+      <menu name="Create '${symbolic.source.filename}' link as..." description="Creates a symbolic link.">
+        <visibility properties="symbolic.source.path" />
         <menu name="Symbolic Link" description="Creates a directory symbolic link.">
-          <visibility properties="symbolic.target.path" />
+          <visibility properties="symbolic.source.path" />
           <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /D &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
+            <exec path="powershell.exe" arguments="-Command &quot;Start-Process cmd -ArgumentList '/K mklink /D \&quot;${selection.path}\${symbolic.source.filename}\&quot; \&quot;${symbolic.source.path}\&quot;' -Verb RunAs&quot;" />
           </actions>
         </menu>
         <menu name="Hard Link" description="Creates a directory hard link.">
-          <visibility properties="symbolic.target.path" />
+          <visibility properties="symbolic.source.path" />
           <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /H &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
+            <exec path="powershell.exe" arguments="-Command &quot;Start-Process cmd -ArgumentList '/K mklink /H \&quot;${selection.path}\${symbolic.source.filename}\&quot; \&quot;${symbolic.source.path}\&quot;' -Verb RunAs&quot;" />
           </actions>
         </menu>
         <menu name="Junction" description="Creates a directory junction.">
-          <visibility properties="symbolic.target.path" />
+          <visibility properties="symbolic.source.path" />
           <actions>
-            <exec path="C:\windows\system32\cmd.exe" arguments="/K mklink /J &quot;${selection.parent.path}\${symbolic.target.filename}&quot; &quot;${symbolic.target.path}&quot;" />
+            <exec path="powershell.exe" arguments="-Command &quot;Start-Process cmd -ArgumentList '/K mklink /J \&quot;${selection.path}\${symbolic.source.filename}\&quot; \&quot;${symbolic.source.path}\&quot;' -Verb RunAs&quot;" />
           </actions>
         </menu>
       </menu>
-
     </menu>
 
+    <!-- Microsoft Office 2007 -->
+    <menu name="Microsoft Office 2007">
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office12\EXCEL.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="XLS;XLSX" />
+        <actions>
+          <exec path="C:\Program Files (x86)\Microsoft Office\Office12\EXCEL.EXE" arguments="/r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office12\WINWORD.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="DOC;DOCX" />
+        <actions>
+          <!-- Microsoft Word does not support opening a document in READONLY mode from the command line.
+          It can be implemented using DDE (https://en.wikibooks.org/wiki/Microsoft_Office/Opening_a_Word_File_as_Read_Only) but DDE is not supported by this application.
+          An ugly workaround is to temporary modify the file's attribute to READONLY, open the document with Microsoft Word, 
+          and then remove the READONLY attribute a few seconds later.
+          -->
+          <!-- Sleep in a batch file:
+            https://stackoverflow.com/questions/1672338/how-to-sleep-for-5-seconds-in-a-batch-file-cmd
+            powershell -command "Start-Sleep -s 5"
+            timeout 5
+            echo Wait for Microsoft Word to open your document and && pause
+            -->
+          <exec path="${env.ComSpec}" arguments="/C title &quot;Open as READ-ONLY&quot; &amp;&amp; attrib +r &quot;${selection.path}&quot; &amp;&amp; &quot;C:\Program Files (x86)\Microsoft Office\Office12\WINWORD.EXE&quot; &quot;${selection.path}&quot; &amp;&amp; timeout 5 &amp;&amp; attrib -r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office12\POWERPNT.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="PPT;PPTX" />
+        <actions>
+          <!-- Microsoft PowerPoint does not support opening a document in READONLY mode from the command line.
+          However, the same strategy cannot be used exactly as with Microsoft Word because 'POWERPNT.EXE' is a blocking command while 'WINWORD.EXE' is not.
+          In other words, if we call POWERPNT.EXE, the application must exit before the 'timeout' and 'attrib' commands can be executed.
+          Launching 'POWERPNT.EXE' with the START command 
+          -->
+          <exec path="${env.ComSpec}" arguments="/C title &quot;Open as READ-ONLY&quot; &amp;&amp; attrib +r &quot;${selection.path}&quot; &amp;&amp; START &quot;&quot; &quot;C:\Program Files (x86)\Microsoft Office\Office12\POWERPNT.EXE&quot; &quot;${selection.path}&quot; &amp;&amp; timeout 5 &amp;&amp; attrib -r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office12\MSACCESS.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="mdb" />
+        <actions>
+          <exec path="C:\Program Files (x86)\Microsoft Office\Office12\MSACCESS.EXE" arguments="/ro &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+    </menu>
+    
+    <menu separator="true" />
+    
   </shell>
 </root>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="option #01 (always)">
+      <validity maxfiles="999" maxfolders="999" />
+      <icon path="C:\Windows\System32\shell32.dll" index="68" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+    
+    <menu name="option #02 (never)">
+      <validity maxfiles="0" maxfolders="0" />
+      <icon path="C:\Windows\System32\shell32.dll" index="69" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+    
+    <menu name="option #03 (single file)">
+      <validity maxfiles="1" maxfolders="0" />
+      <icon path="C:\Windows\System32\shell32.dll" index="70" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+
+    <menu name="option #04 (single folder)">
+      <validity maxfiles="0" maxfolders="1" />
+      <icon path="C:\Windows\System32\shell32.dll" index="71" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+
+    <menu name="option #05 (single file OR folder)">
+      <validity maxfiles="1" maxfolders="1" />
+      <icon path="C:\Windows\System32\shell32.dll" index="72" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+    
+    <menu name="option #06">
+      <icon path="C:\Windows\System32\shell32.dll" index="73" />
+      <menu name="enable option #07">
+        <icon path="C:\Windows\System32\shell32.dll" index="74" />
+        <actions>
+          <property name="foobar" value="true" />
+        </actions>
+      </menu>
+      <menu name="disable option #07">
+        <icon path="C:\Windows\System32\shell32.dll" index="75" />
+        <actions>
+          <property name="foobar" value="" />
+        </actions>
+      </menu>
+      <menu name="option #07">
+        <icon path="C:\Windows\System32\shell32.dll" index="76" />
+        <validity properties="foobar" />
+        <actions>
+          <clipboard value=""/>
+        </actions>
+      </menu>
+    </menu>
+    
+    <menu name="option #08 (txt or log files)">
+      <validity fileextensions="txt;log" />
+      <icon path="C:\Windows\System32\shell32.dll" index="77" />
+      <actions>
+        <clipboard value=""/>
+      </actions>
+    </menu>
+    
+    <menu name="option #09 (properties)">
+      <menu name="option #10 selection.path=${selection.path}" />
+      <menu name="option #11 selection.filename=${selection.filename}" />
+      <menu name="option #12 selection.filename.noext=${selection.filename.noext}" />
+      <menu name="option #13 selection.parent.path=${selection.parent.path}" />
+      <menu name="option #14 selection.parent.filename=${selection.parent.filename}" />
+      <menu name="option #15 TEMP=${env.TEMP}" />
+    </menu>
+
+  </shell>
+</root>
