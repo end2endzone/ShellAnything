@@ -245,6 +245,7 @@ Help:
     
     <!-- Microsoft Office 2007 -->
     <menu name="Microsoft Office 2007">
+      <icon path="C:\Program Files (x86)\Microsoft Office\Office12\OFFOWC.DLL" index="0" />
       <menu name="Open as READ-ONLY">
         <icon path="C:\Program Files (x86)\Microsoft Office\Office12\EXCEL.EXE" index="0" />
         <visibility maxfiles="1" maxfolders="0" fileextensions="XLS;XLSX" />
