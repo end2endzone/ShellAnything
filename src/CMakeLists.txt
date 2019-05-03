@@ -53,6 +53,8 @@ add_library(shellext SHARED
   ${SHELLANYTHING_CONFIG_HEADER}
   BitmapCache.cpp
   BitmapCache.h
+  glog_utils.cpp
+  glog_utils.h
   shellext.cpp
   shellext.h
   shellext.def
