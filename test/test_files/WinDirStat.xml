@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="WinDirStat">
+      <icon path="C:\Program Files (x86)\WinDirStat\windirstat.exe" index="0" />
+      <visibility maxfiles="0" maxfolders="1" exists="C:\Program Files (x86)\WinDirStat\windirstat.exe" />
+      <actions>
+        <exec path="C:\Program Files (x86)\WinDirStat\windirstat.exe" arguments="&quot;${selection.path}&quot;" />
+      </actions>
+    </menu>    
+  </shell>
+</root>

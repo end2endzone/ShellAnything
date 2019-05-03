@@ -4,6 +4,11 @@ find_package(glog REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/default.xml
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2003.xml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2007.xml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2010.xml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2013.xml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2016.xml"
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
@@ -11,6 +16,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseValidator.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/WinDirStat.xml
 )
 
 # Include files from shellanything library which are not public

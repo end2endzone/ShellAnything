@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <!-- Microsoft Office 2016 -->
+    <menu name="Microsoft Office 2016">
+      <visibility exists="C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE" />
+      <icon path="C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\MSOICONS.EXE" index="6" />
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office16\EXCEL.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="XLS;XLSX" />
+        <actions>
+          <exec path="C:\Program Files (x86)\Microsoft Office\Office16\EXCEL.EXE" arguments="/r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="DOC;DOCX" />
+        <actions>
+          <!--
+          Microsoft Word does not support opening a document in READONLY mode from the command line.
+          It can be implemented using DDE (https://en.wikibooks.org/wiki/Microsoft_Office/Opening_a_Word_File_as_Read_Only) but DDE is not supported by this application.
+          An ugly workaround is to temporary modify the file's attribute to READONLY, open the document with Microsoft Word, 
+          and then remove the READONLY attribute a few seconds later.
+          -->
+          <!--
+           Sleep in a batch file:
+            https://stackoverflow.com/questions/1672338/how-to-sleep-for-5-seconds-in-a-batch-file-cmd
+            powershell -command "Start-Sleep -s 5"
+            timeout 5
+            echo Wait for Microsoft Word to open your document and && pause
+          -->
+          <exec path="${env.ComSpec}" arguments="/C title &quot;Open as READ-ONLY&quot; &amp;&amp; attrib +r &quot;${selection.path}&quot; &amp;&amp; &quot;C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE&quot; &quot;${selection.path}&quot; &amp;&amp; timeout 5 &amp;&amp; attrib -r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office16\POWERPNT.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="PPT;PPTX" />
+        <actions>
+          <!--
+          Microsoft PowerPoint does not support opening a document in READONLY mode from the command line.
+          However, the same strategy cannot be used exactly as with Microsoft Word because 'POWERPNT.EXE' is a blocking command while 'WINWORD.EXE' is not.
+          In other words, if we call POWERPNT.EXE, the application must exit before the 'timeout' and 'attrib' commands can be executed.
+          Launching 'POWERPNT.EXE' with the START command 
+          -->
+          <exec path="${env.ComSpec}" arguments="/C title &quot;Open as READ-ONLY&quot; &amp;&amp; attrib +r &quot;${selection.path}&quot; &amp;&amp; START &quot;&quot; &quot;C:\Program Files (x86)\Microsoft Office\Office16\POWERPNT.EXE&quot; &quot;${selection.path}&quot; &amp;&amp; timeout 5 &amp;&amp; attrib -r &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+      <menu name="Open as READ-ONLY">
+        <icon path="C:\Program Files (x86)\Microsoft Office\Office16\MSACCESS.EXE" index="0" />
+        <visibility maxfiles="1" maxfolders="0" fileextensions="mdb" />
+        <actions>
+          <exec path="C:\Program Files (x86)\Microsoft Office\Office16\MSACCESS.EXE" arguments="/ro &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
+    </menu>
+    
+  </shell>
+</root>
