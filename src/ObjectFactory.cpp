@@ -178,6 +178,16 @@ namespace shellanything
       }
     }
 
+    //parse exists
+    std::string exists;
+    if (parseAttribute(element, "exists", true, true, exists, error))
+    {
+      if (!exists.empty())
+      {
+        result.setFileExists(exists);
+      }
+    }
+
     //parse properties
     std::string properties;
     if (parseAttribute(element, "properties", true, true, properties, error))

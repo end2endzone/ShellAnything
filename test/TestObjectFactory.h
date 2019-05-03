@@ -22,50 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_VALIDATION_H
-#define SA_VALIDATION_H
+#ifndef TEST_SA_CONFIGMANAGER_H
+#define TEST_SA_CONFIGMANAGER_H
 
-#include "shellanything/Node.h"
-#include "shellanything/Context.h"
-#include <string>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-
-  class Validator
+  class TestObjectFactory : public ::testing::Test
   {
   public:
-    Validator();
-    Validator(const Validator & validator);
-    virtual ~Validator();
-
-    const Validator & operator =(const Validator & validator);
-
-    const int & getMaxFiles() const;
-    void setMaxFiles(const int & iMaxFiles);
-
-    const int & getMaxDirectories() const;
-    void setMaxDirectories(const int & iMaxDirectories);
-
-    const std::string & getProperties() const;
-    void setProperties(const std::string & iProperties);
-
-    const std::string & getFileExtensions() const;
-    void setFileExtensions(const std::string & iFileExtensions);
-
-    const std::string & getFileExists() const;
-    void setFileExists(const std::string & iFileExists);
-
-    bool validate(const Context & iContext) const;
-
-  private:
-    int mMaxFiles;
-    int mMaxDirectories;
-    std::string mProperties;
-    std::string mFileExtensions;
-    std::string mFileExists;
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_VALIDATION_H
+#endif //TEST_SA_CONFIGMANAGER_H

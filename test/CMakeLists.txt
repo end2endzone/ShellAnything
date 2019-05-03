@@ -9,6 +9,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testDetectNewFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseValidator.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
 
@@ -47,6 +48,8 @@ add_executable(shellanything_unittest
   TestMenu.h
   TestNode.cpp
   TestNode.h
+  TestObjectFactory.cpp
+  TestObjectFactory.h
   TestWin32Registry.cpp
   TestWin32Registry.h
   TestPropertyManager.cpp

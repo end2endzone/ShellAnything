@@ -78,6 +78,7 @@ namespace shellanything
       mMaxDirectories = validator.mMaxDirectories ;
       mProperties     = validator.mProperties     ;
       mFileExtensions = validator.mFileExtensions ;
+      mFileExists     = validator.mFileExists     ;
     }
     return (*this);
   }
@@ -120,6 +121,16 @@ namespace shellanything
   void Validator::setFileExtensions(const std::string & iFileExtensions)
   {
     mFileExtensions = iFileExtensions;
+  }
+
+  const std::string & Validator::getFileExists() const
+  {
+    return mFileExists;
+  }
+
+  void Validator::setFileExists(const std::string & iFileExists)
+  {
+    mFileExists = iFileExists;
   }
 
   bool Validator::validate(const Context & iContext) const
@@ -167,6 +178,23 @@ namespace shellanything
         bool found = hasValue(accepted_file_extensions, current_file_extension);
         if (!found)
           return false; //current file extension is not accepted
+      }
+    }
+
+    //validate file/directory exists
+    if (!mFileExists.empty())
+    {
+      //split
+      ra::strings::StringVector mandatory_files = ra::strings::split(mFileExists, "|");
+
+      //for each file
+      for(size_t i=0; i<mandatory_files.size(); i++)
+      {
+        const std::string & element = mandatory_files[i];
+        bool isFile = ra::filesystem::fileExists(element.c_str());
+        bool isDir  = ra::filesystem::folderExists(element.c_str());
+        if (!isFile && !isDir)
+          return false; //mandatory file/directory not found
       }
     }
 

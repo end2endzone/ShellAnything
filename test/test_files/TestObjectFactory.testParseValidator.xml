@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <visibility properties="bar" />
+      <actions>
+        <property name="foo" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu01">
+      <visibility maxfiles="5" maxfolders="6" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu02">
+      <visibility fileextensions="com;exe;bat;cmd" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu03">
+      <visibility exists="C:\Users\Public|C:\Program Files (x86)" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

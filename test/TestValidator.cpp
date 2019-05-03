@@ -200,6 +200,43 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testFileExists)
+  {
+    Context c;
+ 
+#ifdef _WIN32
+    const std::string file_path = "C:\\Windows\\System32\\kernel32.dll";
+    const std::string dir_path = "C:\\Program Files (x86)";
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    Validator v;
+ 
+    //assert default
+    ASSERT_TRUE( v.validate(c) );
+ 
+    //assert failure when a specified file/directory is not found
+    v.setFileExists("foo");
+    ASSERT_FALSE( v.validate(c) );
+ 
+    //assert success if the specified file is found
+    v.setFileExists(file_path);
+    ASSERT_TRUE( v.validate(c) );
+ 
+    //assert success if the specified directory is found
+    v.setFileExists(dir_path);
+    ASSERT_TRUE( v.validate(c) );
+ 
+    //assert success if multiple element is specified
+    v.setFileExists(file_path + "|" + dir_path);
+    ASSERT_TRUE( v.validate(c) );
+ 
+    //assert failure if the last element is not found
+    v.setFileExists(file_path + "|" + dir_path + "|foo");
+    ASSERT_FALSE( v.validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
