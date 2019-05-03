@@ -94,7 +94,13 @@ namespace shellanything
 
     uint32_t pId = startProcess(path, arguments, basedir);
 
-    return pId != 0;
+    bool success = pId != 0;
+    if (success)
+    {
+      LOG(INFO) << "Process created. PID=" << pId;
+    }
+
+    return success;
   }
 
   const std::string & ActionExecute::getPath() const
