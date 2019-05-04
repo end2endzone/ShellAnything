@@ -41,11 +41,11 @@ namespace shellanything
     int second; // [0,59]
   };
 
-  int GetDateDiffAbsolute(const GLOG_DATETIME & dt);
-  int GetDateDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2);
-  int GetLogFileAge(const std::string & path);
   const GLOG_DATETIME & GetInvalidLogDateTime();
-  GLOG_DATETIME GetLogDateTime(const std::string & path);
+  int DateTimeToSeconds(const GLOG_DATETIME & dt);
+  int GetDateTimeDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2);
+  int GetLogFileAge(const std::string & path);
+  GLOG_DATETIME GetFileDateTime(const std::string & path);
   std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id);
   std::string GetLogDirectory();
   bool IsLogFile(const std::string & path);

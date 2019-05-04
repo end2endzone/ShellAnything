@@ -20,7 +20,7 @@ extern std::string GetCurrentModulePath();
 
 namespace shellanything
 {
-  int GetDateDiffAbsolute(const GLOG_DATETIME & dt)
+  int DateTimeToSeconds(const GLOG_DATETIME & dt)
   {
     int total_seconds = 0;
     total_seconds += dt.year   *60*60*24*31*12;
@@ -32,10 +32,10 @@ namespace shellanything
     return total_seconds;
   }
 
-  int GetDateDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2)
+  int GetDateTimeDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2)
   {
-    int seconds1 = GetDateDiffAbsolute(dt1);
-    int seconds2 = GetDateDiffAbsolute(dt2);
+    int seconds1 = DateTimeToSeconds(dt1);
+    int seconds2 = DateTimeToSeconds(dt2);
     int diff = seconds2 - seconds1;
     return diff;
   }
@@ -43,7 +43,7 @@ namespace shellanything
   int GetLogFileAge(const std::string & path)
   {
     //when did we created this file ?
-    const GLOG_DATETIME      file_date = GetLogDateTime(path);
+    const GLOG_DATETIME      file_date = GetFileDateTime(path);
     const GLOG_DATETIME & invalid_date = GetInvalidLogDateTime();
     if (memcmp(&file_date, &invalid_date, sizeof(GLOG_DATETIME)) == 0)
       return 999999999; //failed getting the file's datetime
@@ -59,7 +59,7 @@ namespace shellanything
     now.minute = tmp.tm_min   ;
     now.second = tmp.tm_sec   ;
 
-    int diff = GetDateDiff(file_date, now);
+    int diff = GetDateTimeDiff(file_date, now);
     return diff;
   }
 
@@ -69,7 +69,7 @@ namespace shellanything
     return dt;
   }
 
-  GLOG_DATETIME GetLogDateTime(const std::string & path)
+  GLOG_DATETIME GetFileDateTime(const std::string & path)
   {
     GLOG_DATETIME dt = {0};
 
