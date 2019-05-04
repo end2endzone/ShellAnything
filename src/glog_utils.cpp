@@ -5,6 +5,7 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/time_.h"
+#include "rapidassist/process.h"
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h> //for MAX_PATH
@@ -169,6 +170,16 @@ namespace shellanything
 
   std::string GetLogDirectory()
   {
+    //Issue #10 - Change the log directory if run from the unit tests executable
+    std::string process_path = ra::process::getCurrentProcessPath();
+    if (process_path.find("_unittest") != std::string::npos)
+    {
+      //This DLL is executed by the unit tests
+      std::string log_dir = ra::process::getCurrentProcessDir();
+      log_dir.append("\\logs");
+      return log_dir;
+    }
+
     //By default, GLOG will output log files in %TEMP% directory.
     //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
 
