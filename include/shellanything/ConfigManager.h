@@ -57,10 +57,9 @@ namespace shellanything
 
     bool isLoadedConfigurationFile(const std::string & path) const;
 
-  private:
-    //methods
     static bool isConfigurationFile(const std::string & path);
 
+  private:
     //attributes
     PathList mPaths;
     Node mConfigurations;
