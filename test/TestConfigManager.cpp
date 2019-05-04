@@ -285,6 +285,47 @@ namespace shellanything { namespace test
     delete config;
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testClear)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //act
+    cmgr.clear();
+
+    //ASSERT nothing is loaded
+    configs = cmgr.getConfigurations();
+    ASSERT_EQ( 0, configs.size() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
  
 } //namespace test
 } //namespace shellanything

@@ -43,17 +43,18 @@ namespace shellanything
 
     static ConfigManager & getInstance();
     
+    Configuration::ConfigurationPtrList getConfigurations();
+
+    bool isConfigFileLoaded(const std::string & path) const;
+
+    void clear();
     void refresh();
 
     Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
 
-    Configuration::ConfigurationPtrList getConfigurations();
-
     void clearSearchPath();
     void addSearchPath(const std::string & path);
-
-    bool isConfigFileLoaded(const std::string & path) const;
 
   private:
     //attributes

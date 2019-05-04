@@ -48,6 +48,13 @@ namespace shellanything
     return _instance;
   }
 
+  void ConfigManager::clear()
+  {
+    clearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
+    mConfigurations.removeChildren();
+    refresh(); //forces all loaded configurations to be unloaded
+  }
+
   void ConfigManager::refresh()
   {
     LOG(INFO) << __FUNCTION__ << "()";

@@ -85,6 +85,7 @@ namespace shellanything { namespace test
       "test_files\\samples.xml",
       "test_files\\TestConfigManager.testAssignCommandId.1.xml",
       "test_files\\TestConfigManager.testAssignCommandId.2.xml",
+      "test_files\\TestConfigManager.testClear.xml",
       "test_files\\TestConfigManager.testDetectNewFile.xml",
       "test_files\\TestConfigManager.testFileModifications.xml",
       "test_files\\TestObjectFactory.testParseValidator.xml",

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Start regedit.exe">
+      <actions>
+        <exec path="C:\windows\system32\regedit.exe" />
+      </actions>
+    </menu>
+  </shell>
+</root>
