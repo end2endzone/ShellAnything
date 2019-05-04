@@ -54,7 +54,7 @@ public:
   {
     TEXTBOX_ANSWER,
     BUTTON_OK,
-    BUTTOK_CANCEL,
+    BUTTON_CANCEL,
     LABEL_PROMPT,
   };
   void setCtrl(CONTROLS ctrl, HWND hWnd);

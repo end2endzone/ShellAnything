@@ -214,7 +214,7 @@ void CInputBox::setCtrl(CONTROLS ctrl, HWND hWnd)
     case BUTTON_OK:
       m_hButtonOK = hWnd;
       break;
-    case BUTTOK_CANCEL:
+    case BUTTON_CANCEL:
       m_hButtonCancel = hWnd;
       break;
     case LABEL_PROMPT:
@@ -239,7 +239,7 @@ HWND CInputBox::getCtrl(CONTROLS ctrl) const
     case BUTTON_OK:
       return m_hButtonOK;
       break;
-    case BUTTOK_CANCEL:
+    case BUTTON_CANCEL:
       return m_hButtonCancel;
       break;
     case LABEL_PROMPT:
@@ -363,7 +363,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         NULL,
         hInstance,
         NULL);
-      pInputBox->setCtrl(CInputBox::BUTTOK_CANCEL, hButtonCancel);
+      pInputBox->setCtrl(CInputBox::BUTTON_CANCEL, hButtonCancel);
       SendMessage(hButtonCancel, WM_SETFONT, (WPARAM)hWindowFont, 0);
 
       // label Prompt
@@ -397,6 +397,21 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
       HWND thisWindow = pInputBox->getWindow();
 
+      //Do we get exceptions from HydraDMH64.dll!000000001000fd74() and HydraDMH64.dll!000000001000b4bc()
+      //'C:\Program Files (x86)\ATI Technologies\HydraVision\HydraDMH64.dll'
+      //because we are deleting FONT objects before deleting the buttons/label/inputbox first?
+      //According to http://www.winprog.org/tutorial/simple_window.html, this is not required
+      /*
+      HWND hTextBoxAnswer = pInputBox->getCtrl(TEXTBOX_ANSWER);
+      HWND hButtonOK      = pInputBox->getCtrl(BUTTON_OK);
+      HWND hButtonCancel  = pInputBox->getCtrl(BUTTON_CANCEL);
+      HWND hLabelPrompt   = pInputBox->getCtrl(LABEL_PROMPT);
+      DestroyWindow(hTextBoxAnswer);
+      DestroyWindow(hButtonOK     );
+      DestroyWindow(hButtonCancel );
+      DestroyWindow(hLabelPrompt  );
+      */
+
       //window font
       HFONT hFont = pInputBox->getWindowFont();
       DeleteObject(hFont);
@@ -421,7 +436,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     case BN_CLICKED:
       HWND hInputBox      = pInputBox->getWindow();
       HWND hButtonOK      = pInputBox->getCtrl(BUTTON_OK);
-      HWND hButtonCancel  = pInputBox->getCtrl(BUTTOK_CANCEL);
+      HWND hButtonCancel  = pInputBox->getCtrl(BUTTON_CANCEL);
 
       HWND hButtonClicked = (HWND)lParam;
       if (hButtonClicked == hButtonOK)
