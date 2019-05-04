@@ -156,7 +156,7 @@ namespace shellanything
           if (Configuration::isValidConfigFile(file_path))
           {
             //is this file already loaded ?
-            if (!isLoadedConfigurationFile(file_path))
+            if (!isConfigFileLoaded(file_path))
             {
               LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
@@ -235,7 +235,7 @@ namespace shellanything
     mPaths.push_back(path);
   }
 
-  bool ConfigManager::isLoadedConfigurationFile(const std::string & path) const
+  bool ConfigManager::isConfigFileLoaded(const std::string & path) const
   {
     for(size_t i=0; i<mConfigurations.size(); i++)
     {
