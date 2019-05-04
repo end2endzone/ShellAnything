@@ -78,9 +78,13 @@ namespace shellanything { namespace test
     std::string path = log_dir + "\\" + filename;
 
     //create the file
+    printf("Creating file '%s'.\n", path.c_str());
     FILE * f = fopen(path.c_str(), "w");
     if (!f)
+    {
+      printf("Failed creating log file '%s'.\n", path.c_str());
       return "";
+    }
 
     fputs("This is a fake log file!", f);
 
@@ -98,6 +102,20 @@ namespace shellanything { namespace test
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestGlogUtils, testValidLogDirectory)
+  {
+    std::string log_dir = GetLogDirectory();
+
+    //assert a folder was decided
+    ASSERT_FALSE( log_dir.empty() );
+
+    //assert the directory can be created
+    if (!ra::filesystem::folderExists(log_dir.c_str()))
+    {
+      ASSERT_TRUE( ra::filesystem::createFolder(log_dir.c_str()) );
+    }
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestGlogUtils, testLogDirectoryCreation)
   {
     ASSERT_FALSE( GetLogDirectory().empty() );
   }
