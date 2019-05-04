@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "InputBox.h"
+#include "utf_strings.h"
 
 #define DEFAULT_INPUTBOX_WIDTH  400
 #define DEFAULT_INPUTBOX_HEIGHT 150
@@ -33,7 +34,7 @@
 #define DEFAULT_HORIZONTAL_PADDING 10
 #define DEFAULT_VERTICAL_PADDING   10
 
-static const char * INPUTBOX_CLASS_NAME = "InputBox";
+static const wchar_t * INPUTBOX_CLASS_NAME = L"InputBox";
 
 HFONT createInputBoxFont()
 {
@@ -85,10 +86,10 @@ CInputBox::CInputBox(HWND hParent) :
   m_hInstance = GetModuleHandle(NULL);
   m_hParent = hParent;
 
-  WNDCLASSEX wcex = {0};
-  wcex.cbSize = sizeof(WNDCLASSEX); //Be sure to set this member before calling the GetClassInfoEx function: https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagwndclassexa
+  WNDCLASSEXW wcex = {0};
+  wcex.cbSize = sizeof(WNDCLASSEXW); //Be sure to set this member before calling the GetClassInfoEx function: https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-tagwndclassexa
 
-  if (!GetClassInfoEx(m_hInstance, INPUTBOX_CLASS_NAME, &wcex))
+  if (!GetClassInfoExW(m_hInstance, INPUTBOX_CLASS_NAME, &wcex))
   {
     //Load system question icon
     //Icon id: https://docs.microsoft.com/en-us/windows/desktop/api/shellapi/ne-shellapi-shstockiconid
@@ -110,7 +111,7 @@ CInputBox::CInputBox(HWND hParent) :
     wcex.lpszClassName  = INPUTBOX_CLASS_NAME;
     wcex.hIconSm        = m_hIcon; //LoadIcon(NULL, IDI_APPLICATION);
 
-    if (RegisterClassEx(&wcex) == 0)
+    if (RegisterClassExW(&wcex) == 0)
       MessageBox(hParent, "Failed registering WNDCLASSEX for CInputBox!", "Error", MB_OK | MB_ICONERROR);
   }
 }
@@ -125,7 +126,7 @@ CInputBox::~CInputBox()
   }
 
   // Unregister window class, freeing the memory that was previously allocated for this window.
-  UnregisterClass(INPUTBOX_CLASS_NAME, m_hInstance);
+  UnregisterClassW(INPUTBOX_CLASS_NAME, m_hInstance);
 }
 
 void CInputBox::setWidth(const int & width)
@@ -254,12 +255,24 @@ HWND CInputBox::getCtrl(CONTROLS ctrl) const
   };
 }
 
-void CInputBox::setText(const std::string & text)
+void CInputBox::setTextAnsi(const std::string & text)
+{
+  std::wstring text_unicode = shellanything::ansi_to_unicode(text);
+  m_Text = text_unicode;
+}
+
+std::string CInputBox::getTextAnsi() const
+{
+  std::string text_ansi = shellanything::unicode_to_ansi(m_Text);
+  return text_ansi;
+}
+
+void CInputBox::setTextUnicode(const std::wstring & text)
 {
   m_Text = text;
 }
 
-const std::string & CInputBox::getText() const
+std::wstring CInputBox::getTextUnicode() const
 {
   return m_Text;
 }
@@ -369,8 +382,21 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       SetFocus(hTextBoxAnswer);
     }
     break;
+	case WM_CLOSE:
+    {
+      //0xC0000005: Access violation reading location 0xffffffffffcbf330.
+      //https://social.msdn.microsoft.com/Forums/vstudio/en-US/7c96adba-23a0-4d06-86db-6a274528e362/destroywindowhwnd-gives-me-exceptions-on-x64?forum=vcgeneral
+      //https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/7c96adba-23a0-4d06-86db-6a274528e362/destroywindowhwnd-gives-me-exceptions-on-x64?forum=vcgeneral
+      DestroyWindow(hWnd);
+    }
+    break;
   case WM_DESTROY:
     {
+      //https://stackoverflow.com/questions/3155782/what-is-the-difference-between-wm-quit-wm-close-and-wm-destroy-in-a-windows-pr
+      //https://docs.microsoft.com/en-us/windows/desktop/winmsg/using-messages-and-message-queues#posting
+
+      HWND thisWindow = pInputBox->getWindow();
+
       //window font
       HFONT hFont = pInputBox->getWindowFont();
       DeleteObject(hFont);
@@ -386,7 +412,6 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       EnableWindow(hParent, TRUE);
       SetForegroundWindow(hParent);
 
-      DestroyWindow(hWnd);
       PostQuitMessage(0);
     }
     break;
@@ -402,12 +427,12 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       if (hButtonClicked == hButtonOK)
       {
         //simulate user pressing ENTER key which is catched in DoModal() and ease the destruction of the window
-        PostMessage(hInputBox, WM_KEYDOWN, VK_RETURN, 0);
+        PostMessageW(hInputBox, WM_KEYDOWN, VK_RETURN, 0);
       }
       else if (hButtonClicked == hButtonCancel)
       {
         //simulate user pressing ESC key which is catched in DoModal() and ease the destruction of the window
-        PostMessage(hInputBox, WM_KEYDOWN, VK_ESCAPE, 0);
+        PostMessageW(hInputBox, WM_KEYDOWN, VK_ESCAPE, 0);
       }
       break;
     }
@@ -441,19 +466,26 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
     break;
   default:
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    return DefWindowProcW(hWnd, uMsg, wParam, lParam);
   }
   return 0;
 }
 
-bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
+bool CInputBox::DoModal(const std::string  & caption, const std::string  & prompt)
+{
+  std::wstring caption_unicode = shellanything::ansi_to_unicode(caption);
+  std::wstring  prompt_unicode = shellanything::ansi_to_unicode(prompt);
+  return DoModal(caption_unicode, prompt_unicode);
+}
+
+bool CInputBox::DoModal(const std::wstring & caption, const std::wstring & prompt)
 {
   //Get the size of the desktop to be able to center the windows in the screen
   RECT rect;
   GetWindowRect(GetDesktopWindow(), &rect);
 
   // Setup window initialization attributes.
-  CREATESTRUCT cs = {0};
+  CREATESTRUCTW cs = {0};
   cs.lpCreateParams = NULL;
   cs.hInstance      = m_hInstance;
   cs.hMenu          = 0;
@@ -468,7 +500,7 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
   cs.dwExStyle      = 0; //WS_EX_TOPMOST;
   cs.lpCreateParams = this; //https://docs.microsoft.com/en-us/windows/desktop/LearnWin32/managing-application-state-
 
-  m_hInputBox = ::CreateWindowEx(
+  m_hInputBox = ::CreateWindowExW(
     cs.dwExStyle,
     cs.lpszClass,
     cs.lpszName,
@@ -483,6 +515,8 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
     cs.lpCreateParams
   ); 
 
+  BOOL is_unicode = IsWindowUnicode(m_hInputBox);
+
   //Validate that WndProc captured WM_CREATE message and properly created all controls
   if(m_hInputBox == NULL)
     return FALSE;
@@ -495,7 +529,8 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
   if(m_hLabelPrompt == NULL)
     return FALSE;
   
-  SetWindowText(m_hLabelPrompt, prompt.c_str());
+  //SetWindowTextW(m_hInputBox, caption.c_str());
+  SetWindowTextW(m_hLabelPrompt, prompt.c_str());
 
   EnableWindow(m_hParent, FALSE);
 
@@ -506,7 +541,7 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
   bool result = false;
 
   MSG msg = {0};
-  while (GetMessage(&msg, NULL, 0, 0)) 
+  while (GetMessageW(&msg, NULL, 0, 0)) 
   {       
     if (msg.message == WM_KEYDOWN) 
     {
@@ -516,23 +551,23 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
         {
           //Exit the window like if user have pressed CANCEL button
           //Note, pressing the CANCEL button also send this message.
-          SendMessage(m_hInputBox, WM_DESTROY, 0, 0);
+          SendMessageW(m_hInputBox, WM_CLOSE, 0, 0);
           result = false; //CANCEL button
         }
         break;
       case VK_RETURN:
         {
           //Make a copy of the textbox's value
-          size_t length = (size_t)GetWindowTextLength(m_hTextBoxAnswer);
+          size_t length = (size_t)GetWindowTextLengthW(m_hTextBoxAnswer);
           m_Text.assign(length, 0);
           if (m_Text.size() == length && length > 0)
           {
-            GetWindowText(m_hTextBoxAnswer, &m_Text[0], (int)length+1); //GetWindowText() expect length to also include the NULL terminating character
+            GetWindowTextW(m_hTextBoxAnswer, &m_Text[0], (int)length+1); //GetWindowText() expect length to also include the NULL terminating character
           }
 
           //Exit the window like if user have pressed OK button
           //Note, pressing the OK button also send this message.
-          SendMessage(m_hInputBox, WM_DESTROY, 0, 0);
+          SendMessageW(m_hInputBox, WM_CLOSE, 0, 0);
           result = true; //OK button
         }
         break;
@@ -548,7 +583,7 @@ bool CInputBox::DoModal(const std::string & caption, const std::string & prompt)
       };
     }
     TranslateMessage(&msg);
-    DispatchMessage(&msg);      
+    DispatchMessageW(&msg);      
   }
 
   return result;

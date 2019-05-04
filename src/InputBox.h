@@ -59,10 +59,14 @@ public:
   };
   void setCtrl(CONTROLS ctrl, HWND hWnd);
   HWND getCtrl(CONTROLS ctrl) const;
-  void setText(const std::string & text);
-  const std::string & getText() const;
 
-  bool DoModal(const std::string & caption, const std::string & prompt);
+  void setTextAnsi(const std::string & text);
+  std::string getTextAnsi() const;
+  void setTextUnicode(const std::wstring & text);
+  std::wstring getTextUnicode() const;
+
+  bool DoModal(const std::string  & caption, const std::string  & prompt);
+  bool DoModal(const std::wstring & caption, const std::wstring & prompt);
 
 private:
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -80,7 +84,7 @@ private:
   HWND m_hLabelPrompt;
   int m_Width;
   int m_Height;
-  std::string m_Text;
+  std::wstring m_Text;
 };
 
 #endif //INPUTBOX_H

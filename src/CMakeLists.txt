@@ -45,6 +45,8 @@ add_library(shellanything STATIC
   Platform.cpp
   PropertyManager.h
   PropertyManager.cpp
+  utf_strings.h
+  utf_strings.cpp
 )
 
 add_library(shellext SHARED

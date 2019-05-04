@@ -22,67 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/ActionPrompt.h"
-#include "PropertyManager.h"
-#include "InputBox.h"
+#ifndef TEST_SA_CONTEXT_H
+#define TEST_SA_CONTEXT_H
 
-#include <glog/logging.h>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-
-  ActionPrompt::ActionPrompt()
+  class TestInputBox : public ::testing::Test
   {
-  }
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
+  };
 
-  ActionPrompt::~ActionPrompt()
-  {
-  }
-
-  bool ActionPrompt::execute(const Context & iContext) const
-  {
-    PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string name = pmgr.expand(mName);
-    std::string title = pmgr.expand(mTitle);
-
-    //debug
-    LOG(INFO) << "Prompt: '" << title << "' ?";
-
-    CInputBox box(NULL);
-    bool result = box.DoModal("Question / Prompt", title);
-    if (!result)
-    {
-      LOG(INFO) << "Prompt: user has cancelled the action.";
-      return false;
-    }
-
-    const std::string value = box.getTextAnsi();
-
-    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << value << "'";
-
-    pmgr.setProperty(name, value);
-
-    return true;
-  }
-
-  const std::string & ActionPrompt::getName() const
-  {
-    return mName;
-  }
-
-  void ActionPrompt::setName(const std::string & iName)
-  {
-    mName = iName;
-  }
-
-  const std::string & ActionPrompt::getTitle() const
-  {
-    return mTitle;
-  }
-
-  void ActionPrompt::setTitle(const std::string & iTitle)
-  {
-    mTitle = iTitle;
-  }
-
+} //namespace test
 } //namespace shellanything
+
+#endif //TEST_SA_CONTEXT_H
