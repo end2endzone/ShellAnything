@@ -1,4 +1,5 @@
 Changes for 0.1.0
 
 * First public release.
+* Fixed issue #1: Do not delete log files that are less than 5 days old.
 * Fixed issue #2: Validator with 'exists' attribute.

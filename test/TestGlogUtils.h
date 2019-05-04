@@ -22,38 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_GLOG_UTILS_H
-#define SA_GLOG_UTILS_H
+#ifndef TEST_SA_GLOG_UTILS_H
+#define TEST_SA_GLOG_UTILS_H
 
-#include <glog/logging.h>
-#include <string>
-#include <stdint.h>
+#include <gtest/gtest.h>
 
-namespace shellanything
+namespace shellanything { namespace test
 {
-  struct GLOG_DATETIME
+  class TestGlogUtils : public ::testing::Test
   {
-    int year;
-    int month;  // [1,12]
-    int day;    // [1,31]
-    int hour;   // [0,23]
-    int minute; // [0,59]
-    int second; // [0,59]
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
-  int GetDateDiffAbsolute(const GLOG_DATETIME & dt);
-  int GetDateDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2);
-  int GetLogFileAge(const std::string & path);
-  const GLOG_DATETIME & GetInvalidLogDateTime();
-  GLOG_DATETIME GetLogDateTime(const std::string & path);
-  std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id);
-  std::string GetLogDirectory();
-  bool IsLogFile(const std::string & path);
-
-  void DeletePreviousLogs(int max_age_seconds);
-  void DeletePreviousLogs();
-  void InitLogger();
-
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_GLOG_UTILS_H
+#endif //TEST_SA_GLOG_UTILS_H

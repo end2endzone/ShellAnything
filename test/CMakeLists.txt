@@ -23,6 +23,8 @@ set(CONFIGURATION_TEST_FILES ""
 set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
   ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
+  ${CMAKE_SOURCE_DIR}/src/glog_utils.h
+  ${CMAKE_SOURCE_DIR}/src/glog_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/Platform.h
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
@@ -50,6 +52,8 @@ add_executable(shellanything_unittest
   TestContext.h
   TestDemoSamples.cpp
   TestDemoSamples.h
+  TestGlogUtils.cpp
+  TestGlogUtils.h
   TestMenu.cpp
   TestMenu.h
   TestNode.cpp
