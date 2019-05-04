@@ -23,17 +23,13 @@
  *********************************************************************************/
 
 #include "shellanything/ConfigManager.h"
-#include "ObjectFactory.h"
 #include "shellanything/Menu.h"
 #include "Platform.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
-#include "tinyxml2.h"
 
 #include <glog/logging.h>
-
-using namespace tinyxml2;
 
 namespace shellanything
 {
@@ -50,63 +46,6 @@ namespace shellanything
   {
     static ConfigManager _instance;
     return _instance;
-  }
-
-
-  Configuration * ConfigManager::loadFile(const std::string & path, std::string & error)
-  {
-    error = "";
-
-    if (!ra::filesystem::fileExists(path.c_str()))
-    {
-      error = "File '" + path + "' not found.";
-      return NULL;
-    }
-
-    uint64_t file_modified_date = ra::filesystem::getFileModifiedDate(path.c_str());
-
-    //Parse the xml file
-    //http://leethomason.github.io/tinyxml2/
-    
-    XMLDocument doc;
-    XMLError result = doc.LoadFile(path.c_str());
-    if (result != XML_SUCCESS && doc.ErrorStr())
-    {
-      error = doc.ErrorStr();
-      return NULL;
-    }
-
-    const XMLElement * xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
-    if (!xml_shell)
-    {
-      error = "Node <shell> not found";
-      return NULL;
-    }
-
-    Configuration * config = new Configuration();
-    config->setFilePath(path);
-    config->setFileModifiedDate(file_modified_date);
-
-    //find <menu> nodes under <shell>
-    const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
-    while (xml_menu)
-    {
-      //found a new menu node
-      Menu * menu = ObjectFactory::getInstance().parseMenu(xml_menu, error);
-      if (menu == NULL)
-      {
-        delete config;
-        return NULL;
-      }
-
-      //add the new menu to the current configuration
-      config->addChild(menu);
-
-      //next menu node
-      xml_menu = xml_menu->NextSiblingElement("menu");
-    }
-
-    return config;
   }
 
   void ConfigManager::refresh()
@@ -162,7 +101,7 @@ namespace shellanything
 
               //parse the file
               std::string error;
-              Configuration * config = loadFile(file_path, error);
+              Configuration * config = Configuration::loadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message

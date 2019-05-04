@@ -25,6 +25,11 @@
 #include "shellanything/Configuration.h"
 #include "rapidassist/filesystem.h"
 #include "Platform.h"
+#include "ObjectFactory.h"
+
+#include "tinyxml2.h"
+
+using namespace tinyxml2;
 
 namespace shellanything
 {
@@ -36,6 +41,62 @@ namespace shellanything
 
   Configuration::~Configuration()
   {
+  }
+
+  Configuration * Configuration::loadFile(const std::string & path, std::string & error)
+  {
+    error = "";
+
+    if (!ra::filesystem::fileExists(path.c_str()))
+    {
+      error = "File '" + path + "' not found.";
+      return NULL;
+    }
+
+    uint64_t file_modified_date = ra::filesystem::getFileModifiedDate(path.c_str());
+
+    //Parse the xml file
+    //http://leethomason.github.io/tinyxml2/
+    
+    XMLDocument doc;
+    XMLError result = doc.LoadFile(path.c_str());
+    if (result != XML_SUCCESS && doc.ErrorStr())
+    {
+      error = doc.ErrorStr();
+      return NULL;
+    }
+
+    const XMLElement * xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
+    if (!xml_shell)
+    {
+      error = "Node <shell> not found";
+      return NULL;
+    }
+
+    Configuration * config = new Configuration();
+    config->setFilePath(path);
+    config->setFileModifiedDate(file_modified_date);
+
+    //find <menu> nodes under <shell>
+    const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
+    while (xml_menu)
+    {
+      //found a new menu node
+      Menu * menu = ObjectFactory::getInstance().parseMenu(xml_menu, error);
+      if (menu == NULL)
+      {
+        delete config;
+        return NULL;
+      }
+
+      //add the new menu to the current configuration
+      config->addChild(menu);
+
+      //next menu node
+      xml_menu = xml_menu->NextSiblingElement("menu");
+    }
+
+    return config;
   }
 
   bool Configuration::isValidConfigFile(const std::string & path)

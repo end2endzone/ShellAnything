@@ -42,8 +42,6 @@ namespace shellanything
     typedef std::vector<std::string> PathList;
 
     static ConfigManager & getInstance();
-
-    Configuration * loadFile(const std::string & path, std::string & error);
     
     void refresh();
 

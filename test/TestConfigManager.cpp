@@ -66,21 +66,6 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestConfigManager, testLoadFile)
-  {
-    ConfigManager & mgr = ConfigManager::getInstance();
-    
-    const std::string path = "test_files/default.xml";
-    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
-    Configuration * config = mgr.loadFile(path, error_message);
-
-    ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
-    ASSERT_NE( INVALID_CONFIGURATION, config );
-
-    //cleanup
-    delete config;
-  }
-  //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testDetectNewFile)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
@@ -272,7 +257,7 @@ namespace shellanything { namespace test
     
     const std::string path = "test_files/default.xml";
     std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
-    Configuration * config = mgr.loadFile(path, error_message);
+    Configuration * config = Configuration::loadFile(path, error_message);
 
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
     ASSERT_NE( INVALID_CONFIGURATION, config );

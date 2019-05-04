@@ -28,9 +28,11 @@
 #include "shellanything/ActionExecute.h"
 
 #include "rapidassist/filesystem.h"
+#include "rapidassist/gtesthelp.h"
 
 namespace shellanything { namespace test
 {
+  static const Configuration * INVALID_CONFIGURATION = NULL;
 
   //--------------------------------------------------------------------------------------------------
   void TestConfiguration::SetUp()
@@ -98,6 +100,19 @@ namespace shellanything { namespace test
       ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) );
       ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) );
     }
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testLoadFile)
+  {
+    const std::string path = "test_files/default.xml";
+    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
+    Configuration * config = Configuration::loadFile(path, error_message);
+
+    ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
+    ASSERT_NE( INVALID_CONFIGURATION, config );
+
+    //cleanup
+    delete config;
   }
   //--------------------------------------------------------------------------------------------------
 
