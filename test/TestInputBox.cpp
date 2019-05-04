@@ -39,7 +39,7 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestInputBox, testTextAnsi)
+  TEST_F(TestInputBox, DISABLED_testTextAnsi)
   {
     HWND hWnd = GetDesktopWindow();
 
@@ -52,7 +52,7 @@ namespace shellanything { namespace test
     bool ok = box.DoModal(caption, prompt);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestInputBox, testTextUnicode)
+  TEST_F(TestInputBox, DISABLED_testTextUnicode)
   {
     HWND hWnd = GetDesktopWindow();
 
