@@ -23,6 +23,8 @@
  *********************************************************************************/
 
 #include "shellanything/Configuration.h"
+#include "rapidassist/filesystem.h"
+#include "Platform.h"
 
 namespace shellanything
 {
@@ -34,6 +36,33 @@ namespace shellanything
 
   Configuration::~Configuration()
   {
+  }
+
+  bool Configuration::isValidConfigFile(const std::string & path)
+  {
+    std::string file_extension = ra::filesystem::getFileExtention(path);
+    file_extension = ra::strings::uppercase(file_extension);
+    if (file_extension == "XML")
+    {
+      //read the beginning of the file
+      std::string content;
+      bool readed = peekFile(path.c_str(), 1024, content);
+      if (readed)
+      {
+        //and look for special XML tags
+        size_t rootPos = content.find("<root>", 0);
+        size_t shellPos = content.find("<shell>", rootPos);
+        size_t menuPos = content.find("<menu", shellPos);
+        if (rootPos != std::string::npos &&
+            shellPos != std::string::npos &&
+            menuPos != std::string::npos)
+        {
+          //found the required tags
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   const std::string & Configuration::getFilePath() const

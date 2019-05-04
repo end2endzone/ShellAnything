@@ -153,7 +153,7 @@ namespace shellanything
         for(size_t j=0; j<files.size(); j++)
         {
           const std::string & file_path = files[j];
-          if (isConfigurationFile(file_path))
+          if (Configuration::isValidConfigFile(file_path))
           {
             //is this file already loaded ?
             if (!isLoadedConfigurationFile(file_path))
@@ -233,33 +233,6 @@ namespace shellanything
   void ConfigManager::addSearchPath(const std::string & path)
   {
     mPaths.push_back(path);
-  }
-
-  bool ConfigManager::isConfigurationFile(const std::string & path)
-  {
-    std::string file_extension = ra::filesystem::getFileExtention(path);
-    file_extension = ra::strings::uppercase(file_extension);
-    if (file_extension == "XML")
-    {
-      //read the beginning of the file
-      std::string content;
-      bool readed = peekFile(path.c_str(), 1024, content);
-      if (readed)
-      {
-        //and look for special XML tags
-        size_t rootPos = content.find("<root>", 0);
-        size_t shellPos = content.find("<shell>", rootPos);
-        size_t menuPos = content.find("<menu", shellPos);
-        if (rootPos != std::string::npos &&
-            shellPos != std::string::npos &&
-            menuPos != std::string::npos)
-        {
-          //found the required tags
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   bool ConfigManager::isLoadedConfigurationFile(const std::string & path) const

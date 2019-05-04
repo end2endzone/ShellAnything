@@ -27,6 +27,8 @@
 #include "shellanything/Menu.h"
 #include "shellanything/ActionExecute.h"
 
+#include "rapidassist/filesystem.h"
+
 namespace shellanything { namespace test
 {
 
@@ -67,6 +69,35 @@ namespace shellanything { namespace test
     menu->setValidity(validity);
     menu->setVisibility(visibility);
     menu->addAction(action);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testIsValidConfigFile)
+  {
+    static const char * files[] = {
+      "test_files\\default.xml",
+      "test_files\\Microsoft Office 2003.xml",
+      "test_files\\Microsoft Office 2007.xml",
+      "test_files\\Microsoft Office 2010.xml",
+      "test_files\\Microsoft Office 2013.xml",
+      "test_files\\Microsoft Office 2016.xml",
+      "test_files\\samples.xml",
+      "test_files\\TestConfigManager.testAssignCommandId.1.xml",
+      "test_files\\TestConfigManager.testAssignCommandId.2.xml",
+      "test_files\\TestConfigManager.testDetectNewFile.xml",
+      "test_files\\TestConfigManager.testFileModifications.xml",
+      "test_files\\TestObjectFactory.testParseValidator.xml",
+      "test_files\\tests.xml",
+      "test_files\\WinDirStat.xml",
+    };
+    const size_t num_files = sizeof(files)/sizeof(files[0]);
+
+    //for each test files
+    for(size_t i=0; i<num_files; i++)
+    {
+      const std::string path = files[i];
+      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) );
+      ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) );
+    }
   }
   //--------------------------------------------------------------------------------------------------
 

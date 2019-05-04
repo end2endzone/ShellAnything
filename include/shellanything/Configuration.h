@@ -40,6 +40,8 @@ namespace shellanything
     Configuration();
     virtual ~Configuration();
 
+    static bool isValidConfigFile(const std::string & path);
+
     const std::string & getFilePath() const;
     void setFilePath(const std::string & iFilePath);
 
