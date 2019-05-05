@@ -160,8 +160,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   std::string description = pmgr.expand(menu->getDescription());
 
   //Get visible/enable properties based on current context.
-  bool menu_visible   = menu->isVisible(m_Context);
-  bool menu_enabled   = menu->isEnabled(m_Context);
+  bool menu_visible   = menu->isVisible();
+  bool menu_enabled   = menu->isEnabled();
   bool menu_separator = menu->isSeparator();
 
   //Skip this menu if not visible
@@ -265,8 +265,11 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     m_BitmapCache.reset_counters();
   }
 
-  //get all available configurations
+  //update all menus with the new context
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  cmgr.update(m_Context);
+
+  //get all available configurations
   shellanything::Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
   UINT insert_pos = 0;
   for(size_t i=0; i<configs.size(); i++)

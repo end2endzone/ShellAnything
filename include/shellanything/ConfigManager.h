@@ -50,6 +50,8 @@ namespace shellanything
     void clear();
     void refresh();
 
+    void update(const Context & c);
+
     Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
 

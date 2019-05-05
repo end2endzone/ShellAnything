@@ -135,6 +135,17 @@ namespace shellanything
     }
   }
 
+  void ConfigManager::update(const Context & c)
+  {
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      config->update(c);
+    }
+  }
+
   Menu * ConfigManager::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child

@@ -58,14 +58,19 @@ namespace shellanything
     const Icon & getIcon() const;
     void setIcon(const Icon & iIcon);
 
+    void update(const Context & c);
+
     Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
 
     const uint32_t & getCommandId() const;
     void setCommandId(const uint32_t & iCommandId);
 
-    bool isVisible(const Context & c);
-    bool isEnabled(const Context & c);
+    bool isVisible() const;
+    void setVisible(bool visible);
+
+    bool isEnabled() const;
+    void setEnabled(bool enabled);
 
     const Validator & getValidity();
     void setValidity(const Validator & iValidity);
@@ -82,6 +87,8 @@ namespace shellanything
     Icon mIcon;
     Validator mValidity;
     Validator mVisibility;
+    bool mVisible;
+    bool mEnabled;
     bool mSeparator;
     uint32_t mCommandId;
     std::string mName;

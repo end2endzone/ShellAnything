@@ -28,7 +28,9 @@ namespace shellanything
 {
   Menu::Menu() : Node("Menu"),
     mSeparator(false),
-    mCommandId(0)
+    mCommandId(0),
+    mVisible(true),
+    mEnabled(true)
   {
   }
 
@@ -89,6 +91,25 @@ namespace shellanything
     mIcon = icon;
   }
 
+  void Menu::update(const Context & c)
+  {
+    //update current menu
+    bool visible = mVisibility.validate(c);
+    bool enabled = mValidity.validate(c);
+    setVisible(visible);
+    setEnabled(enabled);
+
+    //update children
+
+    //for each child
+    Menu::MenuPtrList children = getSubMenus();
+    for(size_t i=0; i<children.size(); i++)
+    {
+      Menu * child = children[i];
+      child->update(c);
+    }
+  }
+
   Menu * Menu::findMenuByCommandId(const uint32_t & iCommandId)
   {
     if (mCommandId == iCommandId)
@@ -134,16 +155,24 @@ namespace shellanything
     mCommandId = iCommandId;
   }
  
-  bool Menu::isVisible(const Context & c)
+  bool Menu::isVisible() const
   {
-    bool validated = mVisibility.validate(c);
-    return validated;
+    return mVisible;
   }
 
-  bool Menu::isEnabled(const Context & c)
+  bool Menu::isEnabled() const
   {
-    bool validated = mValidity.validate(c);
-    return validated;
+    return mEnabled;
+  }
+
+  void Menu::setVisible(bool visible)
+  {
+    mVisible = visible;
+  }
+
+  void Menu::setEnabled(bool enabled)
+  {
+    mEnabled = enabled;
   }
 
   const Validator & Menu::getValidity()

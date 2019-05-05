@@ -146,6 +146,17 @@ namespace shellanything
     mFileModifiedDate = iFileModifiedDate;
   }
 
+  void Configuration::update(const Context & c)
+  {
+    //for each child
+    Menu::MenuPtrList children = getMenus();
+    for(size_t i=0; i<children.size(); i++)
+    {
+      Menu * child = children[i];
+      child->update(c);
+    }
+  }
+
   Menu * Configuration::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
