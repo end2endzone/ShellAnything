@@ -100,6 +100,7 @@ namespace shellanything
     setEnabled(enabled);
 
     //update children
+    bool all_invisible_children = true;
 
     //for each child
     Menu::MenuPtrList children = getSubMenus();
@@ -107,6 +108,17 @@ namespace shellanything
     {
       Menu * child = children[i];
       child->update(c);
+
+      //refresh the flag
+      all_invisible_children = all_invisible_children && !child->isVisible();
+    }
+
+    //Issue #4 - Parent menu with no children.
+    //if all the direct children of this menu are invisible
+    if (isParentMenu() && visible && all_invisible_children)
+    {
+      //force this node as invisible.
+      setVisible(false);
     }
   }
 

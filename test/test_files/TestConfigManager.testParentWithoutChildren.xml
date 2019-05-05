@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="option 1">
+      <menu name="option 1.1">
+        <menu name="option 1.1.1">
+          <visibility maxfiles="1" maxfolders="0" />
+          <actions>
+            <property name="foo" value="bar" />
+          </actions>
+        </menu>
+      </menu>
+    </menu>
+  </shell>
+</root>
