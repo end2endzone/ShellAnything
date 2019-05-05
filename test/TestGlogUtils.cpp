@@ -104,6 +104,7 @@ namespace shellanything { namespace test
   TEST_F(TestGlogUtils, testValidLogDirectory)
   {
     std::string log_dir = GetLogDirectory();
+    printf("Using log directory '%s'.\n", log_dir.c_str());
 
     //assert a folder was decided
     ASSERT_FALSE( log_dir.empty() );
@@ -111,7 +112,7 @@ namespace shellanything { namespace test
     //assert the directory can be created
     if (!ra::filesystem::folderExists(log_dir.c_str()))
     {
-      ASSERT_TRUE( ra::filesystem::createFolder(log_dir.c_str()) );
+      ASSERT_TRUE( ra::filesystem::createFolder(log_dir.c_str()) ) << "Failed creating directory '" << log_dir << "'.";
     }
   }
   //--------------------------------------------------------------------------------------------------
@@ -154,6 +155,7 @@ namespace shellanything { namespace test
   {
     //create old files
     std::string log_dir = GetLogDirectory();
+    printf("Using log directory '%s'.\n", log_dir.c_str());
 
     tm now = ra::time::getLocalTime();
     now.tm_year += 1900;
@@ -166,9 +168,9 @@ namespace shellanything { namespace test
     std::string file1 = CreateFakeLog(0, past_date, "123456", 7890);
     std::string file2 = CreateFakeLog(1, past_date, "123456", 7890);
     std::string file3 = CreateFakeLog(2, past_date, "123456", 7890);
-    ASSERT_TRUE( ra::filesystem::fileExists(file1.c_str()) );
-    ASSERT_TRUE( ra::filesystem::fileExists(file2.c_str()) );
-    ASSERT_TRUE( ra::filesystem::fileExists(file3.c_str()) );
+    ASSERT_TRUE( ra::filesystem::fileExists(file1.c_str()) ) << "File not found: '" << file1 << "'.";
+    ASSERT_TRUE( ra::filesystem::fileExists(file2.c_str()) ) << "File not found: '" << file2 << "'.";
+    ASSERT_TRUE( ra::filesystem::fileExists(file3.c_str()) ) << "File not found: '" << file3 << "'.";
     
     //create an "actual" log file
     std::string file4 = CreateFakeLog(0, today_date, "123456", 4567);

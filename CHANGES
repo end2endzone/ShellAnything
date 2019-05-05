@@ -3,5 +3,6 @@ Changes for 0.1.0
 * First public release.
 * Fixed issue  #1: Do not delete log files that are less than 5 days old.
 * Fixed issue  #2: Validator with 'exists' attribute.
+* Fixed issue  #7: Change the default filename format for log files.
 * Fixed issue  #9: Modify InputBox to support Unicode strings.
 * Fixed issue #10: Change the log directory if run from the unit tests.

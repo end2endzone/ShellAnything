@@ -47,7 +47,7 @@ namespace shellanything
     const GLOG_DATETIME      file_date = GetFileDateTime(path);
     const GLOG_DATETIME & invalid_date = GetInvalidLogDateTime();
     if (memcmp(&file_date, &invalid_date, sizeof(GLOG_DATETIME)) == 0)
-      return 999999999; //failed getting the file's datetime
+      return 0; //failed getting the file's datetime
 
     GLOG_DATETIME now;
     tm tmp = ra::time::getLocalTime();
@@ -84,15 +84,12 @@ namespace shellanything
     //native format is expected to have 9 parts:
     //  0: module filename
     //  1: file extension
-    //  2: %COMPUTERNAME%
-    //  3: %USERNAME%
-    //  4: log
-    //  5: level (INFO, WARNING, ERROR)
-    //  6: date-time
-    //  7: process id
-    //  8: log
+    //  2: level (INFO, WARNING, ERROR)
+    //  3: date-time
+    //  4: process id
+    //  5: log
 
-    if (parts.size() < 9)
+    if (parts.size() < 6)
       return GetInvalidLogDateTime(); //fail
 
     std::string datetime = parts[parts.size()-3];
@@ -133,29 +130,39 @@ namespace shellanything
     return dt;
   }
 
+  std::string GetLogDestination(int level)
+  {
+    //For issue #7 - Change the default filename format for log files
+    //NATIVE FORMAT:  shellext-d.dll.SES-MBL-WPC0866.beauchamp.a3.log.INFO.20180120-124422.8732.log
+    //DESIRED FORMAT: shellext-d.dll.INFO.20180120-124422.8732.log
+
+    // The function google::SetLogDestination() is expecting a full path (including the destination directory)
+
+    std::string module_path = GetCurrentModulePath();
+    std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
+
+    std::string path;
+
+    path += GetLogDirectory();
+    path += "\\";
+    path += module_filename;
+    path += ".";
+    path += google::GetLogSeverityName(level);
+    path += ".";
+
+    return path;
+  }
+
   std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id)
   {
     std::string module_path = GetCurrentModulePath();
     std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
-    /*std::string module_extension = ra::filesystem::getFileExtention(module_filename);
-    std::string module_filename_we = module_filename;
-    if (!module_extension.empty())
-    {
-      size_t length = module_filename.size() - module_extension.size() - 1;
-      module_filename_we = module_filename.substr(0, length);
-    };*/
 
     std::string filename;
+
     filename.append(module_filename);
     filename.append(".");
-    filename.append(ra::environment::getEnvironmentVariable("USERDOMAIN"));
-    filename.append(".");
-    filename.append(ra::environment::getEnvironmentVariable("USERNAME"));
-    filename.append(".log");
-
-    filename.append(".");
-    const char * level_str = google::GetLogSeverityName(level);
-    filename.append(level_str);
+    filename += google::GetLogSeverityName(level);
 
     filename.append(".");
     filename.append(date);
@@ -203,13 +210,6 @@ namespace shellanything
   {
     std::string module_path = GetCurrentModulePath();
     std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
-    /*std::string module_extension = ra::filesystem::getFileExtention(module_filename);
-    std::string module_filename_we = module_filename;
-    if (!module_extension.empty())
-    {
-      size_t length = module_filename.size() - module_extension.size() - 1;
-      module_filename_we = module_filename.substr(0, length);
-    };*/
 
     //validate that 'path' contains the dll filename
     size_t pos = path.find(module_filename);
@@ -294,10 +294,13 @@ namespace shellanything
       fLS::FLAGS_log_dir = log_dir;
     }
  
-    //Do not change the default output files...
-    //google::SetLogDestination(google::GLOG_INFO,    "shellext.dll.INFO");
-    //google::SetLogDestination(google::GLOG_WARNING, "shellext.dll.WARNING");
-    //google::SetLogDestination(google::GLOG_ERROR,   "shellext.dll.ERROR");
+    //Issue #7 - Change the default filename format for log files
+    std::string log_destination_info    = GetLogDestination(google::GLOG_INFO   );
+    std::string log_destination_warning = GetLogDestination(google::GLOG_WARNING);
+    std::string log_destination_error   = GetLogDestination(google::GLOG_ERROR  );
+    google::SetLogDestination(google::GLOG_INFO,    log_destination_info   .c_str());
+    google::SetLogDestination(google::GLOG_WARNING, log_destination_warning.c_str());
+    google::SetLogDestination(google::GLOG_ERROR,   log_destination_error  .c_str());
  
     const std::vector<std::string> dirs = google::GetLoggingDirectories();
  
