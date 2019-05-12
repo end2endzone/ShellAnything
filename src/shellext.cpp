@@ -265,11 +265,10 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     m_BitmapCache.reset_counters();
   }
 
-  //update all menus with the new context
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
-  cmgr.update(m_Context);
+  //browse through all shellanything menus and build the win32 popup menus
 
-  //get all available configurations
+  //for each configuration
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
   shellanything::Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
   UINT insert_pos = 0;
   for(size_t i=0; i<configs.size(); i++)
@@ -457,7 +456,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
   cmgr.refresh();
 
-  //Assign unique command id to all available menus (even the one that will not be visible)
+  //Update all menus with the new context
+  //This will refresh the visibility flags which is required before clalling ConfigManager::assignCommandIds()
+  cmgr.update(m_Context);
+
+  //Assign unique command id to visible menus. Issue #5
   nextCommandId = cmgr.assignCommandIds(m_FirstCommandId);
 
   //Build the menus

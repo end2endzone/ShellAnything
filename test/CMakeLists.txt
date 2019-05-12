@@ -12,6 +12,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandIdsInvalid.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testClear.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testDetectNewFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml

@@ -2,22 +2,18 @@
 <root>
   <shell>
     <menu name="Winzip">
-      <menu name="Add ${selection.filename}.zip" icon="auto">
-        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
-        <validity folder="true" />
+      <menu name="Add ${selection.filename}.zip">
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-a -r &quot;${selection.path}\${selection.filename}.zip&quot; &quot;${selection.path}&quot;" />
         </actions>
       </menu>
-      <menu name="Extract to folder ${selection.filename}" icon="auto">
-        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
+      <menu name="Extract to folder ${selection.filename}">
         <validity fileextensions="zip" />
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}\${selection.filename_noext}&quot;" />
         </actions>
       </menu>
-      <menu name="Extract here" icon="auto">
-        <!-- Note that icon attribute is set to auto for this menu which should use the first icon of the menu's first shell command -->
+      <menu name="Extract here">
         <validity fileextensions="zip" />
         <actions>
           <exec path="C:\Program Files (x86)\WinZip\winzip32.exe" arguments="-e &quot;${selection.path}&quot; &quot;${selection.parent.path}&quot;" />

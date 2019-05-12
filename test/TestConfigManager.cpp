@@ -36,6 +36,13 @@ namespace shellanything { namespace test
 {
   static const Configuration * INVALID_CONFIGURATION = NULL;
  
+  const char * toString(bool value)
+  {
+    if (value)
+      return "true";
+    return "false";
+  }
+
   Context getContextSingleFile()
   {
     Context c;
@@ -62,6 +69,60 @@ namespace shellanything { namespace test
     c.setElements(elements);
 
     return c;
+  }
+
+  void queryAllMenusRecursive(Menu * menu, Menu::MenuPtrList & list)
+  {
+    if (menu == NULL)
+      return;
+
+    list.push_back(menu);
+
+    Menu::MenuPtrList submenus = menu->getSubMenus();
+    for(size_t i=0; i<submenus.size(); i++)
+    {
+      Menu * submenu = submenus[i];
+      queryAllMenusRecursive(submenu, list);
+    }
+  }
+
+  void queryAllMenusRecursive(Configuration * config, Menu::MenuPtrList & list)
+  {
+    if (config == NULL)
+      return;
+
+    Menu::MenuPtrList menus = config->getMenus();
+    for(size_t i=0; i<menus.size(); i++)
+    {
+      Menu * menu = menus[i];
+      queryAllMenusRecursive(menu, list);
+    }
+  }
+  
+  Menu * querySubMenu(Menu * parent, size_t index)
+  {
+    if (parent == NULL)
+      return NULL;
+
+    Menu::MenuPtrList menus = parent->getSubMenus();
+    if (index >= menus.size())
+      return NULL; //out of bounds
+
+    Menu * m = menus[index];
+    return m;
+  }
+
+  Menu * querySubMenu(Configuration * config, size_t index)
+  {
+    if (config == NULL)
+      return NULL;
+
+    Menu::MenuPtrList menus = config->getMenus();
+    if (index >= menus.size())
+      return NULL; //out of bounds
+
+    Menu * m = menus[index];
+    return m;
   }
 
   //--------------------------------------------------------------------------------------------------
@@ -403,6 +464,99 @@ namespace shellanything { namespace test
 
     //ASSERT top menu is invisible (issue #4)
     ASSERT_FALSE( first->isVisible() );
+
+    //get all submenus
+    Menu * option1 = first;
+    ASSERT_TRUE( option1 != NULL );
+    Menu * option1_1 = querySubMenu(option1, 0);
+    ASSERT_TRUE( option1_1 != NULL );
+    Menu * option1_1_1 = querySubMenu(option1_1, 0);
+    ASSERT_TRUE( option1_1_1 != NULL );
+    ASSERT_FALSE( option1_1_1->isParentMenu() ); //menu is a leaf
+
+    //assert all sub menus are also invisible
+    ASSERT_FALSE( option1->isVisible() );
+    ASSERT_FALSE( option1_1->isVisible() );
+    ASSERT_FALSE( option1_1_1->isVisible() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfigManager, testAssignCommandIdsInvalid)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //query all menus
+    Menu * option1 = querySubMenu(configs[0], 0);
+    ASSERT_TRUE( option1 != NULL );
+    Menu * option1_1 = querySubMenu(option1, 0);
+    Menu * option1_2 = querySubMenu(option1, 1);
+    Menu * option1_3 = querySubMenu(option1, 2);
+    ASSERT_TRUE( option1_1 != NULL );
+    ASSERT_TRUE( option1_2 != NULL );
+    ASSERT_TRUE( option1_3 != NULL );
+    Menu * option1_2_1    = querySubMenu(option1_2,   0);
+    Menu * option1_2_1_1  = querySubMenu(option1_2_1, 0);
+    ASSERT_TRUE( option1_2_1    != NULL );
+    ASSERT_TRUE( option1_2_1_1  != NULL );
+
+    //query all menus
+    Menu::MenuPtrList menus;
+    queryAllMenusRecursive(configs[0], menus);
+
+    //update the menus based on a context with a single file
+    Context context = getContextSingleFile();
+    cmgr.update(context);
+
+    //assign unique command ids
+    uint32_t nextCommandId = cmgr.assignCommandIds(101);
+    ASSERT_EQ( 103, nextCommandId ); //assert 2 Menu(s) visible by ConfigManager
+
+    //assert that all visible menu have an assigned command id (issue #5)
+    for(size_t i=0; i<menus.size(); i++)
+    {
+      Menu * m = menus[i];
+      std::string message = ra::strings::format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->getName().c_str(), toString(m->isVisible()), m->getCommandId());
+      if (m->isVisible())
+        ASSERT_NE(Menu::INVALID_COMMAND_ID, m->getCommandId() ) << message; //visible menus must have a valid command id
+      else
+        ASSERT_EQ(Menu::INVALID_COMMAND_ID, m->getCommandId() ) << message; //invisible menus must have an invalid command id
+    }
+
+    //expected assigned command ids
+    ASSERT_EQ( 101, option1->getCommandId() );
+    ASSERT_EQ( 102, option1_1->getCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2->getCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_3->getCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1  ->getCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1_1->getCommandId() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

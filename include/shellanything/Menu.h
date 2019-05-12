@@ -40,6 +40,7 @@ namespace shellanything
   {
   public:
     typedef std::vector<Menu*> MenuPtrList;
+    static const uint32_t INVALID_COMMAND_ID;
 
     Menu();
     virtual ~Menu();
