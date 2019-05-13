@@ -80,12 +80,12 @@ std::string GuidToString(GUID guid)
 
 std::string GuidToInterfaceName(GUID guid)
 {
-  if (IsEqualGUID(guid, IID_IUnknown))                  return "IID_IUnknown";              //{00000000-0000-0000-C000-000000000046}
-  if (IsEqualGUID(guid, IID_IClassFactory))             return "IID_IClassFactory";         //{00000001-0000-0000-C000-000000000046}
-  if (IsEqualGUID(guid, IID_IShellExtInit))             return "IID_IShellExtInit";         //{000214E8-0000-0000-C000-000000000046}
-  if (IsEqualGUID(guid, IID_IContextMenu))              return "IID_IContextMenu";          //{000214E4-0000-0000-C000-000000000046}
-  if (IsEqualGUID(guid, IID_IContextMenu2))             return "IID_IContextMenu2";         //{000214F4-0000-0000-C000-000000000046}
-  if (IsEqualGUID(guid, IID_IContextMenu3))             return "IID_IContextMenu3";         //{BCFCE0A0-EC17-11D0-8D10-00A0C90F2719}
+  if (IsEqualGUID(guid, IID_IUnknown))                  return "IUnknown";                  //{00000000-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IClassFactory))             return "IClassFactory";             //{00000001-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IShellExtInit))             return "IShellExtInit";             //{000214E8-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu))              return "IContextMenu";              //{000214E4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu2))             return "IContextMenu2";             //{000214F4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu3))             return "IContextMenu3";             //{BCFCE0A0-EC17-11D0-8D10-00A0C90F2719}
   if (IsEqualGUID(guid, IID_IObjectWithSite))           return "IObjectWithSite";           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
   if (IsEqualGUID(guid, IID_IInternetSecurityManager))  return "IInternetSecurityManager";  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
 
@@ -188,7 +188,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     const std::string & icon_filename = icon.getPath();
     const int icon_index = icon.getIndex();
 
-    //ask the cache for an existing icon
+    //ask the cache for an existing icon.
+    //this will identify the icon in the cache as "used" or "active".
     HBITMAP hBitmap = m_BitmapCache.find_handle(icon_filename, icon_index);
 
     //if nothing in cache, create a new one
@@ -254,9 +255,23 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
 void CContextMenu::BuildMenuTree(HMENU hMenu)
 {
+  //Bitmap ressources must be properly destroyed.
+  //When a menu (HMENU handle) is destroyed using win32 DestroyMenu() function, it also destroy the child menus:
+  //https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-destroymenu
+  //
+  //However the bitmap assigned to menus are not deleted with DestroyMenu() function.
+  //Bitmap is a limited resource. If you ran out of GDI resources, you may see black menus 
+  //and Windows Explorer will have difficulties to render all the window. For details, see
+  //https://www.codeproject.com/Questions/1228261/Windows-shell-extension
+  //
+  //To prevent running out of bitmap ressource we use the shellanything::BitmapCache class.
+  //Each bitmap is identified as 'used' in CContextMenu::BuildMenuTree() with 'm_BitmapCache.find_handle()'.
+  //Every 5 times the shell extension popup is displayed, we look for 'unused' bitmap and delete them.
+  //
+
   //handle destruction of old bitmap in the cache
   m_BuildMenuTreeCount++;
-  if (m_BuildMenuTreeCount > 0 && m_BuildMenuTreeCount%10 == 0)
+  if (m_BuildMenuTreeCount > 0 && (m_BuildMenuTreeCount % 5) == 0)
   {
     //every 10 calls, refresh the cache
     m_BitmapCache.destroy_old_handles();
