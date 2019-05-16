@@ -1207,6 +1207,18 @@ void InitConfigManager()
   cmgr.clearSearchPath();
   cmgr.addSearchPath(config_dir);
   cmgr.refresh();
+
+  //define global properties
+  std::string prop_application_path       = GetCurrentModulePath();
+  std::string prop_application_directory  = ra::filesystem::getParentPath(prop_application_path);
+  std::string prop_log_directory          = shellanything::GetLogDirectory();
+  std::string prop_config_directory       = config_dir;
+
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  pmgr.setProperty("application.path"     , prop_application_path     );
+  pmgr.setProperty("application.directory", prop_application_directory);
+  pmgr.setProperty("log.directory"        , prop_log_directory        );
+  pmgr.setProperty("config.directory"     , prop_config_directory     );
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
@@ -1222,6 +1234,8 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     // Initialize the configuration manager
     InitConfigManager();
+
+
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {

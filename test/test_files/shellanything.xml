@@ -13,19 +13,19 @@
         <menu name="Application">
           <icon path="C:\Windows\system32\shell32.dll" index="72" />
           <actions>
-            <open path="F:\Projets\Cpp\ShellAnything\master\build\bin\Debug" />
+            <open path="${application.directory}" />
           </actions>
         </menu>
         <menu name="Logs">
           <icon path="C:\Windows\system32\shell32.dll" index="70" />
           <actions>
-            <open path="C:\Users\JohnSmith\ShellAnything\Logs" />
+            <open path="${log.directory}" />
           </actions>
         </menu>
         <menu name="Configurations">
           <icon path="C:\Windows\system32\shell32.dll" index="69" />
           <actions>
-            <open path="C:\Users\JohnSmith\ShellAnything" />
+            <open path="${config.directory}" />
           </actions>
         </menu>
       </menu>
