@@ -22,7 +22,6 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "rapidassist/strings.h"
 #include <stdint.h>
 #include <vector>
 #include <string>
@@ -45,7 +44,7 @@ namespace win32_registry
   
   struct RGS_ENTRY
   {
-    bool isKey; //true is the entry is a key, false if the entry is a value
+    bool isKey; //true if the entry is a key, false if the entry is a value
     bool isNoRemove;
     bool isForceRemove;
     std::string path;
@@ -78,8 +77,10 @@ namespace win32_registry
 
   bool getAssociatedProgram(const char* iFileExtention, std::string & oCmdLine);
   bool setAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine);
+
   bool registerCommandForFile(const char * iName, const char * iCommand);
   bool registerCommandForFolder(const char * iName, const char * iCommand);
+
   REGISTRY_ICON getFileTypeIcon(const char * iFileExtention);
 
-} //namespace shellanything
+} //namespace win32_registry

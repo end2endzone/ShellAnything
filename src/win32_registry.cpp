@@ -24,6 +24,7 @@
 
 #include "win32_registry.h"
 
+#include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "Platform.h"
@@ -571,13 +572,18 @@ namespace win32_registry
         filePath = parts[0];
         std::string indexStr = parts[1];
         const char * debugValue = indexStr.c_str();
-        ra::strings::replace(indexStr, "-", ""); //some file contains a -102 instead of 102. Don't know why. ie: 
         ra::strings::parse(indexStr, index);
       }
       else
         return NULL_ICON; //unknown format
     }
     
+    //Does filePath contains double quotes ?
+    if (filePath.find("\"") != std::string::npos)
+    {
+      ra::strings::replace(filePath, "\"", "");
+    }
+
     //Does file exists ?
     {
       const char * debugValue = filePath.c_str();
@@ -603,17 +609,47 @@ namespace win32_registry
       }
     }
 
+    //File does not exists. Maybe path is only a filename and must be found using %PATH%.
+    std::string path_env = ra::environment::getEnvironmentVariable("PATH");
+    ra::strings::StringVector paths;
+    ra::strings::split(paths, path_env, ";");
+    for(size_t i=0; i<paths.size(); i++)
+    {
+      //build temp file path
+      std::string test_path = paths[i];
+      test_path = shellanything::expand(test_path.c_str());
+      ra::filesystem::normalizePath(test_path);
+      test_path += ra::filesystem::getPathSeparatorStr();
+      test_path += filePath;
+
+      //test to find the file
+      {
+        const char * debugValue = test_path.c_str();
+        if (test_path.size() > 0 && ra::filesystem::fileExists(test_path.c_str()))
+        {
+          REGISTRY_ICON icon;
+          icon.path = test_path;
+          icon.index = index;
+          return icon;
+        }
+      }
+    }
+
     //Unable to extract icon
     return NULL_ICON;
   }
 
   REGISTRY_ICON getFileTypeIcon(const char * iFileExtention)
   {
+    if (iFileExtention == NULL)
+      return NULL_ICON;
+
     std::string extention = iFileExtention;
     if (extention[0] != '.')
     {
       extention.insert(0, 1, '.');
     }
+    extention = ra::strings::lowercase(extention); //file extensions are in lowercase in the registry.
 
     //Extract document short name. ie AcroExch.Document
     std::string documentName;

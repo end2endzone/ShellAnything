@@ -58,11 +58,28 @@ namespace shellanything
 
       //process with search and replace
       ra::strings::replace(output, pattern, value);
+
+      //also look for case insensitive replacement
+      std::string pattern_uppercase = ra::strings::uppercase(pattern);
+      std::string output_uppercase = ra::strings::uppercase(output);
+      size_t pattern_pos = output_uppercase.find(pattern_uppercase);
+      while (pattern_pos != std::string::npos)
+      {
+        //extract the pattern from the value.
+        //ie: the value contains %systemdrive% instead of the official %SystemDrive%
+        std::string pattern2 = output.substr(pattern_pos, pattern.size());
+
+        //process with search and replace using the unofficial pattern
+        ra::strings::replace(output, pattern2, value);
+
+        //search again for next pattern
+        output_uppercase = ra::strings::uppercase(output);
+        pattern_pos = output_uppercase.find(pattern_uppercase);
+      }
     }
 
     return output;
   }
-
   ra::strings::StringVector getEnvironmentVariables()
   {
     ra::strings::StringVector vars;
