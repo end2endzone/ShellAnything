@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+  
+    <menu separator="true" />
+    
+    <menu name="ShellAnything">
+      <icon path="C:\Windows\system32\imageres.dll" index="60" />
+
+      <menu name="Directories">
+        <icon path="C:\Windows\system32\shell32.dll" index="3" />
+        
+        <menu name="Application">
+          <icon path="C:\Windows\system32\shell32.dll" index="72" />
+          <actions>
+            <open path="F:\Projets\Cpp\ShellAnything\master\build\bin\Debug" />
+          </actions>
+        </menu>
+        <menu name="Logs">
+          <icon path="C:\Windows\system32\shell32.dll" index="70" />
+          <actions>
+            <open path="C:\Users\JohnSmith\ShellAnything\Logs" />
+          </actions>
+        </menu>
+        <menu name="Configurations">
+          <icon path="C:\Windows\system32\shell32.dll" index="69" />
+          <actions>
+            <open path="C:\Users\JohnSmith\ShellAnything" />
+          </actions>
+        </menu>
+      </menu>
+
+      <menu name="Github">
+        <icon path="C:\Windows\system32\shell32.dll" index="13" />
+        
+        <menu name="Source code">
+          <!--<icon path="C:\Windows\system32\dsuiext.dll" index="8" />-->
+          <icon path="C:\Windows\System32\wscript.exe" index="1" />
+          <actions>
+            <open path="https://github.com/end2endzone/ShellAnything" />
+          </actions>
+        </menu>
+        <menu name="Latest Release">
+          <icon path="C:\Windows\system32\ieframe.dll" index="12" />
+          <actions>
+            <open path="https://github.com/end2endzone/ShellAnything/releases/latest" />
+          </actions>
+        </menu>
+        
+      </menu>
+    </menu>
+    
+    <menu separator="true" />
+    
+  </shell>
+</root>

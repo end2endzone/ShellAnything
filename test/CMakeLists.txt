@@ -10,6 +10,7 @@ set(CONFIGURATION_TEST_FILES ""
   "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2013.xml"
   "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2016.xml"
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/shellanything.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandIdsInvalid.xml
