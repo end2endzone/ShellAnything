@@ -37,11 +37,6 @@
 
 namespace win32_registry
 {
-  REGISTRY_ICON NULL_ICON = {
-    std::string(),
-    0,
-  };
-
   bool isIconEquals(const REGISTRY_ICON & a, const REGISTRY_ICON & b)
   {
     if (a.path == b.path && a.index == b.index)
@@ -675,7 +670,7 @@ namespace win32_registry
     {
       std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", documentName.c_str()); 
       REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-      if (!isIconEquals(icon,NULL_ICON))
+      if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
         return icon;
     }
 
@@ -699,7 +694,7 @@ namespace win32_registry
       {
         std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", documentCurrentVersionName.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON))
+        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
           return icon;
       }
 
@@ -725,7 +720,7 @@ namespace win32_registry
       {
         std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", iconHandlerGuid.c_str(), documentName.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON))
+        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
           return icon;
       }
 
@@ -733,7 +728,7 @@ namespace win32_registry
       {
         std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", iconHandlerGuid.c_str(), documentName.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON))
+        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
           return icon;
       }
     }
@@ -1116,6 +1111,17 @@ namespace win32_registry
     }
 
     return true;
+  }
+
+  REGISTRY_ICON getUnknownFileTypeIcon()
+  {
+    //C:\Windows\System32\imageres.dll
+    std::string imageres_path = shellanything::findFileFromPaths("imageres.dll");
+
+    REGISTRY_ICON icon;
+    icon.path = imageres_path;
+    icon.index = 2;
+    return icon;
   }
 
 } //namespace win32_registry

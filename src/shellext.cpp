@@ -197,7 +197,9 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     {
       HICON hIconLarge = NULL;
       HICON hIconSmall = NULL;
+      
       //
+      UINT numIconInFile = ExtractIconEx( icon_filename.c_str(), -1, NULL, NULL, 1 );
       UINT numIconLoaded = ExtractIconEx( icon_filename.c_str(), icon_index, &hIconLarge, &hIconSmall, 1 );
       if (numIconLoaded >= 1)
       {

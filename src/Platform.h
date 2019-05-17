@@ -65,6 +65,9 @@ namespace shellanything
   std::string GetSystemErrorDescription(uint32_t dwError);
   void ShowErrorMessage(const std::string & title, const std::string & message);
 
+  bool findFileFromPaths(const std::string & filename, ra::strings::StringVector & locations);
+  std::string findFileFromPaths(const std::string & filename);
+
 } //namespace shellanything
 
 #endif //SA_ACTION_H

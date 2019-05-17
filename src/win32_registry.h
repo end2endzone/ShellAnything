@@ -52,8 +52,10 @@ namespace win32_registry
   };
 
   typedef std::vector<RGS_ENTRY> RGS_ENTRY_LIST;
-
   typedef std::string MemoryBuffer;
+
+  static const REGISTRY_ICON NULL_ICON = { std::string(), 0 };
+  static const int & INVALID_ICON_INDEX = -1;
   
   std::string toString(const RGS_ENTRY & entry);
   bool parseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries);
@@ -82,5 +84,6 @@ namespace win32_registry
   bool registerCommandForFolder(const char * iName, const char * iCommand);
 
   REGISTRY_ICON getFileTypeIcon(const char * iFileExtention);
+  REGISTRY_ICON getUnknownFileTypeIcon();
 
 } //namespace win32_registry

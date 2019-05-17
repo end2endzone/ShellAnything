@@ -166,7 +166,7 @@ namespace shellanything { namespace test
     }
 
     static const char * file_extensions[] = {
-      "application", 
+      "application", "avi", 
       "bat", "bmp", 
       "c", "cab", "chm", "cmd", "cpp", "cs", "csproj", "css", "csv", 
       "def", "dll", "doc", "docx", "dsp", "dsw", "dtd", 
@@ -174,17 +174,17 @@ namespace shellanything { namespace test
       "gif", 
       "h", "htm", "html", 
       "inf", "ini", 
-      "jar", "java", "jpg", "js", 
+      "jar", "java", "jpeg", "jpg", "js", 
       "lib", "log", 
-      "mdb", "msi", 
+      "mdb", "mid", "mp3", "mpg", "mpeg", "msi", 
       "obj", "ocx", 
       "pdf", "png", "pptx", 
       "rc", "reg", "res", "resx", "rgs", 
-      "sdf", "sln", "svg", "sys", 
+      "sln", "svg", "sys", 
       "tga", "tif", "tmp", "ttf", "txt", 
       "udf", "url", "user", 
       "vb", "vbs", "vcproj", "vcxproj", "vdproj", 
-      "war", "wav", "website", 
+      "war", "wav", "website", "wmv", 
       "xaml", "xls", "xlsm", "xlsx", "xml", "xsd", "xslt", 
       "zip", 
     };
@@ -205,10 +205,13 @@ namespace shellanything { namespace test
       ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
 
       //get the icon matching this file's extension
-      const win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
+      win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
       if (icon.path.empty())
       {
         printf("Failed to find icon for file extension. Is this expected ? file_extension='%s'. \n", file_extension);
+
+        //use default unknown icon
+        icon = win32_registry::getUnknownFileTypeIcon();
       }
 
       //load and save the found icon to a file
@@ -217,6 +220,7 @@ namespace shellanything { namespace test
         HICON hIconLarge = NULL;
         HICON hIconSmall = NULL;
 
+        UINT numIconInFile = ExtractIconEx( icon.path.c_str(), -1, NULL, NULL, 1 );
         UINT numIconLoaded = ExtractIconEx( icon.path.c_str(), icon.index, &hIconLarge, &hIconSmall, 1 );
         ASSERT_GE( numIconLoaded, 1) << "Failed to load at least one icon from file '" << icon.path << "' for file extension '" << file_extension << "'."; //at least 1 icon loaded
         
@@ -229,8 +233,8 @@ namespace shellanything { namespace test
         ASSERT_TRUE( hIconBest != NULL ) << "Unable to load large/small icon from file '" << icon.path << "' for file extension '" << file_extension << "'.";
 
         //Convert the icon to a bitmap (with invisible background)
-        SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-        HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+        SIZE icon_size = win32_utils::GetIconSize(hIconBest);
+        HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconBest, icon_size.cx, icon_size.cy);
 
         //Remove the invisible background and replace by red color
         COLORREF background_color = RGB(255,0,255); //pink
@@ -248,6 +252,88 @@ namespace shellanything { namespace test
         //delete the bitmap
         DeleteObject(hBitmap);
       }
+    }
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWin32Registry, testGetFileTypeIconSDF)
+  {
+    //The file extension "SDF" is a special case.
+    //The file type is registered when you install Visual Studio on the system.
+    //The "type" of the file is "SQL Server Compact Edition Database File".
+    //The icon is defined in "HKEY_CLASSES_ROOT\Microsoft SQL Server Compact Edition Database File\DefaultIcon" with a 
+    //default value of "C:\Program Files\Microsoft SQL Server Compact Edition\v3.5\sqlceme35.dll,-1".
+    //However, the index -1 is an invalid value for ExtractIconEx().
+    //See https://docs.microsoft.com/en-us/windows/desktop/api/shellapi/nf-shellapi-extracticonexa
+    //When nIconIndex is negative, it means that abs(nIconIndex) is the value of a RESSOURCE ID.
+    //If nIconIndex is positive, then the index refers to a 0-based index inside the file.
+    //The value -1 is a special case for nIconIndex and commands ExtractIconEx() to return the total number of icons inside the file
+    //instead of loading the icon whose RESSOURCE ID is 1.
+    //For more detalis, see here 
+    //and here
+    //The function GetFileTypeIcon() should be bullet proof when dealing with an invalid index value.
+    //
+
+    static const char * file_extension = "sdf";
+
+    //create a fake file with the extensions for visual reference
+    std::string file_path = ra::gtesthelp::getTestQualifiedName();
+    static const size_t BUFFER_SIZE = 1024;
+    char post_filename[BUFFER_SIZE];
+    sprintf(post_filename, ".sample_file.%s", file_extension);
+    file_path.append(post_filename);
+    bool created = ra::gtesthelp::createFile(file_path.c_str());
+    ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
+
+    //get the icon matching this file's extension
+    win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
+
+    //For debugging on each system where the test is executed.
+    printf("Found icon in file '%s', index '%d'.\n", icon.path.c_str(), icon.index);
+
+    //assert a valid index was returned
+    if (!icon.path.empty())
+    {
+      ASSERT_NE(icon.index, -1);
+    }
+
+    //load and save the found icon to a file
+    if (!icon.path.empty())
+    {
+      HICON hIconLarge = NULL;
+      HICON hIconSmall = NULL;
+
+      UINT numIconInFile = ExtractIconEx( icon.path.c_str(), -1, NULL, NULL, 1 );
+
+      UINT numIconLoaded = ExtractIconEx( icon.path.c_str(), icon.index, &hIconLarge, &hIconSmall, 1 );
+      ASSERT_GE( numIconLoaded, 1) << "Failed to load at least one icon from file '" << icon.path << "' for file extension '" << file_extension << "'."; //at least 1 icon loaded
+        
+      //select best icon
+      HICON hIconBest = NULL;
+      if (hIconSmall)
+        hIconBest = hIconSmall;
+      if (hIconLarge)
+        hIconBest = hIconLarge;
+      ASSERT_TRUE( hIconBest != NULL ) << "Unable to load large/small icon from file '" << icon.path << "' for file extension '" << file_extension << "'.";
+
+      //Convert the icon to a bitmap (with invisible background)
+      SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
+      HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+
+      //Remove the invisible background and replace by red color
+      COLORREF background_color = RGB(255,0,255); //pink
+      win32_utils::FillTransparentPixels(hBitmap, background_color);
+
+      DestroyIcon(hIconLarge);
+      DestroyIcon(hIconSmall);
+
+      //save to a file
+      file_path = ra::gtesthelp::getTestQualifiedName();
+      sprintf(post_filename, ".icon_%s.bmp", file_extension);
+      file_path.append(post_filename);
+      win32_utils::CreateBMPFile(file_path.c_str(), hBitmap);
+
+      //delete the bitmap
+      DeleteObject(hBitmap);
     }
   }
   //--------------------------------------------------------------------------------------------------
