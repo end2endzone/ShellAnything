@@ -68,11 +68,38 @@ std::string GetCurrentModulePath()
   return path;
 }
 
+std::string GetLogDirectorySafe()
+{
+  std::string log_dir = shellanything::GetLogDirectory();
+  printf("Using log directory '%s'.\n", log_dir.c_str());
+
+  //verify if the directory is available
+  if (ra::filesystem::folderExists(log_dir.c_str()))
+    printf("Directory is found.\n");
+  else
+  {
+    printf("WARNING: Directory is NOT found!\n");
+
+    //creating directory
+    printf("Creating directory '%s'.\n", log_dir.c_str());
+    bool created = ra::filesystem::createFolder(log_dir.c_str());
+    if (created)
+      printf("Directory created.\n");
+    else
+      printf("WARNING: Failed creating directory!\n");
+
+    if (ra::filesystem::folderExists(log_dir.c_str()))
+      printf("Directory is found.\n");
+  }
+
+  return log_dir;
+}
+
 namespace shellanything { namespace test
 {
   std::string CreateFakeLog(int level, const std::string & date, const std::string & time, uint32_t process_id)
   {
-    std::string log_dir = GetLogDirectory();
+    std::string log_dir = GetLogDirectorySafe();
     std::string filename = GetLogFilename(level, date, time, process_id);
 
     std::string path = log_dir + "\\" + filename;
@@ -103,7 +130,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestGlogUtils, testValidLogDirectory)
   {
-    std::string log_dir = GetLogDirectory();
+    std::string log_dir = GetLogDirectorySafe();
     printf("Using log directory '%s'.\n", log_dir.c_str());
 
     //assert a folder was decided
@@ -118,7 +145,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestGlogUtils, testLogDirectoryCreation)
   {
-    ASSERT_FALSE( GetLogDirectory().empty() );
+    ASSERT_FALSE( GetLogDirectorySafe().empty() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestGlogUtils, testGetLogDateTime)
@@ -154,7 +181,7 @@ namespace shellanything { namespace test
   TEST_F(TestGlogUtils, testCleanup)
   {
     //create old files
-    std::string log_dir = GetLogDirectory();
+    std::string log_dir = GetLogDirectorySafe();
     printf("Using log directory '%s'.\n", log_dir.c_str());
 
     tm now = ra::time::getLocalTime();
