@@ -82,7 +82,10 @@ std::string GetLogDirectorySafe()
 
     //creating directory
     printf("Creating directory '%s'.\n", log_dir.c_str());
-    bool created = ra::filesystem::createFolder(log_dir.c_str());
+
+    //Use 'shellanything::createFolder()' instead of 'ra::filesystem::createFolder()' because
+    //of RapidAssist issue #27: https://github.com/end2endzone/RapidAssist/issues/27
+    bool created = shellanything::createFolder(log_dir.c_str());
     if (created)
       printf("Directory created.\n");
     else
