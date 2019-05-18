@@ -148,7 +148,7 @@ Help:
     </menu>
 
     <!-- symbolic links -->
-    <menu name="Symbolic Links ">
+    <menu name="Symbolic Links">
       <icon path="C:\Windows\System32\imageres.dll" index="154" />
       <!-- See also https://stackoverflow.com/questions/19098101/how-to-open-an-elevated-cmd-using-command-line-for-windows -->
       <visibility maxfiles="0" maxfolders="1" />
