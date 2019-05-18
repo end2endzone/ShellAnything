@@ -86,6 +86,8 @@ namespace shellanything { namespace test
     static const QUICK_ICON icons[] = {
       {"C:\\Windows\\System32\\imageres.dll", 154},
       {"C:\\Windows\\System32\\shell32.dll",   29},
+      {"C:\\Windows\\System32\\imageres.dll", 160},
+      {"C:\\Windows\\System32\\mmcndmgr.dll",  69},
     };
     static const size_t num_icons = sizeof(icons)/sizeof(icons[0]);
 
