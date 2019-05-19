@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+  
+    <menu separator="true" />
+    
+    <!-- Add support for loading *.ico files with <icon> tag #11
+    https://github.com/end2endzone/ShellAnything/issues/11 -->
+    
+    <menu name="Test issue #11 (ico files)">
+      <icon path="c:\Program Files (x86)\Microsoft Office\Office12\REFBAR.ICO" index="0" />
+      <actions>
+        <prompt name="foobar" title="Testing icon with *.ico files." />
+      </actions>
+    </menu>    
+    
+    <menu separator="true" />
+    
+  </shell>
+</root>
