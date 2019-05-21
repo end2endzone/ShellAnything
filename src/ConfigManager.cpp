@@ -135,6 +135,18 @@ namespace shellanything
     }
   }
 
+  void ConfigManager::resolveFileExtensionIcons()
+  {
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    for(size_t i=0; i<configurations.size(); i++)
+    {
+      Configuration * config = configurations[i];
+      config->resolveFileExtensionIcons();
+    }
+  }
+
+
   void ConfigManager::update(const Context & c)
   {
     //for each child

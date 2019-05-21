@@ -50,6 +50,7 @@ namespace shellanything
     void setFileModifiedDate(const uint64_t & iFileModifiedDate);
 
     void update(const Context & c);
+    void resolveFileExtensionIcons();
 
     Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);

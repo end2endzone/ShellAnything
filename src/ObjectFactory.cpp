@@ -495,14 +495,23 @@ namespace shellanything
 
     //parse path
     std::string icon_path;
-    if (!parseAttribute(element, "path", false, false, icon_path, error))
+    bool hasPath = parseAttribute(element, "path", true, true, icon_path, error);
+
+    //parse fileextension
+    std::string icon_fileextension;
+    bool hasFileExtension = parseAttribute(element, "fileextension", true, true, icon_fileextension, error);
+    
+    if (!hasPath && !hasFileExtension)
     {
       //failed parsing
       return false;
     }
 
     Icon result;
-    result.setPath(icon_path);
+    if (hasPath)
+      result.setPath(icon_path);
+    if (hasFileExtension)
+      result.setFileExtension(icon_fileextension);
 
     //parse index
     int icon_index = -1;

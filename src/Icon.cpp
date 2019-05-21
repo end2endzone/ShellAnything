@@ -27,7 +27,7 @@
 namespace shellanything
 {
   Icon::Icon() :
-    mIndex(0)
+    mIndex(Icon::INVALID_ICON_INDEX)
   {
   }
 
@@ -44,17 +44,30 @@ namespace shellanything
   {
     if (this != &icon)
     {
-      mPath  = icon.mPath ;
-      mIndex = icon.mIndex;
+      mFileExtension  = icon.mFileExtension ;
+      mPath           = icon.mPath ;
+      mIndex          = icon.mIndex;
     }
     return (*this);
   }
 
   bool Icon::isValid() const
   {
-    if (mPath.empty())
+    if (!mFileExtension.empty())
+      return true;
+    if (mPath.empty() || mIndex == Icon::INVALID_ICON_INDEX)
       return false;
     return true;
+  }
+
+  const std::string & Icon::getFileExtension() const
+  {
+    return mFileExtension;
+  }
+
+  void Icon::setFileExtension(const std::string & iFileExtension)
+  {
+    mFileExtension = iFileExtension;
   }
 
   const std::string & Icon::getPath() const

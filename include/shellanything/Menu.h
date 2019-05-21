@@ -60,6 +60,7 @@ namespace shellanything
     void setIcon(const Icon & iIcon);
 
     void update(const Context & c);
+    void resolveFileExtensionIcons();
 
     Menu * findMenuByCommandId(const uint32_t & iCommandId);
     uint32_t assignCommandIds(const uint32_t & iFirstCommandId);

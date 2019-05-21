@@ -34,6 +34,8 @@ namespace shellanything
   class Icon
   {
   public:
+    static const int INVALID_ICON_INDEX = -1;
+
     Icon();
     Icon(const Icon & icon);
     virtual ~Icon();
@@ -42,6 +44,9 @@ namespace shellanything
 
     bool isValid() const;
 
+    const std::string & getFileExtension() const;
+    void setFileExtension(const std::string & iFileExtension);
+
     const std::string & getPath() const;
     void setPath(const std::string & iPath);
 
@@ -49,6 +54,7 @@ namespace shellanything
     void setIndex(const int & iIndex);
 
   private:
+    std::string mFileExtension;
     std::string mPath;
     int mIndex;
   };

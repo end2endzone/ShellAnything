@@ -157,6 +157,17 @@ namespace shellanything
     }
   }
 
+  void Configuration::resolveFileExtensionIcons()
+  {
+    //for each child
+    Menu::MenuPtrList children = getMenus();
+    for(size_t i=0; i<children.size(); i++)
+    {
+      Menu * child = children[i];
+      child->resolveFileExtensionIcons();
+    }
+  }
+
   Menu * Configuration::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <!-- normal/legacy icon usage -->
+      <icon path="C:\Windows\System32\shell32.dll" index="42" />
+      <actions>
+        <property name="foo" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu01">
+      <!-- Use the ShellAnything application icon itself. -->
+      <icon path="${application.path}" index="0" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu02">
+      <!-- Refer to the *.txt file icon -->
+      <icon fileextension="txt" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

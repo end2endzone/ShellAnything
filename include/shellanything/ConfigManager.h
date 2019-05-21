@@ -49,6 +49,7 @@ namespace shellanything
 
     void clear();
     void refresh();
+    void resolveFileExtensionIcons();
 
     void update(const Context & c);
 

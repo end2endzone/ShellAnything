@@ -186,7 +186,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   if (!menu_separator && icon.isValid())
   {
     const std::string & icon_filename = icon.getPath();
-    const int icon_index = icon.getIndex();
+    const int & icon_index = icon.getIndex();
 
     //ask the cache for an existing icon.
     //this will identify the icon in the cache as "used" or "active".
@@ -472,6 +472,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //Refresh the list of loaded configuration files
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
   cmgr.refresh();
+
+  //Replace icons with a file extension to absolute path of dll module that contains the icon for the given file extension.
+  cmgr.resolveFileExtensionIcons();
 
   //Update all menus with the new context
   //This will refresh the visibility flags which is required before clalling ConfigManager::assignCommandIds()
