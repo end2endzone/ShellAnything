@@ -646,6 +646,25 @@ namespace win32_registry
     }
     extention = ra::strings::lowercase(extention); //file extensions are in lowercase in the registry.
 
+    //Process known file extensions that can't be solved by searching the registry.
+    //image reference: https://diymediahome.org/windows-icons-reference-list-with-details-locations-images/
+    if (extention == "exe")
+    {
+      REGISTRY_ICON icon;
+      icon.path = shellanything::findFileFromPaths("shell32.dll");
+      icon.index = 2;
+      return icon;
+    }
+    else if ( extention == "dll" ||
+              extention == "ocx" ||
+              extention == "sys" )
+    {
+      REGISTRY_ICON icon;
+      icon.path = shellanything::findFileFromPaths("shell32.dll");
+      icon.index = 72;
+      return icon;
+    }
+
     //Extract document short name. ie AcroExch.Document
     std::string documentName;
     {
