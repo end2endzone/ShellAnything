@@ -44,9 +44,13 @@ namespace shellanything
     const std::string & getTitle() const;
     void setTitle(const std::string & iTitle);
 
+    const std::string & getDefault() const;
+    void setDefault(const std::string & iDefault);
+
   private:
     std::string mName;
     std::string mTitle;
+    std::string mDefault;
   };
 
 } //namespace shellanything

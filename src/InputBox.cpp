@@ -342,6 +342,13 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       pInputBox->setCtrl(CInputBox::TEXTBOX_ANSWER, hTextBoxAnswer);
       SendMessage(hTextBoxAnswer, WM_SETFONT, (WPARAM)hWindowFont, 0);
 
+      //default value for anwser
+      std::wstring default_text = pInputBox->getTextUnicode();
+      if (!default_text.empty())
+      {
+        SetWindowTextW(hTextBoxAnswer, default_text.c_str());
+      }
+
       // button OK
       HWND hButtonOK = CreateWindowEx(WS_EX_STATICEDGE,
         "BUTTON","OK",

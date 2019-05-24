@@ -49,6 +49,7 @@ namespace shellanything
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
     CInputBox box(NULL);
+    box.setTextAnsi(mDefault);
     bool result = box.DoModal("Question / Prompt", title);
     if (!result)
     {
@@ -83,6 +84,16 @@ namespace shellanything
   void ActionPrompt::setTitle(const std::string & iTitle)
   {
     mTitle = iTitle;
+  }
+
+  const std::string & ActionPrompt::getDefault() const
+  {
+    return mDefault;
+  }
+
+  void ActionPrompt::setDefault(const std::string & iDefault)
+  {
+    mDefault = iDefault;
   }
 
 } //namespace shellanything

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <!--basic prompt usage-->
+        <prompt name="foo" title="Please enter a value for 'foo'." />
+      </actions>
+    </menu>
+ 
+    <menu name="menu01">
+      <actions>
+        <prompt name="theanswer" title="What is the answer to life, universe and everything?" default="42" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu02">
+      <actions>
+        <!--test utf-8 character-->
+        <prompt name="foo" title="âne, cheval, école." />
+      </actions>
+    </menu>
+ 
+  </shell>
+</root>

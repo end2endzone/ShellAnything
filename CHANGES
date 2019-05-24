@@ -12,3 +12,4 @@ Changes for 0.1.0
 * Fixed issue #11: Add support for loading *.ico files with <icon> tag.
 * Fixed issue #12: Symbolink Link icon have dark grey background instead of white background.
 * Fixed issue #14: Assign icon based on file extension.
+* Fixed issue #16: Default value for <prompt> action.

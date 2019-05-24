@@ -25,6 +25,7 @@
 #include "TestObjectFactory.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
+#include "shellanything/ActionPrompt.h"
 #include "Platform.h"
 
 #include "rapidassist/gtesthelp.h"
@@ -36,6 +37,23 @@ namespace shellanything { namespace test
 {
   static const Configuration * INVALID_CONFIGURATION = NULL;
  
+  //--------------------------------------------------------------------------------------------------
+  ActionPrompt * getFirstActionPrompt(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->getActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionPrompt * action_prompt = dynamic_cast<ActionPrompt *>(action);
+      if (action_prompt)
+        return action_prompt;
+    }
+ 
+    return NULL;
+  }
   //--------------------------------------------------------------------------------------------------
   void TestObjectFactory::SetUp()
   {
@@ -167,6 +185,62 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string("txt"),        menus[02]->getIcon().getFileExtension() );
     ASSERT_EQ( std::string(""),           menus[02]->getIcon().getPath() );
     ASSERT_EQ( Icon::INVALID_ICON_INDEX,  menus[02]->getIcon().getIndex() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionPrompt)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT a 3 menus are available
+    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 3, menus.size() );
+
+    //assert all menus have a prompt element as the first action
+    ActionPrompt * prompt00 = getFirstActionPrompt(menus[00]);
+    ActionPrompt * prompt01 = getFirstActionPrompt(menus[01]);
+    ActionPrompt * prompt02 = getFirstActionPrompt(menus[02]);
+
+    ASSERT_TRUE( prompt00 != NULL );
+    ASSERT_TRUE( prompt01 != NULL );
+    ASSERT_TRUE( prompt02 != NULL );
+
+    //assert menu #0 have no default values
+    static const std::string EMPTY_STRING;
+    std::string prompt00_default = prompt00->getDefault();
+    ASSERT_EQ( EMPTY_STRING, prompt00_default);
+
+    //assert menu #1 have a default value
+    std::string prompt01_default = prompt01->getDefault();
+    ASSERT_EQ( std::string("42"), prompt01_default);
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

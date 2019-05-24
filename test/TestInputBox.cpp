@@ -77,6 +77,23 @@ namespace shellanything { namespace test
     bool ok = box.DoModal(caption, prompt);
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestInputBox, DISABLED_testDefaultTextUnicode)
+  {
+    HWND hWnd = GetDesktopWindow();
+ 
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::wstring hello_text = std::wstring(L"hello world from ") + shellanything::ansi_to_unicode(test_name);
+ 
+    std::wstring caption = std::wstring(L"caption: ") + hello_text;
+    std::wstring prompt = std::wstring(L"prompt: ") + hello_text;
+ 
+    CInputBox box(hWnd);
+ 
+    box.setTextAnsi("my default text");
+ 
+    bool ok = box.DoModal(caption, prompt);
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

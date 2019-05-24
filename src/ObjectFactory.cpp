@@ -273,6 +273,14 @@ namespace shellanything
         action->setTitle(tmp_str);
       }
 
+      //parse default
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "default", false, true, tmp_str, error))
+      {
+        action->setDefault(tmp_str);
+      }
+
       //done parsing
       return action;
     }
