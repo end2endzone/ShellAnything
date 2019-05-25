@@ -535,7 +535,7 @@ namespace win32_registry
   static REGISTRY_ICON getFileTypeDefaultIcon(const char * iBaseKey)
   {
     //Extract default icon. ie: C:\Windows\Installer\{AC76BA86-7AD7-1036-7B44-A90000000001}\PDFFile_8.ico,0
-    std::string defaultIcon;
+    std::string default_icon;
     {
       std::string key = ra::strings::format("%s\\DefaultIcon", iBaseKey); 
       MemoryBuffer buffer;
@@ -546,25 +546,25 @@ namespace win32_registry
         return NULL_ICON;
       if (type != REGISTRY_TYPE_STRING)
         return NULL_ICON;
-      defaultIcon = buffer.c_str();
+      default_icon = buffer.c_str();
     }
     
     //check format of default icon. File only or file with index
-    std::string filePath;
+    std::string file_path;
     int index = 0;
     {
       ra::strings::StringVector parts;
-      ra::strings::split( parts, defaultIcon, ",");
+      ra::strings::split( parts, default_icon, ",");
 
       if (parts.size() == 1)
       {
         //assumed a file only
-        filePath = parts[0];
+        file_path = parts[0];
       }
       else if (parts.size() == 2)
       {
         //assumed a file and index
-        filePath = parts[0];
+        file_path = parts[0];
         std::string indexStr = parts[1];
         const char * debugValue = indexStr.c_str();
         ra::strings::parse(indexStr, index);
@@ -573,32 +573,32 @@ namespace win32_registry
         return NULL_ICON; //unknown format
     }
     
-    //Does filePath contains double quotes ?
-    if (filePath.find("\"") != std::string::npos)
+    //Does file_path contains double quotes ?
+    if (file_path.find("\"") != std::string::npos)
     {
-      ra::strings::replace(filePath, "\"", "");
+      ra::strings::replace(file_path, "\"", "");
     }
 
     //Does file exists ?
     {
-      const char * debugValue = filePath.c_str();
-      if (filePath.size() > 0 && ra::filesystem::fileExists(filePath.c_str()))
+      const char * debug_value = file_path.c_str();
+      if (file_path.size() > 0 && ra::filesystem::fileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
-        icon.path = filePath;
+        icon.path = file_path;
         icon.index = index;
         return icon;
       }
     }
 
     //File does not exists. Maybe path contains "expandables" values
-    filePath = shellanything::expand(filePath.c_str());
+    file_path = shellanything::expand(file_path.c_str());
     {
-      const char * debugValue = filePath.c_str();
-      if (filePath.size() > 0 && ra::filesystem::fileExists(filePath.c_str()))
+      const char * debug_value = file_path.c_str();
+      if (file_path.size() > 0 && ra::filesystem::fileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
-        icon.path = filePath;
+        icon.path = file_path;
         icon.index = index;
         return icon;
       }
@@ -615,11 +615,11 @@ namespace win32_registry
       test_path = shellanything::expand(test_path.c_str());
       ra::filesystem::normalizePath(test_path);
       test_path += ra::filesystem::getPathSeparatorStr();
-      test_path += filePath;
+      test_path += file_path;
 
       //test to find the file
       {
-        const char * debugValue = test_path.c_str();
+        const char * debug_value = test_path.c_str();
         if (test_path.size() > 0 && ra::filesystem::fileExists(test_path.c_str()))
         {
           REGISTRY_ICON icon;
@@ -632,6 +632,17 @@ namespace win32_registry
 
     //Unable to extract icon
     return NULL_ICON;
+  }
+
+  bool isValid(const REGISTRY_ICON & icon)
+  {
+    if (icon.path.empty())
+      return false;
+    if (isIconEquals(icon,NULL_ICON))
+      return false;
+    if (icon.index == INVALID_ICON_INDEX) //See issue #17
+      return false;
+    return true;
   }
 
   REGISTRY_ICON getFileTypeIcon(const char * iFileExtention)
@@ -665,8 +676,8 @@ namespace win32_registry
       return icon;
     }
 
-    //Extract document short name. ie AcroExch.Document
-    std::string documentName;
+    //Extract document short name. ie: AcroExch.Document
+    std::string document_short_name;
     {
       std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", extention.c_str()); 
       MemoryBuffer buffer;
@@ -676,78 +687,68 @@ namespace win32_registry
         return NULL_ICON;
       if (type != REGISTRY_TYPE_STRING)
         return NULL_ICON;
-      documentName = buffer.c_str();
+      if (buffer.empty())
+        return NULL_ICON;
+      document_short_name = buffer.c_str();
     }
 
-    if (documentName.size() == 0)
+    //Check DefautIcon with document_short_name. ie: HKEY_CLASSES_ROOT\FirefoxHTML\DefaultIcon
     {
-      //no document name. Abort
-      return NULL_ICON;
-    }
-
-    //Check DefautIcon with documentName. ie: HKEY_CLASSES_ROOT\FirefoxHTML\DefaultIcon
-    {
-      std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", documentName.c_str()); 
+      std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", document_short_name.c_str()); 
       REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-      if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
+      if (isValid(icon))
         return icon;
     }
 
     //Extract document long name. ie: AcroExch.Document.7
-    std::string documentCurrentVersionName;
+    std::string document_current_version_name;
     {
-      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", documentName.c_str()); 
+      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", document_short_name.c_str()); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = getDefaultKeyValue(key.c_str(), type, buffer);
       if (success)
-        documentCurrentVersionName = buffer.c_str();
+        document_current_version_name = buffer.c_str();
     }
 
-    //Does file type has a current version ?
-    if (documentCurrentVersionName.size() > 0)
+    //Does file type have a current version ?
+    if (!document_current_version_name.empty())
     {
-      //Keep looking with current version
-
       //Check DefautIcon with current version name. ie: HKEY_CLASSES_ROOT\AcroExch.Document.7\DefaultIcon
-      {
-        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", documentCurrentVersionName.c_str()); 
-        REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
-          return icon;
-      }
-
-      //icon is invalid.
+      std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", document_current_version_name.c_str()); 
+      REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
+      if (isValid(icon))
+        return icon;
     }
     
-    //Does the file type has a icon handler ?
-    std::string iconHandlerGuid;
+    //Does the file type have an icon handler? ie: 
+    std::string document_icon_handler_guid;
     {
-      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", documentName.c_str()); 
+      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", document_short_name.c_str()); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = getDefaultKeyValue(key.c_str(), type, buffer);
       if (success)
-        iconHandlerGuid = buffer.c_str();
+        document_icon_handler_guid = buffer.c_str();
     }
 
-    if (iconHandlerGuid.size() > 0)
+    if (!document_icon_handler_guid.empty())
     {
-      //Keep looking with iconhandler
+      //Keep looking with IconHandler
                                                 
       //check default icon of icon handler. ie: HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile
       {
-        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", iconHandlerGuid.c_str(), documentName.c_str()); 
+        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
+        if (isValid(icon))
           return icon;
       }
 
       //check default icon of icon handler. ie: KEY_CLASSES_ROOT\Wow6432Node\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile\DefaultIcon
       {
-        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", iconHandlerGuid.c_str(), documentName.c_str()); 
+        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
-        if (!isIconEquals(icon,NULL_ICON) && icon.index != INVALID_ICON_INDEX)
+        if (isValid(icon))
           return icon;
       }
     }
@@ -758,7 +759,7 @@ namespace win32_registry
     {
       if (program.size() > 0)
       {
-        //chceck if file exists
+        //check if file exists
         const char * debugValue = program.c_str();
         if (ra::filesystem::fileExists(program.c_str()))
         {

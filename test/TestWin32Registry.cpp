@@ -257,21 +257,23 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestWin32Registry, testGetFileTypeIconSDF)
   {
+    //https://github.com/end2endzone/ShellAnything/issues/17
+
     //The file extension "SDF" is a special case.
     //The file type is registered when you install Visual Studio on the system.
-    //The "type" of the file is "SQL Server Compact Edition Database File".
-    //The icon is defined in "HKEY_CLASSES_ROOT\Microsoft SQL Server Compact Edition Database File\DefaultIcon" with a 
-    //default value of "C:\Program Files\Microsoft SQL Server Compact Edition\v3.5\sqlceme35.dll,-1".
+    //The "type" of the file is SQL Server Compact Edition Database File.
+    //The icon is defined in HKEY_CLASSES_ROOT\Microsoft SQL Server Compact Edition Database File\DefaultIcon with a default value of C:\Program Files\Microsoft SQL Server Compact Edition\v3.5\sqlceme35.dll,-1.
+    //
     //However, the index -1 is an invalid value for ExtractIconEx().
     //See https://docs.microsoft.com/en-us/windows/desktop/api/shellapi/nf-shellapi-extracticonexa
-    //When nIconIndex is negative, it means that abs(nIconIndex) is the value of a RESSOURCE ID.
-    //If nIconIndex is positive, then the index refers to a 0-based index inside the file.
-    //The value -1 is a special case for nIconIndex and commands ExtractIconEx() to return the total number of icons inside the file
-    //instead of loading the icon whose RESSOURCE ID is 1.
-    //For more detalis, see here 
-    //and here
-    //The function GetFileTypeIcon() should be bullet proof when dealing with an invalid index value.
     //
+    //When nIconIndex is negative, it means that abs(nIconIndex) is the value of a RESSOURCE ID.
+    //If nIconIndex is positive, then nIconIndex refers to a 0-based index inside the file.
+    //
+    //The value -1 is a special case for nIconIndex and commands ExtractIconEx() to return the total number of icons inside the file instead of loading the icon whose RESSOURCE ID is 1.
+    //For more detalis, see https://stackoverflow.com/questions/24786234/correct-usage-of-the-extracticonex-niconindex-parameter
+    //
+    //The function GetFileTypeIcon() should be bullet proof when dealing with an invalid index value.
 
     static const char * file_extension = "sdf";
 

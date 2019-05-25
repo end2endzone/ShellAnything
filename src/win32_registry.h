@@ -83,6 +83,7 @@ namespace win32_registry
   bool registerCommandForFile(const char * iName, const char * iCommand);
   bool registerCommandForFolder(const char * iName, const char * iCommand);
 
+  bool isValid(const REGISTRY_ICON & icon);
   REGISTRY_ICON getFileTypeIcon(const char * iFileExtention);
   REGISTRY_ICON getUnknownFileTypeIcon();
 
