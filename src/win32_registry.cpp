@@ -638,9 +638,9 @@ namespace win32_registry
   {
     if (icon.path.empty())
       return false;
-    if (isIconEquals(icon,NULL_ICON))
-      return false;
     if (icon.index == INVALID_ICON_INDEX) //See issue #17
+      return false;
+    if (isIconEquals(icon,NULL_ICON))
       return false;
     return true;
   }
