@@ -208,7 +208,7 @@ namespace shellanything { namespace test
       win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
       if (icon.path.empty())
       {
-        printf("Failed to find icon for file extension. Is this expected ? file_extension='%s'. \n", file_extension);
+        printf("Failed to find icon for file extension. Is this expected? file_extension='%s'. \n", file_extension);
 
         //use default unknown icon
         icon = win32_registry::getUnknownFileTypeIcon();
