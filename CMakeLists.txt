@@ -96,7 +96,7 @@ set(SHELLANYTHING_INSTALL_CMAKE_DIR    ${SHELLANYTHING_INSTALL_LIB_DIR}) # CMake
 ##############################################################################################################################################
 
 # Build options
-option(SHELLANYTHING_BUILD_GTESTHELP "Build the Google Test helper functions." ON)
+option(SHELLANYTHING_BUILD_DOC "Build ShellAnything documentation" OFF)
 option(SHELLANYTHING_BUILD_TEST "Build all ShellAnything's unit tests" OFF)
 
 # Force a debug postfix if none specified.
@@ -155,7 +155,6 @@ endif()
 # Generate doxygen documentation
 # See https://vicrucann.github.io/tutorials/quick-cmake-doxygen/
 ##############################################################################################################################################
-option(SHELLANYTHING_BUILD_DOC "Build ShellAnything documentation" OFF)
 if (SHELLANYTHING_BUILD_DOC)
   # check if Doxygen is installed
   find_package(Doxygen)

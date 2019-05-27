@@ -1,2 +1,147 @@
-# ShellAnything
-Easily add new options to Windows File Explorer context menu when right-clicking on a file. 
+![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+
+
+# ShellAnything #
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Github Releases](https://img.shields.io/github/release/end2endzone/shellanything.svg)](https://github.com/end2endzone/shellanything/releases)
+
+ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu when a user right-clicking on a file or a directory.
+
+![ShellAnything screenshot](docs/ShellAnything-screenshot.jpg?raw=true)
+
+
+
+
+## Status ##
+
+Build:
+
+| Service | Build | Tests |
+|----|-------|-------|
+| AppVeyor | [![Build status](https://img.shields.io/appveyor/ci/end2endzone/ShellAnything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything) | [![Tests status](https://img.shields.io/appveyor/tests/end2endzone/shellanything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master/tests) |
+| Travis CI | [![Build Status](https://img.shields.io/travis/end2endzone/ShellAnything/master.svg?logo=travis&style=flat)](https://travis-ci.org/end2endzone/ShellAnything) |  |
+
+Statistics:
+
+| AppVeyor | Travic CI |
+|----------|-----------|
+| [![Statistics](https://buildstats.info/appveyor/chart/end2endzone/shellanything)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master) | [![Statistics](https://buildstats.info/travisci/chart/end2endzone/ShellAnything)](https://travis-ci.org/end2endzone/ShellAnything) |
+
+
+
+
+# Purpose #
+
+Adding new options to the Windows Explorer context menu can be done in many ways. One can create new context menus by [manually editing the registry](https://www.groovypost.com/howto/add-any-program-windows-context-menu/) but this option limited in support (static text, no submenus). If you are technical, you can also follow [this StackOverflow guide](https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders).
+
+With Shell Extension, you can dynamically create a context menu item (or submenu) that is more relevant to the selected file(s).
+Shell extension are dynamic by nature because they are runtime DLL inside Windows Explorer. They can show or hide options based on the selected file's size, the content of the file, anything.
+Shell extensions also have the ability to handle multiple selected files simultaneously.
+
+On the downside, writing shell extensions is complicated, tedious and difficult to debug. 
+
+This is where ShellAnything is useful. It provides a simple xml-based way of adding new dynamic options to Windows Explorer context menu.
+
+ShellAnything is implemented in C++ which is safe compared to C#.
+
+
+
+## Writing Shell Extensions with C&#35;. ##
+
+Writing Shell Extensions with C# is possible but highly discouraged and probably not a good idea.
+
+Many articles already discussed the subject and they all comes to the same conslusion: ***Don't do it.***
+
+For instance, the following articles are good references:
+* StackOverflow have discussed the issue rigorously : [StackOverflow - Windows shell extension with C#](https://stackoverflow.com/questions/2194572/windows-shell-extension-with-c-sharp/2194638#2194638).
+* Raymond Chen, from **The Old New Thing**, says [Do not write in-process shell extensions in managed code](https://devblogs.microsoft.com/oldnewthing/20061218-01/?p=28693) and following the release of version 4 of the .NET Framework (with in-process side-by-side runtimes), [the answer is still no](https://devblogs.microsoft.com/oldnewthing/?p=5163).
+* Microsoft [Guidance for Implementing In-Process Extensions](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/dd758089(v=vs.85)) is discouraging the use of C#.
+
+
+
+
+# Features #
+
+The main features of ShellAnything are:
+
+* Easily add custom menus and submenus.
+* Dynamic content based on xml files. Change project xml files to see the menus updated automatically.
+* Support for custom icons for each menu.
+* Support activation and visibility filters based on selected files.
+* Define actions executed when a menu is selected:
+  * Execute an application
+  * Open a document
+  * Prompt for a value
+  * Change the clipboard
+  * and many more.
+* Powerful property-based system for rich dynamic content and filters.
+* Easy integrate any third party application with custom menus.
+
+
+
+
+# Usage #
+
+The instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
+
+
+
+
+# Limitations #
+
+
+
+## Lorem ipsum dolor sit amet ##
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+
+
+## Lorem ipsum dolor sit amet ##
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+
+
+
+# Build #
+
+Please refer to file [INSTALL.md](INSTALL.md) for details on how installing/building the application.
+
+
+
+
+# Platform #
+
+ShellAnything has been tested with the following platform:
+
+*   Windows x86/x64
+
+
+
+
+# Versioning #
+
+We use [Semantic Versioning 2.0.0](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/end2endzone/ShellAnything/tags).
+
+
+
+
+# Authors #
+
+* **Antoine Beauchamp** - *Initial work* - [end2endzone](https://github.com/end2endzone)
+
+See also the list of [contributors](https://github.com/end2endzone/ShellAnything/blob/master/AUTHORS) who participated in this project.
+
+
+
+
+# License #
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
