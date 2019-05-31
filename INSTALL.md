@@ -1,8 +1,8 @@
 # Install #
 
-The library does not provides pre-build binaries or provides an installation package. To install the binary files on the system, the source code must be compiled and copied to the appropriate directory.
+The application does not provides pre-build binaries or provides an installation package. To install the binary files on the system, the source code must be compiled and copied to the appropriate directory.
 
-The following steps show how to install the library:
+The following steps show how to install the application:
 
 1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`).
 

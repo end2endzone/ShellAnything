@@ -32,7 +32,7 @@ Statistics:
 
 # Purpose #
 
-Adding new options to the Windows Explorer context menu can be done in many ways. One can create new context menus by [manually editing the registry](https://www.groovypost.com/howto/add-any-program-windows-context-menu/) but this option limited in support (static text, no submenus). If you are technical, you can also follow [this StackOverflow guide](https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders).
+Adding new options to the Windows Explorer context menu can be done in many ways. One can create new context menus by [manually editing the registry](https://www.groovypost.com/howto/add-any-program-windows-context-menu/) but this option limited in support (static text, no submenus). If you are technical person, you can also follow [this guide](https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders) on StackOverflow.
 
 With Shell Extension, you can dynamically create a context menu item (or submenu) that is more relevant to the selected file(s).
 Shell extension are dynamic by nature because they are runtime DLL inside Windows Explorer. They can show or hide options based on the selected file's size, the content of the file, anything.
@@ -42,7 +42,7 @@ On the downside, writing shell extensions is complicated, tedious and difficult 
 
 This is where ShellAnything is useful. It provides a simple xml-based way of adding new dynamic options to Windows Explorer context menu.
 
-ShellAnything is implemented in C++ which is safe compared to C#.
+ShellAnything is implemented in C++ which, for writing Shell Extension, is a safe programming language compared to C#. See [Writing Shell Extensions with C&#35;](#writing-shell-extensions-with-c) for details.
 
 
 
@@ -54,7 +54,7 @@ Many articles already discussed the subject and they all comes to the same consl
 
 For instance, the following articles are good references:
 * StackOverflow have discussed the issue rigorously : [StackOverflow - Windows shell extension with C#](https://stackoverflow.com/questions/2194572/windows-shell-extension-with-c-sharp/2194638#2194638).
-* Raymond Chen, from **The Old New Thing**, says [Do not write in-process shell extensions in managed code](https://devblogs.microsoft.com/oldnewthing/20061218-01/?p=28693) and following the release of version 4 of the .NET Framework (with in-process side-by-side runtimes), [the answer is still no](https://devblogs.microsoft.com/oldnewthing/?p=5163).
+* Raymond Chen, from **The Old New Thing**, says "[Do not write in-process shell extensions in managed code](https://devblogs.microsoft.com/oldnewthing/20061218-01/?p=28693)" and following the release of version 4 of the .NET Framework (with in-process side-by-side runtimes), "[the answer is still no](https://devblogs.microsoft.com/oldnewthing/?p=5163)".
 * Microsoft [Guidance for Implementing In-Process Extensions](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/dd758089(v=vs.85)) is discouraging the use of C#.
 
 
@@ -65,10 +65,10 @@ For instance, the following articles are good references:
 The main features of ShellAnything are:
 
 * Easily add custom menus and submenus.
-* Dynamic content based on xml files. Change project xml files to see the menus updated automatically.
+* Dynamic content based on xml files. Change project xml files to see the menu options updated automatically.
 * Support for custom icons for each menu.
 * Support activation and visibility filters based on selected files.
-* Define actions executed when a menu is selected:
+* Define actions executed when a menu option is selected:
   * Execute an application
   * Open a document
   * Prompt for a value
@@ -82,30 +82,7 @@ The main features of ShellAnything are:
 
 # Usage #
 
-The instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
-
-
-
-
-# Limitations #
-
-
-
-## Lorem ipsum dolor sit amet ##
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-
-
-
-## Lorem ipsum dolor sit amet ##
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+For instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
 
 
 
