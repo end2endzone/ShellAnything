@@ -276,7 +276,7 @@ namespace shellanything
       //parse default
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "default", false, true, tmp_str, error))
+      if (parseAttribute(element, "default", true, true, tmp_str, error))
       {
         action->setDefault(tmp_str);
       }
