@@ -250,6 +250,14 @@ namespace shellanything
         action->setArguments(tmp_str);
       }
 
+      //parse basedir
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "basedir", true, true, tmp_str, error))
+      {
+        action->setBaseDir(tmp_str);
+      }
+
       //done parsing
       return action;
     }
