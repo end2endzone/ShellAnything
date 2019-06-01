@@ -7,7 +7,7 @@
 
 ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu when a user right-clicking on a file or a directory.
 
-![ShellAnything screenshot](docs/ShellAnything-screenshot.jpg?raw=true)
+![ShellAnything screenshot](docs/screenshot_file.png?raw=true) ![ShellAnything screenshot](docs/screenshot_folder.png?raw=true)
 
 
 
