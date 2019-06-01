@@ -1,0 +1,121 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Constants
+//
+// --------- VS_VERSION.dwFileOS -----------
+#define VOS_UNKNOWN             0x00000000L
+#define VOS_DOS                 0x00010000L
+#define VOS_OS216               0x00020000L
+#define VOS_OS232               0x00030000L
+#define VOS_NT                  0x00040000L
+
+#define VOS_BASE                0x00000000L
+#define VOS_WINDOWS16           0x00000001L
+#define VOS_PM16                0x00000002L
+#define VOS_PM32                0x00000003L
+#define VOS_WINDOWS32           0x00000004L
+
+#define VOS_DOS_WINDOWS16       0x00010001L
+#define VOS_DOS_WINDOWS32       0x00010004L
+#define VOS_OS216_PM16          0x00020002L
+#define VOS_OS232_PM32          0x00030003L
+#define VOS_NT_WINDOWS32        0x00040004L
+
+
+// --------- VS_VERSION.dwFileType ---------
+#define VFT_UNKNOWN             0x00000000L
+#define VFT_APP                 0x00000001L
+#define VFT_DLL                 0x00000002L
+#define VFT_DRV                 0x00000003L
+#define VFT_FONT                0x00000004L
+#define VFT_VXD                 0x00000005L
+#define VFT_STATIC_LIB          0x00000007L
+
+
+// --------- VS_VERSION.dwFileFlags ---------
+#define VS_FF_DEBUG             0x00000001L /*the file contains debugging information*/
+#define VS_FF_PATCHED           0x00000004L /*the version information has been changed from original shipping version*/
+#define VS_FF_PRERELEASE        0x00000002L /*the file is a development version only and not commercially available*/
+#define VS_FF_PRIVATEBUILD      0x00000008L /*the file was not built using standard release procedures*/
+#define VS_FF_SPECIALBUILD      0x00000020L /*the file was built using standard release procedures but is a variation of the standard file of the same version number*/
+//      VS_FFI_FILEFLAGSMASK                /*A combination of all the preceding values.*/
+
+// --------- VS_VERSION.dwFileFlagsMask ---------
+//0x0001 - numeric info 
+//0x0002 - file type 
+//0x0004 - file description 
+//0x0008 - company name 
+//0x0010 - FileVersion 
+//0x0020 - Comments 
+//0x0040 - InternalName 
+//0x0080 - LegalCopyright 
+//0x0100 - LegalTrademarks 
+//0x0200 - OriginalFilename 
+//0x0400 - ProductName 
+//0x0800 - ProductVersion 
+//0x1000 - PrivateBuild 
+//0x2000 - SpecialBuild 
+//0x4000 - LegalTrademarks1 
+//0x8000 - clean-up empty fields 
+
+// --------- VS_VERSION.dwFileSubtype for VFT_WINDOWS_FONT ---------
+#define VFT2_UNKNOWN            0x0 
+#define VFT2_FONT_RASTER        0x1 
+#define VFT2_FONT_VECTOR        0x2 
+#define VFT2_FONT_TRUETYPE      0x3 
+// --------- VS_VERSION.dwFileSubtype for VFT_WINDOWS_DRV ---------
+//#define VFT2_UNKNOWN            0x0 
+#define VFT2_DRV_PRINTER        0x1 
+#define VFT2_DRV_KEYBOARD       0x2 
+#define VFT2_DRV_LANGUAGE       0x3 
+#define VFT2_DRV_DISPLAY        0x4 
+#define VFT2_DRV_MOUSE          0x5 
+#define VFT2_DRV_NETWORK        0x6 
+#define VFT2_DRV_SYSTEM         0x7 
+#define VFT2_DRV_INSTALLABLE    0x8 
+#define VFT2_DRV_SOUND          0x9 
+#define VFT2_DRV_COMM           0xA 
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+
+1 VERSIONINFO
+ FILEVERSION @SHELLANYTHING_VERSION_MAJOR@,@SHELLANYTHING_VERSION_MINOR@,@SHELLANYTHING_VERSION_PATCH@,0
+ PRODUCTVERSION @SHELLANYTHING_VERSION@
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+  FILEFLAGS VS_FF_DEBUG
+#else
+  FILEFLAGS 0x0L
+#endif
+FILEOS VOS_WINDOWS32
+#ifdef _USEDLL
+FILETYPE VFT_DLL
+#else
+FILETYPE VFT_APP
+#endif
+FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "Comments", "ShellAnything Shell Extension"
+            VALUE "CompanyName", "end2endzone"
+            VALUE "FileDescription", "ShellAnything Shell Extension"
+            VALUE "FileVersion", "@SHELLANYTHING_VERSION@"
+            VALUE "LegalCopyright", "MIT License"
+            VALUE "OriginalFilename", "shellext.dll"
+            VALUE "ProductName", "ShellAnything"
+            VALUE "ProductVersion", "@SHELLANYTHING_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END

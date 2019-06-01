@@ -3,6 +3,16 @@ find_package(tinyxml2 REQUIRED)
 find_package(win32clipboard REQUIRED)
 find_package(glog REQUIRED)
 
+#resource.rc
+set(SHELLANYTHING_RESOURCE_RC ${CMAKE_BINARY_DIR}/src/resource.rc)
+message("Generating ${SHELLANYTHING_RESOURCE_RC}...")
+configure_file( ${CMAKE_SOURCE_DIR}/src/resource.rc.in ${SHELLANYTHING_RESOURCE_RC} )
+
+#version.rc
+set(SHELLANYTHING_VERSION_RC ${CMAKE_BINARY_DIR}/src/version.rc)
+message("Generating ${SHELLANYTHING_VERSION_RC}...")
+configure_file( ${CMAKE_SOURCE_DIR}/src/version.rc.in ${SHELLANYTHING_VERSION_RC} )
+
 set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Action.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionClipboard.h
@@ -46,13 +56,17 @@ add_library(shellanything STATIC
   PropertyManager.h
   PropertyManager.cpp
   utf_strings.h
-  utf_strings.cpp
+  utf_strings.cpp 
 )
 
 add_library(shellext SHARED
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  ${SHELLANYTHING_RESOURCE_RC}
+  ${SHELLANYTHING_VERSION_RC}
+  ${CMAKE_SOURCE_DIR}/src/resource.rc.in
+  ${CMAKE_SOURCE_DIR}/src/version.rc.in
   BitmapCache.cpp
   BitmapCache.h
   glog_utils.cpp
@@ -76,8 +90,8 @@ if(SHELLANYTHING_BUILD_GTESTHELP)
 endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(shellanything         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-set_target_properties(shellext PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(shellext        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for exported code.
 target_include_directories(shellanything
