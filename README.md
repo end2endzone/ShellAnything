@@ -98,9 +98,10 @@ For instructions on how to use ShellAnything, please refer to the [User Manual](
 
 The User Manual also features Use Case with the following examples:
 
-* [example 1](UserManual.md#test)
-* [example 2](UserManual.md#test)
-* [example 3](UserManual.md#test)
+* [Integrate a third party application](UserManual.md#integrate-a-third-party-application)
+* [Run an application with parameters](UserManual.md#run-an-application-with-parameters)
+* [Open a command prompt in directory](UserManual.md#open-a-command-prompt-in-directory)
+* [Select two files for an operation](UserManual.md#select-two-files-for-an-operation)
 
 
 

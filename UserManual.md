@@ -580,7 +580,7 @@ Help:
 
 
 
-## Integrate a third parties application ##
+## Integrate a third party application ##
 
 [WinDirStat](https://windirstat.net/) is a disk usage statistics viewer. It is a 3rd party application that do not provide a shell extension with the installer. The application have command line support with the following syntax: `windirstat.exe <folder>`.
 
