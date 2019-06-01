@@ -7,8 +7,6 @@
 
 ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu when a user right-clicking on a file or a directory.
 
-![ShellAnything screenshot](docs/screenshot_file.png?raw=true) ![ShellAnything screenshot](docs/screenshot_folder.png?raw=true)
-
 
 
 
@@ -26,6 +24,20 @@ Statistics:
 | AppVeyor | Travic CI |
 |----------|-----------|
 | [![Statistics](https://buildstats.info/appveyor/chart/end2endzone/shellanything)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master) | [![Statistics](https://buildstats.info/travisci/chart/end2endzone/ShellAnything)](https://travis-ci.org/end2endzone/ShellAnything) |
+
+
+
+
+# Screenshots #
+
+**Files context menu:**
+
+![ShellAnything screenshot](docs/screenshot_file.png?raw=true)
+
+
+**Directories context menu:**
+
+![ShellAnything screenshot](docs/screenshot_folder.png?raw=true)
 
 
 
@@ -65,11 +77,11 @@ For instance, the following articles are good references:
 The main features of ShellAnything are:
 
 * Easily add custom menus and submenus.
-* Dynamic content based on xml files. Change project xml files to see the menu options updated automatically.
-* Support for custom icons for each menu.
+* Dynamic content based on xml files. Change project xml files to see the menu options update automatically.
+* Support menu custom icons.
 * Support activation and visibility filters based on selected files.
-* Define actions executed when a menu option is selected:
-  * Execute an application
+* Define actions executed when a menu option is clicked:
+  * Run an application
   * Open a document
   * Prompt for a value
   * Change the clipboard
@@ -83,6 +95,12 @@ The main features of ShellAnything are:
 # Usage #
 
 For instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
+
+The User Manual also features Use Case with the following examples:
+
+* [example 1](UserManual.md#test)
+* [example 2](UserManual.md#test)
+* [example 3](UserManual.md#test)
 
 
 

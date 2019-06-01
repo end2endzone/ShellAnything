@@ -47,7 +47,7 @@ Help:
       </menu>
     </menu>
     
-    <menu name="Command line from here...">
+    <menu name="Open command prompt here">
       <icon path="C:\Windows\System32\cmd.exe" index="0" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
@@ -66,16 +66,18 @@ Help:
 
     <!--Show file selection or compare capabilities-->
     <menu name="Compare">
-      <visibility maxfiles="1" maxfolders="1" />
+      <visibility maxfiles="1" maxfolders="0" />
       <icon path="C:\Windows\System32\dsuiext.dll" index="32" />
       <menu name="Select file '${selection.filename}'">
         <actions>
+          <!-- Remember the selected file in properties. The path will be used later -->
           <property name="compare.first.selection.path"     value="${selection.path}" />
           <property name="compare.first.selection.filename" value="${selection.filename}" />
         </actions>
       </menu>
       <menu name="Compare with '${compare.first.selection.filename}' (text)">
         <icon path="C:\Windows\System32\imageres.dll" index="14" />
+        <!-- Hide this menu until a choice was made in 'Select file' menu -->
         <visibility properties="compare.first.selection.filename" />
         <actions>
           <exec path="${env.ComSpec}" arguments="/K FC /L &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
@@ -99,7 +101,7 @@ Help:
     </menu>
 
     <!--Low level find file-->
-    <menu name="Find file...">
+    <menu name="Find a file...">
       <icon path="C:\Windows\System32\shell32.dll" index="22" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>

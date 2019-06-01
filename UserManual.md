@@ -9,7 +9,6 @@ This manual includes a description of the system functionalities and capabilitie
   * [Visibility / Validity](#visibility-validity)
   * [Actions](#actions)
   * [Properties](#properties)
-* [Advanced Configuration File Sample ](#advanced-configuration-file-sample)
 * [Use Cases](#use-cases)
 
 
@@ -173,7 +172,7 @@ To insert a sub menu, define a &lt;menu&gt; element under another &lt;menu&gt; e
 
 The &lt;visibility&gt; and &lt;validity&gt; elements act as filters for menus. They affect a menu's status: visible/invisible and enabled/disabled respectively. The &lt;visibility&gt; and &lt;validity&gt; elements must be added under a &lt;menu&gt; element.
 
-Each element must be validated against multiple criterias defined by the attributes below. If the validation is successful, the menu will be set visible/enabled. If the validation fails then the associated menu is set invisible/disabled.
+Each element must be validated against multiple criteria defined by the attributes below. If the validation is successful, the menu will be set visible/enabled. If the validation fails then the associated menu is set invisible/disabled.
 
 The &lt;visibility&gt; and &lt;validity&gt; elements have the following attributes:
 
@@ -257,7 +256,7 @@ The &lt;icon&gt; elements have the following attributes:
 
 
 
-## Path attribute: ##
+## path attribute: ##
 
 The `path` attribute defines the file path of an icon file or library. The path must be defined in absolute form. The `path` attribute supports the following icon file format: `ico`, `dll`, `ocx` and `cpl`.
 
@@ -268,13 +267,24 @@ For example, the following sets a menu with the *Home* icon (first icon of iefra
 
 
 
-## Index attribute: ##
+## index attribute: ##
 
 The `index` attribute defines the index of an icon inside an icon library. The index is 0-based. The index is optional for `ico` file format. If the index is not specified, the value `0` is used. 
 
 For example, the following sets a menu with the *Empty Recycle Bin* icon :
 ```xml
 <icon path="C:\windows\system32\imageres.dll" index="50" />
+```
+
+
+
+## fileextension attribute: ##
+
+The `fileextension` attribute defines the icon of a menu based on the system's default icon for the given file extension. The fileextension is optional and have priority over the `path` and `index` attributes. 
+
+For example, the following sets a menu with the *Text File* icon :
+```xml
+<icon fileextension="txt" />
 ```
 
 
@@ -393,16 +403,27 @@ For example, the following ask the user a question :
 
 The `name` attribute defines the name of the property to set with the value of the answer.
 
-For example, the following sets the property `myprogram.user.name' with the prompt answer :
+For example, the following sets the property `myprogram.user.fullname' with the prompt answer :
 ```xml
-<prompt name="myprogram.user.name" />
+<prompt name="myprogram.user.fullname" />
+```
+
+
+
+### default attribute: ###
+
+The `default` attribute defines the default value of the answer.
+
+For example, the following sets the value `John Smith` as default value to the question `What is your name?` :
+```xml
+<prompt name="myprogram.user.fullname" title="What is your name?" default="John Smith" />
 ```
 
 
 
 ## &lt;property&gt; action ##
 
-The &lt;property&gt; element is used to set a [property](#properties) to a specific value. The modified property can be used with the &lt;visibility&gt; and &lt;validity&gt; elements to create advanced dynamic menus.
+The &lt;property&gt; element is used to set a property to a specific value. The modified property can be used with the &lt;visibility&gt; and &lt;validity&gt; elements to create advanced dynamic menus.
 The modified property can also be used to temporary store the current selection path of filename in properties for use cases with multiple file selection.
 
 See the [properties](#properties) section for details.
@@ -428,7 +449,7 @@ The `value` attribute defines the actual new value of the given property.
 
 For example, the following set the property `myprogram.user.name` to value `John Smith` :
 ```xml
-<property name="myprogram.user.name" value="John Smith" />
+<property name="myprogram.user.fullname" value="John Smith" />
 ```
 
 
@@ -436,9 +457,9 @@ For example, the following set the property `myprogram.user.name` to value `John
 
 # Properties #
 
-The ShellAnything application supports an advanced property system which is a way of assinging values to custom named variables. The property system of ShellAnything plays a big role in implementing dynamic content for *Windows Explorer's* context menu.
+The ShellAnything application supports an advanced property system which is a way to assing values to custom named variables. The property system of ShellAnything plays a big role in implementing dynamic content for *Windows Explorer's* context menu.
 
-Properties are case sensitive and cannot contains spaces.
+Properties only support string values. Property names are case sensitive and cannot contain spaces.
 
 
 
@@ -450,11 +471,25 @@ The application supports multiple way to set a property to a custom value:
 
 
 
+## Property expansion ##
+
+Property expansion allows you to insert variable content in a string value, menu name, icon path, custom action, and so on.
+
+The syntax of a property expansion is as follows: `${name-of-property}` where `name-of-property` is the actual name of a property.
+The name of a property is case sensitive.
+
+For instance, the following would create a menu "send file by email" with the actual file name in the menu name:
+```
+<menu name="Send file '${my_filename}' by email.">
+```
+
+
+
 ## Using properties ##
 
 **Example #1:**
 
-Properties can be used to store temporary values (for instance, based on the selection). For example, a menu can save the clicked file path to a property so that another menu can later refer to it. The typical use case is when comparing files: the first menu "select first file" and save the path to a property and the second menu "select second file" and launches the comparision with the two files.
+Properties can be used to store temporary values (for instance, based on the selection). For example, a menu can save the clicked file path to a property so that another menu can later refer to it. The typical use case is when comparing files: the first menu "select first file" and save the path to a property and the second menu "select second file" and launches the comparison with the two files.
 The implementation of such menus would be like this:
 
 ```xml
@@ -497,25 +532,11 @@ For instance, if one wants to implement 2 menus (called 'A' and 'B') and only sh
 
 
 
-## Property expansion ##
-
-Property expansion allows you to insert variable content in a string value, menu name, icon path, custom action, and so on.
-
-The syntax of a property expansion is as follows: `${name-of-property}` where `name-of-property` is the actual name.
-The name of a property is case sensitive.
-
-For instance, the following would create a menu "send file by email" with the actual file name in the menu name:
-```
-<menu name="Send file '${my_filename}' by email.">
-```
-
-
-
 ## Environment variables ##
 
-The list of environement variables is also available through the property system.
+The list of environment variables is also available through the property system.
 
-The syntax of an environement variable property expansion is as follows: `${env.name-of-env-variable}` where `name-of-env-variable` is the actual name of an environement variable.
+The syntax of an environment variable property expansion is as follows: `${env.name-of-environment-variable}` where `name-of-environment-variable` is the actual name of an environment variable.
 The name of the variable is case sensitive.
 
 For example, the following would create a menu with the current user login name:
@@ -555,28 +576,112 @@ Help:
 -->
 ```
 
-# Advanced Configuration File Sample #
-
-
-
-## Lorem ipsum dolor sit amet ##
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum
-
-
-
 # Use Cases #
 
 
 
-## Lorem ipsum dolor sit amet ##
+## Integrate a third parties application ##
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+[WinDirStat](https://windirstat.net/) is a disk usage statistics viewer. It is a 3rd party application that do not provide a shell extension with the installer. The application have command line support with the following syntax: `windirstat.exe <folder>`.
+
+With ShellAnything, a context menu option can be easily created to allow WinDirStat integration with *Windows Explorer* :
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="WinDirStat">
+      <icon path="C:\Program Files (x86)\WinDirStat\windirstat.exe" index="0" />
+      <visibility maxfiles="0" maxfolders="1" exists="C:\Program Files (x86)\WinDirStat\windirstat.exe" />
+      <actions>
+        <exec path="C:\Program Files (x86)\WinDirStat\windirstat.exe" arguments="&quot;${selection.path}&quot;" />
+      </actions>
+    </menu>    
+  </shell>
+</root>
+```
 
 
+
+## Run an application with parameters ##
+
+Run an application that requires special parameters (a.k.a arguments) requires one to open a `command prompt`, navigate to the target directory, and run the command with the parameters.
+
+ShellAnything can easily create a menu that is available only with one right-click a directory. The menu also prompt the user for the arguments and run the desired application:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Run with parameters..." description="Run the selected executable with parameters">
+      <icon path="C:\Windows\System32\shell32.dll" index="76" />
+      <visibility maxfiles="1" maxfolders="0" fileextensions="com;exe;bat;cmd" />
+      <actions>
+        <prompt name="myarguments" title="Please enter the command line parameters" />
+        <exec path="${selection.path}" arguments="${myarguments}" />
+      </actions>
+    </menu>
+  </shell>
+</root>
+```
+
+
+
+## Open a command prompt in directory ##
+
+Developers often needs to open a command prompt at the current location when navigating *Windows Explorer*.
+ShellAnything can quickly open a command prompt inside the current *Windows Explorer* directory:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Open command line here">
+      <icon path="C:\Windows\System32\cmd.exe" index="0" />
+      <visibility maxfiles="0" maxfolders="1" />
+      <actions>
+        <exec path="${env.ComSpec}" basedir="&quot;${selection.path}&quot;" />
+      </actions>
+    </menu>
+  </shell>
+</root>
+```
+
+
+
+## Select two files for an operation ##
+
+If an application requires multiple input files (ie: compare files), ShellAnything allows creating a menu that select the first file and then show another menu for picking the second file and launch the application.
+
+The following xml sample can select two files for an operation :
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Compare">
+      <visibility maxfiles="1" maxfolders="0" />
+      <icon path="C:\Windows\System32\dsuiext.dll" index="32" />
+      <menu name="Select file '${selection.filename}'">
+        <actions>
+          <!-- Remember the selected file in properties. The path will be used later -->
+          <property name="compare.first.selection.path"     value="${selection.path}" />
+          <property name="compare.first.selection.filename" value="${selection.filename}" />
+        </actions>
+      </menu>
+      <menu name="Compare with '${compare.first.selection.filename}' (text)">
+        <icon path="C:\Windows\System32\imageres.dll" index="14" />
+        <!-- Hide this menu until a choice was made in 'Select file' menu -->
+        <visibility properties="compare.first.selection.filename" />
+        <actions>
+          <!-- Run the compare command with the following 2 files: ${compare.first.selection.path} and ${selection.path} -->
+
+          <!--Reset the properties now that compare is complete-->
+          <property name="compare.first.selection.path"     value="" />
+          <property name="compare.first.selection.filename" value="" />
+        </actions>
+      </menu>
+    </menu>
+  </shell>
+</root>
+```
