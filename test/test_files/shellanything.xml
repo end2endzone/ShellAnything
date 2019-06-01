@@ -5,7 +5,7 @@
     <menu separator="true" />
     
     <menu name="ShellAnything">
-      <icon path="C:\Windows\system32\imageres.dll" index="60" />
+      <icon path="${application.path}" index="0" />
 
       <menu name="Directories">
         <icon path="C:\Windows\system32\shell32.dll" index="3" />
