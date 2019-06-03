@@ -31,20 +31,46 @@
 namespace shellanything
 {
 
-  // Convert a wide Unicode string to an UTF8 string
+  /// <summary>
+  /// Convert a wide unicode string to an utf8 string
+  /// </summary>
+  /// <param name="wstr">The unicode string that must be converted.</param>
+  /// <returns>Returns an utf8 encoded string.</returns>
   std::string unicode_to_utf8(const std::wstring & wstr);
 
-  // Convert an UTF8 string to a wide Unicode String
+  /// <summary>
+  /// Convert an utf8 string to a wide unicode string
+  /// </summary>
+  /// <param name="str">The utf8 string that must be converted.</param>
+  /// <returns>Returns an unicode encoded string.</returns>
   std::wstring utf8_to_unicode(const std::string & str);
 
-  // Convert an wide Unicode string to ANSI string
+  /// <summary>
+  /// Convert an wide unicode string to ansi string
+  /// </summary>
+  /// <param name="str">The unicode string that must be converted.</param>
+  /// <returns>Returns an ansi encoded string.</returns>
   std::string unicode_to_ansi(const std::wstring & wstr);
 
-  // Convert an ANSI string to a wide Unicode String
+  /// <summary>
+  /// Convert an ansi string to a wide unicode string
+  /// </summary>
+  /// <param name="str">The ansi string that must be converted.</param>
+  /// <returns>Returns an unicode encoded string.</returns>
   std::wstring ansi_to_unicode(const std::string & str);
 
+  /// <summary>
+  /// Convert an utf8 string to an ansi string
+  /// </summary>
+  /// <param name="str">The utf8 string that must be converted.</param>
+  /// <returns>Returns an ansi encoded string.</returns>
   std::string utf8_to_ansi(const std::string & str);
 
+  /// <summary>
+  /// Convert an ansi string to an utf8 string
+  /// </summary>
+  /// <param name="str">The ansi string that must be converted.</param>
+  /// <returns>Returns a utf8 encoded string.</returns>
   std::string ansi_to_utf8(const std::string & str);
 
 } //namespace shellanything

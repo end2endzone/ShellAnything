@@ -32,14 +32,25 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Abstract action class.
+  /// </summary>
   class Action
   {
   public:
+    /// <summary>
+    /// A list of Action class pointers.
+    /// </summary>
     typedef std::vector<Action*> ActionPtrList;
 
     Action();
     virtual ~Action();
 
+    /// <summary>
+    /// Execute the action on the system.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const = 0;
   };
 

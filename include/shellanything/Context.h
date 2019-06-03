@@ -31,6 +31,9 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// A Context class holds a list of files and/or directories.
+  /// </summary>
   class Context
   {
   public:
@@ -40,15 +43,39 @@ namespace shellanything
     Context(const Context & c);
     virtual ~Context();
 
+    /// <summary>
+    /// Copy operator
+    /// </summary>
     const Context & operator =(const Context & c);
 
+    /// <summary>
+    /// Register a list of 'properties' based on the context elements.
+    /// </summary>
     void registerProperties() const;
+
+    /// <summary>
+    /// Unregister the list of 'properties' created by registerProperties().
+    /// </summary>
     void unregisterProperties() const;
 
+    /// <summary>
+    /// Get the list of elements of the Context.
+    /// </summary>
     const ElementList & getElements() const;
+
+    /// <summary>
+    /// Set the list of elements to the Context.
+    /// </summary>
     void setElements(const ElementList & elements);
 
+    /// <summary>
+    /// Get the number of files in the context.
+    /// </summary>
     int getNumFiles() const;
+
+    /// <summary>
+    /// Get the number of directories in the context.
+    /// </summary>
     int getNumDirectories() const;
 
   private:

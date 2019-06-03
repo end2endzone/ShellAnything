@@ -20,7 +20,7 @@ Help:
     <menu separator="true" />
     
     <menu name="Copy to clipboard...">
-      <icon path="C:\Windows\System32\shell32.dll" index="68" />
+      <icon path="C:\Windows\System32\shell32.dll" index="134" />
       <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
         <icon path="C:\Windows\System32\shell32.dll" index="165" />
         <actions>
@@ -28,7 +28,7 @@ Help:
         </actions>
       </menu>
       <menu name="Filename" description="Copy the selected filename(s) to the clipboard">
-        <icon path="C:\Windows\System32\shell32.dll" index="2" />
+        <icon path="C:\Windows\System32\shell32.dll" index="1" />
         <actions>
           <clipboard value="${selection.filename}"/>
         </actions>

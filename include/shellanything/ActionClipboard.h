@@ -30,15 +30,30 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Action class that changes the clipboard.
+  /// </summary>
   class ActionClipboard : public Action
   {
   public:
     ActionClipboard();
     virtual ~ActionClipboard();
 
+    /// <summary>
+    /// Change the clipboard content.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const;
 
+    /// <summary>
+    /// Getter for the 'value' parameter.
+    /// </summary>
     const std::string & getValue() const;
+
+    /// <summary>
+    /// Setter for the 'value' parameter.
+    /// </summary>
     void setValue(const std::string & iValue);
 
   private:

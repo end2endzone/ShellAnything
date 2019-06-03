@@ -28,9 +28,13 @@
 #include <Windows.h>
 #include <string>
 
-class CInputBox  
+class CInputBox
 {
 public:
+  /// <summary>
+  /// Creates a new InputBox.
+  /// </summary>
+  /// <param name="hParent">The parent windows of the InputBox. Can be NULL.</param>
   CInputBox(HWND hParent);
   virtual ~CInputBox();
 
@@ -60,12 +64,42 @@ public:
   void setCtrl(CONTROLS ctrl, HWND hWnd);
   HWND getCtrl(CONTROLS ctrl) const;
 
+  /// <summary>
+  /// Set the default text from an ansi string.
+  /// </summary>
+  /// <param name="text">The new text to display</param>
   void setTextAnsi(const std::string & text);
+
+  /// <summary>
+  /// Get the default text as an ansi string.
+  /// </summary>
   std::string getTextAnsi() const;
+
+  /// <summary>
+  /// Set the default text from an unicode string.
+  /// </summary>
+  /// <param name="text">The new text to display</param>
   void setTextUnicode(const std::wstring & text);
+
+  /// <summary>
+  /// Get the default text as an unicode string.
+  /// </summary>
   std::wstring getTextUnicode() const;
 
+  /// <summary>
+  /// Display the input box to the user and wait for the user to click the OK or CANCEL buttons.
+  /// </summary>
+  /// <param name="caption">The caption of the window.</param>
+  /// <param name="prompt">The prompt question displayed to the user.</param>
+  /// <returns>Returns true if the user have clicked OK button. Returns false otherwise.</returns>
   bool DoModal(const std::string  & caption, const std::string  & prompt);
+
+  /// <summary>
+  /// Display the input box to the user and wait for the user to click the OK or CANCEL buttons.
+  /// </summary>
+  /// <param name="caption">The caption of the window.</param>
+  /// <param name="prompt">The prompt question displayed to the user.</param>
+  /// <returns>Returns true if the user have clicked OK button. Returns false otherwise.</returns>
   bool DoModal(const std::wstring & caption, const std::wstring & prompt);
 
 private:

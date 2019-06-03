@@ -30,42 +30,192 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Expand a file path by replacing environment variable reference by the actual variable's value.
+  /// Unix    environment variables syntax must in the following form:  $name where  'name' is an environment variable.
+  /// Windows environment variables syntax must in the following form:  %name% where 'name' is an environment variable.
+  /// </summary>
+  /// <param name="iValue">The path that must be expanded.</param>
+  /// <returns>Returns a new string with the expanded strings.</returns>
   std::string expand(const std::string & iValue);
+
+  /// <summary>
+  /// Returns a list of all environment variables defined by the current process.
+  /// </summary>
+  /// <returns>Returns a list of all environment variables.</returns>
   ra::strings::StringVector getEnvironmentVariables();
 
+  /// <summary>
+  /// Returns the current user 'home' directory.
+  /// For unix    systems, the returned path is "~".
+  /// For windows systems, the returned path is "%USERPROFILE%" (ie "C:\Users\JohnSmith").
+  /// </summary>
+  /// <returns>Returns the current user's home directory.</returns>
   std::string getHomeDirectory();
+
+  /// <summary>
+  /// Returns the current user 'application data' directory.
+  /// For unix    systems, the returned path is "/usr/share".
+  /// For windows systems, the returned path is "%USERPROFILE%\AppData\Local" (ie "C:\Users\JohnSmith\AppData\Local").
+  /// </summary>
+  /// <returns>Returns the current user's application data directory.</returns>
   std::string getApplicationsDataDirectory();
+
+  /// <summary>
+  /// Returns the current user 'documents' directory.
+  /// For unix    systems, the returned path is "~/Documents".
+  /// For windows systems, the returned path is "%USERPROFILE%\Documents" (ie "C:\Users\JohnSmith\Documents").
+  /// </summary>
+  /// <returns>Returns the current user's documents directory.</returns>
   std::string getDocumentsDirectory();
+
+  /// <summary>
+  /// Returns the current user 'desktop' directory.
+  /// For unix    systems, the returned path is "~/Desktop".
+  /// For windows systems, the returned path is "%USERPROFILE%\Desktop" (ie "C:\Users\JohnSmith\Desktop").
+  /// </summary>
+  /// <returns>Returns the current user's desktop directory.</returns>
   std::string getDesktopDirectory();
 
+  /// <summary>
+  /// Reads the first 'size' bytes of file 'path' and copy the content to 'content' variable.
+  /// </summary>
+  /// <param name="path">The path of the file.</param>
+  /// <param name="size">The number of bytes to peek into the file.</param>
+  /// <param name="content">The variable that will contains the readed bytes.</param>
+  /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool peekFile(const std::string & path, size_t size, std::string & content);
+
+  /// <summary>
+  /// Reads the content of the given file path copy the content to 'content' variable.
+  /// </summary>
+  /// <param name="path">The path of the file.</param>
+  /// <param name="content">The variable that will contains the readed bytes.</param>
+  /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool readFile(const std::string & path, std::string & content);
+
+  /// <summary>
+  /// Writes the given content to a file.
+  /// </summary>
+  /// <param name="path">The path of the file.</param>
+  /// <param name="content">The content to write to the file.</param>
+  /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool writeFile(const std::string & path, std::string & content);
+
+  //https://github.com/end2endzone/RapidAssist/issues/27
   bool createFolder(const char * iPath);
 
-  // copyFile() callback interfaces
+  /// <summary>
+  /// copyFile() callback interface
+  /// </summary>
   class IProgressReport
   {
   public:
+    /// <summary>
+    /// CopyFile() callback function.
+    /// </summary>
+    /// <param name="progress">The progress of the file copy. Ranges [0, 1] inclusive.</param>
     virtual void onProgressReport(double progress) = 0;
   };
+
+  /// <summary>
+  /// CopyFile() callback function.
+  /// </summary>
+  /// <param name="progress">The progress of the file copy. Ranges [0, 1] inclusive.</param>
   typedef void (*ProgressReportCallback)(double);
+
+  /// <summary>
+  /// Copy a file to another destination.
+  /// </summary>
+  /// <param name="source_path">The source file path to copy.</param>
+  /// <param name="destination_path">The destination file path.</param>
+  /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path);
+
+  /// <summary>
+  /// Copy a file to another destination.
+  /// </summary>
+  /// <param name="source_path">The source file path to copy.</param>
+  /// <param name="destination_path">The destination file path.</param>
+  /// <param name="progress_functor">A valid IProgressReport pointer to handle the copy callback.</param>
+  /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor);
+
+  /// <summary>
+  /// Copy a file to another destination.
+  /// </summary>
+  /// <param name="source_path">The source file path to copy.</param>
+  /// <param name="destination_path">The destination file path.</param>
+  /// <param name="progress_function">A valid ProgressReportCallback function pointer to handle the copy callback.</param>
+  /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path, ProgressReportCallback progress_function);
 
+  /// <summary>
+  /// Get the file name of a path without the extension.
+  /// </summary>
+  /// <param name="iPath">The file path of a file.</param>
+  /// <returns>Returns the file name without the extension.</returns>
   std::string getFilenameWithoutExtension(const char * iPath);
+
   std::string makeRelativePath(const std::string & base_path, const std::string & test_path);
 
+  /// <summary>
+  /// Start the given process from the given directory.
+  /// </summary>
+  /// <param name="iCommand">The command to start. Can include a process path and/or arguments.</param>
+  /// <param name="iDefaultDirectory">The directory to run the command from.</param>
+  /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t startProcess(const std::string & iCommand, const std::string & iDefaultDirectory);
+
+  /// <summary>
+  /// Start the given process with the given arguments from the given directory.
+  /// </summary>
+  /// <param name="iExecPath">The path to the executable to start.</param>
+  /// <param name="iArguments">The arguments to send to the process.</param>
+  /// <param name="iDefaultDirectory">The directory to run the command from.</param>
+  /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory);
+
+  /// <summary>
+  /// Open a document with the default system application.
+  /// </summary>
+  /// <param name="iPath">The path to the document to open.</param>
+  /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t openDocument(const std::string & iPath);
 
+  /// <summary>
+  /// Get the latest system error code.
+  /// </summary>
+  /// <returns>Returns the latest system error code.</returns>
   uint32_t GetSystemErrorCode();
+
+  /// <summary>
+  /// Get a system error description from the given error code.
+  /// </summary>
+  /// <param name="dwError">The system error code.</param>
+  /// <returns>Returns the system error description from the given error code.</returns>
   std::string GetSystemErrorDescription(uint32_t dwError);
+
+  /// <summary>
+  /// Show an error message to the user.
+  /// </summary>
+  /// <param name="title">The caption title of the window.</param>
+  /// <param name="message">The message to display to the user.</param>
   void ShowErrorMessage(const std::string & title, const std::string & message);
 
+  /// <summary>
+  /// Finds a file using the PATH environment variable.
+  /// </summary>
+  /// <param name="filename">The filename that we are searching for.</param>
+  /// <param name="locations">The path locations where the file was found.</param>
+  /// <returns>Returns true if the filename was found at least once. Returns false otherwise.</returns>
   bool findFileFromPaths(const std::string & filename, ra::strings::StringVector & locations);
+
+  /// <summary>
+  /// Finds a file using the PATH environment variable.
+  /// </summary>
+  /// <param name="filename">The filename that we are searching for.</param>
+  /// <returns>Returns the first location where the file was found. Returns empty string otherwise.</returns>
   std::string findFileFromPaths(const std::string & filename);
 
 } //namespace shellanything

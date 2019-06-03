@@ -30,18 +30,40 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Action class that changes the value of a property.
+  /// </summary>
   class ActionProperty : public Action
   {
   public:
     ActionProperty();
     virtual ~ActionProperty();
 
+    /// <summary>
+    /// Changes the value of a property.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const;
 
+    /// <summary>
+    /// Getter for the 'name' parameter.
+    /// </summary>
     const std::string & getName() const;
+
+    /// <summary>
+    /// Setter for the 'name' parameter.
+    /// </summary>
     void setName(const std::string & iName);
 
+    /// <summary>
+    /// Getter for the 'value' parameter.
+    /// </summary>
     const std::string & getValue() const;
+
+    /// <summary>
+    /// Setter for the 'value' parameter.
+    /// </summary>
     void setValue(const std::string & iValue);
 
   private:

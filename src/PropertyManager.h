@@ -30,6 +30,9 @@
 
 namespace shellanything
 {
+  /// <summary>
+  /// Manages the property system
+  /// </summary>
   class PropertyManager
   {
   public:
@@ -49,12 +52,46 @@ namespace shellanything
     //------------------------
     typedef std::map<std::string /*name*/, std::string /*value*/> PropertyMap;
 
+    /// <summary>
+    /// Clears all the registered properties.
+    /// Note that environement variable properties are still registered to the manager.
+    /// </summary>
     void clear();
+
+    /// <summary>
+    /// Delete the given property.
+    /// </summary>
+    /// <param name="name">The name of the property to delete.</param>
     void clearProperty(const std::string & name);
+
+    /// <summary>
+    /// Check if a property have been set.
+    /// An empty property value is defined as 'set'.
+    /// </summary>
+    /// <param name="name">The name of the property to check.</param>
+    /// <returns>Returns true if the property is set. Returns false otherwise.</returns>
     bool hasProperty(const std::string & name) const;
+
+    /// <summary>
+    /// Sets the value of the given property name.
+    /// </summary>
+    /// <param name="name">The name of the property to set.</param>
+    /// <param name="value">The new value of the property.</param>
     void setProperty(const std::string & name, const std::string & value);
+
+    /// <summary>
+    /// Gets the value of the given property name.
+    /// </summary>
+    /// <param name="name">The name of the property to get.</param>
+    /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
     const std::string & getProperty(const std::string & name) const;
 
+    /// <summary>
+    /// Expands the given string by replacing property variable reference by the actual variable's value.
+    /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
+    /// </summary>
+    /// <param name="value">The given value to expand.</param>
+    /// <returns>Returns a copy of the given value with the property references expanded.</returns>
     std::string expand(const std::string & value) const;
 
   private:

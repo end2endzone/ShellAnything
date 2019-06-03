@@ -30,21 +30,50 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Action class that prompts the user for a value.
+  /// </summary>
   class ActionPrompt : public Action
   {
   public:
     ActionPrompt();
     virtual ~ActionPrompt();
 
+    /// <summary>
+    /// Prompts the user for a value.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const;
 
+    /// <summary>
+    /// Getter for the 'name' parameter.
+    /// </summary>
     const std::string & getName() const;
+
+    /// <summary>
+    /// Setter for the 'name' parameter.
+    /// </summary>
     void setName(const std::string & iName);
 
+    /// <summary>
+    /// Getter for the 'title' parameter.
+    /// </summary>
     const std::string & getTitle() const;
+
+    /// <summary>
+    /// Setter for the 'title' parameter.
+    /// </summary>
     void setTitle(const std::string & iTitle);
 
+    /// <summary>
+    /// Getter for the 'default' parameter.
+    /// </summary>
     const std::string & getDefault() const;
+
+    /// <summary>
+    /// Setter for the 'default' parameter.
+    /// </summary>
     void setDefault(const std::string & iDefault);
 
   private:

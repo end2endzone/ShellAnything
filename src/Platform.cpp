@@ -53,7 +53,11 @@ namespace shellanything
     {
       const std::string & name = variables[i];
 
+#ifdef _WIN32
       std::string pattern = std::string("%") + name + std::string("%");
+#else
+      std::string pattern = std::string("$") + name;
+#endif
       std::string value = ra::environment::getEnvironmentVariable(name.c_str());
 
       //process with search and replace
@@ -145,6 +149,8 @@ namespace shellanything
 #ifdef _WIN32
     std::string dir = getWin32Directory(CSIDL_LOCAL_APPDATA);
     return dir;
+#else
+    return "/usr/share";
 #endif
   }
 
@@ -153,6 +159,8 @@ namespace shellanything
 #ifdef _WIN32
     std::string dir = getWin32Directory(CSIDL_PERSONAL);
     return dir;
+#else
+    return "~/Documents";
 #endif
   }
 
@@ -161,6 +169,8 @@ namespace shellanything
 #ifdef _WIN32
     std::string dir = getWin32Directory(CSIDL_DESKTOPDIRECTORY);
     return dir;
+#else
+    return "~/Desktop";
 #endif
   }
 

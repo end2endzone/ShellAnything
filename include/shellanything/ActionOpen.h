@@ -30,15 +30,30 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Action class that opens a documents using default application.
+  /// </summary>
   class ActionOpen : public Action
   {
   public:
     ActionOpen();
     virtual ~ActionOpen();
 
+    /// <summary>
+    /// Open a document with the default application.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const;
 
+    /// <summary>
+    /// Getter for the 'path' parameter.
+    /// </summary>
     const std::string & getPath() const;
+
+    /// <summary>
+    /// Setter for the 'path' parameter.
+    /// </summary>
     void setPath(const std::string & iPath);
 
   private:

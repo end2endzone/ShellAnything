@@ -31,26 +31,60 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Icon class encapsulate the path to a system's icon.
+  /// </summary>
   class Icon
   {
   public:
+    /// <summary>
+    /// Invalid index within a file.
+    /// </summary>
     static const int INVALID_ICON_INDEX = -1;
 
     Icon();
     Icon(const Icon & icon);
     virtual ~Icon();
 
+    /// <summary>
+    /// Copy operator
+    /// </summary>
     const Icon & operator =(const Icon & icon);
 
+    /// <summary>
+    /// Returns true if the icon have a valid path and index.
+    /// </summary>
+    /// <returns>Returns true if the icon have a valid path and index. Returns false otherwise.</returns>
     bool isValid() const;
 
+    /// <summary>
+    /// Getter for the 'fileextension' parameter.
+    /// </summary>
     const std::string & getFileExtension() const;
+
+    /// <summary>
+    /// Setter for the 'fileextension' parameter.
+    /// </summary>
     void setFileExtension(const std::string & iFileExtension);
 
+    /// <summary>
+    /// Getter for the 'path' parameter.
+    /// </summary>
     const std::string & getPath() const;
+
+    /// <summary>
+    /// Setter for the 'path' parameter.
+    /// </summary>
     void setPath(const std::string & iPath);
 
+    /// <summary>
+    /// Getter for the 'index' parameter.
+    /// </summary>
     const int & getIndex() const;
+
+    /// <summary>
+    /// Setter for the 'index' parameter.
+    /// </summary>
     void setIndex(const int & iIndex);
 
   private:

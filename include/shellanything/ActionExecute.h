@@ -30,21 +30,50 @@
 namespace shellanything
 {
 
+  /// <summary>
+  /// Action class that executes a program.
+  /// </summary>
   class ActionExecute : public Action
   {
   public:
     ActionExecute();
     virtual ~ActionExecute();
 
+    /// <summary>
+    /// Execute an application.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool execute(const Context & iContext) const;
 
+    /// <summary>
+    /// Getter for the 'path' parameter.
+    /// </summary>
     const std::string & getPath() const;
+
+    /// <summary>
+    /// Setter for the 'path' parameter.
+    /// </summary>
     void setPath(const std::string & iPath);
 
+    /// <summary>
+    /// Getter for the 'basedir' parameter.
+    /// </summary>
     const std::string & getBaseDir() const;
+
+    /// <summary>
+    /// Setter for the 'basedir' parameter.
+    /// </summary>
     void setBaseDir(const std::string & iBaseDir);
 
+    /// <summary>
+    /// Getter for the 'arguments' parameter.
+    /// </summary>
     const std::string & getArguments() const;
+
+    /// <summary>
+    /// Setter for the 'arguments' parameter.
+    /// </summary>
     void setArguments(const std::string & iArguments);
 
   private:
