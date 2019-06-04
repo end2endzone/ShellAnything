@@ -4,12 +4,28 @@ This *User Manual* contains all essential information for the end-user to make f
 This manual includes a description of the system functionalities and capabilities with examples divided in the following sections:
 
 * [Post Installation](#post-installation)
+  * [Register the shell extension](#register-the-shell-extension)
+  * [Unregister the shell extension](#unregister-the-shell-extension)
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
   * [Visibility / Validity](#visibility-validity)
   * [Actions](#actions)
-  * [Properties](#properties)
+    * [&lt;exec&gt; action](#exec-action)
+    * [&lt;open&gt; action](#open-action)
+    * [&lt;clipboard&gt; action](#clipboard-action)
+    * [&lt;prompt&gt; action](#prompt-action)
+    * [&lt;property&gt; action](#property-action)
+* [Properties](#properties)
+  * [Setting properties](#setting-properties)
+  * [Property expansion](#property-expansion)
+  * [Using properties](using-properties)
+  * [Environment variables](#environment-variables)
+  * [Selection-based properties](#selection-based-properties)
 * [Use Cases](#use-cases)
+  * [Integrate a third party application](#integrate-a-third-party-application)
+  * [Run an application with parameters](#run-an-application-with-parameters)
+  * [Open a command prompt in directory](#open-a-command-prompt-in-directory)
+  * [Select two files for an operation](#select-two-files-for-an-operation)
 
 
 
@@ -115,7 +131,7 @@ The following xml file shows the minimum requirement of a `Configuration File`:
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <shell>
-    <!-- define menus here -->
+    <!-- insert menu definitions here -->
   </shell>
 </root>
 ```
@@ -124,14 +140,15 @@ Note that this sample file does not define any menus.
 
 
 
-
-# Menus #
+## Menus ##
 
 A &lt;menu&gt; element in a `Configuration File` defines a menu item that is displayed on a context menu. A &lt;menu&gt; element must be inserted under the &lt;shell&gt; element.
 
 The &lt;menu&gt; element have two attributes.
 
-## name attribute: ##
+
+
+### name attribute: ###
 
 The `name` attribute is the actual text that will be displayed on the context menu. For instance, the following menu element will display `Test 1-2-3` when you right-click a file or directory:
 
@@ -140,7 +157,9 @@ The `name` attribute is the actual text that will be displayed on the context me
 </menu>
 ```
 
-## separator attribute: ##
+
+
+### separator attribute: ###
 
 The `separator` attribute allows one to define a separator between menu options. To define a separator, one must set the `separator` attributes to one of the following values: `true`, `yes` or `on`. For example, add the following menu element in a *configuration file*:
 
@@ -148,7 +167,9 @@ The `separator` attribute allows one to define a separator between menu options.
 <menu separator="true" />
 ```
 
-## Creating Sub Menus: ##
+
+
+### Creating Sub Menus: ###
 
 A `Configuration File` can have multiple menu element. 
 
@@ -167,8 +188,7 @@ To insert a sub menu, define a &lt;menu&gt; element under another &lt;menu&gt; e
 
 
 
-
-# Visibility / Validity #
+## Visibility / Validity ##
 
 The &lt;visibility&gt; and &lt;validity&gt; elements act as filters for menus. They affect a menu's status: visible/invisible and enabled/disabled respectively. The &lt;visibility&gt; and &lt;validity&gt; elements must be added under a &lt;menu&gt; element.
 
@@ -178,7 +198,7 @@ The &lt;visibility&gt; and &lt;validity&gt; elements have the following attribut
 
 
 
-## maxfiles and maxfolders attributes: ##
+### maxfiles and maxfolders attributes: ###
 
 The `maxfiles` and `maxfolders` attributes validates a menu based on the number of files and folders selected by the user.
 
@@ -202,7 +222,7 @@ For example, the following set a menu visible only when the user right-click on 
 
 
 
-## fileextensions attribute: ##
+### fileextensions attribute: ###
 
 The `fileextensions` attribute validates a menu based on the file's extension selected by the user.
 
@@ -217,7 +237,7 @@ For example, the following set a menu visible only when the user right-click on 
 
 
 
-## exists attribute: ##
+### exists attribute: ###
 
 The `exists` attribute validates a menu if the specified file exists.
 
@@ -232,7 +252,7 @@ For example, the following set a menu visible only when *Microsoft Word 2016* is
 
 
 
-## properties attribute: ##
+### properties attribute: ###
 
 The `properties` attribute validates a menu if the specified property is not empty.
 
@@ -247,8 +267,7 @@ For example, the following set a menu visible when `process.started` property is
 
 
 
-
-# Icons #
+## Icons ##
 
 The &lt;icon&gt; element allows one to assign icon to menus. The &lt;icon&gt; element must be added under a &lt;menu&gt; element.
 
@@ -256,7 +275,7 @@ The &lt;icon&gt; elements have the following attributes:
 
 
 
-## path attribute: ##
+### path attribute: ###
 
 The `path` attribute defines the file path of an icon file or library. The path must be defined in absolute form. The `path` attribute supports the following icon file format: `ico`, `dll`, `ocx` and `cpl`.
 
@@ -267,7 +286,7 @@ For example, the following sets a menu with the *Home* icon (first icon of iefra
 
 
 
-## index attribute: ##
+### index attribute: ###
 
 The `index` attribute defines the index of an icon inside an icon library. The index is 0-based. The index is optional for `ico` file format. If the index is not specified, the value `0` is used. 
 
@@ -278,7 +297,7 @@ For example, the following sets a menu with the *Empty Recycle Bin* icon :
 
 
 
-## fileextension attribute: ##
+### fileextension attribute: ###
 
 The `fileextension` attribute defines the icon of a menu based on the system's default icon for the given file extension. The fileextension is optional and have priority over the `path` and `index` attributes. 
 
@@ -289,8 +308,7 @@ For example, the following sets a menu with the *Text File* icon :
 
 
 
-
-# Actions #
+## Actions ##
 
 The &lt;actions&gt; element contains the list of actions to execute when a user clicks on a menu option. Note that &lt;actions&gt; element does not define the actions to execute. The specific definition of each action must be inserted as children of the &lt;actions&gt; element.
 
@@ -302,7 +320,7 @@ The application support multiple types of actions. The list of each specific act
 
 
 
-## &lt;exec&gt; action ##
+### &lt;exec&gt; action ###
 
 The &lt;exec&gt; element is used to launch an application. The &lt;exec&gt; element must be added under the &lt;actions&gt; element.
 
@@ -310,7 +328,7 @@ The &lt;exec&gt; elements have the following attributes:
 
 
 
-### path attribute: ###
+#### path attribute: ####
 
 The `path` attribute defines the path of the executable to launch. The path may be specified in absolute or relative form. The system will verify that the file exists before launching the executable.
 
@@ -320,29 +338,30 @@ For example, the following launch the Windows Calculator:
 ```
 
 
-### arguments attribute: ###
+
+#### arguments attribute: ####
 
 The `arguments` attribute defines the launching command line parameters sent to the application specified in the `path` attribute.
 
-For example, the following launches `notepad.exe` and open the `7-Zip License.txt` document :
+For example, the following launche `notepad.exe` and open the `License.txt` document :
 ```xml
 <exec path="C:\Windows\notepad.exe" arguments="C:\Program Files\7-Zip\License.txt" />
 ```
 
 
 
-### basedir attribute: ###
+#### basedir attribute: ####
 
 The `basedir` attribute defines the directory to use as `current directory` when launching the application specified in the `path` attribute.
 
-For example, the following launches `notepad.exe` and open the `7-Zip License.txt` document :
+For example, the following launche `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
 ```xml
 <exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
 ```
 
 
 
-## &lt;open&gt; action ##
+### &lt;open&gt; action ###
 
 The &lt;open&gt; element is used to open a document by the default associated application. The &lt;open&gt; element must be added under the &lt;actions&gt; element.
 
@@ -350,18 +369,18 @@ The &lt;open&gt; elements have the following attributes:
 
 
 
-### path attribute: ###
+#### path attribute: ####
 
 The `path` attribute defines the path of the document to open. The path must be specified in absolute form. The system will verify that the file exists before opening the document. The application will execute the `open` action (as if the user had right-clicked on the document ans selected `open` command).
 
-For example, the following opens the default JPEG viewer to view following JPEG image:
+For example, the following opens the default JPEG viewer to view following image:
 ```xml
 <open path="C:\Windows\Web\Wallpaper\Landscapes\img7.jpg" />
 ```
 
 
 
-## &lt;clipboard&gt; action ##
+### &lt;clipboard&gt; action ###
 
 The &lt;clipboard&gt; element is used to change the value of the [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525) to a new value. The &lt;clipboard&gt; element must be added under the &lt;actions&gt; element.
 
@@ -369,7 +388,7 @@ The &lt;clipboard&gt; elements have the following attributes:
 
 
 
-### value attribute: ###
+#### value attribute: ####
 
 The `value` attribute defines the new text value of the clipboard.
 
@@ -380,7 +399,7 @@ For example, the following sets the clipboard to the value `The quick brown fox 
 
 
 
-## &lt;prompt&gt; action ##
+### &lt;prompt&gt; action ###
 
 The &lt;prompt&gt; element is used to ask the user a question. The answer to the question is stored in [properties](#properties). The &lt;prompt&gt; element must be added under the &lt;actions&gt; element.
 
@@ -388,7 +407,7 @@ The &lt;prompt&gt; elements have the following attributes:
 
 
 
-### title attribute: ###
+#### title attribute: ####
 
 The `title` attribute defines the text value of the question displayed in the prompt message.
 
@@ -399,7 +418,7 @@ For example, the following ask the user a question :
 
 
 
-### name attribute: ###
+#### name attribute: ####
 
 The `name` attribute defines the name of the property to set with the value of the answer.
 
@@ -410,7 +429,7 @@ For example, the following sets the property `myprogram.user.fullname' with the 
 
 
 
-### default attribute: ###
+#### default attribute: ####
 
 The `default` attribute defines the default value of the answer.
 
@@ -421,7 +440,7 @@ For example, the following sets the value `John Smith` as default value to the q
 
 
 
-## &lt;property&gt; action ##
+### &lt;property&gt; action ###
 
 The &lt;property&gt; element is used to set a property to a specific value. The modified property can be used with the &lt;visibility&gt; and &lt;validity&gt; elements to create advanced dynamic menus.
 The modified property can also be used to temporary store the current selection path of filename in properties for use cases with multiple file selection.
@@ -432,7 +451,7 @@ The &lt;property&gt; elements have the following attributes:
 
 
 
-### name attribute: ###
+#### name attribute: ####
 
 The `name` attribute defines the name of the property to set with a new value.
 
@@ -443,7 +462,7 @@ For example, the following sets the property `myprogram.user.name` to an empty v
 
 
 
-### value attribute: ###
+#### value attribute: ####
 
 The `value` attribute defines the actual new value of the given property.
 
@@ -548,17 +567,17 @@ For example, the following would create a menu with the current user login name:
 
 ## Selection-based properties ##
 
-The application also provides a list of dynamic properties. The values of these properties will change based on the selected files/folders when a user right-click to show a context menu.
+The application also provides a list of dynamic properties. The values of these properties will change based based on the user selection when a user right-click files or folders.
 
-The following section defines the list of dynamic properties. Theses properties are updated based on the user selection.
+The following table defines the list of dynamic properties adn their utility:
 
-| Property                  | Description                                                          |
-|---------------------------|----------------------------------------------------------------------|
-| selection.path            | Matches the full path of the clicked element.                        |
-| selection.filename        | Matches the filename of the clicked element.                         |
-| selection.filename.noext  | Matches the filename of the clicked element with the file extension. |
-| selection.parent.path     | Matches the full path of the parent element.                         |
-| selection.parent.filename | Matches the filename of the parent element.                          |
+| Property                  | Description                                                              |
+|---------------------------|--------------------------------------------------------------------------|
+| selection.path            | Matches the full path of the clicked element.                            |
+| selection.filename        | Matches the filename  of the clicked element.                            |
+| selection.filename.noext  | Matches the filename  of the clicked element without the file extension. |
+| selection.parent.path     | Matches the full path of the parent  element.                            |
+| selection.parent.filename | Matches the filename  of the parent  element.                            |
 
 
 
