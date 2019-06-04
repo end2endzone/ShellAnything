@@ -489,7 +489,7 @@ For instance, the following would create a menu "send file by email" with the ac
 
 **Example #1:**
 
-Properties can be used to store temporary values (for instance, based on the selection). For example, a menu can save the clicked file path to a property so that another menu can later refer to it. The typical use case is when comparing files: the first menu "select first file" and save the path to a property and the second menu "select second file" and launches the comparison with the two files.
+Properties can be used to store temporary values (for instance, based on the selection). For example, a menu can save the clicked file path to a property so that another menu can later refer to it. The typical use case is when comparing files: the first menu "select first file" and save the path to a property and the second menu "select second file" and launches the compare application with the two files.
 The implementation of such menus would be like this:
 
 ```xml
@@ -552,29 +552,16 @@ The application also provides a list of dynamic properties. The values of these 
 
 The following section defines the list of dynamic properties. Theses properties are updated based on the user selection.
 
-AFFICHER</BR>
-UN</BR>
-TABLEAU</BR>
-POUR</BR>
-LES</BR>
-RESULTS</BR>
+| Property                  | Description                                                          |
+|---------------------------|----------------------------------------------------------------------|
+| selection.path            | Matches the full path of the clicked element.                        |
+| selection.filename        | Matches the filename of the clicked element.                         |
+| selection.filename.noext  | Matches the filename of the clicked element with the file extension. |
+| selection.parent.path     | Matches the full path of the parent element.                         |
+| selection.parent.filename | Matches the filename of the parent element.                          |
 
-```xml
-<!--
-Help:
-  ${selection.path} is the full path of the clicked element
-  ${selection.parent.path} is the full path of the parent element
-  ${selection.parent.filename} is the filename of the parent element
-  ${selection.filename} is selection.filename (including file extension)
-  ${selection.filename.noext} is selection.filename without file extension
-  
-  ${env.XYZ} refers to environment variable XYZ
-  
-  Property names must not contain spaces
-  Property lists must be separated by ';' character
-  File extension lists must be separated by ';' character
--->
-```
+
+
 
 # Use Cases #
 
