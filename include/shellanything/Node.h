@@ -49,6 +49,12 @@ namespace shellanything
     Node(const std::string & type);
     virtual ~Node();
 
+  private:
+    // Disable copy constructor and copy operator
+    Node(const Node&);
+    Node& operator=(const Node&);
+  public:
+
     /// <summary>
     /// Getter for the 'node-type' parameter.
     /// </summary>

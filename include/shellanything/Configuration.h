@@ -46,6 +46,12 @@ namespace shellanything
     Configuration();
     virtual ~Configuration();
 
+  private:
+    // Disable copy constructor and copy operator
+    Configuration(const Configuration&);
+    Configuration& operator=(const Configuration&);
+  public:
+
     /// <summary>
     /// Load a configuration file.
     /// </summary>

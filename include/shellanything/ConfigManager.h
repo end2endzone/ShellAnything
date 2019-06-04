@@ -41,6 +41,12 @@ namespace shellanything
     ConfigManager();
     virtual ~ConfigManager();
 
+  private:
+    // Disable copy constructor and copy operator
+    ConfigManager(const ConfigManager&);
+    ConfigManager& operator=(const ConfigManager&);
+  public:
+
   public:
     /// <summary>
     /// A list of string for holding configuration paths.

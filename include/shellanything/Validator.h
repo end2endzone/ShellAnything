@@ -39,21 +39,59 @@ namespace shellanything
     Validator(const Validator & validator);
     virtual ~Validator();
 
+    /// <summary>
+    /// Copy operator
+    /// </summary>
     const Validator & operator =(const Validator & validator);
 
+    /// <summary>
+    /// Getter for the 'maxfiles' parameter.
+    /// </summary>
     const int & getMaxFiles() const;
+
+    /// <summary>
+    /// Setter for the 'maxfiles' parameter.
+    /// </summary>
     void setMaxFiles(const int & iMaxFiles);
 
+    /// <summary>
+    /// Getter for the 'maxdirectories' parameter.
+    /// </summary>
     const int & getMaxDirectories() const;
+
+    /// <summary>
+    /// Setter for the 'maxdirectories' parameter.
+    /// </summary>
     void setMaxDirectories(const int & iMaxDirectories);
 
+    /// <summary>
+    /// Getter for the 'properties' parameter.
+    /// </summary>
     const std::string & getProperties() const;
+
+    /// <summary>
+    /// Setter for the 'properties' parameter.
+    /// </summary>
     void setProperties(const std::string & iProperties);
 
+    /// <summary>
+    /// Getter for the 'fileextensions' parameter.
+    /// </summary>
     const std::string & getFileExtensions() const;
+
+    /// <summary>
+    /// Setter for the 'fileextensions' parameter.
+    /// </summary>
     void setFileExtensions(const std::string & iFileExtensions);
 
+    /// <summary>
+    /// Getter for the 'fileexists' parameter.
+    /// </summary>
     const std::string & getFileExists() const;
+
+    /// <summary>
+    /// Setter for the 'fileexists' parameter.
+    /// </summary>
     void setFileExists(const std::string & iFileExists);
 
     bool validate(const Context & iContext) const;

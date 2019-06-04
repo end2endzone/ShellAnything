@@ -55,6 +55,12 @@ namespace shellanything
     Menu();
     virtual ~Menu();
 
+  private:
+    // Disable copy constructor and copy operator
+    Menu(const Menu&);
+    Menu& operator=(const Menu&);
+  public:
+
     /// <summary>
     /// Returns true of the menu is a separator.
     /// </summary>

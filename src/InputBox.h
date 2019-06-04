@@ -38,6 +38,12 @@ public:
   CInputBox(HWND hParent);
   virtual ~CInputBox();
 
+  private:
+  // Disable copy constructor and copy operator
+  CInputBox(const CInputBox&);
+  CInputBox& operator=(const CInputBox&);
+  public:
+
   void setWidth(const int & width);
   const int & getWidth() const;
   void setHeight(const int & height);

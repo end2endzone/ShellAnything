@@ -46,6 +46,12 @@ namespace shellanything
     Action();
     virtual ~Action();
 
+  private:
+    // Disable copy constructor and copy operator
+    Action(const Action&);
+    Action& operator=(const Action&);
+  public:
+
     /// <summary>
     /// Execute the action on the system.
     /// </summary>

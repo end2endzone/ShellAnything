@@ -43,6 +43,10 @@ namespace shellanything
     ObjectFactory();
     virtual ~ObjectFactory();
 
+    // Disable copy constructor and copy operator
+    ObjectFactory(const ObjectFactory&);
+    ObjectFactory& operator=(const ObjectFactory&);
+
   public:
     static ObjectFactory & getInstance();
 
