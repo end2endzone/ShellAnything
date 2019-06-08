@@ -189,18 +189,20 @@ namespace shellanything { namespace test
     ASSERT_TRUE( pmgr.hasProperty("selection.path") );
  
     const char * test_string = ""
-      "selection.path"            "=${selection.path}"            "\n"
-      "selection.parent.path"     "=${selection.parent.path}"     "\n"
-      "selection.parent.filename" "=${selection.parent.filename}" "\n"
-      "selection.filename"        "=${selection.filename}"        "\n"
-      "selection.filename.noext"  "=${selection.filename.noext}"  "\n";
+      "selection.path"                "=${selection.path}"                "\n"
+      "selection.parent.path"         "=${selection.parent.path}"         "\n"
+      "selection.parent.filename"     "=${selection.parent.filename}"     "\n"
+      "selection.filename"            "=${selection.filename}"            "\n"
+      "selection.filename.noext"      "=${selection.filename.noext}"      "\n"
+      "selection.filename.extension"  "=${selection.filename.extension}"  "\n";
  
     const char * expected_string = ""
-      "selection.path"            "=C:\\Windows\\System32\\notepad.exe\n"
-      "selection.parent.path"     "=C:\\Windows\\System32\n"
-      "selection.parent.filename" "=System32\n"
-      "selection.filename"        "=notepad.exe\n"
-      "selection.filename.noext"  "=notepad\n";
+      "selection.path"                "=C:\\Windows\\System32\\notepad.exe\n"
+      "selection.parent.path"         "=C:\\Windows\\System32\n"
+      "selection.parent.filename"     "=System32\n"
+      "selection.filename"            "=notepad.exe\n"
+      "selection.filename.noext"      "=notepad\n"
+      "selection.filename.extension"  "=exe\n";
  
     std::string actual_string = pmgr.expand(test_string);
  
@@ -241,6 +243,7 @@ namespace shellanything { namespace test
     std::string selection_parent_filename  = pmgr.expand("${selection.parent.filename}");
     std::string selection_filename         = pmgr.expand("${selection.filename}");
     std::string selection_filename_noext   = pmgr.expand("${selection.filename.noext}");
+    std::string selection_filename_ext     = pmgr.expand("${selection.filename.extension}");
  
     //assert 1 line per element (file or directory) in context
     ASSERT_EQ( context.getElements().size(), countLines(selection_path           ) );
@@ -248,6 +251,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( context.getElements().size(), countLines(selection_parent_filename) );
     ASSERT_EQ( context.getElements().size(), countLines(selection_filename       ) );
     ASSERT_EQ( context.getElements().size(), countLines(selection_filename_noext ) );
+    ASSERT_EQ( context.getElements().size(), countLines(selection_filename_ext   ) );
  
     //assert all elements are added to the ${selection.path}
     for(size_t i=0; i<context.getElements().size(); i++)

@@ -72,6 +72,7 @@ namespace shellanything
     std::string selection_parent_filename;
     std::string selection_filename       ;
     std::string selection_filename_noext ;
+    std::string selection_filename_ext   ;
  
     //for each element
     for(size_t i=0; i<elements.size(); i++)
@@ -83,6 +84,7 @@ namespace shellanything
       //${selection.parent.filename} is the filename of the parent element
       //${selection.filename} is selection.filename (including file extension)
       //${selection.filename_noext} is selection.filename without file extension
+      //${selection.filename.extension} is the file extension of the clicked element.
  
       //build properties for this specific element
       std::string element_selection_path            = element;
@@ -90,39 +92,44 @@ namespace shellanything
       std::string element_selection_parent_filename = ra::filesystem::getFilename(element_selection_parent_path.c_str());
       std::string element_selection_filename        = ra::filesystem::getFilename(element_selection_path.c_str());
       std::string element_selection_filename_noext  = getFilenameWithoutExtension(element_selection_path.c_str());
+      std::string element_selection_filename_ext    = ra::filesystem::getFileExtention(element_selection_filename);
  
       //append this specific element properties to the global property string
  
       //add a newline if the property value is not empty. This allows printing all file path on individual lines
       static const char * line_separator = ra::environment::getLineSeparator();
-      if (!selection_path           .empty()) selection_path           .append( line_separator );
-      if (!selection_parent_path    .empty()) selection_parent_path    .append( line_separator );
-      if (!selection_parent_filename.empty()) selection_parent_filename.append( line_separator );
-      if (!selection_filename       .empty()) selection_filename       .append( line_separator );
-      if (!selection_filename_noext .empty()) selection_filename_noext .append( line_separator );
+      if (!selection_path           .empty()) selection_path            .append( line_separator );
+      if (!selection_parent_path    .empty()) selection_parent_path     .append( line_separator );
+      if (!selection_parent_filename.empty()) selection_parent_filename .append( line_separator );
+      if (!selection_filename       .empty()) selection_filename        .append( line_separator );
+      if (!selection_filename_noext .empty()) selection_filename_noext  .append( line_separator );
+      if (!selection_filename_ext   .empty()) selection_filename_ext    .append( line_separator );
  
       selection_path           .append( element_selection_path            );
       selection_parent_path    .append( element_selection_parent_path     );
       selection_parent_filename.append( element_selection_parent_filename );
       selection_filename       .append( element_selection_filename        );
       selection_filename_noext .append( element_selection_filename_noext  );
+      selection_filename_ext   .append( element_selection_filename_ext    );
     }
  
-    pmgr.setProperty("selection.path"           , selection_path           );
-    pmgr.setProperty("selection.parent.path"    , selection_parent_path    );
-    pmgr.setProperty("selection.parent.filename", selection_parent_filename);
-    pmgr.setProperty("selection.filename"       , selection_filename       );
-    pmgr.setProperty("selection.filename.noext" , selection_filename_noext );
+    pmgr.setProperty("selection.path"               , selection_path           );
+    pmgr.setProperty("selection.parent.path"        , selection_parent_path    );
+    pmgr.setProperty("selection.parent.filename"    , selection_parent_filename);
+    pmgr.setProperty("selection.filename"           , selection_filename       );
+    pmgr.setProperty("selection.filename.noext"     , selection_filename_noext );
+    pmgr.setProperty("selection.filename.extension" , selection_filename_ext   );
   }
  
   void Context::unregisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
-    pmgr.clearProperty("selection.path"           );
-    pmgr.clearProperty("selection.parent.path"    );
-    pmgr.clearProperty("selection.parent.filename");
-    pmgr.clearProperty("selection.filename"       );
-    pmgr.clearProperty("selection.filename.noext" );
+    pmgr.clearProperty("selection.path"               );
+    pmgr.clearProperty("selection.parent.path"        );
+    pmgr.clearProperty("selection.parent.filename"    );
+    pmgr.clearProperty("selection.filename"           );
+    pmgr.clearProperty("selection.filename.noext"     );
+    pmgr.clearProperty("selection.filename.extension" );
   }
  
   const Context::ElementList & Context::getElements() const

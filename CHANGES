@@ -1,5 +1,6 @@
 Changes for 0.2.0
 
+* Fixed issue #26: Create `selection.filename.extension` automatic value.
 
 
 Changes for 0.1.0

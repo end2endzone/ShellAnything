@@ -571,14 +571,14 @@ The application also provides a list of dynamic properties. The values of these 
 
 The following table defines the list of dynamic properties adn their utility:
 
-| Property                  | Description                                                              |
-|---------------------------|--------------------------------------------------------------------------|
-| selection.path            | Matches the full path of the clicked element.                            |
-| selection.filename        | Matches the filename  of the clicked element.                            |
-| selection.filename.noext  | Matches the filename  of the clicked element without the file extension. |
-| selection.parent.path     | Matches the full path of the parent  element.                            |
-| selection.parent.filename | Matches the filename  of the parent  element.                            |
-
+| Property                     | Description                                                              |
+|------------------------------|--------------------------------------------------------------------------|
+| selection.path               | Matches the full path of the clicked element.                            |
+| selection.filename           | Matches the filename  of the clicked element.                            |
+| selection.filename.noext     | Matches the filename  of the clicked element without the file extension. |
+| selection.parent.path        | Matches the full path of the parent  element.                            |
+| selection.parent.filename    | Matches the filename  of the parent  element.                            |
+| selection.filename.extension | Matches the file extension of the clicked element.                       |
 
 
 
