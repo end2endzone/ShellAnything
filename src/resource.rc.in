@@ -1,1 +1,1 @@
-appicon  ICON  "@CMAKE_SOURCE_DIR@/resources/icons/main.ico"
+appicon  ICON  "@CMAKE_SOURCE_DIR@/resources/icons/0.2.0.ico"
