@@ -23,7 +23,7 @@
     </menu>
 
     <menu name="menu03">
-      <visibility exists="C:\Users\Public|C:\Program Files (x86)" />
+      <visibility exists="C:\Users\Public;C:\Program Files (x86)" />
       <actions>
         <property name="baz" value="true" />
       </actions>

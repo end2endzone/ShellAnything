@@ -121,7 +121,7 @@ namespace shellanything { namespace test
     //assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
     static const std::string expected_file_extension = "com;exe;bat;cmd";
-    static const std::string expected_file_exists = "C:\\Users\\Public|C:\\Program Files (x86)";
+    static const std::string expected_file_exists = "C:\\Users\\Public;C:\\Program Files (x86)";
 
     ASSERT_EQ( expected_property,       menus[00]->getVisibility().getProperties() );
     ASSERT_EQ( 5,                       menus[01]->getVisibility().getMaxFiles() );

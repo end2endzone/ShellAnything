@@ -1,5 +1,6 @@
 Changes for 0.2.0
 
+* Fixed issue #22: Use the same character for separating value in configuration files.
 * Fixed issue #25: Missing 'Folder' registry key when registering the shell extension.
 * Fixed issue #26: Create `selection.filename.extension` automatic value.
 * Fixed issue #28: Unregister the shell extension for DragDropHandlers.

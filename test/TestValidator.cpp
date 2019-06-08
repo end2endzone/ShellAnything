@@ -229,11 +229,11 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.validate(c) );
  
     //assert success if multiple element is specified
-    v.setFileExists(file_path + "|" + dir_path);
+    v.setFileExists(file_path + ";" + dir_path);
     ASSERT_TRUE( v.validate(c) );
  
     //assert failure if the last element is not found
-    v.setFileExists(file_path + "|" + dir_path + "|foo");
+    v.setFileExists(file_path + ";" + dir_path + ";foo");
     ASSERT_FALSE( v.validate(c) );
   }
   //--------------------------------------------------------------------------------------------------

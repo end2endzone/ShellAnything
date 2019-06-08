@@ -188,7 +188,7 @@ namespace shellanything
     if (!file_exists.empty())
     {
       //split
-      ra::strings::StringVector mandatory_files = ra::strings::split(file_exists, "|");
+      ra::strings::StringVector mandatory_files = ra::strings::split(file_exists, ";");
 
       //for each file
       for(size_t i=0; i<mandatory_files.size(); i++)

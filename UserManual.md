@@ -241,7 +241,7 @@ For example, the following set a menu visible only when the user right-click on 
 
 The `exists` attribute validates a menu if the specified file exists.
 
-If `exists` attribute is set, the application will search for the file. If the file exists on the system, the validation is successful. To specify multiple files, one must separate each extensions with the `|` character. If multiple files are specified, **all files** must exists on the system for the validation to be successful.
+If `exists` attribute is set, the application will search for the file. If the file exists on the system, the validation is successful. To specify multiple files, one must separate each extensions with the `;` character. If multiple files are specified, **all files** must exists on the system for the validation to be successful.
 
 If `exists` attribute is not specified, then the validation is successful.
 
