@@ -31,6 +31,13 @@ namespace shellanything
 {
 
   /// <summary>
+  /// Parse the given string as a boolean value.
+  /// </summary>
+  /// <param name="str">The input string which contains a boolean string representation.</param>
+  /// <returns>Returns true when the given string is logically 'true'. Returns false otherwise.</returns>
+  bool parseBoolean(const std::string & value);
+
+  /// <summary>
   /// Expand a file path by replacing environment variable reference by the actual variable's value.
   /// Unix    environment variables syntax must in the following form:  $name where  'name' is an environment variable.
   /// Windows environment variables syntax must in the following form:  %name% where 'name' is an environment variable.

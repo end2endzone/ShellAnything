@@ -23,6 +23,7 @@
 #include "rapidassist/process.h"
 
 #include "shellanything/ConfigManager.h"
+#include "version.h"
 #include "PropertyManager.h"
 
 #include <assert.h>
@@ -92,6 +93,50 @@ std::string GuidToInterfaceName(GUID guid)
   //unknown GUID, return the string representation:
   //ie: CLSID_UNDOCUMENTED_01, {924502A7-CC8E-4F60-AE1F-F70C0A2B7A7C}
   return GuidToString(guid);
+}
+
+/// <summary>
+/// Returns true if the application is run for the first time.
+/// Note, for Windows users, the implementation is based on registry keys in HKEY_CURRENT_USER\Software\name\version.
+/// </summary>
+/// <param name="name">The name of the application.</param>
+/// <param name="version">The version of the application.</param>
+/// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
+bool isFirstApplicationRun(const std::string & name, const std::string & version)
+{
+  std::string key = ra::strings::format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
+  if (!win32_registry::createKey(key.c_str(), NULL))
+  {
+    // unable to get to the application's key.
+    // assume it is not the first run.
+    return false;  
+  }
+ 
+  static const char * FIRST_RUN_VALUE_NAME = "first_run";
+ 
+  // try to read the value
+  win32_registry::MemoryBuffer value;
+  win32_registry::REGISTRY_TYPE value_type;
+  if (!win32_registry::getValue(key.c_str(), FIRST_RUN_VALUE_NAME, value_type, value))
+  {
+    // the registry value is not found.
+    // assume the application is run for the first time.
+ 
+    // update the flag to "false" for the next call
+    win32_registry::setValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+ 
+    return true;
+  }
+
+  bool first_run = shellanything::parseBoolean(value);
+ 
+  if (first_run)
+  {
+    //update the flag to "false"
+    win32_registry::setValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+  }
+ 
+  return first_run;
 }
 
 template <class T> class FlagDescriptor
@@ -1184,6 +1229,40 @@ STDAPI DllUnregisterServer(void)
   return S_OK;
 }
 
+void InstallDefaultConfigurations(const std::string & config_dir)
+{
+  std::string app_path = GetCurrentModulePath();
+  std::string app_dir = ra::filesystem::getParentPath(app_path);
+
+  static const char * default_files[] = {
+    "default.xml",
+    "Microsoft Office 2003.xml",
+    "Microsoft Office 2007.xml",
+    "Microsoft Office 2010.xml",
+    "Microsoft Office 2013.xml",
+    "Microsoft Office 2016.xml",
+    "shellanything.xml",
+    "WinDirStat.xml",
+  };
+  static const size_t num_files = sizeof(default_files)/sizeof(default_files[0]);
+
+  LOG(INFO) << "First application launch. Installing default configurations files.";
+
+  for(size_t i=0; i<num_files; i++)
+  {
+    const char * filename = default_files[i];
+    std::string source_path = app_dir    + "\\test_files\\" + filename;
+    std::string target_path = config_dir + "\\" + filename;
+
+    LOG(INFO) << "Installing configuration file: " << target_path;
+    bool installed = shellanything::copyFile(source_path, target_path);
+    if (!installed)
+    {
+      LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
+    }
+  }
+}
+
 void LogEnvironment()
 {
   LOG(INFO) << "Enabling logging";
@@ -1202,11 +1281,20 @@ void InitConfigManager()
 {
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
 
+  static const std::string app_name = "ShellAnything";
+  static const std::string app_version = SHELLANYTHING_VERSION;
+
   //get home directory of the user
   std::string home_dir = shellanything::getHomeDirectory();
-  std::string config_dir = home_dir + "\\ShellAnything";
+  std::string config_dir = home_dir + "\\" + app_name;
   LOG(INFO) << "HOME   directory : " << home_dir.c_str();
   LOG(INFO) << "Config directory : " << config_dir.c_str();
+
+  bool first_run = isFirstApplicationRun(app_name, app_version);
+  if (first_run)
+  {
+    InstallDefaultConfigurations(config_dir);
+  }
 
   //setup ConfigManager to read files from config_dir
   cmgr.clearSearchPath();

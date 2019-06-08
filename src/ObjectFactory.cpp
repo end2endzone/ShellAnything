@@ -36,6 +36,8 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
 
+#include "Platform.h"
+
 using namespace tinyxml2;
 
 namespace shellanything
@@ -340,19 +342,6 @@ namespace shellanything
     return NULL;
   }
 
-  bool parseBoolean(const std::string & value)
-  {
-    if (value == "1")
-      return true;
-    else if (ra::strings::uppercase(value) == "TRUE")
-      return true;
-    else if (ra::strings::uppercase(value) == "YES")
-      return true;
-    else if (ra::strings::uppercase(value) == "ON")
-      return true;
-    return false;
-  }
-
   Menu * ObjectFactory::parseMenu(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
@@ -377,7 +366,7 @@ namespace shellanything
     bool is_separator = false;
     if (have_separetor)
     {
-      is_separator = parseBoolean(menu_separator);
+      is_separator = shellanything::parseBoolean(menu_separator);
       if (is_separator)
       {
         menu->setSeparator(true);

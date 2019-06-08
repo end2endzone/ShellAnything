@@ -44,6 +44,19 @@
 namespace shellanything
 {
 
+  bool parseBoolean(const std::string & value)
+  {
+    if (value == "1")
+      return true;
+    else if (ra::strings::uppercase(value) == "TRUE")
+      return true;
+    else if (ra::strings::uppercase(value) == "YES")
+      return true;
+    else if (ra::strings::uppercase(value) == "ON")
+      return true;
+    return false;
+  }
+
   std::string expand(const std::string & iValue)
   {
     std::string output = iValue;
