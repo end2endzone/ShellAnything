@@ -1094,6 +1094,13 @@ STDAPI DllRegisterServer(void)
       return E_ACCESSDENIED;
   }
 
+  // Register the shell extension for folders
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
   // Register the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
@@ -1152,6 +1159,13 @@ STDAPI DllUnregisterServer(void)
   // Unregister the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for folders
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
