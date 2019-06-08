@@ -174,19 +174,20 @@ namespace win32_registry
       {
         //Read value's size and type
         DWORD valueType = 0;
-        DWORD valueSize = 0;
+        DWORD valueSize = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
         RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, NULL, &valueSize);
 
+        DWORD length = valueSize - 1;
+
         //allocate space for value
-        if (valueSize > 0 && oValue.assign(valueSize, 0).size())
+        if (valueSize > 0 && oValue.assign(length, 0).size())
         {
           //Read the actual data of the value
           valueType = 0;
-          valueSize = (DWORD)oValue.size();
           RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, (LPBYTE)oValue.c_str(), &valueSize);
           
           oType = convertType(valueType);
-          success = (valueSize == oValue.size());
+          success = (length == oValue.size());
         }
 
         RegCloseKey(keyHandle);
