@@ -49,10 +49,16 @@ environment:
   PlatformToolset: v140
   
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
-platform: Win32
+platform:
+  - Win32
+  - x64
 
 # build Configuration, i.e. Debug, Release, etc.
-configuration: Release
+configuration:
+  - Release
+
+matrix:
+  fast_finish: true
 
 before_build:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_googletest.bat
@@ -77,8 +83,9 @@ test_script:
 #      artifacts configuration    #
 #---------------------------------#
 
+# ShellAnything-0.1.0-win32.exe
+# ShellAnything-0.1.0-win64.zip
+
 artifacts:
-- path: .\build\bin\Release\shellanything_unittest.x86.release.xml
-  name: shellanything_unittest.x86.release.xml
-- path: .\build\shellanything-*-win32.exe
-  name: shellanything-win32.exe
+- path: .\build\bin\Release\shellanything_unittest.*.release.xml
+- path: .\build\shellanything-*-win*.*
