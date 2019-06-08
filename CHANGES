@@ -1,6 +1,7 @@
 Changes for 0.2.0
 
 * Fixed issue #26: Create `selection.filename.extension` automatic value.
+* Fixed issue #28: Unregister the shell extension for DragDropHandlers.
 
 
 Changes for 0.1.0
