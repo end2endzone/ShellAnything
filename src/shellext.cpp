@@ -230,8 +230,9 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   const shellanything::Icon & icon = menu->getIcon();
   if (!menu_separator && icon.isValid())
   {
-    const std::string & icon_filename = icon.getPath();
-    const int & icon_index = icon.getIndex();
+    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+    const std::string icon_filename = pmgr.expand(icon.getPath());
+    const int & icon_index          = icon.getIndex();
 
     //ask the cache for an existing icon.
     //this will identify the icon in the cache as "used" or "active".

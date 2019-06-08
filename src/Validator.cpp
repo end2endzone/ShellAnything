@@ -143,15 +143,16 @@ namespace shellanything
 
     //validate properties
     PropertyManager & pmgr = PropertyManager::getInstance();
-    if (!mProperties.empty())
+    const std::string properties = pmgr.expand(mProperties);
+    if (!properties.empty())
     {
       //split
-      ra::strings::StringVector properties = ra::strings::split(mProperties, ";");
+      ra::strings::StringVector property_list = ra::strings::split(properties, ";");
 
       //each property specified must exists and be non-empty
-      for(size_t i=0; i<properties.size(); i++)
+      for(size_t i=0; i<property_list.size(); i++)
       {
-        const std::string & p = properties[i];
+        const std::string & p = property_list[i];
         if (!pmgr.hasProperty(p))
           return false; //missing property
         const std::string & p_value = pmgr.getProperty(p);
@@ -161,10 +162,11 @@ namespace shellanything
     }
 
     //validate file extentions
-    if (!mFileExtensions.empty())
+    const std::string file_extensions = pmgr.expand(mFileExtensions);
+    if (!file_extensions.empty())
     {
       //split
-      ra::strings::StringVector accepted_file_extensions = ra::strings::split(mFileExtensions, ";");
+      ra::strings::StringVector accepted_file_extensions = ra::strings::split(file_extensions, ";");
       uppercase(accepted_file_extensions);
 
       //for each file selected
@@ -182,10 +184,11 @@ namespace shellanything
     }
 
     //validate file/directory exists
-    if (!mFileExists.empty())
+    const std::string file_exists = pmgr.expand(mFileExists);
+    if (!file_exists.empty())
     {
       //split
-      ra::strings::StringVector mandatory_files = ra::strings::split(mFileExists, "|");
+      ra::strings::StringVector mandatory_files = ra::strings::split(file_exists, "|");
 
       //for each file
       for(size_t i=0; i<mandatory_files.size(); i++)

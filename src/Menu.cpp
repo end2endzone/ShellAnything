@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/Menu.h"
+#include "PropertyManager.h"
 #include "win32_registry.h"
 
 #include <glog/logging.h>
@@ -130,7 +131,10 @@ namespace shellanything
   void Menu::resolveFileExtensionIcons()
   {
     //resolve current menu
-    const std::string & file_extension = mIcon.getFileExtension();
+
+    //is this menu have a file extension ?
+    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+    std::string file_extension       = pmgr.expand(mIcon.getFileExtension());
     if (!file_extension.empty())
     {
       //try to find the path to the icon module for the given file extension.
