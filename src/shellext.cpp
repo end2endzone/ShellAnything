@@ -741,7 +741,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   }
 
   // User clicked on one or more file or directory
-  if (pDataObj)
+  else if (pDataObj)
   {
     LOG(INFO) << "User right-clicked on selected files/directories.";
 
