@@ -76,10 +76,12 @@ add_library(shellext SHARED
   shellext.def
   utf_strings.cpp
   utf_strings.h
-  win32_utils.cpp
-  win32_utils.h
   win32_registry.cpp
   win32_registry.h
+  win32_shell.cpp
+  win32_shell.h
+  win32_utils.cpp
+  win32_utils.h
 )
 
 # Unit test projects requires to link with pthread if also linking with gtest
