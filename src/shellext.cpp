@@ -14,7 +14,6 @@
 #include "shellext.h"
 #include "win32_registry.h"
 #include "win32_utils.h"
-#include "win32_shell.h"
 #include "glog_utils.h"
 #include "utf_strings.h"
 
@@ -70,6 +69,30 @@ std::string GetCurrentModulePath()
     path = buffer;
   }
   return path;
+}
+
+std::string GuidToString(GUID guid)
+{
+  std::string output;
+  output.assign(40, 0);
+  sprintf_s((char*)output.c_str(), output.size(), "{%08X-%04hX-%04hX-%02X%02X-%02X%02X%02X%02X%02X%02X}", guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+  return output;
+}
+
+std::string GuidToInterfaceName(GUID guid)
+{
+  if (IsEqualGUID(guid, IID_IUnknown))                  return "IUnknown";                  //{00000000-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IClassFactory))             return "IClassFactory";             //{00000001-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IShellExtInit))             return "IShellExtInit";             //{000214E8-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu))              return "IContextMenu";              //{000214E4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu2))             return "IContextMenu2";             //{000214F4-0000-0000-C000-000000000046}
+  if (IsEqualGUID(guid, IID_IContextMenu3))             return "IContextMenu3";             //{BCFCE0A0-EC17-11D0-8D10-00A0C90F2719}
+  if (IsEqualGUID(guid, IID_IObjectWithSite))           return "IObjectWithSite";           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+  if (IsEqualGUID(guid, IID_IInternetSecurityManager))  return "IInternetSecurityManager";  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+
+  //unknown GUID, return the string representation:
+  //ie: CLSID_UNDOCUMENTED_01, {924502A7-CC8E-4F60-AE1F-F70C0A2B7A7C}
+  return GuidToString(guid);
 }
 
 /// <summary>
@@ -777,7 +800,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << win32_shell::GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
 
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
   if (  IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
@@ -813,12 +836,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR *
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << win32_shell::GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << win32_shell::GuidToInterfaceName(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -869,7 +892,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR 
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << win32_shell::GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -890,12 +913,12 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR 
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << win32_shell::GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << win32_shell::GuidToInterfaceName(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
   return E_NOINTERFACE;
 }
 
@@ -925,7 +948,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << win32_shell::GuidToInterfaceName(riid).c_str();
+  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToInterfaceName(riid).c_str();
 
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
@@ -951,7 +974,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << win32_shell::GuidToInterfaceName(rclsid).c_str() << ", riid=" << win32_shell::GuidToInterfaceName(riid).c_str() << "";
+  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToInterfaceName(rclsid).c_str() << ", riid=" << GuidToInterfaceName(riid).c_str() << "";
 
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, SHELLANYTHING_SHELLEXTENSION_CLSID))
@@ -961,14 +984,14 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
     {
-      LOG(ERROR) << __FUNCTION__ << "(), Interface " << win32_shell::GuidToInterfaceName(riid).c_str() << " not found!";
+      LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToInterfaceName(riid).c_str() << " not found!";
       delete pcf;
       pcf = NULL;
     }
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << win32_shell::GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
     return hr;
   }
-  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << win32_shell::GuidToInterfaceName(rclsid).c_str() << " not found!";
+  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << GuidToInterfaceName(rclsid).c_str() << " not found!";
   return CLASS_E_CLASSNOTAVAILABLE;
 }
 
@@ -991,15 +1014,204 @@ STDAPI DllCanUnloadNow(void)
 
 STDAPI DllRegisterServer(void)
 {
+  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
+  const char * guid_str = guid_str_tmp.c_str();
+  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
   const std::string module_path = GetCurrentModulePath();
-  HRESULT result = win32_shell::DllRegisterServer(SHELLANYTHING_SHELLEXTENSION_CLSID, ShellExtensionClassName, ShellExtensionDescription, module_path.c_str());
-  return result;
+
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+
+  //Register version 1 of our class
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  //Register current version of our class
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Add the CLSID of this DLL to the registry
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+
+  // Define the path and parameters of our DLL:
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
+    if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
+    if (!win32_registry::createKey(key.c_str(), ShellExtensionClassName))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
+    if (!win32_registry::createKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
+    if (!win32_registry::createKey(key.c_str(), module_path.c_str() ))
+      return E_ACCESSDENIED;
+    if (!win32_registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for all the file types
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for directories
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for folders
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for the desktop or the file explorer's background
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension for drives
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::createKey(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Register the shell extension to the system's approved Shell Extensions
+  {
+    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
+    if (!win32_registry::createKey(key.c_str()))
+      return E_ACCESSDENIED;
+    if (!win32_registry::setValue(key.c_str(), guid_str, ShellExtensionDescription))
+      return E_ACCESSDENIED;
+  }
+
+  // Notify the Shell to pick the changes:
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
+
+  return S_OK;
 }
 
 STDAPI DllUnregisterServer(void)
 {
-  HRESULT result = win32_shell::DllUnregisterServer(SHELLANYTHING_SHELLEXTENSION_CLSID, ShellExtensionClassName);
-  return result;
+  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
+  const char * guid_str = guid_str_tmp.c_str();
+  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
+
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+
+  // Unregister the shell extension from the system's approved Shell Extensions
+  {
+    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
+    if (!win32_registry::deleteValue(key.c_str(), guid_str))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for drives
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for the desktop or the file explorer's background
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for folders
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for directories
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister the shell extension for all the file types
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Remove the CLSID of this DLL from the registry
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Unregister current and version 1 of our extension
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+  {
+    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
+    if (!win32_registry::deleteKey(key.c_str()))
+      return E_ACCESSDENIED;
+  }
+
+  // Notify the Shell to pick the changes:
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
+
+  return S_OK;
 }
 
 void InstallDefaultConfigurations(const std::string & config_dir)
@@ -1042,12 +1254,12 @@ void LogEnvironment()
   LOG(INFO) << "DLL path: " << GetCurrentModulePath();
   LOG(INFO) << "EXE path: " << ra::process::getCurrentProcessPath().c_str();
 
-  LOG(INFO) << "IID_IUnknown      : " << win32_shell::GuidToString(IID_IUnknown).c_str();
-  LOG(INFO) << "IID_IClassFactory : " << win32_shell::GuidToString(IID_IClassFactory).c_str();
-  LOG(INFO) << "IID_IShellExtInit : " << win32_shell::GuidToString(IID_IShellExtInit).c_str();
-  LOG(INFO) << "IID_IContextMenu  : " << win32_shell::GuidToString(IID_IContextMenu).c_str();
-  LOG(INFO) << "IID_IContextMenu2 : " << win32_shell::GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
-  LOG(INFO) << "IID_IContextMenu3 : " << win32_shell::GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+  LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
+  LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
+  LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();
+  LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
+  LOG(INFO) << "IID_IContextMenu2 : " << GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
+  LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
 }
 
 void InitConfigManager()
