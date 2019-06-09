@@ -22,6 +22,9 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#ifndef WIN32_REGISTRY_H
+#define WIN32_REGISTRY_H
+
 #include <stdint.h>
 #include <vector>
 #include <string>
@@ -88,3 +91,5 @@ namespace win32_registry
   REGISTRY_ICON getUnknownFileTypeIcon();
 
 } //namespace win32_registry
+
+#endif //WIN32_REGISTRY_H
