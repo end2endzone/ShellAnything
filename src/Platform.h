@@ -30,6 +30,10 @@
 namespace shellanything
 {
 
+  //*********************************************************************************************************************************
+  // RapidAssist: parseBoolean() and toString(bool)
+  // https://github.com/end2endzone/RapidAssist/issues/26
+  //*********************************************************************************************************************************
   /// <summary>
   /// Parse the given string as a boolean value.
   /// </summary>
@@ -37,6 +41,10 @@ namespace shellanything
   /// <returns>Returns true when the given string is logically 'true'. Returns false otherwise.</returns>
   bool parseBoolean(const std::string & value);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::environment::expand()
+  // https://github.com/end2endzone/RapidAssist/issues/31
+  //*********************************************************************************************************************************
   /// <summary>
   /// Expand a file path by replacing environment variable reference by the actual variable's value.
   /// Unix    environment variables syntax must in the following form:  $name where  'name' is an environment variable.
@@ -46,12 +54,20 @@ namespace shellanything
   /// <returns>Returns a new string with the expanded strings.</returns>
   std::string expand(const std::string & iValue);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::environment::getEnvironmentVariables()
+  // https://github.com/end2endzone/RapidAssist/issues/23
+  //*********************************************************************************************************************************
   /// <summary>
   /// Returns a list of all environment variables defined by the current process.
   /// </summary>
   /// <returns>Returns a list of all environment variables.</returns>
   ra::strings::StringVector getEnvironmentVariables();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Get current user system directories.
+  // https://github.com/end2endzone/RapidAssist/issues/25
+  //*********************************************************************************************************************************
   /// <summary>
   /// Returns the current user 'home' directory.
   /// For unix    systems, the returned path is "~".
@@ -60,6 +76,10 @@ namespace shellanything
   /// <returns>Returns the current user's home directory.</returns>
   std::string getHomeDirectory();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Get current user system directories.
+  // https://github.com/end2endzone/RapidAssist/issues/25
+  //*********************************************************************************************************************************
   /// <summary>
   /// Returns the current user 'application data' directory.
   /// For unix    systems, the returned path is "/usr/share".
@@ -68,6 +88,10 @@ namespace shellanything
   /// <returns>Returns the current user's application data directory.</returns>
   std::string getApplicationsDataDirectory();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Get current user system directories.
+  // https://github.com/end2endzone/RapidAssist/issues/25
+  //*********************************************************************************************************************************
   /// <summary>
   /// Returns the current user 'documents' directory.
   /// For unix    systems, the returned path is "~/Documents".
@@ -76,6 +100,10 @@ namespace shellanything
   /// <returns>Returns the current user's documents directory.</returns>
   std::string getDocumentsDirectory();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Get current user system directories.
+  // https://github.com/end2endzone/RapidAssist/issues/25
+  //*********************************************************************************************************************************
   /// <summary>
   /// Returns the current user 'desktop' directory.
   /// For unix    systems, the returned path is "~/Desktop".
@@ -84,6 +112,10 @@ namespace shellanything
   /// <returns>Returns the current user's desktop directory.</returns>
   std::string getDesktopDirectory();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::readFile() and writeFile()
+  // https://github.com/end2endzone/RapidAssist/issues/15
+  //*********************************************************************************************************************************
   /// <summary>
   /// Reads the first 'size' bytes of file 'path' and copy the content to 'content' variable.
   /// </summary>
@@ -93,6 +125,10 @@ namespace shellanything
   /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool peekFile(const std::string & path, size_t size, std::string & content);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::readFile() and writeFile()
+  // https://github.com/end2endzone/RapidAssist/issues/15
+  //*********************************************************************************************************************************
   /// <summary>
   /// Reads the content of the given file path copy the content to 'content' variable.
   /// </summary>
@@ -101,6 +137,10 @@ namespace shellanything
   /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool readFile(const std::string & path, std::string & content);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::readFile() and writeFile()
+  // https://github.com/end2endzone/RapidAssist/issues/15
+  //*********************************************************************************************************************************
   /// <summary>
   /// Writes the given content to a file.
   /// </summary>
@@ -109,9 +149,16 @@ namespace shellanything
   /// <returns>Returns true when the function is successful. Returns false otherwise.</returns>
   bool writeFile(const std::string & path, std::string & content);
 
-  //https://github.com/end2endzone/RapidAssist/issues/27
+  //*********************************************************************************************************************************
+  // RapidAssist: createFolder() fails with absolute path.
+  // https://github.com/end2endzone/RapidAssist/issues/27
+  //*********************************************************************************************************************************
   bool createFolder(const char * iPath);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::copyFile().
+  // https://github.com/end2endzone/RapidAssist/issues/29
+  //*********************************************************************************************************************************
   /// <summary>
   /// copyFile() callback interface
   /// </summary>
@@ -125,12 +172,20 @@ namespace shellanything
     virtual void onProgressReport(double progress) = 0;
   };
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::copyFile().
+  // https://github.com/end2endzone/RapidAssist/issues/29
+  //*********************************************************************************************************************************
   /// <summary>
   /// CopyFile() callback function.
   /// </summary>
   /// <param name="progress">The progress of the file copy. Ranges [0, 1] inclusive.</param>
   typedef void (*ProgressReportCallback)(double);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::copyFile().
+  // https://github.com/end2endzone/RapidAssist/issues/29
+  //*********************************************************************************************************************************
   /// <summary>
   /// Copy a file to another destination.
   /// </summary>
@@ -139,6 +194,10 @@ namespace shellanything
   /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::copyFile().
+  // https://github.com/end2endzone/RapidAssist/issues/29
+  //*********************************************************************************************************************************
   /// <summary>
   /// Copy a file to another destination.
   /// </summary>
@@ -148,6 +207,10 @@ namespace shellanything
   /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path, IProgressReport * progress_functor);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::copyFile().
+  // https://github.com/end2endzone/RapidAssist/issues/29
+  //*********************************************************************************************************************************
   /// <summary>
   /// Copy a file to another destination.
   /// </summary>
@@ -157,6 +220,10 @@ namespace shellanything
   /// <returns>Returns true if file copy is successful. Returns false otherwise.</returns>
   bool copyFile(const std::string & source_path, const std::string & destination_path, ProgressReportCallback progress_function);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::getFilenameWithoutExtension().
+  // https://github.com/end2endzone/RapidAssist/issues/22
+  //*********************************************************************************************************************************
   /// <summary>
   /// Get the file name of a path without the extension.
   /// </summary>
@@ -164,8 +231,22 @@ namespace shellanything
   /// <returns>Returns the file name without the extension.</returns>
   std::string getFilenameWithoutExtension(const char * iPath);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::filesystem::makeRelativePath().
+  // https://github.com/end2endzone/RapidAssist/issues/28
+  //*********************************************************************************************************************************
+  /// <summary>
+  /// Convert an absolute path to a relative path based on the given path.
+  /// </summary>
+  /// <param name="base_path">The base path from which the relate path is constructed.</param>
+  /// <param name="test_path">The full path that must be converted.</param>
+  /// <returns>Returns a relative path from 'base_path' to 'test_path'. Returns an empty string on failure.</returns>
   std::string makeRelativePath(const std::string & base_path, const std::string & test_path);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::process::startProcess.
+  // https://github.com/end2endzone/RapidAssist/issues/33
+  //*********************************************************************************************************************************
   /// <summary>
   /// Start the given process from the given directory.
   /// </summary>
@@ -174,6 +255,10 @@ namespace shellanything
   /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t startProcess(const std::string & iCommand, const std::string & iDefaultDirectory);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::process::startProcess.
+  // https://github.com/end2endzone/RapidAssist/issues/33
+  //*********************************************************************************************************************************
   /// <summary>
   /// Start the given process with the given arguments from the given directory.
   /// </summary>
@@ -183,6 +268,10 @@ namespace shellanything
   /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t startProcess(const std::string & iExecPath, const std::string & iArguments, const std::string & iDefaultDirectory);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: ra::process::startProcess.
+  // https://github.com/end2endzone/RapidAssist/issues/33
+  //*********************************************************************************************************************************
   /// <summary>
   /// Open a document with the default system application.
   /// </summary>
@@ -190,12 +279,20 @@ namespace shellanything
   /// <returns>Returns the process id when successful. Returns 0 otherwise.</returns>
   uint32_t openDocument(const std::string & iPath);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Create `errors` namespace.
+  // https://github.com/end2endzone/RapidAssist/issues/18
+  //*********************************************************************************************************************************
   /// <summary>
   /// Get the latest system error code.
   /// </summary>
   /// <returns>Returns the latest system error code.</returns>
   uint32_t GetSystemErrorCode();
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Create `errors` namespace.
+  // https://github.com/end2endzone/RapidAssist/issues/18
+  //*********************************************************************************************************************************
   /// <summary>
   /// Get a system error description from the given error code.
   /// </summary>
@@ -203,6 +300,10 @@ namespace shellanything
   /// <returns>Returns the system error description from the given error code.</returns>
   std::string GetSystemErrorDescription(uint32_t dwError);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: Create `errors` namespace.
+  // https://github.com/end2endzone/RapidAssist/issues/18
+  //*********************************************************************************************************************************
   /// <summary>
   /// Show an error message to the user.
   /// </summary>
@@ -210,6 +311,10 @@ namespace shellanything
   /// <param name="message">The message to display to the user.</param>
   void ShowErrorMessage(const std::string & title, const std::string & message);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: where() or which() function.
+  // https://github.com/end2endzone/RapidAssist/issues/19
+  //*********************************************************************************************************************************
   /// <summary>
   /// Finds a file using the PATH environment variable.
   /// </summary>
@@ -218,6 +323,10 @@ namespace shellanything
   /// <returns>Returns true if the filename was found at least once. Returns false otherwise.</returns>
   bool findFileFromPaths(const std::string & filename, ra::strings::StringVector & locations);
 
+  //*********************************************************************************************************************************
+  // RapidAssist: where() or which() function.
+  // https://github.com/end2endzone/RapidAssist/issues/19
+  //*********************************************************************************************************************************
   /// <summary>
   /// Finds a file using the PATH environment variable.
   /// </summary>
