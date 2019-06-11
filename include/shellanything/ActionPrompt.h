@@ -40,6 +40,12 @@ namespace shellanything
     virtual ~ActionPrompt();
 
     /// <summary>
+    /// Returns true if the ActionPrompt is configued as a Yes/No question.
+    /// </summary>
+    /// <returns>Returns true if the ActionPrompt is configued as a Yes/No question. Returns false otherwise.</returns>
+    virtual bool isYesNoQuestion() const;
+
+    /// <summary>
     /// Prompts the user for a value.
     /// </summary>
     /// <param name="iContext">The current context of execution.</param>
@@ -55,6 +61,16 @@ namespace shellanything
     /// Setter for the 'name' parameter.
     /// </summary>
     void setName(const std::string & iName);
+
+    /// <summary>
+    /// Getter for the 'type' parameter.
+    /// </summary>
+    const std::string & getType() const;
+
+    /// <summary>
+    /// Setter for the 'type' parameter.
+    /// </summary>
+    void setType(const std::string & iType);
 
     /// <summary>
     /// Getter for the 'title' parameter.
@@ -76,10 +92,33 @@ namespace shellanything
     /// </summary>
     void setDefault(const std::string & iDefault);
 
+    /// <summary>
+    /// Getter for the 'valueyes' parameter.
+    /// </summary>
+    const std::string & getValueYes() const;
+
+    /// <summary>
+    /// Setter for the 'valueyes' parameter.
+    /// </summary>
+    void setValueYes(const std::string & iValueYes);
+
+    /// <summary>
+    /// Getter for the 'valueno' parameter.
+    /// </summary>
+    const std::string & getValueNo() const;
+
+    /// <summary>
+    /// Setter for the 'valueno' parameter.
+    /// </summary>
+    void setValueNo(const std::string & iValueNo);
+
   private:
+    std::string mType;
     std::string mName;
     std::string mTitle;
     std::string mDefault;
+    std::string mValueYes;
+    std::string mValueNo;
   };
 
 } //namespace shellanything

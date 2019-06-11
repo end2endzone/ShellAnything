@@ -25,6 +25,7 @@
 #include "shellanything/ActionPrompt.h"
 #include "PropertyManager.h"
 #include "InputBox.h"
+#include "rapidassist/strings.h"
 
 #include <glog/logging.h>
 
@@ -39,31 +40,73 @@ namespace shellanything
   {
   }
 
+  bool ActionPrompt::isYesNoQuestion() const
+  {
+    bool yes_no_question = (!mType.empty() && ra::strings::uppercase(mType) == "YESNO");
+    return yes_no_question;
+  }
+
   bool ActionPrompt::execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string name = pmgr.expand(mName);
-    std::string title = pmgr.expand(mTitle);
+    const std::string name = pmgr.expand(mName);
+    const std::string title = pmgr.expand(mTitle);
+    const std::string & type = mType;
+
+    static const char * caption = "Question / Prompt";
+    static const HWND parent_window = NULL;
+
+    std::string answer; //the text result of the prompt
 
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
-    CInputBox box(NULL);
-    box.setTextAnsi(mDefault);
-    bool result = box.DoModal("Question / Prompt", title);
-    if (!result)
+    if (isYesNoQuestion())
     {
-      LOG(INFO) << "Prompt: user has cancelled the action.";
-      return false;
+      int result = MessageBox(parent_window, title.c_str(), caption, MB_YESNOCANCEL | MB_ICONQUESTION);
+      switch(result)
+      {
+      case IDYES:
+        answer = mValueYes;
+        break;
+      case IDNO:
+        answer = mValueNo;
+        break;
+      default:
+      case IDCANCEL:
+        LOG(INFO) << "Prompt: user has cancelled the action.";
+        return false;
+      };
+    }
+    else
+    {
+      CInputBox box(parent_window);
+      box.setTextAnsi(mDefault);
+      bool result = box.DoModal(caption, title);
+      if (!result)
+      {
+        LOG(INFO) << "Prompt: user has cancelled the action.";
+        return false;
+      }
+
+      answer = box.getTextAnsi();
     }
 
-    const std::string value = box.getTextAnsi();
-
-    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << value << "'";
-
-    pmgr.setProperty(name, value);
+    //update the property
+    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'";
+    pmgr.setProperty(name, answer);
 
     return true;
+  }
+
+  const std::string & ActionPrompt::getType() const
+  {
+    return mType;
+  }
+
+  void ActionPrompt::setType(const std::string & iType)
+  {
+    mType = iType;
   }
 
   const std::string & ActionPrompt::getName() const
@@ -94,6 +137,26 @@ namespace shellanything
   void ActionPrompt::setDefault(const std::string & iDefault)
   {
     mDefault = iDefault;
+  }
+
+  const std::string & ActionPrompt::getValueYes() const
+  {
+    return mValueYes;
+  }
+
+  void ActionPrompt::setValueYes(const std::string & iValueYes)
+  {
+    mValueYes = iValueYes;
+  }
+
+  const std::string & ActionPrompt::getValueNo() const
+  {
+    return mValueNo;
+  }
+
+  void ActionPrompt::setValueNo(const std::string & iValueNo)
+  {
+    mValueNo = iValueNo;
   }
 
 } //namespace shellanything

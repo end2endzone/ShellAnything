@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestDemoSamples.h"
+#include "PropertyManager.h"
 #include "shellanything/ActionPrompt.h"
 
 namespace shellanything { namespace test
@@ -30,24 +31,48 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestDemoSamples::SetUp()
   {
+    PropertyManager & pmgr = PropertyManager::getInstance();
+    pmgr.clear();
   }
   //--------------------------------------------------------------------------------------------------
   void TestDemoSamples::TearDown()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestDemoSamples, DISABLED_demoActionPrompt)
+  TEST_F(TestDemoSamples, DISABLED_demoActionPromptQuestion)
   {
-
     ActionPrompt prompt;
     prompt.setName("myproperty");
     prompt.setTitle("What is your name?");
+    prompt.setDefault("John Smith");
+
+    Context c;
+
+    bool result = prompt.execute(c);
+    
+    ASSERT_TRUE(result);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestDemoSamples, DISABLED_demoActionPromptYesNo)
+  {
+
+    ActionPrompt prompt;
+    prompt.setType("yesno");
+    prompt.setValueYes("yes");
+    prompt.setValueNo("no");
+    prompt.setName("myproperty");
+    prompt.setTitle("Are you afraid of the dark?");
     
     Context c;
 
     bool result = prompt.execute(c);
     
     ASSERT_TRUE(result);
+
+    //assert user have answered "yes"
+    PropertyManager & pmgr = PropertyManager::getInstance();
+    std::string myproperty = pmgr.getProperty("myproperty");
+    ASSERT_TRUE(myproperty == prompt.getValueYes() || myproperty == prompt.getValueNo());
   }
   //--------------------------------------------------------------------------------------------------
 

@@ -20,6 +20,13 @@
         <prompt name="foo" title="âne, cheval, école." />
       </actions>
     </menu>
- 
+
+    <menu name="menu03">
+      <actions>
+        <!--test yesno question-->
+        <prompt type="yesno" name="verbosemode" title="Enable verbose output mode?" valueyes="/verbose" valueno="/normal" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

@@ -341,7 +341,7 @@ For example, the following launch the Windows Calculator:
 
 #### arguments attribute: ####
 
-The `arguments` attribute defines the launching command line parameters sent to the application specified in the `path` attribute.
+The `arguments` attribute defines the launching command line parameters sent to the application specified in the `path` attribute. The attribute is optional.
 
 For example, the following launche `notepad.exe` and open the `License.txt` document :
 ```xml
@@ -352,7 +352,7 @@ For example, the following launche `notepad.exe` and open the `License.txt` docu
 
 #### basedir attribute: ####
 
-The `basedir` attribute defines the directory to use as `current directory` when launching the application specified in the `path` attribute.
+The `basedir` attribute defines the directory to use as `current directory` when launching the application specified in the `path` attribute. The attribute is optional.
 
 For example, the following launche `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
 ```xml
@@ -431,11 +431,51 @@ For example, the following sets the property `myprogram.user.fullname' with the 
 
 #### default attribute: ####
 
-The `default` attribute defines the default value of the answer.
+The `default` attribute defines the default value of the answer. The attribute is optional.
 
 For example, the following sets the value `John Smith` as default value to the question `What is your name?` :
 ```xml
 <prompt name="myprogram.user.fullname" title="What is your name?" default="John Smith" />
+```
+
+
+
+#### type attribute: ####
+
+The `type` attribute defines the type of the prompt. The attribute is optional.
+
+The following table shows the attribute supported values:
+
+| Values | Description                                                                  |
+|--------|------------------------------------------------------------------------------|
+| empty  | The prompt ask for a question and expect a text answer.                      |
+| yesno  | The prompt ask for a question and expect a &lt;yes&gt; or &lt;no&gt; answer. |
+
+For example, the following ask the question `Enable verbose output?` and sets `verbose` property to `/verbose` or `/normal` based on the the user response:
+```xml
+<prompt type="yesno" name="verbose" title="Enable verbose output mode?" valueyes="/verbose" valueno="/normal" />
+```
+
+
+
+#### valueyes attribute: ####
+
+The `valueyes` attribute defines the value of the property when the user select "yes" as the answer. The attribute is optional and only valid if `type` attribute is set to `yesno`.
+
+For example, the following sets `verbose` property to `/verbose` when if the user response is "yes":
+```xml
+<prompt type="yesno" name="verbose" title="Enable verbose output mode?" valueyes="/verbose" valueno="/normal" />
+```
+
+
+
+#### valueno attribute: ####
+
+The `valueno` attribute defines the value of the property when the user select "no" as the answer. The attribute is optional and only valid if `type` attribute is set to `yesno`.
+
+For example, the following sets `verbose` property to `/normal` when if the user response is "no":
+```xml
+<prompt type="yesno" name="verbose" title="Enable verbose output mode?" valueyes="/verbose" valueno="/normal" />
 ```
 
 

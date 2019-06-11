@@ -222,16 +222,18 @@ namespace shellanything { namespace test
 
     //ASSERT a 3 menus are available
     Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
-    ASSERT_EQ( 3, menus.size() );
+    ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a prompt element as the first action
     ActionPrompt * prompt00 = getFirstActionPrompt(menus[00]);
     ActionPrompt * prompt01 = getFirstActionPrompt(menus[01]);
     ActionPrompt * prompt02 = getFirstActionPrompt(menus[02]);
+    ActionPrompt * prompt03 = getFirstActionPrompt(menus[03]);
 
     ASSERT_TRUE( prompt00 != NULL );
     ASSERT_TRUE( prompt01 != NULL );
     ASSERT_TRUE( prompt02 != NULL );
+    ASSERT_TRUE( prompt03 != NULL );
 
     //assert menu #0 have no default values
     static const std::string EMPTY_STRING;
@@ -241,6 +243,18 @@ namespace shellanything { namespace test
     //assert menu #1 have a default value
     std::string prompt01_default = prompt01->getDefault();
     ASSERT_EQ( std::string("42"), prompt01_default);
+
+    //assert menu #3 is a yesno question
+    ASSERT_FALSE( prompt00->isYesNoQuestion() );
+    ASSERT_FALSE( prompt01->isYesNoQuestion() );
+    ASSERT_FALSE( prompt02->isYesNoQuestion() );
+    ASSERT_TRUE ( prompt03->isYesNoQuestion() );
+
+    //assert menu #3 have a "yes" and a "no" values defined
+    ASSERT_TRUE ( prompt00->getValueYes().empty() );
+    ASSERT_TRUE ( prompt00->getValueNo ().empty() );
+    ASSERT_FALSE( prompt03->getValueYes().empty() );
+    ASSERT_FALSE( prompt03->getValueNo ().empty() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

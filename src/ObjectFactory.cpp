@@ -291,6 +291,30 @@ namespace shellanything
         action->setDefault(tmp_str);
       }
 
+      //parse type
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "type", true, true, tmp_str, error))
+      {
+        action->setType(tmp_str);
+      }
+
+      //parse valueyes
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "valueyes", true, true, tmp_str, error))
+      {
+        action->setValueYes(tmp_str);
+      }
+
+      //parse valueno
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "valueno", true, true, tmp_str, error))
+      {
+        action->setValueNo(tmp_str);
+      }
+
       //done parsing
       return action;
     }
