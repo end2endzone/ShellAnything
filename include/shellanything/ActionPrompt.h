@@ -46,6 +46,12 @@ namespace shellanything
     virtual bool isYesNoQuestion() const;
 
     /// <summary>
+    /// Returns true if the ActionPrompt is configued as a OK only question.
+    /// </summary>
+    /// <returns>Returns true if the ActionPrompt is configued as a OK question. Returns false otherwise.</returns>
+    virtual bool isOkQuestion() const;
+
+    /// <summary>
     /// Prompts the user for a value.
     /// </summary>
     /// <param name="iContext">The current context of execution.</param>

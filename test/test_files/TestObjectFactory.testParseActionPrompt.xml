@@ -28,5 +28,12 @@
       </actions>
     </menu>
 
+    <menu name="menu04">
+      <actions>
+        <!--test ok message-->
+        <prompt type="ok" name="myproperty" title="Wait for the system to load and press OK button." />
+      </actions>
+    </menu>
+
   </shell>
 </root>

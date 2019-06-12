@@ -46,6 +46,12 @@ namespace shellanything
     return yes_no_question;
   }
 
+  bool ActionPrompt::isOkQuestion() const
+  {
+    bool ok_question = (!mType.empty() && ra::strings::uppercase(mType) == "OK");
+    return ok_question;
+  }
+
   bool ActionPrompt::execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
@@ -61,7 +67,16 @@ namespace shellanything
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
-    if (isYesNoQuestion())
+    if (isOkQuestion())
+    {
+      int result = MessageBox(parent_window, title.c_str(), caption, MB_OK | MB_ICONINFORMATION);
+      if (result == IDCANCEL)
+      {
+        LOG(INFO) << "Prompt: user has cancelled the action.";
+        return false;
+      }
+    }
+    else if (isYesNoQuestion())
     {
       int result = MessageBox(parent_window, title.c_str(), caption, MB_YESNOCANCEL | MB_ICONQUESTION);
       switch(result)

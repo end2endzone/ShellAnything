@@ -75,6 +75,28 @@ namespace shellanything { namespace test
     ASSERT_TRUE(myproperty == prompt.getValueYes() || myproperty == prompt.getValueNo());
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestDemoSamples, DISABLED_demoActionPromptOk)
+  {
+ 
+    ActionPrompt prompt;
+    prompt.setType("ok");
+    prompt.setName("myproperty");
+    prompt.setTitle("Wait for the system to load and press OK button.");
+   
+    Context c;
+ 
+    bool result = prompt.execute(c);
+   
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(prompt.isOkQuestion());
+ 
+    //assert property is unchanged
+    PropertyManager & pmgr = PropertyManager::getInstance();
+    pmgr.setProperty("myproperty", "test");
+    std::string myproperty = pmgr.getProperty("myproperty");
+    ASSERT_EQ( std::string("test"), myproperty );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

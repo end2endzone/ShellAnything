@@ -450,6 +450,7 @@ The following table shows the attribute supported values:
 |--------|------------------------------------------------------------------------------|
 | empty  | The prompt ask for a question and expect a text answer.                      |
 | yesno  | The prompt ask for a question and expect a &lt;yes&gt; or &lt;no&gt; answer. |
+| ok     | The prompt display the question and wait for the user to press OK.           |
 
 For example, the following ask the question `Enable verbose output?` and sets `verbose` property to `/verbose` or `/normal` based on the the user response:
 ```xml
