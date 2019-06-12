@@ -3,14 +3,7 @@ find_package(rapidassist)
 find_package(glog REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/default.xml
-  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2003.xml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2007.xml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2010.xml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2013.xml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/test_files/Microsoft Office 2016.xml"
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/shellanything.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandIdsInvalid.xml
@@ -22,7 +15,6 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseValidator.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/WinDirStat.xml
 )
 
 # Include files from shellanything library which are not public
@@ -88,8 +80,8 @@ add_executable(shellanything_unittest
   TestWin32Utils.h
 )
 
-# Group external files as filster for Visual Studio
-source_group("Test Files"                     FILES ${CONFIGURATION_TEST_FILES})
+# Group external files as filter for Visual Studio
+source_group("Test Configuration Files"       FILES ${CONFIGURATION_TEST_FILES})
 source_group("ShellAnything Library Files"    FILES ${SHELLANYTHING_PRIVATE_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
@@ -104,14 +96,17 @@ target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} r
 add_dependencies(shellanything_unittest shellanything shellext)
 target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
 
-# Copy test files database to target dir
+# Copy test configuration files database to target dir
 add_custom_command( TARGET shellanything_unittest POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
                     ${CMAKE_CURRENT_SOURCE_DIR}/test_files $<TARGET_FILE_DIR:shellanything_unittest>/test_files
-                    COMMENT "Copying test_files database.")
+                    COMMENT "Copying test configuration files database.")
 
-# Copy test files to build dir for local execution (from within the IDE)
+# Copy test configuration files to build dir for local execution (from within the IDE)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test_files DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# Copy default configuration files to build dir for local execution (from within the IDE)
+file(COPY ${CMAKE_SOURCE_DIR}/resources/configurations DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS shellanything_unittest
         EXPORT shellanything-targets

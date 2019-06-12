@@ -13,6 +13,17 @@ set(SHELLANYTHING_VERSION_RC ${CMAKE_BINARY_DIR}/src/version.rc)
 message("Generating ${SHELLANYTHING_VERSION_RC}...")
 configure_file( ${CMAKE_SOURCE_DIR}/src/version.rc.in ${SHELLANYTHING_VERSION_RC} )
 
+set(CONFIGURATION_DEFAULT_FILES ""
+   ${CMAKE_SOURCE_DIR}/resources/configurations/default.xml
+  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2003.xml"
+  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2007.xml"
+  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2010.xml"
+  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2013.xml"
+  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2016.xml"
+   ${CMAKE_SOURCE_DIR}/resources/configurations/shellanything.xml
+   ${CMAKE_SOURCE_DIR}/resources/configurations/WinDirStat.xml
+)
+
 set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Action.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionClipboard.h
@@ -34,6 +45,7 @@ add_library(shellanything STATIC
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  ${CONFIGURATION_DEFAULT_FILES}
   Action.cpp
   ActionClipboard.cpp
   ActionExecute.cpp
@@ -82,6 +94,15 @@ add_library(shellext SHARED
   win32_registry.h
 )
 
+# Group external files as filter for Visual Studio
+source_group("Default Configuration Files"    FILES ${CONFIGURATION_DEFAULT_FILES})
+
+# Copy default configuration files database to target dir
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_SOURCE_DIR}/resources/configurations $<TARGET_FILE_DIR:shellanything>/configurations
+                    COMMENT "Copying default configurations files database.")
+
 # Unit test projects requires to link with pthread if also linking with gtest
 if(SHELLANYTHING_BUILD_GTESTHELP)
   if(NOT WIN32)
@@ -119,6 +140,9 @@ install(TARGETS shellanything
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/resources/configurations
+        DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
 install(TARGETS shellext
         EXPORT shellanything-targets

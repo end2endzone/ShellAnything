@@ -344,7 +344,7 @@ namespace shellanything { namespace test
   {
     ConfigManager & mgr = ConfigManager::getInstance();
     
-    const std::string path = "test_files/default.xml";
+    const std::string path = "configurations/default.xml";
     std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = Configuration::loadFile(path, error_message);
 

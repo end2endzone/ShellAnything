@@ -76,12 +76,17 @@ namespace shellanything { namespace test
   TEST_F(TestConfiguration, testIsValidConfigFile)
   {
     static const char * files[] = {
-      "test_files\\default.xml",
-      "test_files\\Microsoft Office 2003.xml",
-      "test_files\\Microsoft Office 2007.xml",
-      "test_files\\Microsoft Office 2010.xml",
-      "test_files\\Microsoft Office 2013.xml",
-      "test_files\\Microsoft Office 2016.xml",
+      //default configuration files
+      "configurations\\default.xml",
+      "configurations\\Microsoft Office 2003.xml",
+      "configurations\\Microsoft Office 2007.xml",
+      "configurations\\Microsoft Office 2010.xml",
+      "configurations\\Microsoft Office 2013.xml",
+      "configurations\\Microsoft Office 2016.xml",
+      "configurations\\shellanything.xml",
+      "configurations\\WinDirStat.xml",
+
+      //test configuration files
       "test_files\\samples.xml",
       "test_files\\TestConfigManager.testAssignCommandId.1.xml",
       "test_files\\TestConfigManager.testAssignCommandId.2.xml",
@@ -90,7 +95,6 @@ namespace shellanything { namespace test
       "test_files\\TestConfigManager.testFileModifications.xml",
       "test_files\\TestObjectFactory.testParseValidator.xml",
       "test_files\\tests.xml",
-      "test_files\\WinDirStat.xml",
     };
     const size_t num_files = sizeof(files)/sizeof(files[0]);
 
@@ -105,7 +109,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfiguration, testLoadFile)
   {
-    const std::string path = "test_files/default.xml";
+    const std::string path = "configurations/default.xml";
     std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = Configuration::loadFile(path, error_message);
 
