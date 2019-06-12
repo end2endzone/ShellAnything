@@ -26,7 +26,10 @@
 #include "PropertyManager.h"
 #include "win32_registry.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 )
 #include <glog/logging.h>
+#pragma warning( pop )
 
 namespace shellanything
 {

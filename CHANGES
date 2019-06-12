@@ -8,6 +8,7 @@ Changes for 0.2.0
 * Fixed issue #27: Allow icon's fileextension attribute to be dynamic.
 * Fixed issue #28: Unregister the shell extension for DragDropHandlers.
 * Fixed issue #29: Prompt which waits for OK button.
+* Fixed issue #30: Silence warnings from glog library.
 
 
 Changes for 0.1.0

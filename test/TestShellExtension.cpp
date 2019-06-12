@@ -29,7 +29,10 @@
 #include "rapidassist/process.h"
 #include "rapidassist/time_.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 )
 #include <glog/logging.h>
+#pragma warning( pop )
 
 #include <windows.h>
 #include <comdef.h>

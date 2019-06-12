@@ -25,7 +25,11 @@
 #ifndef SA_GLOG_UTILS_H
 #define SA_GLOG_UTILS_H
 
+#pragma warning( push )
+#pragma warning( disable: 4355 )
 #include <glog/logging.h>
+#pragma warning( pop )
+
 #include <string>
 #include <stdint.h>
 

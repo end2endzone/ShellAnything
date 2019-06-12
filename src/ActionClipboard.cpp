@@ -27,7 +27,10 @@
 
 #include "win32clipboard/win32clipboard.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 )
 #include <glog/logging.h>
+#pragma warning( pop )
 
 namespace shellanything
 {
