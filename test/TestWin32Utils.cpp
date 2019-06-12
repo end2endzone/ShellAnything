@@ -22,6 +22,11 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#pragma warning( push )
+#pragma warning( disable: 4018 ) //googletest\install\include\gtest/gtest.h(1528): warning C4018: '>=' : signed/unsigned mismatch
+#include <gtest/gtest.h>
+#pragma warning( pop )
+
 #include "TestWin32Utils.h"
 #include "win32_utils.h"
 #include "rapidassist/filesystem.h"
