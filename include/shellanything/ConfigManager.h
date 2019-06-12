@@ -81,11 +81,6 @@ namespace shellanything
     void refresh();
 
     /// <summary>
-    /// Recursively calls Menu::resolveFileExtensionIcons() on all menus loaded by the configuration manager.
-    /// </summary>
-    void resolveFileExtensionIcons();
-
-    /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
     void update(const Context & c);

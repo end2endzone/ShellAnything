@@ -58,6 +58,11 @@ namespace shellanything
     bool isValid() const;
 
     /// <summary>
+    /// Resolve the icon's file extension to the system icon for this file extension.
+    /// </summary>
+    void resolveFileExtensionIcon();
+
+    /// <summary>
     /// Getter for the 'fileextension' parameter.
     /// </summary>
     const std::string & getFileExtension() const;

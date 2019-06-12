@@ -231,8 +231,41 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   if (!menu_separator && icon.isValid())
   {
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
-    const std::string icon_filename = pmgr.expand(icon.getPath());
-    const int & icon_index          = icon.getIndex();
+    std::string file_extension  = pmgr.expand(icon.getFileExtension());
+    std::string icon_filename   = pmgr.expand(icon.getPath());
+    int icon_index              = icon.getIndex();
+
+    //if the icon is pointing to a file extension
+    if (!file_extension.empty())
+    {
+      //resolve the file extension to a system icon.
+
+      //did we already resolved this icon?
+      IconMap::iterator wExtensionsIterator = m_FileExtensionCache.find(file_extension);
+      bool found = (wExtensionsIterator != m_FileExtensionCache.end());
+      if (found)
+      {
+        //already resolved
+        const shellanything::Icon & resolved_icon = wExtensionsIterator->second;
+        icon_filename = resolved_icon.getPath();
+        icon_index    = resolved_icon.getIndex();
+      }
+      else
+      {
+        //not found
+        
+        //make a copy of the icon and resolve the file extension to a system icon.
+        shellanything::Icon resolved_icon = icon;
+        resolved_icon.resolveFileExtensionIcon();
+
+        //save the icon for a future use
+        m_FileExtensionCache[file_extension] = resolved_icon;
+
+        //use the resolved icon location
+        icon_filename = resolved_icon.getPath();
+        icon_index    = resolved_icon.getIndex();
+      }
+    }
 
     //ask the cache for an existing icon.
     //this will identify the icon in the cache as "used" or "active".
@@ -518,9 +551,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //Refresh the list of loaded configuration files
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
   cmgr.refresh();
-
-  //Replace icons with a file extension to absolute path of dll module that contains the icon for the given file extension.
-  cmgr.resolveFileExtensionIcons();
 
   //Update all menus with the new context
   //This will refresh the visibility flags which is required before clalling ConfigManager::assignCommandIds()

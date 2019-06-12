@@ -28,7 +28,7 @@ Help:
         </actions>
       </menu>
       <menu name="Filename" description="Copy the selected filename(s) to the clipboard">
-        <icon path="C:\Windows\System32\shell32.dll" index="1" />
+        <icon fileextension="${selection.filename.extension}" />
         <actions>
           <clipboard value="${selection.filename}"/>
         </actions>

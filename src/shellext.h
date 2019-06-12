@@ -31,8 +31,10 @@
 #include "BitmapCache.h"
 #include "shellanything/Context.h"
 #include "shellanything/Menu.h"
+#include "shellanything/Icon.h"
 
 #include <vector>
+#include <map>
 
 //Shell extension GUID
 static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
@@ -83,6 +85,9 @@ public:
 
 class CContextMenu : public IContextMenu, IShellExtInit
 {
+public:
+  typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
+
 protected:
   CCriticalSection            m_CS; //protects class members
   ULONG                       m_cRef;
@@ -90,6 +95,7 @@ protected:
   bool                        m_IsBackGround;
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
   shellanything::BitmapCache  m_BitmapCache;
+  IconMap                     m_FileExtensionCache;
   shellanything::Context      m_Context;
 
 public:

@@ -117,11 +117,6 @@ namespace shellanything
     void update(const Context & c);
 
     /// <summary>
-    /// Replaces the menu and submenus icons that have the 'fileextension' parameter set.
-    /// </summary>
-    void resolveFileExtensionIcons();
-
-    /// <summary>
     /// Searches this menu and submenus for a menu whose command id is iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>

@@ -23,10 +23,6 @@
  *********************************************************************************/
 
 #include "shellanything/Menu.h"
-#include "PropertyManager.h"
-#include "win32_registry.h"
-
-#include <glog/logging.h>
 
 namespace shellanything
 {
@@ -125,47 +121,6 @@ namespace shellanything
     {
       //force this node as invisible.
       setVisible(false);
-    }
-  }
-
-  void Menu::resolveFileExtensionIcons()
-  {
-    //resolve current menu
-
-    //is this menu have a file extension ?
-    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
-    std::string file_extension       = pmgr.expand(mIcon.getFileExtension());
-    if (!file_extension.empty())
-    {
-      //try to find the path to the icon module for the given file extension.
-      win32_registry::REGISTRY_ICON resolved_icon = win32_registry::getFileTypeIcon(file_extension.c_str());
-      if (!resolved_icon.path.empty() && resolved_icon.index != win32_registry::INVALID_ICON_INDEX)
-      {
-        //found the icon for the file extension
-        //replace this menu's icon with the new information
-        LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
-        mIcon.setPath(resolved_icon.path);
-        mIcon.setIndex(resolved_icon.index);
-        mIcon.setFileExtension("");
-      }
-      else
-      {
-        //failed to find a valid icon.
-        //using the default "unknown" icon
-        win32_registry::REGISTRY_ICON unknown_file_icon = win32_registry::getUnknownFileTypeIcon();
-        LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
-        mIcon.setPath(unknown_file_icon.path);
-        mIcon.setIndex(unknown_file_icon.index);
-        mIcon.setFileExtension("");
-      }
-    }
-
-    //for each child
-    Menu::MenuPtrList children = getSubMenus();
-    for(size_t i=0; i<children.size(); i++)
-    {
-      Menu * child = children[i];
-      child->resolveFileExtensionIcons();
     }
   }
 

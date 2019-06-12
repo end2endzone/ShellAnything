@@ -93,11 +93,6 @@ namespace shellanything
     void update(const Context & c);
 
     /// <summary>
-    /// Recursively calls Menu::resolveFileExtensionIcons() on all menus loaded by the configuration manager.
-    /// </summary>
-    void resolveFileExtensionIcons();
-
-    /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>

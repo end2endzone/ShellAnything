@@ -266,29 +266,6 @@ namespace shellanything { namespace test
     root = NULL;
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestMenu, testResolveFileExtensionIcons)
-  {
-    Menu menu;
-    menu.setName("foobar");
-    menu.setEnabled(true);
-    menu.setVisible(true);
-
-    //assign txt file icon
-    Icon icon;
-    icon.setFileExtension("txt");
-    menu.setIcon(icon);
- 
-    //act
-    menu.resolveFileExtensionIcons();
-
-    //refresh the menu icon
-    icon = menu.getIcon();
-
-    ASSERT_TRUE( icon.getFileExtension().empty() );
-    ASSERT_FALSE( icon.getPath().empty() );
-    ASSERT_NE( Icon::INVALID_ICON_INDEX, icon.getIndex() );
-  }
-  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

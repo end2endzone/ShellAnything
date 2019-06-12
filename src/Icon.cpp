@@ -23,6 +23,10 @@
  *********************************************************************************/
 
 #include "shellanything/Icon.h"
+#include "PropertyManager.h"
+#include "win32_registry.h"
+
+#include <glog/logging.h>
 
 namespace shellanything
 {
@@ -58,6 +62,37 @@ namespace shellanything
     if (mPath.empty() || mIndex == Icon::INVALID_ICON_INDEX)
       return false;
     return true;
+  }
+
+  void Icon::resolveFileExtensionIcon()
+  {
+    //is this menu have a file extension ?
+    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+    std::string file_extension = pmgr.expand(mFileExtension);
+    if (!file_extension.empty())
+    {
+      //try to find the path to the icon module for the given file extension.
+      win32_registry::REGISTRY_ICON resolved_icon = win32_registry::getFileTypeIcon(file_extension.c_str());
+      if (!resolved_icon.path.empty() && resolved_icon.index != win32_registry::INVALID_ICON_INDEX)
+      {
+        //found the icon for the file extension
+        //replace this menu's icon with the new information
+        LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
+        mPath = resolved_icon.path;
+        mIndex = resolved_icon.index;
+        mFileExtension = "";
+      }
+      else
+      {
+        //failed to find a valid icon.
+        //using the default "unknown" icon
+        win32_registry::REGISTRY_ICON unknown_file_icon = win32_registry::getUnknownFileTypeIcon();
+        LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
+        mPath = unknown_file_icon.path;
+        mIndex = unknown_file_icon.index;
+        mFileExtension = "";
+      }
+    }
   }
 
   const std::string & Icon::getFileExtension() const
