@@ -28,7 +28,7 @@
 #include "rapidassist/strings.h"
 
 #pragma warning( push )
-#pragma warning( disable: 4355 )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
 #include <glog/logging.h>
 #pragma warning( pop )
 
