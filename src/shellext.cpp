@@ -1269,7 +1269,7 @@ void InstallDefaultConfigurations(const std::string & config_dir)
   for(size_t i=0; i<num_files; i++)
   {
     const char * filename = default_files[i];
-    std::string source_path = app_dir    + "\\test_files\\" + filename;
+    std::string source_path = app_dir    + "\\configurations\\" + filename;
     std::string target_path = config_dir + "\\" + filename;
 
     LOG(INFO) << "Installing configuration file: " << target_path;
