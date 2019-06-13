@@ -306,6 +306,12 @@ For example, the following sets a menu with the *Text File* icon :
 <icon fileextension="txt" />
 ```
 
+The `fileextension` attribute supports dynamic properties and allows one to define an icon based on the user selection.
+For instance, the following icon definition uses the same icon as the clicked file:
+```xml
+  <icon fileextension="${selection.filename.extension}" />
+```
+
 
 
 ## Actions ##
