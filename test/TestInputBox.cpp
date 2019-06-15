@@ -62,7 +62,7 @@ namespace shellanything { namespace test
     static const wchar_t REGISTERED_SIGN = 0x00AE;
 
     std::string test_name = ra::gtesthelp::getTestQualifiedName();
-    std::wstring hello_text = std::wstring(L"hello world from ") + shellanything::ansi_to_unicode(test_name);
+    std::wstring hello_text = std::wstring(L"hello world from ") + encoding::utf::ansi_to_unicode(test_name);
 
     hello_text.insert(0, 1, COPYRIGHT_SIGN);
     hello_text.append(1, L' ');
@@ -82,7 +82,7 @@ namespace shellanything { namespace test
     HWND hWnd = GetDesktopWindow();
  
     std::string test_name = ra::gtesthelp::getTestQualifiedName();
-    std::wstring hello_text = std::wstring(L"hello world from ") + shellanything::ansi_to_unicode(test_name);
+    std::wstring hello_text = std::wstring(L"hello world from ") + encoding::utf::ansi_to_unicode(test_name);
  
     std::wstring caption = std::wstring(L"caption: ") + hello_text;
     std::wstring prompt = std::wstring(L"prompt: ") + hello_text;

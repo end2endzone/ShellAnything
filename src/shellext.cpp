@@ -473,7 +473,7 @@ std::string GetMenuDescriptor(HMENU hMenu)
       //Can't log unicode characters, convert to ansi.
       //Assume some characters might get dropped
       std::wstring wtext = (WCHAR*)menu_name;
-      std::string  atext = shellanything::unicode_to_ansi(wtext);
+      std::string  atext = encoding::utf::unicode_to_ansi(wtext);
       sprintf(descriptor, "%d:%s", id, atext.c_str());
     }
 
@@ -703,7 +703,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_HELPTEXTW:
     {
       //UNICODE tooltip handling
-      std::wstring title = shellanything::ansi_to_unicode(description);
+      std::wstring title = encoding::utf::ansi_to_unicode(description);
       lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }
@@ -718,7 +718,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_VERBW:
     {
       //UNICODE tooltip handling
-      std::wstring title = shellanything::ansi_to_unicode(description);
+      std::wstring title = encoding::utf::ansi_to_unicode(description);
       lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }

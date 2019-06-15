@@ -257,13 +257,13 @@ HWND CInputBox::getCtrl(CONTROLS ctrl) const
 
 void CInputBox::setTextAnsi(const std::string & text)
 {
-  std::wstring text_unicode = shellanything::ansi_to_unicode(text);
+  std::wstring text_unicode = encoding::utf::ansi_to_unicode(text);
   m_Text = text_unicode;
 }
 
 std::string CInputBox::getTextAnsi() const
 {
-  std::string text_ansi = shellanything::unicode_to_ansi(m_Text);
+  std::string text_ansi = encoding::utf::unicode_to_ansi(m_Text);
   return text_ansi;
 }
 
@@ -495,8 +495,8 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 bool CInputBox::DoModal(const std::string  & caption, const std::string  & prompt)
 {
-  std::wstring caption_unicode = shellanything::ansi_to_unicode(caption);
-  std::wstring  prompt_unicode = shellanything::ansi_to_unicode(prompt);
+  std::wstring caption_unicode = encoding::utf::ansi_to_unicode(caption);
+  std::wstring  prompt_unicode = encoding::utf::ansi_to_unicode(prompt);
   return DoModal(caption_unicode, prompt_unicode);
 }
 

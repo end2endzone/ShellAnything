@@ -2,7 +2,9 @@
 
 #include <Windows.h>
 
-namespace shellanything
+namespace encoding
+{
+namespace utf
 {
   static const std::string  EMPTY_STRING;
   static const std::wstring EMPTY_WIDE_STRING;
@@ -69,4 +71,5 @@ namespace shellanything
     return str_utf8;
   }
 
-} //namespace shellanything
+} //namespace utf
+} //namespace encoding

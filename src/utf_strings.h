@@ -28,7 +28,9 @@
 #include <string>
 #include <vector>
 
-namespace shellanything
+namespace encoding
+{
+namespace utf
 {
 
   /// <summary>
@@ -73,7 +75,8 @@ namespace shellanything
   /// <returns>Returns a utf8 encoded string.</returns>
   std::string ansi_to_utf8(const std::string & str);
 
-} //namespace shellanything
+} //namespace utf
+} //namespace encoding
 
 #endif //SA_UTF_STRINGS_H
 

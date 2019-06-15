@@ -179,7 +179,7 @@ namespace shellanything
     /// <summary>
     /// Set the Validator for the 'visibility' parameter.
     /// </summary>
-    /// <param name="iValidity">Set the new Validator for the 'visibility' parameter.</param>
+    /// <param name="iVisibility">Set the new Validator for the 'visibility' parameter.</param>
     void setVisibility(const Validator & iVisibility);
 
     /// <summary>
