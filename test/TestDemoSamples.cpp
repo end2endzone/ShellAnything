@@ -44,7 +44,7 @@ namespace shellanything { namespace test
     ActionPrompt prompt;
     prompt.setName("myproperty");
     prompt.setTitle("What is your name?");
-    prompt.setDefault("John Smith");
+    prompt.setDefault("Isabelle Ringing");
 
     Context c;
 

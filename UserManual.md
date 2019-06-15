@@ -439,9 +439,9 @@ For example, the following sets the property `myprogram.user.fullname' with the 
 
 The `default` attribute defines the default value of the answer. The attribute is optional.
 
-For example, the following sets the value `John Smith` as default value to the question `What is your name?` :
+For example, the following sets the value `Hugh Jass` as default value to the question `What is your name?` :
 ```xml
-<prompt name="myprogram.user.fullname" title="What is your name?" default="John Smith" />
+<prompt name="myprogram.user.fullname" title="What is your name?" default="Hugh Jass" />
 ```
 
 
@@ -513,9 +513,9 @@ For example, the following sets the property `myprogram.user.name` to an empty v
 
 The `value` attribute defines the actual new value of the given property.
 
-For example, the following set the property `myprogram.user.name` to value `John Smith` :
+For example, the following set the property `myprogram.user.name` to value `Al Coholic` :
 ```xml
-<property name="myprogram.user.fullname" value="John Smith" />
+<property name="myprogram.user.fullname" value="Al Coholic" />
 ```
 
 
