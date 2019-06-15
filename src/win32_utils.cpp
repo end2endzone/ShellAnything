@@ -1,5 +1,6 @@
 //#define WIN32_LEAN_AND_MEAN 1
 #include "win32_utils.h"
+#include "utf_strings.h"
 
 #include <string>
 #include <assert.h>
@@ -444,6 +445,109 @@ namespace win32_utils
     }
 
     return isFullyTransparent;
+  }
+
+  std::string GetMenuItemDetails(HMENU hMenu, UINT pos)
+  {
+    MENUITEMINFOA info = {0};
+    info.cbSize = sizeof(MENUITEMINFOA);
+    info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
+    BOOL wInfoSuccess = GetMenuItemInfoA(hMenu, pos, TRUE, &info);
+    if (!wInfoSuccess)
+      return "";
+ 
+    const UINT & id = info.wID; //GetMenuItemID(hMenu, pos);
+ 
+    bool isSeparator  = ((info.fType & MFT_SEPARATOR) != 0);
+    bool isDisabled   = ((info.fState & MFS_DISABLED) != 0);
+    bool isChecked    = ((info.fState & MFS_CHECKED) != 0);
+ 
+    //compute display name
+    static const int BUFFER_SIZE = 1024;
+    char title[BUFFER_SIZE] = {0};
+    char tmp[BUFFER_SIZE] = {0};
+    if (isSeparator)
+    {
+      strcpy(title, "------------------------");
+    }
+    //try with ansi text
+    else if (GetMenuStringA(hMenu, id, tmp, BUFFER_SIZE, 0))
+    {
+      sprintf(title, "%s", tmp, pos, id);
+    }
+    else if (GetMenuStringW(hMenu, id, (WCHAR*)tmp, BUFFER_SIZE/2, 0))
+    {
+      //Can't log unicode characters, convert to ansi.
+      //Assume some characters might get dropped
+      std::wstring wtext = (WCHAR*)tmp;
+      std::string atext = encoding::utf::unicode_to_ansi(wtext);
+      sprintf(title, "%s", atext.c_str(), pos, id);
+    }
+ 
+    //build full menu description string
+    std::string description;
+    description.append(title);
+    description.append(" (");
+    sprintf(tmp, "pos=%lu, id=%lu", pos, id);
+    description.append(tmp);
+    if (isChecked)
+      description.append(", checked");
+    if (isDisabled && !isSeparator)
+      description.append(", disabled");
+    description.append(")");
+ 
+    return description;
+  }
+
+  std::string GetMenuTree(HMENU hMenu, int indent)
+  {
+    std::string output;
+ 
+    int numItems = GetMenuItemCount(hMenu);
+ 
+    for(int i=0; i<numItems; i++)
+    {
+      std::string details = GetMenuItemDetails(hMenu, i);
+ 
+      //Detect if this menu is a parent menu
+      HMENU hSubMenu = NULL;
+      {
+        MENUITEMINFOA info = {0};
+        info.cbSize = sizeof(MENUITEMINFOA);
+        info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
+        BOOL wInfoSuccess = GetMenuItemInfoA(hMenu, i, TRUE, &info);
+        if (wInfoSuccess)
+        {
+          if (info.hSubMenu)
+          {
+            hSubMenu = info.hSubMenu;
+          }
+        }
+      }
+ 
+      if (hSubMenu == NULL)
+      {
+        //no child
+        output += std::string(indent, ' ');
+        output += details + "\n";
+      }
+      else
+      {
+        //output this menu and open a bracket
+        output += std::string(indent, ' ');
+        output += details + " {\n";
+ 
+        //query for submenu description.
+        std::string sub_desc = GetMenuTree(hSubMenu, indent+4);
+        output += sub_desc;
+ 
+        //close the opened bracket
+        output += std::string(indent, ' ');
+        output += "}\n";
+      }
+    }
+ 
+    return output;
   }
 
 } //namespace win32_utils

@@ -219,13 +219,21 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     return;
   }
 
+  //Validate menus integrity
+  const uint32_t & menu_command_id = menu->getCommandId();
+  if (menu_command_id == shellanything::Menu::INVALID_COMMAND_ID)
+  {
+    LOG(ERROR) << __FUNCTION__ << "(), menu '" << title << "' have invalid command id.";
+    return;
+  }
+
   MENUITEMINFOA menuinfo = {0};
 
   menuinfo.cbSize = sizeof(MENUITEMINFOA);
   menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
   menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
   menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
-  menuinfo.wID = menu->getCommandId();
+  menuinfo.wID = menu_command_id;
   menuinfo.dwTypeData = (char*)title.c_str();
   menuinfo.cch = (UINT)title.size();
 
@@ -454,36 +462,6 @@ std::string GetMenuDescriptor(HMENU hMenu)
   std::string output;
 
   int numItems = GetMenuItemCount(hMenu);
-  /*
-  for(int i=0; i<numItems; i++)
-  {
-    UINT id = GetMenuItemID(hMenu, i);
-
-    static const int BUFFER_SIZE = 1024;
-    char menu_name[BUFFER_SIZE] = {0};
-    char descriptor[BUFFER_SIZE] = {0};
-
-    //try with ansi text
-    if (GetMenuStringA(hMenu, i, menu_name, BUFFER_SIZE, 0))
-    {
-      sprintf(descriptor, "%d:%s", id, menu_name);
-    }
-    else if (GetMenuStringW(hMenu, i, (WCHAR*)menu_name, BUFFER_SIZE/2, 0))
-    {
-      //Can't log unicode characters, convert to ansi.
-      //Assume some characters might get dropped
-      std::wstring wtext = (WCHAR*)menu_name;
-      std::string  atext = encoding::utf::unicode_to_ansi(wtext);
-      sprintf(descriptor, "%d:%s", id, atext.c_str());
-    }
-
-    //append the descriptor to the total output
-    if (!output.empty())
-      output.append(",");
-    output.append(descriptor);
-  }
-  */
-
   output.insert(0, "MENU{");
   output.append("GetMenuItemCount()=");
   output.append(ra::strings::toString(numItems));
@@ -565,7 +543,14 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //Build the menus
   BuildMenuTree(hMenu);
 
-  return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, nextCommandId - idCmdFirst );
+  //debug the constructed menu tree
+  UINT numItems = nextCommandId - idCmdFirst;
+  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 0);
+  LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n"
+    "Definition:\n" << menu_tree.c_str();
+
+  HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, numItems );
+  return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
@@ -682,7 +667,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   shellanything::Menu * menu = cmgr.findMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset;
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
     return E_INVALIDARG;
   }
 

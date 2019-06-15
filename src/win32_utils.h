@@ -40,6 +40,8 @@ namespace win32_utils
   void CreateBMPFile(const char * path, HBITMAP hBitmap);
   BOOL IsFullyTransparent(HBITMAP hBitmap);
   BOOL IsFullyTransparent(const std::string & buffer);
+  std::string GetMenuItemDetails(HMENU hMenu, UINT pos);
+  std::string GetMenuTree(HMENU hMenu, int indent);
 } //namespace win32_utils
 
 #endif //WIN32_UTILS_H
