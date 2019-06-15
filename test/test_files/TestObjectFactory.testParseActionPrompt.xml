@@ -17,7 +17,7 @@
     <menu name="menu02">
       <actions>
         <!--test utf-8 character-->
-        <prompt name="foo" title="âne, cheval, école." />
+        <prompt name="foo" title="Español, Québec, Mjölnir." />
       </actions>
     </menu>
 
