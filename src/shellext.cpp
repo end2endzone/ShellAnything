@@ -544,10 +544,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   BuildMenuTree(hMenu);
 
   //debug the constructed menu tree
+  UINT lastCommandId = nextCommandId - 1;
   UINT numItems = nextCommandId - idCmdFirst;
-  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 0);
-  LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n"
-    "Definition:\n" << menu_tree.c_str();
+  LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " lastCommandId=" << lastCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n";
+#ifdef _DEBUG
+  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 6);
+  LOG(INFO) << "Menu definition:\n" << menu_tree.c_str();
+#endif
 
   HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, numItems );
   return hr;
