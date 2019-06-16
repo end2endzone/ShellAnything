@@ -97,6 +97,8 @@ protected:
   shellanything::BitmapCache  m_BitmapCache;
   IconMap                     m_FileExtensionCache;
   shellanything::Context      m_Context;
+  
+  static HMENU m_previousMenu;
 
 public:
   CContextMenu();

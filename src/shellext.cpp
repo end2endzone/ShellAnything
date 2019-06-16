@@ -39,6 +39,8 @@ static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
+HMENU CContextMenu::m_previousMenu = 0;
+
 std::string GetCurrentModulePath()
 {
   std::string path;
@@ -457,18 +459,6 @@ CContextMenu::~CContextMenu()
   InterlockedDecrement(&g_cRefDll);
 }
 
-std::string GetMenuDescriptor(HMENU hMenu)
-{
-  std::string output;
-
-  int numItems = GetMenuItemCount(hMenu);
-  output.insert(0, "MENU{");
-  output.append("GetMenuItemCount()=");
-  output.append(ra::strings::toString(numItems));
-  output.append("}");
-  return output;
-}
-
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
   //build function descriptor
@@ -493,7 +483,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=" << GetMenuDescriptor(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -508,14 +498,28 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //Right-click on the empty area      on the Desktop:                           uFlags=0x00020420=132128(dec)=(CMF_NORMAL|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
   //Right-click on a directory         on the Desktop:                           uFlags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
 
-  //Filter out queries that have nothing selected
+  //Filter out queries that have nothing selected.
   //This can happend if user is copy & pasting files (using CTRL+C and CTRL+V)
+  //and if the shell extension is registered as a DragDropHandlers.
   if ( m_Context.getElements().size() == 0 )
   {
     //Don't know what to do with this
     LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
     return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
   }
+
+  //Filter out queries that are called twice for the same directory.
+  if (hMenu == CContextMenu::m_previousMenu)
+  {
+    //Issue  #6 - Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
+    //Issue #31 - Error in logs for CContextMenu::GetCommandString().
+    //Using a static variable is a poor method for solving the issue but it is a "good enough" strategy.
+    LOG(INFO) << __FUNCTION__ << "(), skipped, QueryContextMenu() called twice and menu is already populated once.";
+    return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
+  }
+
+  //Remember current menu to prevent issues calling twice QueryContextMenu()
+  m_previousMenu = hMenu;
 
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
@@ -548,8 +552,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   UINT numItems = nextCommandId - idCmdFirst;
   LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " lastCommandId=" << lastCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n";
 #ifdef _DEBUG
-  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 6);
-  LOG(INFO) << "Menu definition:\n" << menu_tree.c_str();
+  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 2);
+  LOG(INFO) << "Menu tree:\n" << menu_tree.c_str();
 #endif
 
   HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, numItems );

@@ -1,5 +1,6 @@
 Changes for 0.2.0
 
+* Fixed issue  #6: Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
 * Fixed issue #18: Prompt with a Yes/No answer.
 * Fixed issue #19: Clarify functions that are RapidAssist improvements.
 * Fixed issue #20: Create directory for "officials" configuration files.
@@ -10,6 +11,7 @@ Changes for 0.2.0
 * Fixed issue #28: Unregister the shell extension for DragDropHandlers.
 * Fixed issue #29: Prompt which waits for OK button.
 * Fixed issue #30: Silence warnings from glog library.
+* Fixed issue #31: Error in logs for CContextMenu::GetCommandString().
 
 
 Changes for 0.1.0
