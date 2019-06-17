@@ -27,6 +27,7 @@
 
 #include "shellanything/Node.h"
 #include "shellanything/Menu.h"
+#include "shellanything/Defaults.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -111,7 +112,20 @@ namespace shellanything
     /// </summary>
     Menu::MenuPtrList getMenus();
 
+    /// <summary>
+    /// Set a new Defaults instance to the Configuration. The Configuration instance takes ownership of the defaults.
+    /// </summary>
+    /// <param name="defaults">The given Defaults to add to the configuration</param>
+    void setDefaults(Defaults * defaults);
+
+    /// <summary>
+    /// Get the Defaults instance of the Configuration.
+    /// </summary>
+    /// <returns>Returns the Defaults instance of the Configuration. Returns NULL if no Defaults is set.</returns>
+    const Defaults * getDefaults() const;
+
   private:
+    Defaults * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
   };

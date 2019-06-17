@@ -34,6 +34,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Configuration.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/Defaults.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Icon.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
@@ -55,6 +56,7 @@ add_library(shellanything STATIC
   Configuration.cpp
   ConfigManager.cpp
   Context.cpp
+  Defaults.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp

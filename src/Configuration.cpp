@@ -35,7 +35,8 @@ namespace shellanything
 {
 
   Configuration::Configuration() : Node("Configuration"),
-    mFileModifiedDate(0)
+    mFileModifiedDate(0),
+    mDefaults(NULL)
   {
   }
 
@@ -191,6 +192,19 @@ namespace shellanything
   {
     Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
     return sub_menus;
+  }
+
+  void Configuration::setDefaults(Defaults * defaults)
+  {
+    if (mDefaults)
+      delete mDefaults;
+
+    mDefaults = defaults;
+  }
+
+  const Defaults * Configuration::getDefaults() const
+  {
+    return mDefaults;
   }
 
 } //namespace shellanything
