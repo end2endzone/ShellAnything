@@ -78,6 +78,22 @@ namespace shellanything
     config->setFilePath(path);
     config->setFileModifiedDate(file_modified_date);
 
+    //find <defaults> nodes under <shell>
+    const XMLElement* xml_defaults = xml_shell->FirstChildElement("defaults");
+    while (xml_defaults)
+    {
+      //found a new menu node
+      Defaults * defaults = ObjectFactory::getInstance().parseDefaults(xml_defaults, error);
+      if (defaults != NULL)
+      {
+        //add the new menu to the current configuration
+        config->setDefaults(defaults);
+      }
+
+      //next defaults node
+      xml_defaults = xml_defaults->NextSiblingElement("defaults");
+    }
+
     //find <menu> nodes under <shell>
     const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
     while (xml_menu)
