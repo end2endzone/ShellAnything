@@ -94,6 +94,11 @@ namespace shellanything
     void update(const Context & c);
 
     /// <summary>
+    /// Apply the configuration's default properties.
+    /// </summary>
+    void applyDefaults();
+
+    /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>

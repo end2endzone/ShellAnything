@@ -23,11 +23,22 @@
  *********************************************************************************/
 
 #include "shellanything/Configuration.h"
+#include "shellanything/Context.h"
 #include "rapidassist/filesystem.h"
 #include "Platform.h"
 #include "ObjectFactory.h"
 
 #include "tinyxml2.h"
+
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <Windows.h>
 
 using namespace tinyxml2;
 
@@ -171,6 +182,51 @@ namespace shellanything
     {
       Menu * child = children[i];
       child->update(c);
+    }
+  }
+
+  void Configuration::applyDefaults()
+  {
+    Context empty_context;
+
+    if (mDefaults && mDefaults->getActions().size() > 0)
+    {
+      //configuration have default properties assigned
+      LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+
+      //execute actions
+      const shellanything::Action::ActionPtrList & actions = mDefaults->getActions();
+      for(size_t i=0; i<actions.size(); i++)
+      {
+        LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
+        const shellanything::Action * action = actions[i];
+        if (action)
+        {
+          SetLastError(0); //reset win32 error code in case the action fails.
+          bool success = action->execute(empty_context);
+
+          if (!success)
+          {
+            //try to get an error mesage from win32
+            uint32_t dwError = shellanything::GetSystemErrorCode();
+            if (dwError)
+            {
+              std::string error_message = shellanything::GetSystemErrorDescription(dwError);
+              LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed: " << error_message;
+            }
+            else
+            {
+              //simply log an error
+              LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed.";
+            }
+
+            //stop executing the next actions
+            i = actions.size();
+          }
+        }
+      }
+
+      LOG(INFO) << __FUNCTION__ << "(), executing default properties of configuration file '" << mFilePath.c_str() << "' completed.";
     }
   }
 
