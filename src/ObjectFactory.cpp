@@ -581,11 +581,20 @@ namespace shellanything
       const tinyxml2::XMLElement * element = elements[i];
 
       //found a new action node
-      Action * action = ObjectFactory::getInstance().parseAction(element, error);
-      if (action != NULL)
+      Action * abstract_action = ObjectFactory::getInstance().parseAction(element, error);
+      if (abstract_action)
       {
-        //add the new action node
-        defaults->addAction(action);
+        //filter out all type of actions except ActionProperty actions
+        ActionProperty * property_action = dynamic_cast<ActionProperty *>(abstract_action);
+        if (property_action != NULL)
+        {
+          //add the new action node
+          defaults->addAction(property_action);
+        }
+        else
+        {
+          delete abstract_action;
+        }
       }
     }
 
