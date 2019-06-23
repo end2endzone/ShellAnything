@@ -101,9 +101,9 @@ namespace shellanything { namespace test
       "test_files\\TestConfigManager.testDetectNewFile.xml",
       "test_files\\TestConfigManager.testFileModifications.xml",
       "test_files\\TestConfigManager.testParentWithoutChildren.xml",
-      "test_files\\TestConfigManager.testLoadProperties.xml",
-      "test_files\\TestConfigManager.testParseActionPrompt.xml",
-      "test_files\\TestConfigManager.testParseDefaults.xml",
+      "test_files\\TestConfiguration.testLoadProperties.xml",
+      "test_files\\TestObjectFactory.testParseActionPrompt.xml",
+      "test_files\\TestObjectFactory.testParseDefaults.xml",
       "test_files\\TestObjectFactory.testParseIcon.xml",
       "test_files\\TestObjectFactory.testParseValidator.xml",
       "test_files\\tests.xml",
@@ -114,8 +114,8 @@ namespace shellanything { namespace test
     for(size_t i=0; i<num_files; i++)
     {
       const std::string path = files[i];
-      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) );
-      ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) );
+      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File '" << path.c_str() << "' is not found.";
+      ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) ) << "The file '" << path.c_str() << "' is not a valid configuration file.";
     }
   }
   //--------------------------------------------------------------------------------------------------
