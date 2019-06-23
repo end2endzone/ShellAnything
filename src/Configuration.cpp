@@ -194,25 +194,25 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::Action::ActionPtrList & abstract_actions = mDefaults->getActions();
+      const shellanything::Action::ActionPtrList & actions = mDefaults->getActions();
 
-      //convert 'abstract_actions' to a list of <const shellanything::ActionProperty *>
+      //convert 'actions' to a list of <const shellanything::ActionProperty *>
       typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
-      ActionPropertyPtrList action_properties;
-      for(size_t i=0; i<abstract_actions.size(); i++)
+      ActionPropertyPtrList properties;
+      for(size_t i=0; i<actions.size(); i++)
       {
-        const shellanything::Action * abstract_action = abstract_actions[i];
+        const shellanything::Action * abstract_action = actions[i];
         const shellanything::ActionProperty * action_property = dynamic_cast<const shellanything::ActionProperty *>(abstract_action);
         if (action_property)
-          action_properties.push_back(action_property);
+          properties.push_back(action_property);
       }
 
       //apply all ActionProperty
       Context empty_context;
-      for(size_t i=0; i<action_properties.size(); i++)
+      for(size_t i=0; i<properties.size(); i++)
       {
-        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << action_properties.size() << ".";
-        const shellanything::ActionProperty * action_property = action_properties[i];
+        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << properties.size() << ".";
+        const shellanything::ActionProperty * action_property = properties[i];
         if (action_property)
         {
           //no need to look for failures. ActionProperty never fails.
