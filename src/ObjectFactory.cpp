@@ -46,7 +46,7 @@ namespace shellanything
   static const std::string NODE_ICON = "icon";
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
-  static const std::string NODE_DEFAULTS = "defaults";
+  static const std::string NODE_DEFAULTSETTINGS = "defaults";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
   static const std::string NODE_ACTION_EXEC = "exec";
   static const std::string NODE_ACTION_PROMPT = "prompt";
@@ -555,7 +555,7 @@ namespace shellanything
     return true;
   }
 
-  Defaults * ObjectFactory::parseDefaults(const XMLElement* element, std::string & error)
+  DefaultSettings * ObjectFactory::parseDefaults(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -564,13 +564,13 @@ namespace shellanything
     }
 
     std::string xml_name = element->Name();
-    if (xml_name != NODE_DEFAULTS)
+    if (xml_name != NODE_DEFAULTSETTINGS)
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
-    Defaults * defaults = new Defaults();
+    DefaultSettings * defaults = new DefaultSettings();
 
     ElementPtrList elements; //temporary xml element containers
 
@@ -598,7 +598,7 @@ namespace shellanything
       }
     }
 
-    //do not return a Defaults instance if empty.
+    //do not return a DefaultSettings instance if empty.
     if (defaults->getActions().empty())
     {
       delete defaults;

@@ -96,7 +96,7 @@ namespace shellanything
     while (xml_defaults)
     {
       //found a new menu node
-      Defaults * defaults = ObjectFactory::getInstance().parseDefaults(xml_defaults, error);
+      DefaultSettings * defaults = ObjectFactory::getInstance().parseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
@@ -260,7 +260,7 @@ namespace shellanything
     return sub_menus;
   }
 
-  void Configuration::setDefaults(Defaults * defaults)
+  void Configuration::setDefaults(DefaultSettings * defaults)
   {
     if (mDefaults)
       delete mDefaults;
@@ -268,7 +268,7 @@ namespace shellanything
     mDefaults = defaults;
   }
 
-  const Defaults * Configuration::getDefaults() const
+  const DefaultSettings * Configuration::getDefaults() const
   {
     return mDefaults;
   }

@@ -301,8 +301,8 @@ namespace shellanything { namespace test
     Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT a Defaults section is available
-    const Defaults * defaults = cmgr.getConfigurations()[0]->getDefaults();
+    //ASSERT a DefaultSettings section is available
+    const DefaultSettings * defaults = cmgr.getConfigurations()[0]->getDefaults();
     ASSERT_TRUE( defaults != NULL );
 
     //assert 2 properties parsed

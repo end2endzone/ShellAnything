@@ -22,48 +22,33 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_DEFAULTS_H
-#define SA_DEFAULTS_H
-
-#include "shellanything/Action.h"
-#include <string>
-#include <vector>
-#include <stdint.h>
+#include "shellanything/DefaultSettings.h"
 
 namespace shellanything
 {
 
-  /// <summary>
-  /// The Defaults class defines the default values when a configuration .
-  /// </summary>
-  class Defaults
+  DefaultSettings::DefaultSettings()
   {
-  public:
+  }
 
-    Defaults();
-    virtual ~Defaults();
+  DefaultSettings::~DefaultSettings()
+  {
+    for(size_t i=0; i<mActions.size(); i++)
+    {
+      Action * action = mActions[i];
+      delete action;
+    }
+    mActions.clear();
+  }
 
-  private:
-    // Disable copy constructor and copy operator
-    Defaults(const Defaults&);
-    Defaults& operator=(const Defaults&);
-  public:
+  void DefaultSettings::addAction(Action * action)
+  {
+    mActions.push_back(action);
+  }
 
-    /// <summary>
-    /// Add a new Action to the Defaults. The Defaults instance takes ownership of the action.
-    /// </summary>
-    /// <param name="action">The given action to add to the defaults</param>
-    void addAction(Action * action);
-    
-    /// <summary>
-    /// Get the list of action of the menu.
-    /// </summary>
-    const Action::ActionPtrList & getActions() const;
-
-  private:
-    Action::ActionPtrList mActions;
-  };
+  const Action::ActionPtrList & DefaultSettings::getActions() const
+  {
+    return mActions;
+  }
 
 } //namespace shellanything
-
-#endif //SA_DEFAULTS_H
