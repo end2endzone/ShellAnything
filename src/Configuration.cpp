@@ -91,8 +91,8 @@ namespace shellanything
     config->setFilePath(path);
     config->setFileModifiedDate(file_modified_date);
 
-    //find <defaults> nodes under <shell>
-    const XMLElement* xml_defaults = xml_shell->FirstChildElement("defaults");
+    //find <default> nodes under <shell>
+    const XMLElement* xml_defaults = xml_shell->FirstChildElement("default");
     while (xml_defaults)
     {
       //found a new menu node
@@ -100,11 +100,11 @@ namespace shellanything
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
-        config->setDefaults(defaults);
+        config->setDefaultSettings(defaults);
       }
 
       //next defaults node
-      xml_defaults = xml_defaults->NextSiblingElement("defaults");
+      xml_defaults = xml_defaults->NextSiblingElement("default");
     }
 
     //find <menu> nodes under <shell>
@@ -187,7 +187,7 @@ namespace shellanything
     }
   }
 
-  void Configuration::applyDefaults()
+  void Configuration::applyDefaultSettings()
   {
     if (mDefaults && mDefaults->getActions().size() > 0)
     {
@@ -260,7 +260,7 @@ namespace shellanything
     return sub_menus;
   }
 
-  void Configuration::setDefaults(DefaultSettings * defaults)
+  void Configuration::setDefaultSettings(DefaultSettings * defaults)
   {
     if (mDefaults)
       delete mDefaults;
@@ -268,7 +268,7 @@ namespace shellanything
     mDefaults = defaults;
   }
 
-  const DefaultSettings * Configuration::getDefaults() const
+  const DefaultSettings * Configuration::getDefaultSettings() const
   {
     return mDefaults;
   }

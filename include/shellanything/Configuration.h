@@ -96,7 +96,7 @@ namespace shellanything
     /// <summary>
     /// Apply the configuration's default properties.
     /// </summary>
-    void applyDefaults();
+    void applyDefaultSettings();
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
@@ -118,16 +118,16 @@ namespace shellanything
     Menu::MenuPtrList getMenus();
 
     /// <summary>
-    /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the defaults.
+    /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
     /// </summary>
     /// <param name="defaults">The given DefaultSettings to add to the configuration</param>
-    void setDefaults(DefaultSettings * defaults);
+    void setDefaultSettings(DefaultSettings * defaults);
 
     /// <summary>
     /// Get the DefaultSettings instance of the Configuration.
     /// </summary>
     /// <returns>Returns the DefaultSettings instance of the Configuration. Returns NULL if no DefaultSettings is set.</returns>
-    const DefaultSettings * getDefaults() const;
+    const DefaultSettings * getDefaultSettings() const;
 
   private:
     DefaultSettings * mDefaults;

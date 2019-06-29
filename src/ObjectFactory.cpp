@@ -46,7 +46,7 @@ namespace shellanything
   static const std::string NODE_ICON = "icon";
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
-  static const std::string NODE_DEFAULTSETTINGS = "defaults";
+  static const std::string NODE_DEFAULTSETTINGS = "default";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
   static const std::string NODE_ACTION_EXEC = "exec";
   static const std::string NODE_ACTION_PROMPT = "prompt";
@@ -574,7 +574,7 @@ namespace shellanything
 
     ElementPtrList elements; //temporary xml element containers
 
-    //find <property> node under <defaults>
+    //find <property> node under <default>
     elements = getChildNodes(element, NODE_ACTION_PROPERTY);
     for(size_t i=0; i<elements.size(); i++)
     {

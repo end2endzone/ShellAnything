@@ -52,7 +52,7 @@ namespace shellanything
     /// <summary>
     /// Add a new Action to the DefaultSettings. The DefaultSettings instance takes ownership of the action.
     /// </summary>
-    /// <param name="action">The given action to add to the defaults</param>
+    /// <param name="action">The given action to add to the DefaultSettings instance</param>
     void addAction(Action * action);
     
     /// <summary>

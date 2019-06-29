@@ -123,7 +123,7 @@ namespace shellanything
                 mConfigurations.addChild(config);
 
                 //apply default properties of the configuration
-                config->applyDefaults();
+                config->applyDefaultSettings();
               }
             }
             else

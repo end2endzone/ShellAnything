@@ -302,7 +302,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a DefaultSettings section is available
-    const DefaultSettings * defaults = cmgr.getConfigurations()[0]->getDefaults();
+    const DefaultSettings * defaults = cmgr.getConfigurations()[0]->getDefaultSettings();
     ASSERT_TRUE( defaults != NULL );
 
     //assert 2 properties parsed

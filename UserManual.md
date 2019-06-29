@@ -15,7 +15,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;clipboard&gt; action](#clipboard-action)
     * [&lt;prompt&gt; action](#prompt-action)
     * [&lt;property&gt; action](#property-action)
-  * [Defaults](#Defaults)
+  * [Default](#Default)
 * [Properties](#properties)
   * [Setting properties](#setting-properties)
   * [Property expansion](#property-expansion)
@@ -525,24 +525,24 @@ For example, the following set the property `myprogram.user.name` to value `Al C
 
 
 
-## Defaults ##
+## Default ##
 
-A &lt;defaults&gt; element in a `Configuration File` defines the defaults settings of a configuration file. A &lt;defaults&gt; element must be inserted under the &lt;shell&gt; element.
+A &lt;default&gt; element in a `Configuration File` defines the default settings of a configuration file. A &lt;default&gt; element must be inserted under the &lt;shell&gt; element.
 
-The &lt;defaults&gt; element have no attributes.
+The &lt;default&gt; element have no attributes.
 
-For example, an empty *defaults* section in a configuration file looks like this:
+For example, an empty *default* section in a configuration file looks like this:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <shell>
-    <defaults>
-    </defaults>
+    <default>
+    </default>
   </shell>
 </root>
 ```
 
-The defaults settings supported by the application is the following:
+The default settings supported by the application is the following:
 * Properties. See [default properties](#default-properties) section for details.
 
 
@@ -662,10 +662,10 @@ Each configuration file optionally define a list of properties to initialize whe
 
 For example, the following would define `services.wce.command.start` and `services.wce.command.stop` properties when the configuration is loaded:
 ```xml
-<defaults>
+<default>
   <property name="services.wce.command.start" value="runwce /start" />
   <property name="services.wce.command.stop"  value="runwce /stop"  />
-</defaults>
+</default>
 ```
 
 
