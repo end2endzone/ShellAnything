@@ -27,6 +27,7 @@
 
 #include "shellanything/Node.h"
 #include "shellanything/Menu.h"
+#include "shellanything/DefaultSettings.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -93,6 +94,11 @@ namespace shellanything
     void update(const Context & c);
 
     /// <summary>
+    /// Apply the configuration's default properties.
+    /// </summary>
+    void applyDefaultSettings();
+
+    /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>
@@ -111,7 +117,20 @@ namespace shellanything
     /// </summary>
     Menu::MenuPtrList getMenus();
 
+    /// <summary>
+    /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
+    /// </summary>
+    /// <param name="defaults">The given DefaultSettings to add to the configuration</param>
+    void setDefaultSettings(DefaultSettings * defaults);
+
+    /// <summary>
+    /// Get the DefaultSettings instance of the Configuration.
+    /// </summary>
+    /// <returns>Returns the DefaultSettings instance of the Configuration. Returns NULL if no DefaultSettings is set.</returns>
+    const DefaultSettings * getDefaultSettings() const;
+
   private:
+    DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
   };

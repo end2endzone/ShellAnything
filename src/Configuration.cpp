@@ -23,11 +23,24 @@
  *********************************************************************************/
 
 #include "shellanything/Configuration.h"
+#include "shellanything/Context.h"
+#include "shellanything/ActionProperty.h"
+
 #include "rapidassist/filesystem.h"
 #include "Platform.h"
 #include "ObjectFactory.h"
 
 #include "tinyxml2.h"
+
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <Windows.h>
 
 using namespace tinyxml2;
 
@@ -35,7 +48,8 @@ namespace shellanything
 {
 
   Configuration::Configuration() : Node("Configuration"),
-    mFileModifiedDate(0)
+    mFileModifiedDate(0),
+    mDefaults(NULL)
   {
   }
 
@@ -76,6 +90,22 @@ namespace shellanything
     Configuration * config = new Configuration();
     config->setFilePath(path);
     config->setFileModifiedDate(file_modified_date);
+
+    //find <default> nodes under <shell>
+    const XMLElement* xml_defaults = xml_shell->FirstChildElement("default");
+    while (xml_defaults)
+    {
+      //found a new menu node
+      DefaultSettings * defaults = ObjectFactory::getInstance().parseDefaults(xml_defaults, error);
+      if (defaults != NULL)
+      {
+        //add the new menu to the current configuration
+        config->setDefaultSettings(defaults);
+      }
+
+      //next defaults node
+      xml_defaults = xml_defaults->NextSiblingElement("default");
+    }
 
     //find <menu> nodes under <shell>
     const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
@@ -157,6 +187,43 @@ namespace shellanything
     }
   }
 
+  void Configuration::applyDefaultSettings()
+  {
+    if (mDefaults && mDefaults->getActions().size() > 0)
+    {
+      //configuration have default properties assigned
+      LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+
+      const shellanything::Action::ActionPtrList & actions = mDefaults->getActions();
+
+      //convert 'actions' to a list of <const shellanything::ActionProperty *>
+      typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
+      ActionPropertyPtrList properties;
+      for(size_t i=0; i<actions.size(); i++)
+      {
+        const shellanything::Action * abstract_action = actions[i];
+        const shellanything::ActionProperty * action_property = dynamic_cast<const shellanything::ActionProperty *>(abstract_action);
+        if (action_property)
+          properties.push_back(action_property);
+      }
+
+      //apply all ActionProperty
+      Context empty_context;
+      for(size_t i=0; i<properties.size(); i++)
+      {
+        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << properties.size() << ".";
+        const shellanything::ActionProperty * action_property = properties[i];
+        if (action_property)
+        {
+          //no need to look for failures. ActionProperty never fails.
+          action_property->execute(empty_context);
+        }
+      }
+
+      LOG(INFO) << __FUNCTION__ << "(), execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
+    }
+  }
+
   Menu * Configuration::findMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
@@ -191,6 +258,19 @@ namespace shellanything
   {
     Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
     return sub_menus;
+  }
+
+  void Configuration::setDefaultSettings(DefaultSettings * defaults)
+  {
+    if (mDefaults)
+      delete mDefaults;
+
+    mDefaults = defaults;
+  }
+
+  const DefaultSettings * Configuration::getDefaultSettings() const
+  {
+    return mDefaults;
   }
 
 } //namespace shellanything

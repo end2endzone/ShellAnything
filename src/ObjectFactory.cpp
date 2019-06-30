@@ -46,6 +46,7 @@ namespace shellanything
   static const std::string NODE_ICON = "icon";
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
+  static const std::string NODE_DEFAULTSETTINGS = "default";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
   static const std::string NODE_ACTION_EXEC = "exec";
   static const std::string NODE_ACTION_PROMPT = "prompt";
@@ -552,6 +553,59 @@ namespace shellanything
     //success
     icon = result;
     return true;
+  }
+
+  DefaultSettings * ObjectFactory::parseDefaults(const XMLElement* element, std::string & error)
+  {
+    if (element == NULL)
+    {
+      error = "XMLElement is NULL";
+      return NULL;
+    }
+
+    std::string xml_name = element->Name();
+    if (xml_name != NODE_DEFAULTSETTINGS)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      return NULL;
+    }
+
+    DefaultSettings * defaults = new DefaultSettings();
+
+    ElementPtrList elements; //temporary xml element containers
+
+    //find <property> node under <default>
+    elements = getChildNodes(element, NODE_ACTION_PROPERTY);
+    for(size_t i=0; i<elements.size(); i++)
+    {
+      const tinyxml2::XMLElement * element = elements[i];
+
+      //found a new action node
+      Action * abstract_action = ObjectFactory::getInstance().parseAction(element, error);
+      if (abstract_action)
+      {
+        //filter out all type of actions except ActionProperty actions
+        ActionProperty * property_action = dynamic_cast<ActionProperty *>(abstract_action);
+        if (property_action != NULL)
+        {
+          //add the new action node
+          defaults->addAction(property_action);
+        }
+        else
+        {
+          delete abstract_action;
+        }
+      }
+    }
+
+    //do not return a DefaultSettings instance if empty.
+    if (defaults->getActions().empty())
+    {
+      delete defaults;
+      return NULL;
+    }
+
+    return defaults;
   }
 
 } //namespace shellanything

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <property name="services.command.start" value="runservice /start" />
+      <property name="services.command.stop"  value="runservice /stop"  />
+    </default>
+
+    <menu name="menu00">
+      <!-- normal/legacy icon usage -->
+      <icon path="C:\Windows\System32\shell32.dll" index="42" />
+      <actions>
+        <property name="foo" value="true" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>

@@ -15,12 +15,14 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;clipboard&gt; action](#clipboard-action)
     * [&lt;prompt&gt; action](#prompt-action)
     * [&lt;property&gt; action](#property-action)
+  * [Default](#Default)
 * [Properties](#properties)
   * [Setting properties](#setting-properties)
   * [Property expansion](#property-expansion)
   * [Using properties](using-properties)
   * [Environment variables](#environment-variables)
   * [Selection-based properties](#selection-based-properties)
+  * [Default properties](#default-properties)
 * [Use Cases](#use-cases)
   * [Integrate a third party application](#integrate-a-third-party-application)
   * [Run an application with parameters](#run-an-application-with-parameters)
@@ -265,6 +267,8 @@ For example, the following set a menu visible when `process.started` property is
 <visibility properties="process.started" />
 ```
 
+See [properties](#properties) section for how to define custom properties.
+
 
 
 ## Icons ##
@@ -490,7 +494,7 @@ For example, the following sets `verbose` property to `/normal` when if the user
 ### &lt;property&gt; action ###
 
 The &lt;property&gt; element is used to set a property to a specific value. The modified property can be used with the &lt;visibility&gt; and &lt;validity&gt; elements to create advanced dynamic menus.
-The modified property can also be used to temporary store the current selection path of filename in properties for use cases with multiple file selection.
+The modified property can be used to temporary store the current selection path of filename in properties for use cases with multiple file selection.
 
 See the [properties](#properties) section for details.
 
@@ -521,9 +525,32 @@ For example, the following set the property `myprogram.user.name` to value `Al C
 
 
 
+## Default ##
+
+A &lt;default&gt; element in a `Configuration File` defines the default settings of a configuration file. A &lt;default&gt; element must be inserted under the &lt;shell&gt; element.
+
+The &lt;default&gt; element have no attributes.
+
+For example, an empty *default* section in a configuration file looks like this:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+    </default>
+  </shell>
+</root>
+```
+
+The default settings supported by the application is the following:
+* Properties. See [default properties](#default-properties) section for details.
+
+
+
+
 # Properties #
 
-The ShellAnything application supports an advanced property system which is a way to assing values to custom named variables. The property system of ShellAnything plays a big role in implementing dynamic content for *Windows Explorer's* context menu.
+The ShellAnything application supports an advanced property system which allows one to assing values to custom named variables. The property system of ShellAnything plays a big role in implementing dynamic content for *Windows Explorer's* context menu.
 
 Properties only support string values. Property names are case sensitive and cannot contain spaces.
 
@@ -600,7 +627,7 @@ For instance, if one wants to implement 2 menus (called 'A' and 'B') and only sh
 
 ## Environment variables ##
 
-The list of environment variables is also available through the property system.
+The list of environment variables is available through the property system.
 
 The syntax of an environment variable property expansion is as follows: `${env.name-of-environment-variable}` where `name-of-environment-variable` is the actual name of an environment variable.
 The name of the variable is case sensitive.
@@ -614,7 +641,7 @@ For example, the following would create a menu with the current user login name:
 
 ## Selection-based properties ##
 
-The application also provides a list of dynamic properties. The values of these properties will change based based on the user selection when a user right-click files or folders.
+The application provides a list of dynamic properties. The values of these properties will change based based on the user selection when a user right-click files or folders.
 
 The following table defines the list of dynamic properties adn their utility:
 
@@ -626,6 +653,21 @@ The following table defines the list of dynamic properties adn their utility:
 | selection.parent.path        | Matches the full path of the parent  element.                            |
 | selection.parent.filename    | Matches the filename  of the parent  element.                            |
 | selection.filename.extension | Matches the file extension of the clicked element.                       |
+
+
+
+## Default properties ##
+
+Each configuration file optionally define a list of properties to initialize when a new configuration file is loaded. This mechanism allows one to define default property for the configuration. 
+
+For example, the following would define `services.wce.command.start` and `services.wce.command.stop` properties when the configuration is loaded:
+```xml
+<default>
+  <property name="services.wce.command.start" value="runwce /start" />
+  <property name="services.wce.command.stop"  value="runwce /stop"  />
+</default>
+```
+
 
 
 
@@ -660,7 +702,7 @@ With ShellAnything, a context menu option can be easily created to allow WinDirS
 
 Run an application that requires special parameters (a.k.a arguments) requires one to open a `command prompt`, navigate to the target directory, and run the command with the parameters.
 
-ShellAnything can easily create a menu that is available only with one right-click a directory. The menu also prompt the user for the arguments and run the desired application:
+ShellAnything can easily create a menu that is available only with one right-click a directory. The menu prompt the user for the arguments and run the desired application:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>

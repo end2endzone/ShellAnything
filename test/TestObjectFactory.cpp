@@ -26,6 +26,7 @@
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
 #include "shellanything/ActionPrompt.h"
+#include "shellanything/ActionProperty.h"
 #include "Platform.h"
 
 #include "rapidassist/gtesthelp.h"
@@ -265,6 +266,57 @@ namespace shellanything { namespace test
     ASSERT_FALSE( prompt02->isOkQuestion() );
     ASSERT_FALSE( prompt03->isOkQuestion() );
     ASSERT_TRUE ( prompt04->isOkQuestion() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseDefaults)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT a DefaultSettings section is available
+    const DefaultSettings * defaults = cmgr.getConfigurations()[0]->getDefaultSettings();
+    ASSERT_TRUE( defaults != NULL );
+
+    //assert 2 properties parsed
+    ASSERT_EQ( 2, defaults->getActions().size() );
+
+    const ActionProperty * property1 = dynamic_cast<const ActionProperty *>(defaults->getActions()[0]);
+    const ActionProperty * property2 = dynamic_cast<const ActionProperty *>(defaults->getActions()[1]);
+    ASSERT_TRUE( property1 != NULL );
+    ASSERT_TRUE( property2 != NULL );
+
+    ASSERT_EQ( std::string("services.command.start"), property1->getName());
+    ASSERT_EQ( std::string("services.command.stop" ), property2->getName());
+    ASSERT_EQ( std::string("runservice /start"), property1->getValue());
+    ASSERT_EQ( std::string("runservice /stop" ), property2->getValue());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

@@ -23,12 +23,17 @@
  *********************************************************************************/
 
 #include "TestConfiguration.h"
+#include "shellanything/ConfigManager.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Menu.h"
 #include "shellanything/ActionExecute.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/gtesthelp.h"
+#include "rapidassist/time_.h"
+
+#include "PropertyManager.h"
+#include "Platform.h"
 
 namespace shellanything { namespace test
 {
@@ -88,11 +93,18 @@ namespace shellanything { namespace test
 
       //test configuration files
       "test_files\\samples.xml",
+      "test_files\\test_issue011.xml",
       "test_files\\TestConfigManager.testAssignCommandId.1.xml",
       "test_files\\TestConfigManager.testAssignCommandId.2.xml",
+      "test_files\\TestConfigManager.testAssignCommandIdsInvalid.xml",
       "test_files\\TestConfigManager.testClear.xml",
       "test_files\\TestConfigManager.testDetectNewFile.xml",
       "test_files\\TestConfigManager.testFileModifications.xml",
+      "test_files\\TestConfigManager.testParentWithoutChildren.xml",
+      "test_files\\TestConfiguration.testLoadProperties.xml",
+      "test_files\\TestObjectFactory.testParseActionPrompt.xml",
+      "test_files\\TestObjectFactory.testParseDefaults.xml",
+      "test_files\\TestObjectFactory.testParseIcon.xml",
       "test_files\\TestObjectFactory.testParseValidator.xml",
       "test_files\\tests.xml",
     };
@@ -102,8 +114,8 @@ namespace shellanything { namespace test
     for(size_t i=0; i<num_files; i++)
     {
       const std::string path = files[i];
-      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) );
-      ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) );
+      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File '" << path.c_str() << "' is not found.";
+      ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) ) << "The file '" << path.c_str() << "' is not a valid configuration file.";
     }
   }
   //--------------------------------------------------------------------------------------------------
@@ -118,6 +130,51 @@ namespace shellanything { namespace test
 
     //cleanup
     delete config;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testLoadProperties)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+ 
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //cleanup properties
+    PropertyManager & pmgr = PropertyManager::getInstance();
+    pmgr.clear();
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT that properties was applied
+    static const std::string EMPTY_STRING;
+    std::string services_command_start = pmgr.getProperty("services.command.start");
+    std::string services_command_stop  = pmgr.getProperty("services.command.stop");
+    ASSERT_NE( EMPTY_STRING, services_command_start );
+    ASSERT_NE( EMPTY_STRING, services_command_stop  );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
 

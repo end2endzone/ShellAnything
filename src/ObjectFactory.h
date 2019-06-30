@@ -29,6 +29,7 @@
 #include "shellanything/Action.h"
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
+#include "shellanything/DefaultSettings.h"
 #include "tinyxml2.h"
 
 namespace shellanything
@@ -82,6 +83,13 @@ namespace shellanything
     /// <returns>Returns a valid Menu pointer if the object was properly parsed. Returns NULL otherwise.</returns>
     Menu * parseMenu(const tinyxml2::XMLElement * element, std::string & error);
 
+    /// <summary>
+    /// Parses a DefaultSettings class from xml. Returns NULL if the parsing failed.
+    /// </summary>
+    /// <param name="element">The xml element that contains an DefaultSettings to parse.</param>
+    /// <param name="error">The error description if the parsing failed.</param>
+    /// <returns>Returns a valid DefaultSettings pointer if the object was properly parsed. Returns NULL otherwise.</returns>
+    DefaultSettings * parseDefaults(const tinyxml2::XMLElement * element, std::string & error);
   };
 
 } //namespace shellanything

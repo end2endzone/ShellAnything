@@ -121,6 +121,9 @@ namespace shellanything
               {
                 //add to current list of configurations
                 mConfigurations.addChild(config);
+
+                //apply default properties of the configuration
+                config->applyDefaultSettings();
               }
             }
             else
