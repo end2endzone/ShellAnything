@@ -25,6 +25,7 @@
 #include "TestObjectFactory.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
+#include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionProperty.h"
 #include "Platform.h"
@@ -51,6 +52,23 @@ namespace shellanything { namespace test
       ActionPrompt * action_prompt = dynamic_cast<ActionPrompt *>(action);
       if (action_prompt)
         return action_prompt;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  ActionFile * getFirstActionFile(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->getActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionFile * action_file = dynamic_cast<ActionFile *>(action);
+      if (action_file)
+        return action_file;
     }
  
     return NULL;
@@ -191,7 +209,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestObjectFactory, testParseActionPrompt)
+  TEST_F(TestObjectFactory, testParseActionFile)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
 
@@ -222,6 +240,59 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 3 menus are available
+    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 3, menus.size() );
+
+    //assert all menus have a file element as the first action
+    ActionFile * file00 = getFirstActionFile(menus[00]);
+    ActionFile * file01 = getFirstActionFile(menus[01]);
+    ActionFile * file02 = getFirstActionFile(menus[02]);
+
+    ASSERT_TRUE( file00 != NULL );
+    ASSERT_TRUE( file01 != NULL );
+    ASSERT_TRUE( file02 != NULL );
+
+    //assert menus have text assigned
+    static const std::string EMPTY_STRING;
+    ASSERT_NE(EMPTY_STRING, file00->getText());
+    ASSERT_NE(EMPTY_STRING, file01->getText());
+    //ASSERT_NE(EMPTY_STRING, file02->getText());
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionPrompt)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+
+    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::time::millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT a multiple menus are available
     Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
     ASSERT_EQ( 5, menus.size() );
 

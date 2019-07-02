@@ -28,6 +28,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Action.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionClipboard.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionExecute.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/ActionFile.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionOpen.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionProperty.h
@@ -50,6 +51,7 @@ add_library(shellanything STATIC
   Action.cpp
   ActionClipboard.cpp
   ActionExecute.cpp
+  ActionFile.cpp
   ActionOpen.cpp
   ActionPrompt.cpp
   ActionProperty.cpp

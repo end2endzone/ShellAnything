@@ -29,6 +29,7 @@
 #include "shellanything/Validator.h"
 #include "shellanything/ActionClipboard.h"
 #include "shellanything/ActionExecute.h"
+#include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionProperty.h"
 #include "shellanything/ActionOpen.h"
@@ -49,6 +50,7 @@ namespace shellanything
   static const std::string NODE_DEFAULTSETTINGS = "default";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
   static const std::string NODE_ACTION_EXEC = "exec";
+  static const std::string NODE_ACTION_FILE = "file";
   static const std::string NODE_ACTION_PROMPT = "prompt";
   static const std::string NODE_ACTION_PROPERTY = "property";
   static const std::string NODE_ACTION_OPEN = "open";
@@ -259,6 +261,28 @@ namespace shellanything
       if (parseAttribute(element, "basedir", true, true, tmp_str, error))
       {
         action->setBaseDir(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+    else if (NODE_ACTION_FILE == element->Name())
+    {
+      ActionFile * action = new ActionFile();
+
+      //parse path
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "path", false, true, tmp_str, error))
+      {
+        action->setPath(tmp_str);
+      }
+
+      //parse text
+      const char * text = element->GetText();
+      if (text)
+      {
+        action->setText(text);
       }
 
       //done parsing
