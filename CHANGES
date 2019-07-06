@@ -1,6 +1,7 @@
 Changes for 0.2.0
 
 * Fixed issue  #6: Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
+* Fixed issue #15: Implement <file> action to create files on disk.
 * Fixed issue #18: Prompt with a Yes/No answer.
 * Fixed issue #19: Clarify functions that are RapidAssist improvements.
 * Fixed issue #20: Create directory for "officials" configuration files.
