@@ -526,27 +526,27 @@ For example, the following set the property `myprogram.user.name` to value `Al C
 
 
 ### &lt;file&gt; action ###
- 
+
 The &lt;file&gt; element is used to create a text file on disk. The content of the file is specified between the opening and closing tags of the &lt;file&gt; element. The &lt;file&gt; element supports dynamic properties and can be used to create default configuration files or create support files for the menu.
- 
+
 The &lt;file&gt; elements have the following attributes:
- 
- 
- 
+
+
+
 #### path attribute: ####
- 
+
 The `path` attribute defines the path of the file. The path must be defined in absolute form.
- 
+
 For example, the following action creates a new configuration file named `config.ini` in the user's HOME directory :
 ```xml
 <file path="${env.USERPROFILE}\config.ini">[user]
 username=${env.USERNAME}
 language=en
- 
+
 [environment]
 java=${env.JAVA_HOME}\bin\java.exe
 working_dir=${selection.path}
- 
+
 [database]
 server=192.168.0.1
 port=1562</file>
