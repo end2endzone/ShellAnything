@@ -102,6 +102,7 @@ namespace shellanything { namespace test
       "test_files\\TestConfigManager.testFileModifications.xml",
       "test_files\\TestConfigManager.testParentWithoutChildren.xml",
       "test_files\\TestConfiguration.testLoadProperties.xml",
+      "test_files\\TestObjectFactory.testParseActionFile.xml",
       "test_files\\TestObjectFactory.testParseActionPrompt.xml",
       "test_files\\TestObjectFactory.testParseDefaults.xml",
       "test_files\\TestObjectFactory.testParseIcon.xml",

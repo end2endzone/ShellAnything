@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <file path="${env.TEMP}\menu00.txt">This is a single line text file created by ShellAnything.</file>
+      </actions>
+    </menu>
+ 
+    <menu name="menu01">
+      <actions>
+        <file path="${env.TEMP}\menu01.txt">
+          This is a
+          multiline
+          text file.
+        </file>
+      </actions>
+    </menu>
+ 
+    <menu name="menu02">
+      <actions>
+        <!--test empty file-->
+        <file path="${env.TEMP}\menu02.txt" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>
