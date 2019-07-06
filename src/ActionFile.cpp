@@ -52,7 +52,7 @@ namespace shellanything
     LOG(INFO) << "Writing file '" << path << "'";
 
     //try to create the file
-    FILE * f = fopen(mPath.c_str(), "wb");
+    FILE * f = fopen(path.c_str(), "w");
     if (!f)
     {
       LOG(ERROR) << "Failed creating file '" << path << "'";
@@ -60,8 +60,8 @@ namespace shellanything
     }
 
     //write to file
-    size_t sizeWrite = fwrite(text.c_str(), 1, text.size(), f);
-    if (sizeWrite != text.size())
+    size_t sizeWrite = fputs(text.c_str(), f);
+    if (sizeWrite < text.size()) //can't use == operator as \n can be replaced by \r\n
     {
       LOG(ERROR) << "Failed writing content to file '" << path << "'";
       fclose(f);
