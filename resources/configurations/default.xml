@@ -22,13 +22,13 @@ Help:
     <menu name="Copy to clipboard...">
       <icon path="C:\Windows\System32\shell32.dll" index="134" />
       <menu name="Full Path" description="Copy the selected file path(s) to the clipboard">
-        <icon path="C:\Windows\System32\shell32.dll" index="165" />
+        <icon fileextension="${selection.filename.extension}" />
         <actions>
           <clipboard value="${selection.path}"/>
         </actions>
       </menu>
       <menu name="Filename" description="Copy the selected filename(s) to the clipboard">
-        <icon fileextension="${selection.filename.extension}" />
+        <icon path="C:\Windows\System32\imageres.dll" index="2" />
         <actions>
           <clipboard value="${selection.filename}"/>
         </actions>
