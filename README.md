@@ -79,13 +79,13 @@ The main features of ShellAnything are:
 * Support for custom icons for each menu.
 * Support activation and visibility filters based on selected files.
 * Define actions executed when a menu option is selected:
-  * Launch an application
-  * Open a document
-  * Prompt for a value
-  * Change the clipboard
+  * Launch an application.
+  * Open a document.
+  * Prompt for a value.
+  * Change the clipboard.
   * and many more.
 * Powerful property-based system for rich dynamic content and filters.
-* Easy integrate any third party application with custom menus.
+* Easily integrate any third party application with custom menus.
 
 
 
