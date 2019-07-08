@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Github Releases](https://img.shields.io/github/release/end2endzone/shellanything.svg)](https://github.com/end2endzone/shellanything/releases)
 
-ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu when a user right-clicking on a file or a directory.
+ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.
 
 
 
@@ -17,13 +17,11 @@ Build:
 | Service | Build | Tests |
 |----|-------|-------|
 | AppVeyor | [![Build status](https://img.shields.io/appveyor/ci/end2endzone/ShellAnything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything) | [![Tests status](https://img.shields.io/appveyor/tests/end2endzone/shellanything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master/tests) |
-| Travis CI | [![Build Status](https://img.shields.io/travis/end2endzone/ShellAnything/master.svg?logo=travis&style=flat)](https://travis-ci.org/end2endzone/ShellAnything) |  |
+
 
 Statistics:
 
-| AppVeyor | Travic CI |
-|----------|-----------|
-| [![Statistics](https://buildstats.info/appveyor/chart/end2endzone/shellanything)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master) | [![Statistics](https://buildstats.info/travisci/chart/end2endzone/ShellAnything)](https://travis-ci.org/end2endzone/ShellAnything) |
+[![Statistics](https://buildstats.info/appveyor/chart/end2endzone/shellanything)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master)
 
 
 
@@ -44,10 +42,10 @@ Statistics:
 
 # Purpose #
 
-Adding new options to the Windows Explorer context menu can be done in many ways. One can create new context menus by [manually editing the registry](https://www.groovypost.com/howto/add-any-program-windows-context-menu/) but this option limited in support (static text, no submenus). If you are technical person, you can also follow [this guide](https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders) on StackOverflow.
+Adding new options to Windows Explorer context menu can be done in many ways. One can create new context menus by [manually editing the registry](https://www.groovypost.com/howto/add-any-program-windows-context-menu/) but this option is limited in support (static text, no submenus). If you are technical person, you can also follow [this guide](https://stackoverflow.com/questions/20449316/how-add-context-menu-item-to-windows-explorer-for-folders) on StackOverflow.
 
 With Shell Extension, you can dynamically create a context menu item (or submenu) that is more relevant to the selected file(s).
-Shell extension are dynamic by nature because they are runtime DLL inside Windows Explorer. They can show or hide options based on the selected file's size, the content of the file, anything.
+Shell extension are dynamic by nature because they are runtime DLL inside Windows Explorer. They can show or hide options based on the selected file's name, size, content, etc.
 Shell extensions also have the ability to handle multiple selected files simultaneously.
 
 On the downside, writing shell extensions is complicated, tedious and difficult to debug. 
@@ -77,10 +75,10 @@ For instance, the following articles are good references:
 The main features of ShellAnything are:
 
 * Easily add custom menus and submenus.
-* Dynamic content based on xml files. Change project xml files to see the menu options update automatically.
-* Support menu custom icons.
+* Dynamic content based on xml files. Change xml configuration files to see the menu options update automatically.
+* Support for custom icons for each menu.
 * Support activation and visibility filters based on selected files.
-* Define actions executed when a menu option is clicked:
+* Define actions executed when a menu option is selected:
   * Launch an application
   * Open a document
   * Prompt for a value
@@ -96,12 +94,12 @@ The main features of ShellAnything are:
 
 For instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
 
-The User Manual also features Use Case with the following examples:
+The User Manual also features *Use Case* with the following examples:
 
-* [Integrate a third party application](UserManual.md#integrate-a-third-party-application)
-* [Run an application with parameters](UserManual.md#run-an-application-with-parameters)
-* [Open a command prompt in directory](UserManual.md#open-a-command-prompt-in-directory)
-* [Select two files for an operation](UserManual.md#select-two-files-for-an-operation)
+* [Integrate a third party application](UserManual.md#integrate-a-third-party-application).
+* [Run an application with parameters](UserManual.md#run-an-application-with-parameters).
+* [Open a command prompt in directory](UserManual.md#open-a-command-prompt-in-directory).
+* [Select two files for an operation](UserManual.md#select-two-files-for-an-operation).
 
 
 
@@ -124,7 +122,7 @@ ShellAnything has been tested with the following platform:
 
 # Versioning #
 
-We use [Semantic Versioning 2.0.0](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/end2endzone/ShellAnything/tags).
+This project uses [Semantic Versioning 2.0.0](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/end2endzone/ShellAnything/tags).
 
 
 
