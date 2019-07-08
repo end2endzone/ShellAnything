@@ -122,7 +122,7 @@ ShellAnything has been tested with the following platform:
 
 # Versioning #
 
-This project uses [Semantic Versioning 2.0.0](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/end2endzone/ShellAnything/tags).
+This project use [Semantic Versioning 2.0.0](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/end2endzone/ShellAnything/tags).
 
 
 
