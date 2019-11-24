@@ -200,6 +200,7 @@ install(FILES ${SHELLANYTHING_EXPORT_HEADER}
               ${SHELLANYTHING_CONFIG_HEADER}
               DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR}/shellanything)
 install(EXPORT shellanything-targets DESTINATION ${SHELLANYTHING_INSTALL_CMAKE_DIR})
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/licenses DESTINATION "licenses")
 
 ##############################################################################################################################################
 # Packaging
