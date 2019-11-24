@@ -30,7 +30,7 @@
 #include "TestWin32Utils.h"
 #include "win32_utils.h"
 #include "rapidassist/filesystem.h"
-#include "rapidassist/gtesthelp.h"
+#include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
 {
@@ -67,7 +67,7 @@ namespace shellanything { namespace test
       DestroyIcon(hIconSmall);
 
       //save to a file
-      std::string file_path = ra::gtesthelp::getTestQualifiedName();
+      std::string file_path = ra::testing::GetTestQualifiedName();
       static const size_t BUFFER_SIZE = 1024;
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".shell32.dll.index%03d.bmp", i);
@@ -121,8 +121,8 @@ namespace shellanything { namespace test
       DestroyIcon(hIconSmall);
 
       //save to a file
-      std::string file_path = ra::gtesthelp::getTestQualifiedName();
-      std::string dll_filename = ra::filesystem::getFilename(icon_path);
+      std::string file_path = ra::testing::GetTestQualifiedName();
+      std::string dll_filename = ra::filesystem::GetFilename(icon_path);
       static const size_t BUFFER_SIZE = 1024;
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".%s.index%03d.bmp", dll_filename.c_str(), index);

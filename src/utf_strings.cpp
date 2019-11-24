@@ -1,6 +1,11 @@
 #include "utf_strings.h"
 
 #include <Windows.h>
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
 
 namespace encoding
 {

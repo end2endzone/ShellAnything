@@ -26,7 +26,7 @@
 #include "InputBox.h"
 #include "utf_strings.h"
 
-#include "rapidassist/gtesthelp.h"
+#include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
 {
@@ -43,7 +43,7 @@ namespace shellanything { namespace test
   {
     HWND hWnd = GetDesktopWindow();
 
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string hello_text = std::string("hello world from ") + test_name;
     std::string caption = std::string("caption: ") + hello_text;
     std::string prompt = std::string("prompt: ") + hello_text;
@@ -61,7 +61,7 @@ namespace shellanything { namespace test
     static const wchar_t MICRO_SIGN = 0x00B5;
     static const wchar_t REGISTERED_SIGN = 0x00AE;
 
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::wstring hello_text = std::wstring(L"hello world from ") + encoding::utf::ansi_to_unicode(test_name);
 
     hello_text.insert(0, 1, COPYRIGHT_SIGN);
@@ -81,7 +81,7 @@ namespace shellanything { namespace test
   {
     HWND hWnd = GetDesktopWindow();
  
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::wstring hello_text = std::wstring(L"hello world from ") + encoding::utf::ansi_to_unicode(test_name);
  
     std::wstring caption = std::wstring(L"caption: ") + hello_text;

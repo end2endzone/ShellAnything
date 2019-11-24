@@ -108,7 +108,7 @@ namespace shellanything
     }
     else if (!attr_node)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is missing attribute '" + std::string(attr_name) + "'.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing attribute '" + std::string(attr_name) + "'.";
       return false;
     }
 
@@ -116,7 +116,7 @@ namespace shellanything
 
     if (!allow_empty_values && attr_value.empty())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " have attribute '" + std::string(attr_name) + "' value empty.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " have attribute '" + std::string(attr_name) + "' value empty.";
       return false;
     }
 
@@ -131,7 +131,7 @@ namespace shellanything
 
     //convert string to int
     int int_value = -1;
-    if (!ra::strings::parse(str_value, int_value))
+    if (!ra::strings::Parse(str_value, int_value))
     {
       //failed parsing
       error << "Failed parsing attribute '" << attr_name << "' of node '" << element->Name() << "'.";
@@ -153,7 +153,7 @@ namespace shellanything
 
     if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
       return false;
     }
 
@@ -383,7 +383,7 @@ namespace shellanything
     }
     else
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
@@ -402,7 +402,7 @@ namespace shellanything
     std::string xml_name = element->Name();
     if (xml_name != NODE_MENU)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
@@ -415,7 +415,7 @@ namespace shellanything
     bool is_separator = false;
     if (have_separetor)
     {
-      is_separator = shellanything::parseBoolean(menu_separator);
+      is_separator = ra::strings::ParseBoolean(menu_separator);
       if (is_separator)
       {
         menu->setSeparator(true);
@@ -543,7 +543,7 @@ namespace shellanything
     std::string xml_name = element->Name();
     if (xml_name != NODE_ICON)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 
@@ -590,7 +590,7 @@ namespace shellanything
     std::string xml_name = element->Name();
     if (xml_name != NODE_DEFAULTSETTINGS)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::toString(element->GetLineNum()) + " is an unknown type.";
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
       return NULL;
     }
 

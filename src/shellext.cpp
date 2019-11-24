@@ -20,10 +20,18 @@
 #include "glog_utils.h"
 #include "utf_strings.h"
 
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
+
 #include "rapidassist/strings.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/process.h"
+#include "rapidassist/errors.h"
+#include "rapidassist/user.h"
 
 #include "shellanything/ConfigManager.h"
 #include "version.h"
@@ -51,15 +59,15 @@ std::string GetCurrentModulePath()
                           (LPCSTR) __FUNCTION__,
                           &hModule))
   {
-    DWORD dwError = GetLastError();
-    std::string desc = shellanything::GetSystemErrorDescription(dwError);
+    uint32_t error_code = ra::errors::GetLastErrorCode();
+    std::string desc = ra::errors::GetErrorCodeDescription(error_code);
     std::string message = std::string() +
-      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::toString(__LINE__) + ".\n" +
+      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
       "\n" +
       "Failed getting the file path of the current module.\n" +
       "The following error code was returned:\n" +
       "\n" +
-      ra::strings::format("0x%08x", dwError) + ": " + desc;
+      ra::strings::Format("0x%08x", error_code) + ": " + desc;
 
     //display an error on 
     shellanything::ShowErrorMessage("ShellAnything Error", message);
@@ -109,7 +117,7 @@ std::string GuidToInterfaceName(GUID guid)
 /// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
 bool isFirstApplicationRun(const std::string & name, const std::string & version)
 {
-  std::string key = ra::strings::format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
+  std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
   if (!win32_registry::createKey(key.c_str(), NULL))
   {
     // unable to get to the application's key.
@@ -133,7 +141,7 @@ bool isFirstApplicationRun(const std::string & name, const std::string & version
     return true;
   }
 
-  bool first_run = shellanything::parseBoolean(value);
+  bool first_run = ra::strings::ParseBoolean(value);
  
   if (first_run)
   {
@@ -344,7 +352,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
   insert_pos++; //next menu is below this one
 
-  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::format("%03d", insert_pos) << ", id=" << ra::strings::format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
+  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::Format("%03d", insert_pos) << ", id=" << ra::strings::Format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
 }
 
 void CContextMenu::BuildMenuTree(HMENU hMenu)
@@ -480,10 +488,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
     {NULL, NULL},
   };
   std::string uFlagsStr = FlagDescriptor<UINT>::toBitString(uFlags, flags);
-  std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
+  std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -574,7 +582,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   //define how we should interpret lpcmi->lpVerb
   std::string verb;
   if (IS_INTRESOURCE(lpcmi->lpVerb))
-    verb = ra::strings::toString((int)lpcmi->lpVerb);
+    verb = ra::strings::ToString((int)lpcmi->lpVerb);
   else
     verb = lpcmi->lpVerb;
 
@@ -620,10 +628,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
       if (!success)
       {
         //try to get an error mesage from win32
-        uint32_t dwError = shellanything::GetSystemErrorCode();
+        uint32_t dwError = ra::errors::GetLastErrorCode();
         if (dwError)
         {
-          std::string error_message = shellanything::GetSystemErrorDescription(dwError);
+          std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
           LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed: " << error_message;
         }
         else
@@ -658,7 +666,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
     {NULL, NULL},
   };
   std::string uFlagsStr = FlagDescriptor<UINT>::toValueString(uFlags, flags);
-  std::string uFlagsHex = ra::strings::format("0x%08x", uFlags);
+  std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
@@ -805,7 +813,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       DragQueryFile(hDropInfo, i, (char*)path.data(), (UINT)buffer_size);
 
       //add the new file
-      LOG(INFO) << "Found file/directory #" << ra::strings::format("%03d",i) << ": '" << path << "'.";
+      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d",i) << ": '" << path << "'.";
       files.push_back(path);
     }
     GlobalUnlock(stg.hGlobal);
@@ -1044,62 +1052,62 @@ STDAPI DllRegisterServer(void)
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
   const std::string module_path = GetCurrentModulePath();
 
-  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
 
   //Register version 1 of our class
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
     if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   //Register current version of our class
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Add the CLSID of this DLL to the registry
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
     if (!win32_registry::createKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
 
   // Define the path and parameters of our DLL:
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
     if (!win32_registry::createKey(key.c_str(), class_name_version1.c_str()))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
     if (!win32_registry::createKey(key.c_str(), ShellExtensionClassName))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
     if (!win32_registry::createKey(key.c_str()))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
     if (!win32_registry::createKey(key.c_str(), module_path.c_str() ))
       return E_ACCESSDENIED;
     if (!win32_registry::setValue(key.c_str(), "ThreadingModel", "Apartment"))
@@ -1108,35 +1116,35 @@ STDAPI DllRegisterServer(void)
 
   // Register the shell extension for all the file types
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for directories
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for folders
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for the desktop or the file explorer's background
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for drives
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::createKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
@@ -1166,7 +1174,7 @@ STDAPI DllUnregisterServer(void)
   const char * guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
 
-  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::toString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
 
   // Unregister the shell extension from the system's approved Shell Extensions
   {
@@ -1177,54 +1185,54 @@ STDAPI DllUnregisterServer(void)
 
   // Unregister the shell extension for drives
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for the desktop or the file explorer's background
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for folders
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for directories
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for all the file types
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Remove the CLSID of this DLL from the registry
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister current and version 1 of our extension
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
   {
-    std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
     if (!win32_registry::deleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
@@ -1242,7 +1250,7 @@ STDAPI DllUnregisterServer(void)
 void InstallDefaultConfigurations(const std::string & config_dir)
 {
   std::string app_path = GetCurrentModulePath();
-  std::string app_dir = ra::filesystem::getParentPath(app_path);
+  std::string app_dir = ra::filesystem::GetParentPath(app_path);
 
   static const char * default_files[] = {
     "default.xml",
@@ -1265,7 +1273,7 @@ void InstallDefaultConfigurations(const std::string & config_dir)
     std::string target_path = config_dir + "\\" + filename;
 
     LOG(INFO) << "Installing configuration file: " << target_path;
-    bool installed = shellanything::copyFile(source_path, target_path);
+    bool installed = ra::filesystem::CopyFile(source_path, target_path);
     if (!installed)
     {
       LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
@@ -1277,7 +1285,7 @@ void LogEnvironment()
 {
   LOG(INFO) << "Enabling logging";
   LOG(INFO) << "DLL path: " << GetCurrentModulePath();
-  LOG(INFO) << "EXE path: " << ra::process::getCurrentProcessPath().c_str();
+  LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPath().c_str();
 
   LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
@@ -1295,7 +1303,7 @@ void InitConfigManager()
   static const std::string app_version = SHELLANYTHING_VERSION;
 
   //get home directory of the user
-  std::string home_dir = shellanything::getHomeDirectory();
+  std::string home_dir = ra::user::GetHomeDirectory();
   std::string config_dir = home_dir + "\\" + app_name;
   LOG(INFO) << "HOME   directory : " << home_dir.c_str();
   LOG(INFO) << "Config directory : " << config_dir.c_str();
@@ -1313,7 +1321,7 @@ void InitConfigManager()
 
   //define global properties
   std::string prop_application_path       = GetCurrentModulePath();
-  std::string prop_application_directory  = ra::filesystem::getParentPath(prop_application_path);
+  std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
   std::string prop_log_directory          = shellanything::GetLogDirectory();
   std::string prop_config_directory       = config_dir;
 

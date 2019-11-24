@@ -88,16 +88,16 @@ namespace shellanything
  
       //build properties for this specific element
       std::string element_selection_path            = element;
-      std::string element_selection_parent_path     = ra::filesystem::getParentPath(element_selection_path);
-      std::string element_selection_parent_filename = ra::filesystem::getFilename(element_selection_parent_path.c_str());
-      std::string element_selection_filename        = ra::filesystem::getFilename(element_selection_path.c_str());
-      std::string element_selection_filename_noext  = getFilenameWithoutExtension(element_selection_path.c_str());
-      std::string element_selection_filename_ext    = ra::filesystem::getFileExtention(element_selection_filename);
+      std::string element_selection_parent_path     = ra::filesystem::GetParentPath(element_selection_path);
+      std::string element_selection_parent_filename = ra::filesystem::GetFilename(element_selection_parent_path.c_str());
+      std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
+      std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
+      std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
  
       //append this specific element properties to the global property string
  
       //add a newline if the property value is not empty. This allows printing all file path on individual lines
-      static const char * line_separator = ra::environment::getLineSeparator();
+      static const char * line_separator = ra::environment::GetLineSeparator();
       if (!selection_path           .empty()) selection_path            .append( line_separator );
       if (!selection_parent_path    .empty()) selection_parent_path     .append( line_separator );
       if (!selection_parent_filename.empty()) selection_parent_filename .append( line_separator );
@@ -148,8 +148,8 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       const std::string & element = elements[i];
-      bool isFile = ra::filesystem::fileExists(element.c_str());
-      bool isDir  = ra::filesystem::folderExists(element.c_str());
+      bool isFile = ra::filesystem::FileExists(element.c_str());
+      bool isDir  = ra::filesystem::DirectoryExists(element.c_str());
       if (isFile)
         mNumFiles++;
       if (isDir)

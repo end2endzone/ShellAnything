@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionOpen.h"
+#include "rapidassist/process.h"
 #include "PropertyManager.h"
 #include "Platform.h"
 
@@ -50,7 +51,7 @@ namespace shellanything
     //debug
     LOG(INFO) << "Open file '" << path << "'";
 
-    uint32_t pId = openDocument(path);
+    uint32_t pId = ra::process::OpenDocument(path);
 
     return pId != 0;
   }

@@ -25,7 +25,7 @@
 #include "TestBitmapCache.h"
 #include "BitmapCache.h"
 #include "win32_utils.h"
-#include "rapidassist/gtesthelp.h"
+#include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
 {

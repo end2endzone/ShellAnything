@@ -41,6 +41,11 @@
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 #include <Windows.h>
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
 
 using namespace tinyxml2;
 
@@ -61,13 +66,13 @@ namespace shellanything
   {
     error = "";
 
-    if (!ra::filesystem::fileExists(path.c_str()))
+    if (!ra::filesystem::FileExists(path.c_str()))
     {
       error = "File '" + path + "' not found.";
       return NULL;
     }
 
-    uint64_t file_modified_date = ra::filesystem::getFileModifiedDate(path.c_str());
+    uint64_t file_modified_date = ra::filesystem::GetFileModifiedDate(path.c_str());
 
     //Parse the xml file
     //http://leethomason.github.io/tinyxml2/
@@ -131,13 +136,13 @@ namespace shellanything
 
   bool Configuration::isValidConfigFile(const std::string & path)
   {
-    std::string file_extension = ra::filesystem::getFileExtention(path);
-    file_extension = ra::strings::uppercase(file_extension);
+    std::string file_extension = ra::filesystem::GetFileExtention(path);
+    file_extension = ra::strings::Uppercase(file_extension);
     if (file_extension == "XML")
     {
       //read the beginning of the file
       std::string content;
-      bool readed = peekFile(path.c_str(), 1024, content);
+      bool readed = ra::filesystem::PeekFile(path.c_str(), 1024, content);
       if (readed)
       {
         //and look for special XML tags

@@ -29,8 +29,8 @@
 #include "shellanything/ActionExecute.h"
 
 #include "rapidassist/filesystem.h"
-#include "rapidassist/gtesthelp.h"
-#include "rapidassist/time_.h"
+#include "rapidassist/testing.h"
+#include "rapidassist/timing.h"
 
 #include "PropertyManager.h"
 #include "Platform.h"
@@ -115,7 +115,7 @@ namespace shellanything { namespace test
     for(size_t i=0; i<num_files; i++)
     {
       const std::string path = files[i];
-      ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File '" << path.c_str() << "' is not found.";
+      ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File '" << path.c_str() << "' is not found.";
       ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(path) ) << "The file '" << path.c_str() << "' is not a valid configuration file.";
     }
   }
@@ -123,7 +123,7 @@ namespace shellanything { namespace test
   TEST_F(TestConfiguration, testLoadFile)
   {
     const std::string path = "configurations/default.xml";
-    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
+    std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = Configuration::loadFile(path, error_message);
 
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
@@ -137,22 +137,22 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
     
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
 
     //cleanup properties
     PropertyManager & pmgr = PropertyManager::getInstance();
@@ -175,7 +175,7 @@ namespace shellanything { namespace test
     ASSERT_NE( EMPTY_STRING, services_command_stop  );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
 

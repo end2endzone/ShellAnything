@@ -45,13 +45,13 @@ namespace shellanything
 
   bool ActionPrompt::isYesNoQuestion() const
   {
-    bool yes_no_question = (!mType.empty() && ra::strings::uppercase(mType) == "YESNO");
+    bool yes_no_question = (!mType.empty() && ra::strings::Uppercase(mType) == "YESNO");
     return yes_no_question;
   }
 
   bool ActionPrompt::isOkQuestion() const
   {
-    bool ok_question = (!mType.empty() && ra::strings::uppercase(mType) == "OK");
+    bool ok_question = (!mType.empty() && ra::strings::Uppercase(mType) == "OK");
     return ok_question;
   }
 

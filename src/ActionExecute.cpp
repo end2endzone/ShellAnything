@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionExecute.h"
+#include "rapidassist/process.h"
 #include "PropertyManager.h"
 #include "Platform.h"
 
@@ -69,14 +70,14 @@ namespace shellanything
       {
         //if a single file was selected
         const std::string & selected_file = elements[0];
-        const std::string parent_dir = ra::filesystem::getParentPath(selected_file);
+        const std::string parent_dir = ra::filesystem::GetParentPath(selected_file);
         basedir = parent_dir;
       }
       else if (num_dir == 0 && num_files >= 2 && elements.size() >= 1)
       {
         //if a multiple files was selected
         const std::string & first_selected_file = elements[0];
-        const std::string first_parent_dir = ra::filesystem::getParentPath(first_selected_file);
+        const std::string first_parent_dir = ra::filesystem::GetParentPath(first_selected_file);
         basedir = first_parent_dir;
       }
     }
@@ -95,7 +96,7 @@ namespace shellanything
     //debug
     LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
 
-    uint32_t pId = startProcess(path, arguments, basedir);
+    uint32_t pId = ra::process::StartProcess(path, arguments, basedir);
 
     bool success = pId != 0;
     if (success)

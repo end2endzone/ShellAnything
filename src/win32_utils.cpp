@@ -1,6 +1,11 @@
 //#define WIN32_LEAN_AND_MEAN 1
 #include "win32_utils.h"
 #include "utf_strings.h"
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
 
 #include <string>
 #include <assert.h>
@@ -369,7 +374,7 @@ namespace win32_utils
       DIB_RGB_COLORS));
 
     // Create the .BMP file.  
-    hf = CreateFile(pszFile, 
+    hf = ::CreateFileA(pszFile, 
       GENERIC_READ | GENERIC_WRITE, 
       (DWORD) 0, 
       NULL, 

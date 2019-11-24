@@ -26,7 +26,7 @@
 #include "shellanything/Validator.h"
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
-#include "rapidassist/gtesthelp.h"
+#include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
 {
@@ -140,7 +140,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.validate(c) );
 
     PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string property_name = ra::gtesthelp::getTestQualifiedName();
+    std::string property_name = ra::testing::GetTestQualifiedName();
 
     //assert failure when property is not defined
     v.setProperties(property_name);

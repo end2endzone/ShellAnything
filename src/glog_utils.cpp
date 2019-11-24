@@ -1,14 +1,20 @@
 #include "glog_utils.h"
 #include "Platform.h"
 
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h> //for MAX_PATH
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
+
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
-#include "rapidassist/time_.h"
+#include "rapidassist/timing.h"
 #include "rapidassist/process.h"
-
-#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h> //for MAX_PATH
+#include "rapidassist/user.h"
 
 //Global declarations
 char      g_Path[MAX_PATH];         // Path to this DLL. 
@@ -50,7 +56,7 @@ namespace shellanything
       return 0; //failed getting the file's datetime
 
     GLOG_DATETIME now;
-    tm tmp = ra::time::getLocalTime();
+    tm tmp = ra::timing::GetLocalTime();
     tmp.tm_year += 1900;
     tmp.tm_mon += 1; //from [0,11] range to [1,12]
     now.year   = tmp.tm_year  ;
@@ -76,10 +82,10 @@ namespace shellanything
 
     //shellext-d.dll.PCNAME.JohnSmith.log.INFO.20190503-180515.14920.log
     
-    std::string filename = ra::filesystem::getFilename(path.c_str());
+    std::string filename = ra::filesystem::GetFilename(path.c_str());
     
     ra::strings::StringVector parts;
-    ra::strings::split(parts, filename, ".");
+    ra::strings::Split(parts, filename, ".");
 
     //native format is expected to have 9 parts:
     //  0: module filename
@@ -93,7 +99,7 @@ namespace shellanything
       return GetInvalidLogDateTime(); //fail
 
     std::string datetime = parts[parts.size()-3];
-    ra::strings::replace(datetime, "-", ""); //cleanup
+    ra::strings::Replace(datetime, "-", ""); //cleanup
 
     if (datetime.size() != 14)
       return GetInvalidLogDateTime(); //fail
@@ -107,21 +113,21 @@ namespace shellanything
     std::string second = datetime.substr(12, 2);
 
     //trimming
-    year   = ra::strings::trimLeft(year  , '0');
-    month  = ra::strings::trimLeft(month , '0');
-    day    = ra::strings::trimLeft(day   , '0');
-    hour   = ra::strings::trimLeft(hour  , '0');
-    minute = ra::strings::trimLeft(minute, '0');
-    second = ra::strings::trimLeft(second, '0');
+    year   = ra::strings::TrimLeft(year  , '0');
+    month  = ra::strings::TrimLeft(month , '0');
+    day    = ra::strings::TrimLeft(day   , '0');
+    hour   = ra::strings::TrimLeft(hour  , '0');
+    minute = ra::strings::TrimLeft(minute, '0');
+    second = ra::strings::TrimLeft(second, '0');
 
     //parsing
     bool parsed = true;
-    parsed = parsed && ra::strings::parse(year  , dt.year  );
-    parsed = parsed && ra::strings::parse(month , dt.month );
-    parsed = parsed && ra::strings::parse(day   , dt.day   );
-    parsed = parsed && ra::strings::parse(hour  , dt.hour  );
-    parsed = parsed && ra::strings::parse(minute, dt.minute);
-    parsed = parsed && ra::strings::parse(second, dt.second);
+    parsed = parsed && ra::strings::Parse(year  , dt.year  );
+    parsed = parsed && ra::strings::Parse(month , dt.month );
+    parsed = parsed && ra::strings::Parse(day   , dt.day   );
+    parsed = parsed && ra::strings::Parse(hour  , dt.hour  );
+    parsed = parsed && ra::strings::Parse(minute, dt.minute);
+    parsed = parsed && ra::strings::Parse(second, dt.second);
 
     if (!parsed)
       return GetInvalidLogDateTime(); 
@@ -139,7 +145,7 @@ namespace shellanything
     // The function google::SetLogDestination() is expecting a full path (including the destination directory)
 
     std::string module_path = GetCurrentModulePath();
-    std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
+    std::string module_filename = ra::filesystem::GetFilename(module_path.c_str());
 
     std::string path;
 
@@ -156,7 +162,7 @@ namespace shellanything
   std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id)
   {
     std::string module_path = GetCurrentModulePath();
-    std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
+    std::string module_filename = ra::filesystem::GetFilename(module_path.c_str());
 
     std::string filename;
 
@@ -169,7 +175,7 @@ namespace shellanything
     filename.append("-");
     filename.append(time);
     filename.append(".");
-    filename.append(ra::strings::toString(process_id));
+    filename.append(ra::strings::ToString(process_id));
     filename.append(".log");
 
     return filename;
@@ -178,11 +184,11 @@ namespace shellanything
   std::string GetLogDirectory()
   {
     //Issue #10 - Change the log directory if run from the unit tests executable
-    std::string process_path = ra::process::getCurrentProcessPath();
+    std::string process_path = ra::process::GetCurrentProcessPath();
     if (process_path.find("_unittest") != std::string::npos)
     {
       //This DLL is executed by the unit tests
-      std::string log_dir = ra::process::getCurrentProcessDir();
+      std::string log_dir = ra::process::GetCurrentProcessDir();
       log_dir.append("\\logs");
       return log_dir;
     }
@@ -190,7 +196,7 @@ namespace shellanything
     //By default, GLOG will output log files in %TEMP% directory.
     //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
 
-    std::string log_dir = shellanything::getHomeDirectory();
+    std::string log_dir = ra::user::GetHomeDirectory();
     if (!log_dir.empty())
     {
       //We got the %USERPROFILE% directory.
@@ -202,14 +208,14 @@ namespace shellanything
 
     //Failed getting HOME directory.
     //Fallback to using %TEMP%.
-    log_dir = ra::environment::getEnvironmentVariable("TEMP");
+    log_dir = ra::environment::GetEnvironmentVariable("TEMP");
     return log_dir;
   }
 
   bool IsLogFile(const std::string & path)
   {
     std::string module_path = GetCurrentModulePath();
-    std::string module_filename = ra::filesystem::getFilename(module_path.c_str());
+    std::string module_filename = ra::filesystem::GetFilename(module_path.c_str());
 
     //validate that 'path' contains the dll filename
     size_t pos = path.find(module_filename);
@@ -217,8 +223,8 @@ namespace shellanything
       return false;
 
     //validate the path's file extension
-    std::string extension = ra::filesystem::getFileExtention(path);
-    extension = ra::strings::uppercase(extension);
+    std::string extension = ra::filesystem::GetFileExtention(path);
+    extension = ra::strings::Uppercase(extension);
     if (extension != "LOG")
       return false;
 
@@ -229,7 +235,7 @@ namespace shellanything
   {
     std::string log_dir = GetLogDirectory();
     ra::strings::StringVector files;
-    bool success = ra::filesystem::findFiles(files, log_dir.c_str());
+    bool success = ra::filesystem::FindFiles(files, log_dir.c_str());
     if (!success) return;
 
     //for each files
@@ -245,7 +251,7 @@ namespace shellanything
         bool old = (age > max_age_seconds);
 
         if (old)
-          ra::filesystem::deleteFile(path.c_str());
+          ra::filesystem::DeleteFile(path.c_str());
       }
     }
   }
@@ -263,14 +269,14 @@ namespace shellanything
     std::string log_dir = GetLogDirectory();
 
     //Try to create the directory
-    if (!ra::filesystem::folderExists(log_dir.c_str()))
+    if (!ra::filesystem::DirectoryExists(log_dir.c_str()))
     {
-      bool created = shellanything::createFolder(log_dir.c_str());
+      bool created = ra::filesystem::CreateDirectory(log_dir.c_str());
       if (!created)
       {
         //Show an error message
         const std::string title = "ShellAnything init";
-        const std::string message = ra::strings::format("Failed creating log directory '%s'", log_dir.c_str());
+        const std::string message = ra::strings::Format("Failed creating log directory '%s'", log_dir.c_str());
         ShowErrorMessage(title, message);
       }
     }

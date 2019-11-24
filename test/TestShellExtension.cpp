@@ -27,7 +27,7 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/process.h"
-#include "rapidassist/time_.h"
+#include "rapidassist/timing.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -45,11 +45,11 @@ namespace shellanything { namespace test
 
   std::string getShellExtensionDllPath()
   {
-    std::string cur_process = ra::process::getCurrentProcessPath();
+    std::string cur_process = ra::process::GetCurrentProcessPath();
 
     std::string path = cur_process;
-    ra::strings::replace(path, "shellanything_unittest", "shellext");
-    ra::strings::replace(path, ".exe", ".dll");
+    ra::strings::Replace(path, "shellanything_unittest", "shellext");
+    ra::strings::Replace(path, ".exe", ".dll");
     return path;
   }
 
@@ -167,7 +167,7 @@ namespace shellanything { namespace test
   void TestShellExtension::TearDown()
   {
     //Sleep betwwen tests to allow GLOG to generate different log filenames.
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestShellExtension, testDefaultDllCanUnloadNow)
@@ -175,7 +175,7 @@ namespace shellanything { namespace test
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
     std::string path = getShellExtensionDllPath();
-    ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
     ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
@@ -194,7 +194,7 @@ namespace shellanything { namespace test
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
     std::string path = getShellExtensionDllPath();
-    ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
     ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
@@ -233,7 +233,7 @@ namespace shellanything { namespace test
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
     std::string path = getShellExtensionDllPath();
-    ASSERT_TRUE( ra::filesystem::fileExists(path.c_str()) ) << "File not found: '" << path << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
     ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";

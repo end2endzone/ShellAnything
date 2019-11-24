@@ -27,10 +27,10 @@
 #include "shellanything/Context.h"
 #include "Platform.h"
 
-#include "rapidassist/gtesthelp.h"
+#include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
-#include "rapidassist/time_.h"
+#include "rapidassist/timing.h"
 
 namespace shellanything { namespace test
 {
@@ -140,7 +140,7 @@ namespace shellanything { namespace test
       if (config)
       {
         const std::string & file_path = config->getFilePath();
-        ASSERT_TRUE( ra::filesystem::deleteFile(file_path.c_str()) ) << "Failed deleting file '" << file_path << "'.";
+        ASSERT_TRUE( ra::filesystem::DeleteFile(file_path.c_str()) ) << "Failed deleting file '" << file_path << "'.";
       }
     }
 
@@ -159,20 +159,20 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp1.xml";
     std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp2.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path1);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path1);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path1) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path1) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path1 << "'.";
     
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -199,12 +199,12 @@ namespace shellanything { namespace test
       "    </menu>\n"
       "  </shell>\n"
       "</root>\n";
-    static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
+    static const std::string LINE_SEPARATOR = ra::environment::GetLineSeparator();
     if (LINE_SEPARATOR != "\n")
     {
-      ra::strings::replace(CONFIG_XML, "\n", LINE_SEPARATOR);
+      ra::strings::Replace(CONFIG_XML, "\n", LINE_SEPARATOR);
     }
-    bool fileWrite = writeFile(template_target_path2, CONFIG_XML);
+    bool fileWrite = ra::filesystem::WriteFile(template_target_path2, CONFIG_XML);
     ASSERT_TRUE(fileWrite);
  
     //refresh the ConfigurationManager to see if it picked up the new file
@@ -215,30 +215,30 @@ namespace shellanything { namespace test
     ASSERT_EQ( 2, configs.size() );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testFileModifications)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
     
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -261,18 +261,18 @@ namespace shellanything { namespace test
       "        <exec path=\"C:\\windows\\system32\\notepad.exe\" />\n"
       "      </actions>\n"
       "    </menu>";
-    static const std::string LINE_SEPARATOR = ra::environment::getLineSeparator();
+    static const std::string LINE_SEPARATOR = ra::environment::GetLineSeparator();
     if (LINE_SEPARATOR != "\n")
     {
-      ra::strings::replace(MENU_XML, "\n", LINE_SEPARATOR);
+      ra::strings::Replace(MENU_XML, "\n", LINE_SEPARATOR);
     }
  
     //process with file search and replace
     std::string content;
-    bool fileReaded = readFile(template_target_path, content);
+    bool fileReaded = ra::filesystem::ReadFile(template_target_path, content);
     ASSERT_TRUE(fileReaded);
-    ra::strings::replace(content, "<!-- CODE INSERT LOCATION -->", MENU_XML);
-    bool fileWrite = writeFile(template_target_path, content);
+    ra::strings::Replace(content, "<!-- CODE INSERT LOCATION -->", MENU_XML);
+    bool fileWrite = ra::filesystem::WriteFile(template_target_path, content);
     ASSERT_TRUE(fileWrite);
  
     //refresh the ConfigurationManager to see if it picked up the new file
@@ -287,28 +287,28 @@ namespace shellanything { namespace test
     ASSERT_EQ( 2, menus.size() );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testAssignCommandId)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path1 = std::string("test_files") + path_separator + test_name + ".1.xml";
     std::string template_source_path2 = std::string("test_files") + path_separator + test_name + ".2.xml";
     std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.1.xml";
     std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.2.xml";
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path1);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path1);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
     //copy the files
-    ASSERT_TRUE( copyFile(template_source_path1, template_target_path1) ) << "Failed copying file '" << template_source_path1 << "' to file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( copyFile(template_source_path2, template_target_path2) ) << "Failed copying file '" << template_source_path2 << "' to file '" << template_target_path2 << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path1, template_target_path1) ) << "Failed copying file '" << template_source_path1 << "' to file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path2, template_target_path2) ) << "Failed copying file '" << template_source_path2 << "' to file '" << template_target_path2 << "'.";
    
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
  
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -336,8 +336,8 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string("Winzip"),       wWinzipMenu->getName() );
  
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testDescription)
@@ -345,7 +345,7 @@ namespace shellanything { namespace test
     ConfigManager & mgr = ConfigManager::getInstance();
     
     const std::string path = "configurations/default.xml";
-    std::string error_message = ra::gtesthelp::getTestQualifiedName(); //init error message to an unexpected string
+    std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
     Configuration * config = Configuration::loadFile(path, error_message);
 
     ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
@@ -378,22 +378,22 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
     
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -412,29 +412,29 @@ namespace shellanything { namespace test
     ASSERT_EQ( 0, configs.size() );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testParentWithoutChildren)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
     
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -480,29 +480,29 @@ namespace shellanything { namespace test
     ASSERT_FALSE( option1_1_1->isVisible() );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testAssignCommandIdsInvalid)
   {
     ConfigManager & cmgr = ConfigManager::getInstance();
  
-    static const std::string path_separator = ra::filesystem::getPathSeparatorStr();
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
     //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::gtesthelp::getTestQualifiedName();
+    std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
     std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
  
     //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::getParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::createFolder(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
  
     //copy the file
-    ASSERT_TRUE( copyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
     
     //wait to make sure that the next files not dated the same date as this copy
-    ra::time::millisleep(1500);
+    ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
     cmgr.clearSearchPath();
@@ -543,7 +543,7 @@ namespace shellanything { namespace test
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * m = menus[i];
-      std::string message = ra::strings::format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->getName().c_str(), toString(m->isVisible()), m->getCommandId());
+      std::string message = ra::strings::Format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->getName().c_str(), toString(m->isVisible()), m->getCommandId());
       if (m->isVisible())
         ASSERT_NE(Menu::INVALID_COMMAND_ID, m->getCommandId() ) << message; //visible menus must have a valid command id
       else
@@ -559,7 +559,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1_1->getCommandId() );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
   }
   //--------------------------------------------------------------------------------------------------
  

@@ -46,7 +46,7 @@ namespace shellanything
   {
     for(size_t i=0; i<values.size(); i++)
     {
-      std::string tmp = ra::strings::uppercase(values[i]);
+      std::string tmp = ra::strings::Uppercase(values[i]);
       values[i] = tmp;
     }
   }
@@ -147,7 +147,7 @@ namespace shellanything
     if (!properties.empty())
     {
       //split
-      ra::strings::StringVector property_list = ra::strings::split(properties, ";");
+      ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
 
       //each property specified must exists and be non-empty
       for(size_t i=0; i<property_list.size(); i++)
@@ -166,7 +166,7 @@ namespace shellanything
     if (!file_extensions.empty())
     {
       //split
-      ra::strings::StringVector accepted_file_extensions = ra::strings::split(file_extensions, ";");
+      ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
       uppercase(accepted_file_extensions);
 
       //for each file selected
@@ -174,7 +174,7 @@ namespace shellanything
       for(size_t i=0; i<elements.size(); i++) 
       {
         const std::string & element = elements[i];
-        std::string current_file_extension = ra::strings::uppercase(ra::filesystem::getFileExtention(element));
+        std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
 
         //each file extension must be part of accepted_file_extensions
         bool found = hasValue(accepted_file_extensions, current_file_extension);
@@ -188,14 +188,14 @@ namespace shellanything
     if (!file_exists.empty())
     {
       //split
-      ra::strings::StringVector mandatory_files = ra::strings::split(file_exists, ";");
+      ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
 
       //for each file
       for(size_t i=0; i<mandatory_files.size(); i++)
       {
         const std::string & element = mandatory_files[i];
-        bool isFile = ra::filesystem::fileExists(element.c_str());
-        bool isDir  = ra::filesystem::folderExists(element.c_str());
+        bool isFile = ra::filesystem::FileExists(element.c_str());
+        bool isDir  = ra::filesystem::DirectoryExists(element.c_str());
         if (!isFile && !isDir)
           return false; //mandatory file/directory not found
       }

@@ -27,8 +27,15 @@
 
 #include "Platform.h"
 #include <Windows.h>
-#include "rapidassist/time_.h"
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
+
+#include "rapidassist/timing.h"
 #include "rapidassist/filesystem.h"
+#include "rapidassist/errors.h"
 
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
@@ -44,14 +51,14 @@ std::string GetCurrentModulePath()
                           &hModule))
   {
     DWORD dwError = GetLastError();
-    std::string desc = shellanything::GetSystemErrorDescription(dwError);
+    std::string desc = ra::errors::GetErrorCodeDescription(dwError);
     std::string message = std::string() +
-      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::toString(__LINE__) + ".\n" +
+      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
       "\n" +
       "Failed getting the file path of the current module.\n" +
       "The following error code was returned:\n" +
       "\n" +
-      ra::strings::format("0x%08x", dwError) + ": " + desc;
+      ra::strings::Format("0x%08x", dwError) + ": " + desc;
 
     //display an error on 
     shellanything::ShowErrorMessage("ShellAnything Error", message);
@@ -74,7 +81,7 @@ std::string GetLogDirectorySafe()
   printf("Using log directory '%s'.\n", log_dir.c_str());
 
   //verify if the directory is available
-  if (ra::filesystem::folderExists(log_dir.c_str()))
+  if (ra::filesystem::DirectoryExists(log_dir.c_str()))
     printf("Directory is found.\n");
   else
   {
@@ -83,15 +90,15 @@ std::string GetLogDirectorySafe()
     //creating directory
     printf("Creating directory '%s'.\n", log_dir.c_str());
 
-    //Use 'shellanything::createFolder()' instead of 'ra::filesystem::createFolder()' because
+    //Use 'ra::filesystem::CreateDirectory()' instead of 'ra::filesystem::CreateDirectory()' because
     //of RapidAssist issue #27: https://github.com/end2endzone/RapidAssist/issues/27
-    bool created = shellanything::createFolder(log_dir.c_str());
+    bool created = ra::filesystem::CreateDirectory(log_dir.c_str());
     if (created)
       printf("Directory created.\n");
     else
       printf("WARNING: Failed creating directory!\n");
 
-    if (ra::filesystem::folderExists(log_dir.c_str()))
+    if (ra::filesystem::DirectoryExists(log_dir.c_str()))
       printf("Directory is found.\n");
   }
 
@@ -140,9 +147,9 @@ namespace shellanything { namespace test
     ASSERT_FALSE( log_dir.empty() );
 
     //assert the directory can be created
-    if (!ra::filesystem::folderExists(log_dir.c_str()))
+    if (!ra::filesystem::DirectoryExists(log_dir.c_str()))
     {
-      ASSERT_TRUE( ra::filesystem::createFolder(log_dir.c_str()) ) << "Failed creating directory '" << log_dir << "'.";
+      ASSERT_TRUE( ra::filesystem::CreateDirectory(log_dir.c_str()) ) << "Failed creating directory '" << log_dir << "'.";
     }
   }
   //--------------------------------------------------------------------------------------------------
@@ -187,38 +194,38 @@ namespace shellanything { namespace test
     std::string log_dir = GetLogDirectorySafe();
     printf("Using log directory '%s'.\n", log_dir.c_str());
 
-    tm now = ra::time::getLocalTime();
+    tm now = ra::timing::GetLocalTime();
     now.tm_year += 1900;
     now.tm_mon += 1; //from [0,11] range to [1,12]
 
-    std::string  past_date = ra::strings::format("%04d0102", now.tm_year-1);
-    std::string today_date = ra::strings::format("%04d%02d%02d", now.tm_year, now.tm_mon, now.tm_mday);
+    std::string  past_date = ra::strings::Format("%04d0102", now.tm_year-1);
+    std::string today_date = ra::strings::Format("%04d%02d%02d", now.tm_year, now.tm_mon, now.tm_mday);
 
     //create 3 "old" files
     std::string file1 = CreateFakeLog(0, past_date, "123456", 7890);
     std::string file2 = CreateFakeLog(1, past_date, "123456", 7890);
     std::string file3 = CreateFakeLog(2, past_date, "123456", 7890);
-    ASSERT_TRUE( ra::filesystem::fileExists(file1.c_str()) ) << "File not found: '" << file1 << "'.";
-    ASSERT_TRUE( ra::filesystem::fileExists(file2.c_str()) ) << "File not found: '" << file2 << "'.";
-    ASSERT_TRUE( ra::filesystem::fileExists(file3.c_str()) ) << "File not found: '" << file3 << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(file1.c_str()) ) << "File not found: '" << file1 << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(file2.c_str()) ) << "File not found: '" << file2 << "'.";
+    ASSERT_TRUE( ra::filesystem::FileExists(file3.c_str()) ) << "File not found: '" << file3 << "'.";
     
     //create an "actual" log file
     std::string file4 = CreateFakeLog(0, today_date, "123456", 4567);
-    ASSERT_TRUE( ra::filesystem::fileExists(file4.c_str()) );
+    ASSERT_TRUE( ra::filesystem::FileExists(file4.c_str()) );
 
     //act
     shellanything::DeletePreviousLogs();
 
     //assert the "old" files were deleted
-    ASSERT_FALSE( ra::filesystem::fileExists(file1.c_str()) );
-    ASSERT_FALSE( ra::filesystem::fileExists(file2.c_str()) );
-    ASSERT_FALSE( ra::filesystem::fileExists(file3.c_str()) );
+    ASSERT_FALSE( ra::filesystem::FileExists(file1.c_str()) );
+    ASSERT_FALSE( ra::filesystem::FileExists(file2.c_str()) );
+    ASSERT_FALSE( ra::filesystem::FileExists(file3.c_str()) );
 
     //assert "actual" log file is still found
-    ASSERT_TRUE( ra::filesystem::fileExists(file4.c_str()) );
+    ASSERT_TRUE( ra::filesystem::FileExists(file4.c_str()) );
 
     //cleanup
-    ASSERT_TRUE( ra::filesystem::deleteFile(file4.c_str()) );
+    ASSERT_TRUE( ra::filesystem::DeleteFile(file4.c_str()) );
   }
   //--------------------------------------------------------------------------------------------------
 

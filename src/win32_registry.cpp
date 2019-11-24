@@ -24,13 +24,18 @@
 
 #include "win32_registry.h"
 
+//#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#undef GetEnvironmentVariable
+#undef DeleteFile
+#undef CreateDirectory
+#undef CopyFile
+#undef CreateFile
+
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "Platform.h"
-
-//#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
 
 #include <assert.h>
 #include <algorithm>
@@ -493,12 +498,12 @@ namespace win32_registry
     
     std::string key;
 
-    key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shell\\%s", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s", iName); 
     success = createKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", iName); 
     success = createKey(key.c_str());
     if (!success)
       return false;
@@ -516,12 +521,12 @@ namespace win32_registry
     
     std::string key;
 
-    key = ra::strings::format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", iName); 
     success = createKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", iName); 
     success = createKey(key.c_str());
     if (!success)
       return false;
@@ -538,7 +543,7 @@ namespace win32_registry
     //Extract default icon. ie: C:\Windows\Installer\{AC76BA86-7AD7-1036-7B44-A90000000001}\PDFFile_8.ico,0
     std::string default_icon;
     {
-      std::string key = ra::strings::format("%s\\DefaultIcon", iBaseKey); 
+      std::string key = ra::strings::Format("%s\\DefaultIcon", iBaseKey); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       const char * debugValue = key.c_str();
@@ -555,7 +560,7 @@ namespace win32_registry
     int index = 0;
     {
       ra::strings::StringVector parts;
-      ra::strings::split( parts, default_icon, ",");
+      ra::strings::Split( parts, default_icon, ",");
 
       if (parts.size() == 1)
       {
@@ -568,7 +573,7 @@ namespace win32_registry
         file_path = parts[0];
         std::string indexStr = parts[1];
         const char * debugValue = indexStr.c_str();
-        ra::strings::parse(indexStr, index);
+        ra::strings::Parse(indexStr, index);
       }
       else
         return NULL_ICON; //unknown format
@@ -577,13 +582,13 @@ namespace win32_registry
     //Does file_path contains double quotes ?
     if (file_path.find("\"") != std::string::npos)
     {
-      ra::strings::replace(file_path, "\"", "");
+      ra::strings::Replace(file_path, "\"", "");
     }
 
     //Does file exists ?
     {
       const char * debug_value = file_path.c_str();
-      if (file_path.size() > 0 && ra::filesystem::fileExists(file_path.c_str()))
+      if (file_path.size() > 0 && ra::filesystem::FileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
         icon.path = file_path;
@@ -593,10 +598,10 @@ namespace win32_registry
     }
 
     //File does not exists. Maybe path contains "expandables" values
-    file_path = shellanything::expand(file_path.c_str());
+    file_path = ra::environment::Expand(file_path.c_str());
     {
       const char * debug_value = file_path.c_str();
-      if (file_path.size() > 0 && ra::filesystem::fileExists(file_path.c_str()))
+      if (file_path.size() > 0 && ra::filesystem::FileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
         icon.path = file_path;
@@ -606,22 +611,22 @@ namespace win32_registry
     }
 
     //File does not exists. Maybe path is only a filename and must be found using %PATH%.
-    std::string path_env = ra::environment::getEnvironmentVariable("PATH");
+    std::string path_env = ra::environment::GetEnvironmentVariable("PATH");
     ra::strings::StringVector paths;
-    ra::strings::split(paths, path_env, ";");
+    ra::strings::Split(paths, path_env, ";");
     for(size_t i=0; i<paths.size(); i++)
     {
       //build temp file path
       std::string test_path = paths[i];
-      test_path = shellanything::expand(test_path.c_str());
-      ra::filesystem::normalizePath(test_path);
-      test_path += ra::filesystem::getPathSeparatorStr();
+      test_path = ra::environment::Expand(test_path.c_str());
+      ra::filesystem::NormalizePath(test_path);
+      test_path += ra::filesystem::GetPathSeparatorStr();
       test_path += file_path;
 
       //test to find the file
       {
         const char * debug_value = test_path.c_str();
-        if (test_path.size() > 0 && ra::filesystem::fileExists(test_path.c_str()))
+        if (test_path.size() > 0 && ra::filesystem::FileExists(test_path.c_str()))
         {
           REGISTRY_ICON icon;
           icon.path = test_path;
@@ -656,14 +661,14 @@ namespace win32_registry
     {
       extention.insert(0, 1, '.');
     }
-    extention = ra::strings::lowercase(extention); //file extensions are in lowercase in the registry.
+    extention = ra::strings::Lowercase(extention); //file extensions are in lowercase in the registry.
 
     //Process known file extensions that can't be solved by searching the registry.
     //image reference: https://diymediahome.org/windows-icons-reference-list-with-details-locations-images/
     if (extention == "exe")
     {
       REGISTRY_ICON icon;
-      icon.path = shellanything::findFileFromPaths("shell32.dll");
+      icon.path = ra::filesystem::FindFileFromPaths("shell32.dll");
       icon.index = 2;
       return icon;
     }
@@ -672,7 +677,7 @@ namespace win32_registry
               extention == "sys" )
     {
       REGISTRY_ICON icon;
-      icon.path = shellanything::findFileFromPaths("shell32.dll");
+      icon.path = ra::filesystem::FindFileFromPaths("shell32.dll");
       icon.index = 72;
       return icon;
     }
@@ -680,7 +685,7 @@ namespace win32_registry
     //Extract document short name. ie: AcroExch.Document
     std::string document_short_name;
     {
-      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s", extention.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", extention.c_str()); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = getDefaultKeyValue(key.c_str(), type, buffer);
@@ -695,7 +700,7 @@ namespace win32_registry
 
     //Check DefautIcon with document_short_name. ie: HKEY_CLASSES_ROOT\FirefoxHTML\DefaultIcon
     {
-      std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", document_short_name.c_str()); 
+      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_short_name.c_str()); 
       REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
       if (isValid(icon))
         return icon;
@@ -704,7 +709,7 @@ namespace win32_registry
     //Extract document long name. ie: AcroExch.Document.7
     std::string document_current_version_name;
     {
-      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\CurVer", document_short_name.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", document_short_name.c_str()); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = getDefaultKeyValue(key.c_str(), type, buffer);
@@ -716,7 +721,7 @@ namespace win32_registry
     if (!document_current_version_name.empty())
     {
       //Check DefautIcon with current version name. ie: HKEY_CLASSES_ROOT\AcroExch.Document.7\DefaultIcon
-      std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\%s", document_current_version_name.c_str()); 
+      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_current_version_name.c_str()); 
       REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
       if (isValid(icon))
         return icon;
@@ -725,7 +730,7 @@ namespace win32_registry
     //Does the file type have an icon handler? ie: 
     std::string document_icon_handler_guid;
     {
-      std::string key = ra::strings::format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", document_short_name.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", document_short_name.c_str()); 
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = getDefaultKeyValue(key.c_str(), type, buffer);
@@ -739,7 +744,7 @@ namespace win32_registry
                                                 
       //check default icon of icon handler. ie: HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile
       {
-        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
+        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
         if (isValid(icon))
           return icon;
@@ -747,7 +752,7 @@ namespace win32_registry
 
       //check default icon of icon handler. ie: KEY_CLASSES_ROOT\Wow6432Node\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile\DefaultIcon
       {
-        std::string basekey = ra::strings::format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
+        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
         REGISTRY_ICON icon = getFileTypeDefaultIcon(basekey.c_str());
         if (isValid(icon))
           return icon;
@@ -762,7 +767,7 @@ namespace win32_registry
       {
         //check if file exists
         const char * debugValue = program.c_str();
-        if (ra::filesystem::fileExists(program.c_str()))
+        if (ra::filesystem::FileExists(program.c_str()))
         {
           REGISTRY_ICON icon;
           icon.path = program;
@@ -771,18 +776,18 @@ namespace win32_registry
         }
 
         //File does not exists. Maybe arguments are included in the path. Try cleaning it
-        ra::strings::replace(program, "\"", "");
+        ra::strings::Replace(program, "\"", "");
         size_t pos = 0;
         if (program.find(".exe", pos))
         {
           program = program.substr(pos + 4);
 
           //matbe there is expandable in the path too
-          program = shellanything::expand(program.c_str());
+          program = ra::environment::Expand(program.c_str());
 
           //try again
           const char * debugValue = program.c_str();
-          if (ra::filesystem::fileExists(program.c_str()))
+          if (ra::filesystem::FileExists(program.c_str()))
           {
             REGISTRY_ICON icon;
             icon.path = program;
@@ -832,7 +837,7 @@ namespace win32_registry
     {
       //flag found.
       //cleanup
-      ra::strings::replace(line, flag, "");
+      ra::strings::Replace(line, flag, "");
       
       return true;
     }
@@ -909,9 +914,9 @@ namespace win32_registry
 
     //split rgs code in lines
     std::string tmp = rgs;
-    ra::strings::replace(tmp, ra::environment::getLineSeparator(), "\n");
-    ra::strings::replace(tmp, "\r\n", "\n");
-    ra::strings::StringVector lines = ra::strings::split(tmp, "\n");
+    ra::strings::Replace(tmp, ra::environment::GetLineSeparator(), "\n");
+    ra::strings::Replace(tmp, "\r\n", "\n");
+    ra::strings::StringVector lines = ra::strings::Split(tmp, "\n");
 
     //process each lines
     for(size_t i=0; i<lines.size(); i++)
@@ -919,7 +924,7 @@ namespace win32_registry
       std::string line = lines[i];
 
       //trim
-      line = ra::strings::trimLeft(line, '\t');
+      line = ra::strings::TrimLeft(line, '\t');
 
       //extract flags
       bool isNoRemove     = parse_rgs_flag(line, "NoRemove ");
@@ -935,7 +940,7 @@ namespace win32_registry
           return false; //failed parsing rgs code
 
         //trim
-        value = ra::strings::trim(value, '\'');
+        value = ra::strings::Trim(value, '\'');
 
         std::string parent_key = get_last_parent_key(parent_keys);
 
@@ -986,8 +991,8 @@ namespace win32_registry
         }
 
         //trim
-        name          = ra::strings::trim(name,           '\'');
-        default_value = ra::strings::trim(default_value,  '\'');
+        name          = ra::strings::Trim(name,           '\'');
+        default_value = ra::strings::Trim(default_value,  '\'');
 
         //build key full path
         std::string parent_key = get_last_parent_key(parent_keys);
@@ -1001,7 +1006,7 @@ namespace win32_registry
           const std::string module_pattern = "%MODULE%";
           if (default_value.find(module_pattern) != std::string::npos)
           {
-            ra::strings::replace(default_value, module_pattern, module_path);
+            ra::strings::Replace(default_value, module_pattern, module_path);
           }
         }
 
@@ -1073,7 +1078,7 @@ namespace win32_registry
         //create a new string value
         std::string parent_path;
         std::string filename;
-        ra::filesystem::splitPath(entry.path, parent_path, filename);
+        ra::filesystem::SplitPath(entry.path, parent_path, filename);
 
         //std::string debug_message;
         //debug_message += "parent=" + parent_path + "\n";
@@ -1118,7 +1123,7 @@ namespace win32_registry
           //delete the string value
           std::string parent_path;
           std::string filename;
-          ra::filesystem::splitPath(entry.path, parent_path, filename);
+          ra::filesystem::SplitPath(entry.path, parent_path, filename);
 
           //std::string debug_message;
           //debug_message += "parent=" + parent_path + "\n";
@@ -1137,7 +1142,7 @@ namespace win32_registry
   REGISTRY_ICON getUnknownFileTypeIcon()
   {
     //C:\Windows\System32\imageres.dll
-    std::string imageres_path = shellanything::findFileFromPaths("imageres.dll");
+    std::string imageres_path = ra::filesystem::FindFileFromPaths("imageres.dll");
 
     REGISTRY_ICON icon;
     icon.path = imageres_path;

@@ -1,6 +1,7 @@
 Changes for 0.3.0
 
-N/A
+* Using RapidAssist version 0.7.0.
+* Using win32Clipboard version 0.2.0.
 
 
 Changes for 0.2.0
