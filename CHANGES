@@ -2,7 +2,7 @@ Changes for 0.3.0
 
 * Using RapidAssist version 0.7.0.
 * Using win32Clipboard version 0.2.0.
-
+* Fixed issue #34: Missing documentation with installed software.
 
 Changes for 0.2.0
 
