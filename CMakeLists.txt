@@ -90,6 +90,7 @@ set(SHELLANYTHING_INSTALL_BIN_DIR      "bin")
 set(SHELLANYTHING_INSTALL_LIB_DIR      "lib/shellanything-${SHELLANYTHING_VERSION}")
 set(SHELLANYTHING_INSTALL_INCLUDE_DIR  "include/shellanything-${SHELLANYTHING_VERSION}")
 set(SHELLANYTHING_INSTALL_CMAKE_DIR    ${SHELLANYTHING_INSTALL_LIB_DIR}) # CMake files (*.cmake) should have the same destination as the library files. Some also prefers to use "cmake".
+set(SHELLANYTHING_INSTALL_DOC_DIR      "doc")
 
 ##############################################################################################################################################
 # Project settings
@@ -201,6 +202,12 @@ install(FILES ${SHELLANYTHING_EXPORT_HEADER}
               DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR}/shellanything)
 install(EXPORT shellanything-targets DESTINATION ${SHELLANYTHING_INSTALL_CMAKE_DIR})
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/licenses DESTINATION "licenses")
+install(FILES ${CMAKE_SOURCE_DIR}/README.md
+              ${CMAKE_SOURCE_DIR}/UserManual.md
+              ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
+              ${CMAKE_SOURCE_DIR}/docs/screenshot_folder.png
+              ${CMAKE_SOURCE_DIR}/docs/ShellAnything-splashscreen.jpg
+              DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR})
 
 ##############################################################################################################################################
 # Packaging
