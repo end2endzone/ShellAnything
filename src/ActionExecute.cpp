@@ -53,6 +53,7 @@ namespace shellanything
     std::string arguments = pmgr.expand(mArguments);
 
     bool basedir_missing = basedir.empty();
+    bool arguments_missing = arguments.empty();
 
     //Note: the startProcess() function requires basedir to be valid.
     //If not specified try to fill basedir with the best option available
@@ -94,11 +95,19 @@ namespace shellanything
     }
 
     //debug
-    LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
+    uint32_t pId = ra::process::INVALID_PROCESS_ID;
+    if (arguments_missing)
+    {
+      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'";
+      pId = ra::process::StartProcess(path, basedir);
+    }
+    else
+    {
+      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
+      pId = ra::process::StartProcess(path, basedir, arguments);
+    }
 
-    uint32_t pId = ra::process::StartProcess(path, arguments, basedir);
-
-    bool success = pId != 0;
+    bool success = pId != ra::process::INVALID_PROCESS_ID;
     if (success)
     {
       LOG(INFO) << "Process created. PID=" << pId;
