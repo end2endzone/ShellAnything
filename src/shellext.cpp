@@ -622,13 +622,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
     const shellanything::Action * action = actions[i];
     if (action)
     {
-      SetLastError(0); //reset win32 error code in case the action fails.
+      ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
       bool success = action->execute(m_Context);
 
       if (!success)
       {
         //try to get an error mesage from win32
-        uint32_t dwError = ra::errors::GetLastErrorCode();
+        ra::errors::errorcode_t dwError = ra::errors::GetLastErrorCode();
         if (dwError)
         {
           std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
