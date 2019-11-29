@@ -259,8 +259,8 @@ namespace shellanything
   void DeletePreviousLogs()
   {
     static const int DAYS_TO_SECONDS = 86400;
-    static const int MAX_5_DAYS_OLD = 10*DAYS_TO_SECONDS; //10 days old maximum
-    DeletePreviousLogs(MAX_5_DAYS_OLD);
+    static const int MAX_DAYS_OLD = 5*DAYS_TO_SECONDS; //5 days old maximum
+    DeletePreviousLogs(MAX_DAYS_OLD);
   }
 
   void InitLogger()
