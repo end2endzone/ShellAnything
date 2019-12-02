@@ -581,7 +581,10 @@ The default settings supported by the application is the following:
 
 The ShellAnything application supports an advanced property system which allows one to assing values to custom named variables. The property system of ShellAnything plays a big role in implementing dynamic content for *Windows Explorer's* context menu.
 
-Properties only support string values. Property names are case sensitive and cannot contain spaces.
+Properties must conform to the following rules:
+* Properties only support string values.
+* Property names are case sensitive and cannot contain spaces.
+* Property lists must be separated by `;` character.
 
 
 
@@ -670,9 +673,9 @@ For example, the following would create a menu with the current user login name:
 
 ## Selection-based properties ##
 
-The application provides a list of dynamic properties. The values of these properties will change based based on the user selection when a user right-click files or folders.
+The application provides a list of dynamic properties. The values of these properties will change based on the user selection when a user right-click files or folders.
 
-The following table defines the list of dynamic properties adn their utility:
+The following table defines the list of dynamic properties and their utility:
 
 | Property                     | Description                                                              |
 |------------------------------|--------------------------------------------------------------------------|
