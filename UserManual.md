@@ -29,6 +29,9 @@ This manual includes a description of the system functionalities and capabilitie
   * [Run an application with parameters](#run-an-application-with-parameters)
   * [Open a command prompt in directory](#open-a-command-prompt-in-directory)
   * [Select two files for an operation](#select-two-files-for-an-operation)
+* [Troubleshooting](#troubleshooting)
+  * [Logging support](#logging-support)
+  * [Reporting bugs](#reporting-bugs)
 
 
 
@@ -812,3 +815,92 @@ The following xml sample can select two files for an operation :
   </shell>
 </root>
 ```
+
+
+
+
+# Troubleshooting #
+
+
+
+## Logging support ##
+
+ShellAnything provides logging support for troubleshooting and debugging commands.
+
+
+
+### Location ###
+
+The log files are stored in the user's home directory available in `C:\Users\%USERNAME%\ShellAnything\Logs` directory where `%USERNAME%` matches your current login username.
+For instance, the user `JohnSmith` can find his ShellAnything log files in directory `C:\Users\JohnSmith\ShellAnything\Logs`.
+
+
+
+### Filename Format ###
+
+The log files names are generated in the following format:
+`<name>.<LEVEL>.<date>-<time>.<pid>.log`.
+
+The following table defines each field identifier in the filename format:
+
+| Identifier | Description                                                                                                                                                           |
+|:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    name    | Matches the name of the dll that generates log messages. Usually `shellext.dll`.                                                                                      |
+|    LEVEL   | The logging level. Accepted values are `ERROR`, `WARNING` and `INFO`. See [glog documentation](https://github.com/google/glog/blob/v0.4.0/doc/glog.html) for details. |
+|    date    | The current date when the file was created in `yyyymmdd` format.                                                                                                      |
+|    time    | The current date when the file was created in `hhmmss` format.                                                                                                        |
+|     pid    | The Process Id which generates the log message.                                                                                                                       |
+
+For example, the following filename is a valid log file format: 
+`shellext.dll.INFO.20191125-083305.9456.log`
+
+
+
+### Levels ###
+
+The logging library used by ShellAnything is [Google's logging module (glog)](https://github.com/google/glog). 
+
+All messages logged by the application have an associated level to describe the severity of the message.
+
+The application supports 3 differents logging levels: `ERROR`, `WARNING` and `INFO`. See [glog documentation](https://github.com/google/glog/blob/v0.4.0/doc/glog.html) for details.
+
+Each level have a dedicated log file for storing messages. For example:
+```
+shellext.dll.INFO.20191125-083305.9456.log
+shellext.dll.WARNING.20191125-083701.9456.log
+shellext.dll.ERROR.20191125-084152.9456.log
+```
+See [Filename Format](#filename-format) for details.
+
+Each log file contains the messages at it's matching level but also the messages with a higher severity.
+In other words, all logs messages are available in the INFO log file, including messages logged with WARNING and ERROR levels.
+
+The ERROR   log file contains all messages with ERROR level.
+The WARNING log file contains all messages with ERROR and WARNING levels.
+The INFO    log file contains all messages with ERROR, WARNING and INFO levels.
+
+Debugging log messages are only available in debug builds of the application.
+
+
+
+### Log files life cycle###
+
+The log files are kept for a maximum of 5 days.
+
+On application startup, the existing log files are all validated and files older than 5 days are deleted.
+
+To force the the application restart, one can do one of the following:
+* reboot the computer, open a new Windows Explorer.
+* close all Windows Explorer before opening a new Window Explorer window.
+
+This is for security reason as the files may contains sensitive information.
+
+There are no mean of keeping the log files for more than 5 days.
+
+
+
+## Reporting bugs ##
+
+If you find any issues while using ShellAnything, please report your findings using the [project issue page on GitHub](https://github.com/end2endzone/ShellAnything/issues).
+
+Improvements to the software are also welcome and can be proposed using the same method.
