@@ -831,15 +831,17 @@ ShellAnything provides logging support for troubleshooting and debugging command
 
 ### Location ###
 
-The log files are stored in the user's home directory available in `C:\Users\%USERNAME%\ShellAnything\Logs` directory where `%USERNAME%` matches your current login username.
-For instance, the user `JohnSmith` can find his ShellAnything log files in directory `C:\Users\JohnSmith\ShellAnything\Logs`.
+The logging directory is unique for each users of the system.
+
+The log files are stored in `C:\Users\%USERNAME%\ShellAnything\Logs` directory where `%USERNAME%` matches your current login username.
+For example, the user `JohnSmith` can find his own ShellAnything log files in directory `C:\Users\JohnSmith\ShellAnything\Logs`.
 
 
 
 ### Filename Format ###
 
 The log files names are generated in the following format:
-`<name>.<LEVEL>.<date>-<time>.<pid>.log`.
+`name.LEVEL.date-time.pid.log`.
 
 The following table defines each field identifier in the filename format:
 
@@ -851,8 +853,7 @@ The following table defines each field identifier in the filename format:
 |    time    | The current date when the file was created in `hhmmss` format.                                                                                                        |
 |     pid    | The Process Id which generates the log message.                                                                                                                       |
 
-For example, the following filename is a valid log file format: 
-`shellext.dll.INFO.20191125-083305.9456.log`
+For example, `shellext.dll.INFO.20191125-083305.9456.log` is a valid log filename.
 
 
 
@@ -872,30 +873,26 @@ shellext.dll.ERROR.20191125-084152.9456.log
 ```
 See [Filename Format](#filename-format) for details.
 
-Each log file contains the messages at it's matching level but also the messages with a higher severity.
+Each log file contains the messages of it's matching level but also the messages with higher severity.
 In other words, all logs messages are available in the INFO log file, including messages logged with WARNING and ERROR levels.
 
-The ERROR   log file contains all messages with ERROR level.
-The WARNING log file contains all messages with ERROR and WARNING levels.
+The ERROR   log file contains all messages with ERROR level.</br>
+The WARNING log file contains all messages with ERROR and WARNING levels.</br>
 The INFO    log file contains all messages with ERROR, WARNING and INFO levels.
 
 Debugging log messages are only available in debug builds of the application.
 
 
 
-### Log files life cycle###
+### Log files life cycle ###
 
-The log files are kept for a maximum of 5 days.
+The log files are kept for a maximum of 5 days. This is for security reason as the files may contains sensitive information.
 
 On application startup, the existing log files are all validated and files older than 5 days are deleted.
 
-To force the the application restart, one can do one of the following:
-* reboot the computer, open a new Windows Explorer.
-* close all Windows Explorer before opening a new Window Explorer window.
+To force the application restart, reboot the computer and open a new Windows Explorer or close all Windows Explorer before opening a new Window Explorer window.
 
-This is for security reason as the files may contains sensitive information.
-
-There are no mean of keeping the log files for more than 5 days.
+There are no plan for keeping the log files for more than 5 days.
 
 
 
