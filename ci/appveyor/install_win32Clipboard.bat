@@ -19,8 +19,8 @@ git clone "https://github.com/end2endzone/win32Clipboard.git"
 cd win32Clipboard
 echo.
 
-echo Checking out version v0.2.0...
-git checkout 0.2.0
+echo Checking out version v0.3.0...
+git checkout 0.3.0
 echo.
 
 echo ============================================================================

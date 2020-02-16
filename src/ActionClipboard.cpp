@@ -51,8 +51,8 @@ namespace shellanything
     //debug
     LOG(INFO) << "Setting clipboard to '" << value << "'";
 
-    win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::getInstance();
-    bool result = clipboard.setText(value);
+    win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::GetInstance();
+    bool result = clipboard.SetText(value);
 
     return result;
   }
