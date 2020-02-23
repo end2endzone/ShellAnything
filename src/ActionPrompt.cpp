@@ -23,7 +23,6 @@
  *********************************************************************************/
 
 #include "shellanything/ActionPrompt.h"
-#include "utf_strings.h"
 #include "PropertyManager.h"
 #include "InputBox.h"
 #include "rapidassist/strings.h"
@@ -66,41 +65,14 @@ namespace shellanything
     static const char * caption = "Question / Prompt";
     static const HWND parent_window = NULL;
 
-    std::string answer; //the text result of the prompt, in utf-8 format
-
-    //detect if the xml content is valid utf-8
-    bool is_utf8 =  encoding::utf::is_utf8_valid(name.c_str()) &&
-                    encoding::utf::is_utf8_valid(title.c_str()) &&
-                    encoding::utf::is_utf8_valid(mDefault.c_str());
-
-    //prepare the conversion to windows unicode...
-    std::wstring name_utf16; 
-    std::wstring title_utf16;
-    std::wstring default_utf16;
-    std::wstring caption_utf16 = encoding::utf::utf8_to_unicode(caption);
-
-    //convert from utf-8 if possible
-    if (is_utf8)
-    {
-      //convert from utf8 (or ascii) to window's unicode format (utf16)
-      name_utf16    = encoding::utf::utf8_to_unicode(name);
-      title_utf16   = encoding::utf::utf8_to_unicode(title);
-      default_utf16 = encoding::utf::utf8_to_unicode(mDefault);
-    }
-    else
-    {
-      //assume windows ansi encoding
-      name_utf16    = encoding::utf::ansi_to_unicode(name);
-      title_utf16   = encoding::utf::ansi_to_unicode(title);
-      default_utf16 = encoding::utf::ansi_to_unicode(mDefault);
-    }
+    std::string answer; //the text result of the prompt
 
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
     if (isOkQuestion())
     {
-      int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_OK | MB_ICONINFORMATION);
+      int result = MessageBox(parent_window, title.c_str(), caption, MB_OK | MB_ICONINFORMATION);
       if (result == IDCANCEL)
       {
         LOG(INFO) << "Prompt: user has cancelled the action.";
@@ -109,7 +81,7 @@ namespace shellanything
     }
     else if (isYesNoQuestion())
     {
-      int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_YESNOCANCEL | MB_ICONQUESTION);
+      int result = MessageBox(parent_window, title.c_str(), caption, MB_YESNOCANCEL | MB_ICONQUESTION);
       switch(result)
       {
       case IDYES:
@@ -127,25 +99,15 @@ namespace shellanything
     else
     {
       CInputBox box(parent_window);
-      box.setTextUnicode(default_utf16);
-      bool result = box.DoModal(caption_utf16, title_utf16);
+      box.setTextAnsi(mDefault);
+      bool result = box.DoModal(caption, title);
       if (!result)
       {
         LOG(INFO) << "Prompt: user has cancelled the action.";
         return false;
       }
 
-      //pick the utf-8 value if we are working in utf-8
-      if (is_utf8)
-      {
-        std::wstring answer_utf16 = box.getTextUnicode();
-        answer = encoding::utf::unicode_to_utf8(answer_utf16);
-      }
-      else
-      {
-        //assume windows ansi encoding
-        answer = box.getTextAnsi();
-      }
+      answer = box.getTextAnsi();
     }
 
     //update the property

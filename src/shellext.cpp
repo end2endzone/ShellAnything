@@ -237,34 +237,15 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     return;
   }
 
-  //prepare the conversion to windows unicode...
-  std::wstring title_utf16;
-  std::wstring desc_utf16;
+  MENUITEMINFOA menuinfo = {0};
 
-  //detect if the xml content is valid utf-8
-  bool is_utf8 = encoding::utf::is_utf8_valid(title.c_str()) && encoding::utf::is_utf8_valid(description.c_str());
-  if (is_utf8)
-  {
-    //convert from utf8 (or ascii) to window's unicode format (utf16)
-    title_utf16 = encoding::utf::utf8_to_unicode(title);
-    desc_utf16  = encoding::utf::utf8_to_unicode(description);
-  }
-  else
-  {
-    //assume windows ansi encoding
-    title_utf16 = encoding::utf::ansi_to_unicode(title);
-    desc_utf16  = encoding::utf::ansi_to_unicode(description);
-  }
-
-  MENUITEMINFOW menuinfo = {0};
-
-  menuinfo.cbSize = sizeof(MENUITEMINFOW);
+  menuinfo.cbSize = sizeof(MENUITEMINFOA);
   menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
   menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
   menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
   menuinfo.wID = menu_command_id;
-  menuinfo.dwTypeData = (wchar_t*)title_utf16.c_str();
-  menuinfo.cch = (UINT)title_utf16.size();
+  menuinfo.dwTypeData = (char*)title.c_str();
+  menuinfo.cch = (UINT)title.size();
 
   //add an icon
   const shellanything::Icon & icon = menu->getIcon();
@@ -368,7 +349,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     menuinfo.hSubMenu = hSubMenu;
   }
 
-  BOOL result = InsertMenuItemW(hMenu, insert_pos, TRUE, &menuinfo);
+  BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
   insert_pos++; //next menu is below this one
 
   LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::Format("%03d", insert_pos) << ", id=" << ra::strings::Format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
@@ -709,22 +690,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
   std::string description = pmgr.expand(menu->getDescription());
 
-  //prepare the conversion to windows unicode...
-  std::wstring desc_utf16;
-
-  //detect if the xml content is valid utf-8
-  bool is_utf8 = encoding::utf::is_utf8_valid(description.c_str());
-  if (is_utf8)
-  {
-    //convert from utf8 (or ascii) to window's unicode format (utf16)
-    desc_utf16 = encoding::utf::utf8_to_unicode(description);
-  }
-  else
-  {
-    //assume windows ansi encoding
-    desc_utf16 = encoding::utf::ansi_to_unicode(description);
-  }
-
   //Build up tooltip string
   switch(uFlags)
   {
@@ -738,7 +703,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_HELPTEXTW:
     {
       //UNICODE tooltip handling
-      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
+      std::wstring title = encoding::utf::ansi_to_unicode(description);
+      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }
     break;
@@ -752,7 +718,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   case GCS_VERBW:
     {
       //UNICODE tooltip handling
-      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
+      std::wstring title = encoding::utf::ansi_to_unicode(description);
+      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
       return S_OK;
     }
     break;
