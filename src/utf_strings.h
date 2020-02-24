@@ -34,6 +34,41 @@ namespace utf
 {
 
   /// <summary>
+  /// Returns true if the given string is encoded in ASCII.
+  /// </summary>
+  /// <param name="str">The buffer of the given string.</param>
+  /// <returns>Returns true if the given string is encoded in ASCII. Returns false otherwise</returns>
+  bool is_ascii(const char * str);
+
+  /// <summary>
+  /// Returns true if the given string is compatible with Windows CP 1252 encoding.
+  /// </summary>
+  /// <param name="str">The buffer of the given string.</param>
+  /// <returns>Returns true if the given string is compatible with Windows CP 1252 encoding. Returns false otherwise</returns>
+  bool is_cp1252_valid(const char * str);
+
+  /// <summary>
+  /// Returns true if the given string is compatible with ISO-8859-1 encoding.
+  /// </summary>
+  /// <param name="str">The buffer of the given string.</param>
+  /// <returns>Returns true if the given string is compatible with ISO-8859-1 encoding. Returns false otherwise</returns>
+  /// <remarks>
+  /// A buffer that is compatible with ISO-8859-1 encoding will always be compatible with Windows CP 1252 encoding.
+  /// In other words, all characters of ISO-8859-1 encoding are also available in Windows CP 1252 encoding.
+  /// See https://en.wikipedia.org/wiki/Windows-1252#Code_page_layout and
+  /// https://en.wikipedia.org/wiki/ISO/IEC_8859-1#Code_page_layout for details.
+  /// </remarks>
+  bool is_iso8859_1_valid(const char * str);
+
+  /// <summary>
+  /// Returns true if the given string is compatible with UTF-8 encoding.
+  /// </summary>
+  /// <param name="str">The buffer of the given string.</param>
+  /// <returns>Returns true if the given string is compatible with UTF-8 encoding. Returns false otherwise</returns>
+  /// <remarks>A buffer that is pure ASCII will always be compatible with UTF-8 encoding.</remarks>
+  bool is_utf8_valid(const char * str);
+
+  /// <summary>
   /// Convert a wide unicode string to an utf8 string
   /// </summary>
   /// <param name="wstr">The unicode string that must be converted.</param>

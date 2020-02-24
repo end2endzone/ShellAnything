@@ -115,7 +115,7 @@ DllUnregisterServer in shellext.dll succeeded.
 
 The power of ShellAnything comes from the ability to define dynamic content from xml files. To add additional menu options to *Windows Explorer* context menu, one must define the desired menus (and their expected behavior) in a `Configuration File`.
 
-A *configuration file* contains the definition of all [&lt;menu&gt;](#Menu) elements to be displayed on a context menu. *Configuration file* are written in xml file format.
+A *configuration file* contains the definition of all [&lt;menu&gt;](#Menu) elements to be displayed on a context menu. *Configuration file* are written in xml file format and must be encoded in utf-8 format.
 
 When a user right-click on a file in *Windows Explorer*, the application will load all available *configuration files* and display their content into the displayed context menu.
 
@@ -415,7 +415,7 @@ For example, the following sets the clipboard to the value `The quick brown fox 
 
 ### &lt;prompt&gt; action ###
 
-The &lt;prompt&gt; element is used to ask the user a question. The answer to the question is stored in [properties](#properties). The &lt;prompt&gt; element must be added under the &lt;actions&gt; element.
+The &lt;prompt&gt; element is used to ask the user a question. The answer to the question is stored in [properties](#properties) and encoded in utf-8 format. The &lt;prompt&gt; element must be added under the &lt;actions&gt; element.
 
 The &lt;prompt&gt; elements have the following attributes:
 

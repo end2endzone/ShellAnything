@@ -24,6 +24,7 @@
 
 #include "shellanything/ActionClipboard.h"
 #include "PropertyManager.h"
+#include "utf_strings.h"
 
 #include "win32clipboard/win32clipboard.h"
 
@@ -48,11 +49,17 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::getInstance();
     std::string value = pmgr.expand(mValue);
 
+    //convert to windows unicode...
+    std::wstring value_utf16 = encoding::utf::utf8_to_unicode(value);
+
+    //get clipboard handler
+    win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::GetInstance();
+
     //debug
     LOG(INFO) << "Setting clipboard to '" << value << "'";
 
-    win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::GetInstance();
-    bool result = clipboard.SetText(value);
+    //set clipboard value
+    bool result = clipboard.SetTextUnicode(value_utf16);
 
     return result;
   }
