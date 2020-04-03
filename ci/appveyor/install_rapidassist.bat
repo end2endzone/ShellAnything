@@ -19,8 +19,8 @@ git clone "https://github.com/end2endzone/RapidAssist.git"
 cd RapidAssist
 echo.
 
-echo Checking out version v0.7.0...
-git checkout 0.7.0
+echo Checking out version v0.8.1...
+git checkout 0.8.1
 echo.
 
 echo ============================================================================
