@@ -27,6 +27,7 @@
 #include "shellanything/ActionProperty.h"
 
 #include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/random.h"
 #include "Platform.h"
 #include "ObjectFactory.h"
 
@@ -79,6 +80,30 @@ namespace shellanything
     
     XMLDocument doc;
     XMLError result = doc.LoadFile(path.c_str());
+    if (result == XML_ERROR_FILE_NOT_FOUND)
+    {
+      //We already validated that file exists. This is probably because the file path is utf-8 encoded.
+      //This is not supported by TinyXML.
+
+      //As a workaround, copy the file to a temp directory with a non utf-8 path
+      std::string temp_filename;
+      ra::random::GetRandomString(temp_filename, 10);
+      temp_filename.append(".xml");
+      std::string temp_path = ra::filesystem::GetTemporaryDirectory() + ra::filesystem::GetPathSeparatorStr() + temp_filename;
+      bool copied = ra::filesystem::CopyFileUtf8(path, temp_path);
+      if (!copied)
+      {
+        error.clear();
+        error << "Failed to copy file '" << path << "' to '" << temp_path << "'.";
+        return NULL;
+      }
+
+      //and load the new temp file
+      result = doc.LoadFile(temp_path.c_str());
+
+      //cleanup
+      ra::filesystem::DeleteFile(temp_path.c_str());
+    }
     if (result != XML_SUCCESS && doc.ErrorStr())
     {
       error = doc.ErrorStr();
@@ -142,7 +167,7 @@ namespace shellanything
     {
       //read the beginning of the file
       std::string content;
-      bool readed = ra::filesystem::PeekFileUtf8(path.c_str(), 1024, content);
+      bool readed = ra::filesystem::PeekFileUtf8(path.c_str(), 2048, content);
       if (readed)
       {
         //and look for special XML tags

@@ -28,7 +28,7 @@
 #include "shellanything/Menu.h"
 #include "shellanything/ActionExecute.h"
 
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/timing.h"
 
@@ -120,6 +120,19 @@ namespace shellanything { namespace test
     }
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testIsValidConfigFileUtf8)
+  {
+    static const std::string separator = ra::filesystem::GetPathSeparatorStr();
+    const std::string source_path = "configurations/default.xml";
+    std::string target_path = ra::filesystem::GetTemporaryDirectory() + separator + ra::testing::GetTestQualifiedName() + ".psi_\xCE\xA8_psi.xml";
+
+    //copy default config to the new utf-8 path
+    bool copied = ra::filesystem::CopyFileUtf8(source_path, target_path);
+    ASSERT_TRUE(copied) << "Failed to copy file '" << source_path << "' to '" << target_path << "'.";
+
+    ASSERT_TRUE( shellanything::Configuration::isValidConfigFile(target_path) ) << "The file '" << target_path.c_str() << "' is not a valid configuration file.";
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfiguration, testLoadFile)
   {
     const std::string path = "configurations/default.xml";
@@ -131,6 +144,29 @@ namespace shellanything { namespace test
 
     //cleanup
     delete config;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testLoadFileUtf8)
+  {
+    //This test validates that Configuration::loadFile() supports filename with utf-8 characters.
+
+    static const std::string separator = ra::filesystem::GetPathSeparatorStr();
+    const std::string source_path = "configurations/default.xml";
+    std::string target_path = ra::filesystem::GetTemporaryDirectory() + separator + ra::testing::GetTestQualifiedName() + ".psi_\xCE\xA8_psi.xml";
+
+    //copy default config to the new utf-8 path
+    bool copied = ra::filesystem::CopyFileUtf8(source_path, target_path);
+    ASSERT_TRUE(copied) << "Failed to copy file '" << source_path << "' to '" << target_path << "'.";
+
+    std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
+    Configuration * config = Configuration::loadFile(target_path, error_message);
+
+    ASSERT_TRUE( error_message.empty() ) << "error_message=" << error_message;
+    ASSERT_NE( INVALID_CONFIGURATION, config );
+
+    //cleanup
+    delete config;
+    ra::filesystem::DeleteFileUtf8(target_path.c_str());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfiguration, testLoadProperties)
