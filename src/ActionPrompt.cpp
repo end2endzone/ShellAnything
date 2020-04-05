@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionPrompt.h"
+#include "utf_strings.h"
 #include "PropertyManager.h"
 #include "InputBox.h"
 #include "rapidassist/strings.h"
@@ -65,14 +66,20 @@ namespace shellanything
     static const char * caption = "Question / Prompt";
     static const HWND parent_window = NULL;
 
-    std::string answer; //the text result of the prompt
+    std::string answer; //the text result of the prompt, in utf-8 format
+
+    //convert to windows unicode...
+    std::wstring name_utf16    = encoding::utf::utf8_to_unicode(name);
+    std::wstring title_utf16   = encoding::utf::utf8_to_unicode(title);
+    std::wstring default_utf16 = encoding::utf::utf8_to_unicode(mDefault);
+    std::wstring caption_utf16 = encoding::utf::utf8_to_unicode(caption);
 
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
     if (isOkQuestion())
     {
-      int result = MessageBox(parent_window, title.c_str(), caption, MB_OK | MB_ICONINFORMATION);
+      int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_OK | MB_ICONINFORMATION);
       if (result == IDCANCEL)
       {
         LOG(INFO) << "Prompt: user has cancelled the action.";
@@ -81,7 +88,7 @@ namespace shellanything
     }
     else if (isYesNoQuestion())
     {
-      int result = MessageBox(parent_window, title.c_str(), caption, MB_YESNOCANCEL | MB_ICONQUESTION);
+      int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_YESNOCANCEL | MB_ICONQUESTION);
       switch(result)
       {
       case IDYES:
@@ -99,15 +106,17 @@ namespace shellanything
     else
     {
       CInputBox box(parent_window);
-      box.setTextAnsi(mDefault);
-      bool result = box.DoModal(caption, title);
+      box.setTextUnicode(default_utf16);
+      bool result = box.DoModal(caption_utf16, title_utf16);
       if (!result)
       {
         LOG(INFO) << "Prompt: user has cancelled the action.";
         return false;
       }
 
-      answer = box.getTextAnsi();
+      //convert from windows unicode back to utf-8
+      std::wstring answer_utf16 = box.getTextUnicode();
+      answer = encoding::utf::unicode_to_utf8(answer_utf16);
     }
 
     //update the property

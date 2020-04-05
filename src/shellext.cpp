@@ -237,15 +237,19 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     return;
   }
 
-  MENUITEMINFOA menuinfo = {0};
+  //convert to windows unicode...
+  std::wstring title_utf16 = encoding::utf::utf8_to_unicode(title);
+  std::wstring desc_utf16  = encoding::utf::utf8_to_unicode(description);
 
-  menuinfo.cbSize = sizeof(MENUITEMINFOA);
+  MENUITEMINFOW menuinfo = {0};
+
+  menuinfo.cbSize = sizeof(MENUITEMINFOW);
   menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
   menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
   menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
   menuinfo.wID = menu_command_id;
-  menuinfo.dwTypeData = (char*)title.c_str();
-  menuinfo.cch = (UINT)title.size();
+  menuinfo.dwTypeData = (wchar_t*)title_utf16.c_str();
+  menuinfo.cch = (UINT)title_utf16.size();
 
   //add an icon
   const shellanything::Icon & icon = menu->getIcon();
@@ -349,7 +353,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     menuinfo.hSubMenu = hSubMenu;
   }
 
-  BOOL result = InsertMenuItemA(hMenu, insert_pos, TRUE, &menuinfo);
+  BOOL result = InsertMenuItemW(hMenu, insert_pos, TRUE, &menuinfo);
   insert_pos++; //next menu is below this one
 
   LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::Format("%03d", insert_pos) << ", id=" << ra::strings::Format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
@@ -690,36 +694,38 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
   std::string description = pmgr.expand(menu->getDescription());
 
+  //convert to windows unicode...
+  std::wstring desc_utf16 = encoding::utf::utf8_to_unicode(description);
+  std::string  desc_ansi  = encoding::utf::utf8_to_ansi(description);
+
   //Build up tooltip string
   switch(uFlags)
   {
   case GCS_HELPTEXTA:
     {
       //ANIS tooltip handling
-      lstrcpynA(pszName, description.c_str(), cchMax);
+      lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
       return S_OK;
     }
     break;
   case GCS_HELPTEXTW:
     {
       //UNICODE tooltip handling
-      std::wstring title = encoding::utf::ansi_to_unicode(description);
-      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
+      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
       return S_OK;
     }
     break;
   case GCS_VERBA:
     {
       //ANIS tooltip handling
-      lstrcpynA(pszName, description.c_str(), cchMax);
+      lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
       return S_OK;
     }
     break;
   case GCS_VERBW:
     {
       //UNICODE tooltip handling
-      std::wstring title = encoding::utf::ansi_to_unicode(description);
-      lstrcpynW((LPWSTR)pszName, title.c_str(), cchMax);
+      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
       return S_OK;
     }
     break;
