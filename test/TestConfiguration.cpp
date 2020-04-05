@@ -39,6 +39,18 @@ namespace shellanything { namespace test
 {
   static const Configuration * INVALID_CONFIGURATION = NULL;
 
+  std::string BuildConfigurationFileWithEncoding(const std::string & encoding)
+  {
+    std::string file;
+    file += "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n";
+    file += "<root>\n";
+    file += "  <shell>\n";
+    file += "    <menu name=\"test\" />\n";
+    file += "  </shell>\n";
+    file += "</root>\n";
+    return file;
+  }
+
   //--------------------------------------------------------------------------------------------------
   void TestConfiguration::SetUp()
   {
@@ -167,6 +179,85 @@ namespace shellanything { namespace test
     //cleanup
     delete config;
     ra::filesystem::DeleteFileUtf8(target_path.c_str());
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestConfiguration, testLoadFileEncoding)
+  {
+    static const std::string separator = ra::filesystem::GetPathSeparatorStr();
+    std::string path = ra::filesystem::GetTemporaryDirectory() + separator + ra::testing::GetTestQualifiedName() + ".xml";
+
+    //-----------------------------------------
+    // supported encoding
+    //-----------------------------------------
+    {
+      static const char * encodings[] = {
+        "utf-8",
+        "UTF-8",
+      };
+      const size_t num_encodings = sizeof(encodings)/sizeof(encodings[0]);
+
+      //for each params
+      for(size_t i=0; i<num_encodings; i++)
+      {
+        const char * encoding = encodings[i];
+
+        std::string content = BuildConfigurationFileWithEncoding(encoding);
+        bool created = ra::filesystem::WriteTextFile(path, content);
+        ASSERT_TRUE( created ) << "Failed to create text file: " << path;
+
+        //load this config
+        std::string error_message;
+        Configuration * config = Configuration::loadFile(path, error_message);
+
+        //build error description message, if required
+        std::string failure_desc;
+        failure_desc << "Failed to load configuration file. Encoding=" << encoding << ". Error_message=" << error_message << ".";
+
+        //assert success
+        ASSERT_TRUE( error_message.empty() ) << failure_desc;
+        ASSERT_NE( INVALID_CONFIGURATION, config ) << failure_desc;
+
+        //cleanup
+        delete config;
+      }
+    } //supported encoding
+
+
+
+    //-----------------------------------------
+    // unsupported encoding
+    //-----------------------------------------
+    {
+      static const char * encodings[] = {
+        "",
+        "windows-1252",
+        "iso-8859-1",
+      };
+      const size_t num_encodings = sizeof(encodings)/sizeof(encodings[0]);
+
+      //for each params
+      for(size_t i=0; i<num_encodings; i++)
+      {
+        const char * encoding = encodings[i];
+
+        std::string content = BuildConfigurationFileWithEncoding(encoding);
+        bool created = ra::filesystem::WriteTextFile(path, content);
+        ASSERT_TRUE( created ) << "Failed to create text file: " << path;
+
+        //load this config
+        std::string error_message;
+        Configuration * config = Configuration::loadFile(path, error_message);
+
+        //build error description message, if required
+        std::string failure_desc;
+        failure_desc << "Expecting a load failure but the configuration load was succesful. Encoding=" << encoding << ". Error_message=" << error_message << ".";
+
+        //assert success
+        ASSERT_FALSE( error_message.empty() ) << failure_desc;
+        ASSERT_EQ( INVALID_CONFIGURATION, config ) << failure_desc;
+      }
+    } //unsupported encoding
+
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfiguration, testLoadProperties)

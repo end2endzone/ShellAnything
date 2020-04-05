@@ -52,6 +52,52 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
+  std::string GetXmlEncoding(XMLDocument & doc, std::string & error)
+  {
+    XMLNode * first = doc.FirstChild();
+    if (!first)
+    {
+      error = "XML declaration not found.";
+      return "";
+    }
+
+    XMLDeclaration * declaration = first->ToDeclaration();
+    if (!declaration)
+    {
+      error = "XML declaration not found.";
+      return "";
+    }
+
+    if (declaration->Value() == NULL)
+    {
+      error = "XML declaration is empty.";
+      return "";
+    }
+
+    //expecting: xml version="1.0" encoding="utf-8"
+    static const std::string ENCODING_IDENTIFIER = "ENCODING=\"";
+    const std::string str = declaration->Value();
+    size_t pos_start = ra::strings::Uppercase(str).find(ENCODING_IDENTIFIER);
+    if (pos_start == std::string::npos)
+    {
+      error = "XML encoding not specified.";
+      return "";
+    }
+    pos_start += ENCODING_IDENTIFIER.size();
+
+    size_t pos_end = str.find("\"", pos_start);
+    if (pos_end == std::string::npos)
+    {
+      error = "XML declaration is malformed. End of encoding attribute is not found.";
+      return "";
+    }
+    size_t length = pos_end - pos_start;
+    
+    //extract encoding
+    std::string encoding = str.substr(pos_start, length);
+
+    return encoding;
+  }
 
   Configuration::Configuration() : Node("Configuration"),
     mFileModifiedDate(0),
@@ -107,6 +153,27 @@ namespace shellanything
     if (result != XML_SUCCESS && doc.ErrorStr())
     {
       error = doc.ErrorStr();
+      return NULL;
+    }
+
+    //validate utf-8 encoding
+    std::string encoding = GetXmlEncoding(doc, error);
+    if (encoding.empty())
+    {
+      //Not an utf-8 encoded file.
+      error.clear();
+      error << "File is not encoded in UTF-8.";
+      return NULL;
+    }
+
+    //filter utf-8 encoding
+    std::string tmp_encoding = ra::strings::Uppercase(encoding);
+    ra::strings::Replace(tmp_encoding, "-", "");
+    if (tmp_encoding != "UTF8")
+    {
+      //Not an utf-8 encoded file.
+      error.clear();
+      error << "File is not encoded in UTF-8. Encoding found is '" << encoding << "'.";
       return NULL;
     }
 
