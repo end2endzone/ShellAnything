@@ -27,7 +27,7 @@
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
 #include "rapidassist/strings.h"
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 
 namespace shellanything
 {
@@ -194,8 +194,8 @@ namespace shellanything
       for(size_t i=0; i<mandatory_files.size(); i++)
       {
         const std::string & element = mandatory_files[i];
-        bool isFile = ra::filesystem::FileExists(element.c_str());
-        bool isDir  = ra::filesystem::DirectoryExists(element.c_str());
+        bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
+        bool isDir  = ra::filesystem::DirectoryExistsUtf8(element.c_str());
         if (!isFile && !isDir)
           return false; //mandatory file/directory not found
       }

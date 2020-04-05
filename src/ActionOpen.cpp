@@ -23,11 +23,11 @@
  *********************************************************************************/
 
 #include "shellanything/ActionOpen.h"
-#include "rapidassist/process.h"
-#include "rapidassist/filesystem.h"
+#include "rapidassist/process_utf8.h"
+#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/unicode.h"
 #include "PropertyManager.h"
 #include "Platform.h"
-#include "utf_strings.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -56,9 +56,11 @@ namespace shellanything
   }
 
   bool OpenPathGeneric(const std::string & iPath) {
-    SHELLEXECUTEINFO info = { 0 };
+    std::wstring pathW = ra::unicode::Utf8ToUnicode(iPath);
 
-    info.cbSize = sizeof(SHELLEXECUTEINFO);
+    SHELLEXECUTEINFOW info = { 0 };
+
+    info.cbSize = sizeof(SHELLEXECUTEINFOW);
 
     info.fMask |= SEE_MASK_NOCLOSEPROCESS;
     info.fMask |= SEE_MASK_NOASYNC;
@@ -66,12 +68,12 @@ namespace shellanything
 
     info.hwnd = HWND_DESKTOP;
     info.nShow = SW_SHOWDEFAULT;
-    info.lpVerb = "open";
-    info.lpFile = iPath.c_str();
+    info.lpVerb = L"open";
+    info.lpFile = pathW.c_str();
     info.lpParameters = NULL; //arguments
     info.lpDirectory = NULL; // default directory
 
-    BOOL success = ShellExecuteEx(&info);
+    BOOL success = ShellExecuteExW(&info);
     return (success == TRUE);
   }
 
@@ -81,15 +83,15 @@ namespace shellanything
     std::string path = pmgr.expand(mPath);
 
     //is path a file?
-    if (ra::filesystem::FileExists(path.c_str()))
+    if (ra::filesystem::FileExistsUtf8(path.c_str()))
     {
       LOG(INFO) << "Open file '" << path << "'";
-      uint32_t pId = ra::process::OpenDocument(path);
+      uint32_t pId = ra::process::OpenDocumentUtf8(path);
       return pId != ra::process::INVALID_PROCESS_ID;
     }
 
     //is path a directory?
-    if (ra::filesystem::DirectoryExists(path.c_str()))
+    if (ra::filesystem::DirectoryExistsUtf8(path.c_str()))
     {
       LOG(INFO) << "Open directory '" << path << "'";
       bool success = OpenPathGeneric(path);
@@ -97,7 +99,7 @@ namespace shellanything
     }
 
     //is path a valid url?
-    std::wstring wide_path = encoding::utf::ansi_to_unicode(path);
+    std::wstring wide_path = ra::unicode::AnsiToUnicode(path);
     if (IsValidURL(NULL, wide_path.c_str(), 0) == S_OK)
     {
       LOG(INFO) << "Open url '" << path << "'";

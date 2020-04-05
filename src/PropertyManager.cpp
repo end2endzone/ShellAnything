@@ -24,7 +24,7 @@
 
 #include "PropertyManager.h"
 #include "Platform.h"
-#include "rapidassist/environment.h"
+#include "rapidassist/environment_utf8.h"
 
 namespace shellanything
 {
@@ -112,14 +112,17 @@ namespace shellanything
 
   void PropertyManager::registerEnvironmentVariables()
   {
+    //Work around for https://github.com/end2endzone/RapidAssist/issues/54
+    ra::environment::GetEnvironmentVariableUtf8("foo");
+
     //register all environment variables
-    ra::strings::StringVector vars = ra::environment::GetEnvironmentVariables();
+    ra::strings::StringVector vars = ra::environment::GetEnvironmentVariablesUtf8();
     for(size_t i=0; i<vars.size(); i++)
     {
       const std::string & var = vars[i];
 
       std::string name = "env." + var;
-      std::string value = ra::environment::GetEnvironmentVariable(var.c_str());
+      std::string value = ra::environment::GetEnvironmentVariableUtf8(var.c_str());
       
       //register the variable as a valid property
       setProperty(name, value);

@@ -1,5 +1,5 @@
-find_package(GTest)
-find_package(rapidassist)
+find_package(GTest REQUIRED)
+find_package(rapidassist REQUIRED)
 find_package(glog REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
@@ -32,8 +32,6 @@ set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/Platform.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/utf_strings.h
-  ${CMAKE_SOURCE_DIR}/src/utf_strings.cpp
   ${CMAKE_SOURCE_DIR}/src/win32_registry.h
   ${CMAKE_SOURCE_DIR}/src/win32_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/win32_utils.h

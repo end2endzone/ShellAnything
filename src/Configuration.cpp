@@ -26,7 +26,7 @@
 #include "shellanything/Context.h"
 #include "shellanything/ActionProperty.h"
 
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "Platform.h"
 #include "ObjectFactory.h"
 
@@ -66,13 +66,13 @@ namespace shellanything
   {
     error = "";
 
-    if (!ra::filesystem::FileExists(path.c_str()))
+    if (!ra::filesystem::FileExistsUtf8(path.c_str()))
     {
       error = "File '" + path + "' not found.";
       return NULL;
     }
 
-    uint64_t file_modified_date = ra::filesystem::GetFileModifiedDate(path.c_str());
+    uint64_t file_modified_date = ra::filesystem::GetFileModifiedDateUtf8(path.c_str());
 
     //Parse the xml file
     //http://leethomason.github.io/tinyxml2/
@@ -142,7 +142,7 @@ namespace shellanything
     {
       //read the beginning of the file
       std::string content;
-      bool readed = ra::filesystem::PeekFile(path.c_str(), 1024, content);
+      bool readed = ra::filesystem::PeekFileUtf8(path.c_str(), 1024, content);
       if (readed)
       {
         //and look for special XML tags

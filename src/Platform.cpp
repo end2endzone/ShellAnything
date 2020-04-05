@@ -23,8 +23,6 @@
  *********************************************************************************/
 
 #include "Platform.h"
-#include "rapidassist/environment.h"
-#include "rapidassist/filesystem.h"
 #include <stdio.h>
 #include <direct.h>
 
@@ -38,8 +36,6 @@
 #   include <psapi.h>
 #   pragma comment( lib, "psapi.lib" )
 #endif
-
-#include <Shlobj.h>
 
 namespace shellanything
 {

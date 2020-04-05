@@ -23,7 +23,9 @@
  *********************************************************************************/
 
 #include "shellanything/ActionExecute.h"
-#include "rapidassist/process.h"
+#include "rapidassist/process_utf8.h"
+#include "rapidassist/unicode.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
 #include "Platform.h"
 
@@ -32,7 +34,6 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-#include "rapidassist/filesystem.h"
 
 namespace shellanything
 {
@@ -99,12 +100,12 @@ namespace shellanything
     if (arguments_missing)
     {
       LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'";
-      pId = ra::process::StartProcess(path, basedir);
+      pId = ra::process::StartProcessUtf8(path, basedir);
     }
     else
     {
       LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
-      pId = ra::process::StartProcess(path, basedir, arguments);
+      pId = ra::process::StartProcessUtf8(path, basedir, arguments);
     }
 
     bool success = pId != ra::process::INVALID_PROCESS_ID;

@@ -1,11 +1,12 @@
 //#define WIN32_LEAN_AND_MEAN 1
 #include "win32_utils.h"
-#include "utf_strings.h"
 #undef GetEnvironmentVariable
 #undef DeleteFile
 #undef CreateDirectory
 #undef CopyFile
 #undef CreateFile
+
+#include "rapidassist/unicode.h"
 
 #include <string>
 #include <assert.h>
@@ -485,7 +486,7 @@ namespace win32_utils
       //Can't log unicode characters, convert to ansi.
       //Assume some characters might get dropped
       std::wstring wtext = (WCHAR*)tmp;
-      std::string atext = encoding::utf::unicode_to_ansi(wtext);
+      std::string atext = ra::unicode::UnicodeToAnsi(wtext);
       sprintf(title, "%s", atext.c_str(), pos, id);
     }
  

@@ -24,9 +24,9 @@
 
 #include "shellanything/ActionClipboard.h"
 #include "PropertyManager.h"
-#include "utf_strings.h"
 
 #include "win32clipboard/win32clipboard.h"
+#include "rapidassist/unicode.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -50,7 +50,7 @@ namespace shellanything
     std::string value = pmgr.expand(mValue);
 
     //convert to windows unicode...
-    std::wstring value_utf16 = encoding::utf::utf8_to_unicode(value);
+    std::wstring value_utf16 = ra::unicode::Utf8ToUnicode(value);
 
     //get clipboard handler
     win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::GetInstance();

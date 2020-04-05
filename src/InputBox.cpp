@@ -23,7 +23,8 @@
  *********************************************************************************/
 
 #include "InputBox.h"
-#include "utf_strings.h"
+
+#include "rapidassist/unicode.h"
 
 #define DEFAULT_INPUTBOX_WIDTH  400
 #define DEFAULT_INPUTBOX_HEIGHT 150
@@ -257,13 +258,13 @@ HWND CInputBox::getCtrl(CONTROLS ctrl) const
 
 void CInputBox::setTextAnsi(const std::string & text)
 {
-  std::wstring text_unicode = encoding::utf::ansi_to_unicode(text);
+  std::wstring text_unicode = ra::unicode::AnsiToUnicode(text);
   m_Text = text_unicode;
 }
 
 std::string CInputBox::getTextAnsi() const
 {
-  std::string text_ansi = encoding::utf::unicode_to_ansi(m_Text);
+  std::string text_ansi = ra::unicode::UnicodeToAnsi(m_Text);
   return text_ansi;
 }
 
@@ -495,8 +496,8 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 bool CInputBox::DoModal(const std::string  & caption, const std::string  & prompt)
 {
-  std::wstring caption_unicode = encoding::utf::ansi_to_unicode(caption);
-  std::wstring  prompt_unicode = encoding::utf::ansi_to_unicode(prompt);
+  std::wstring caption_unicode = ra::unicode::AnsiToUnicode(caption);
+  std::wstring  prompt_unicode = ra::unicode::AnsiToUnicode(prompt);
   return DoModal(caption_unicode, prompt_unicode);
 }
 

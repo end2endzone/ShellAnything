@@ -34,11 +34,10 @@
 #include "shellanything/ActionProperty.h"
 #include "shellanything/ActionOpen.h"
 
-#include "rapidassist/filesystem.h"
 #include "rapidassist/strings.h"
+#include "rapidassist/unicode.h"
 
 #include "Platform.h"
-#include "utf_strings.h"
 
 using namespace tinyxml2;
 
@@ -73,7 +72,7 @@ namespace shellanything
   std::string toUtf8(const std::string & value)
   {
     //detect if the xml content is valid utf-8
-    bool is_utf8 = encoding::utf::is_utf8_valid(value.c_str());
+    bool is_utf8 = ra::unicode::IsValidUtf8(value.c_str());
 
     if (is_utf8)
     {
@@ -83,7 +82,7 @@ namespace shellanything
 
     //assume encoding is windows ansi.
     //try to be backward compatible as much as possible.
-    std::string value_utf8 = encoding::utf::ansi_to_utf8(value);
+    std::string value_utf8 = ra::unicode::AnsiToUtf8(value);
     return value_utf8;
   }
 

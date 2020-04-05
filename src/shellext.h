@@ -25,8 +25,8 @@
 #ifndef SA_SHELLEXTENSION_H
 #define SA_SHELLEXTENSION_H
 
-#include "version.h"
-#include "config.h"
+#include "shellanything/version.h"
+#include "shellanything/config.h"
 
 #include "BitmapCache.h"
 #include "shellanything/Context.h"

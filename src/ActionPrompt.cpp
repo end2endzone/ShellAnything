@@ -23,10 +23,10 @@
  *********************************************************************************/
 
 #include "shellanything/ActionPrompt.h"
-#include "utf_strings.h"
 #include "PropertyManager.h"
 #include "InputBox.h"
 #include "rapidassist/strings.h"
+#include "rapidassist/unicode.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -69,10 +69,10 @@ namespace shellanything
     std::string answer; //the text result of the prompt, in utf-8 format
 
     //convert to windows unicode...
-    std::wstring name_utf16    = encoding::utf::utf8_to_unicode(name);
-    std::wstring title_utf16   = encoding::utf::utf8_to_unicode(title);
-    std::wstring default_utf16 = encoding::utf::utf8_to_unicode(mDefault);
-    std::wstring caption_utf16 = encoding::utf::utf8_to_unicode(caption);
+    std::wstring name_utf16    = ra::unicode::Utf8ToUnicode(name);
+    std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);
+    std::wstring default_utf16 = ra::unicode::Utf8ToUnicode(mDefault);
+    std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
@@ -116,7 +116,7 @@ namespace shellanything
 
       //convert from windows unicode back to utf-8
       std::wstring answer_utf16 = box.getTextUnicode();
-      answer = encoding::utf::unicode_to_utf8(answer_utf16);
+      answer = ra::unicode::UnicodeToUtf8(answer_utf16);
     }
 
     //update the property

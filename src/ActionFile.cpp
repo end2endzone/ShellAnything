@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/ActionFile.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
 #include "Platform.h"
 
@@ -52,25 +53,16 @@ namespace shellanything
     LOG(INFO) << "Writing file '" << path << "'";
 
     //try to create the file
-    FILE * f = fopen(path.c_str(), "w");
-    if (!f)
-    {
-      LOG(ERROR) << "Failed creating file '" << path << "'";
-      return false;
-    }
-
-    //write to file
-    size_t sizeWrite = fputs(text.c_str(), f);
-    if (sizeWrite < text.size()) //can't use == operator as \n can be replaced by \r\n
+    bool write_ok = ra::filesystem::WriteTextFileUtf8(path, text);
+    if (!write_ok)
     {
       LOG(ERROR) << "Failed writing content to file '" << path << "'";
-      fclose(f);
       return false;
     }
 
-    fclose(f);
-
-    LOG(INFO) << "Wrote " << sizeWrite << " bytes to file '" << path << "'";
+    //get write size
+    uint32_t write_size = ra::filesystem::GetFileSizeUtf8(path.c_str());
+    LOG(INFO) << "Wrote " << write_size << " bytes to file '" << path << "'";
 
     return true;
   }

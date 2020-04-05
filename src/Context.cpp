@@ -26,8 +26,8 @@
 #include "PropertyManager.h"
 #include "Platform.h"
 
-#include "rapidassist/filesystem.h"
-#include "rapidassist/environment.h"
+#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/environment_utf8.h"
 
 namespace shellanything
 {
@@ -148,8 +148,8 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       const std::string & element = elements[i];
-      bool isFile = ra::filesystem::FileExists(element.c_str());
-      bool isDir  = ra::filesystem::DirectoryExists(element.c_str());
+      bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
+      bool isDir  = ra::filesystem::DirectoryExistsUtf8(element.c_str());
       if (isFile)
         mNumFiles++;
       if (isDir)

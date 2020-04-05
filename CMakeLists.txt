@@ -117,7 +117,7 @@ endif()
 # The specified values will not be exported.
 set( SHELLANYTHING_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include )
 include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header files, for source code.
-                    ${CMAKE_BINARY_DIR}/include/shellanything   # for ${SHELLANYTHING_VERSION_HEADER} and ${SHELLANYTHING_CONFIG_HEADER} generated files.
+                    ${CMAKE_BINARY_DIR}/include                 # for ${SHELLANYTHING_VERSION_HEADER} and ${SHELLANYTHING_CONFIG_HEADER} generated files.
 )
 
 # unit tests

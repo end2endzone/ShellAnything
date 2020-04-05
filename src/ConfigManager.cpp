@@ -26,7 +26,7 @@
 #include "shellanything/Menu.h"
 #include "Platform.h"
 
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"
 
 #pragma warning( push )
@@ -71,8 +71,8 @@ namespace shellanything
       //compare the file's date at the load time and the current date
       const std::string & file_path = config->getFilePath();
       const uint64_t & old_file_date = config->getFileModifiedDate();
-      const uint64_t new_file_date = ra::filesystem::GetFileModifiedDate(file_path);
-      if (ra::filesystem::FileExists(file_path.c_str()) && old_file_date == new_file_date)
+      const uint64_t new_file_date = ra::filesystem::GetFileModifiedDateUtf8(file_path);
+      if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
         LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
@@ -95,7 +95,7 @@ namespace shellanything
 
       //search files in each directory
       ra::strings::StringVector files;
-      bool dir_found = ra::filesystem::FindFiles(files, path.c_str());
+      bool dir_found = ra::filesystem::FindFilesUtf8(files, path.c_str());
       if (dir_found)
       {
         //search through each files for *.xml files

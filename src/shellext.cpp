@@ -18,7 +18,6 @@
 #include "win32_registry.h"
 #include "win32_utils.h"
 #include "glog_utils.h"
-#include "utf_strings.h"
 
 #undef GetEnvironmentVariable
 #undef DeleteFile
@@ -32,9 +31,10 @@
 #include "rapidassist/process.h"
 #include "rapidassist/errors.h"
 #include "rapidassist/user.h"
+#include "rapidassist/unicode.h"
 
 #include "shellanything/ConfigManager.h"
-#include "version.h"
+#include "shellanything/version.h"
 #include "PropertyManager.h"
 
 #include <assert.h>
@@ -238,8 +238,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   }
 
   //convert to windows unicode...
-  std::wstring title_utf16 = encoding::utf::utf8_to_unicode(title);
-  std::wstring desc_utf16  = encoding::utf::utf8_to_unicode(description);
+  std::wstring title_utf16 = ra::unicode::Utf8ToUnicode(title);
+  std::wstring desc_utf16  = ra::unicode::Utf8ToUnicode(description);
 
   MENUITEMINFOW menuinfo = {0};
 
@@ -695,8 +695,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   std::string description = pmgr.expand(menu->getDescription());
 
   //convert to windows unicode...
-  std::wstring desc_utf16 = encoding::utf::utf8_to_unicode(description);
-  std::string  desc_ansi  = encoding::utf::utf8_to_ansi(description);
+  std::wstring desc_utf16 = ra::unicode::Utf8ToUnicode(description);
+  std::string  desc_ansi  = ra::unicode::Utf8ToAnsi(description);
 
   //Build up tooltip string
   switch(uFlags)
