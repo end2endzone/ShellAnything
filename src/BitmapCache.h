@@ -40,6 +40,15 @@ namespace shellanything
    
     static const HBITMAP INVALID_BITMAP_HANDLE;
    
+    void clear();
+    void clear_and_destroy();
+    void reset_counters();
+    int destroy_old_handles();
+    void add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
+    HBITMAP find_handle(const std::string & iFilename, const int & iIndex);
+    int get_usage(const std::string & iFilename, const int & iIndex);
+   
+  private:
     // Typedef
     struct USAGE
     {
@@ -51,15 +60,6 @@ namespace shellanything
     typedef std::map<int          /*index*/,    USAGE> IndexMap;
     typedef std::map<std::string  /*filename*/, IndexMap> FilenameMap;
    
-    void clear();
-    void clear_and_destroy();
-    void reset_counters();
-    int destroy_old_handles();
-    void add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
-    HBITMAP find_handle(const std::string & iFilename, const int & iIndex);
-    int get_usage(const std::string & iFilename, const int & iIndex);
-   
-  private:
     FilenameMap mFiles;
   };
 
