@@ -69,23 +69,6 @@ namespace shellanything
     return _instance;
   }
 
-  std::string toUtf8(const std::string & value)
-  {
-    //detect if the xml content is valid utf-8
-    bool is_utf8 = ra::unicode::IsValidUtf8(value.c_str());
-
-    if (is_utf8)
-    {
-      //value is utf8 (or ascii)
-      return value;
-    }
-
-    //assume encoding is windows ansi.
-    //try to be backward compatible as much as possible.
-    std::string value_utf8 = ra::unicode::AnsiToUtf8(value);
-    return value_utf8;
-  }
-
   typedef std::vector<const XMLElement *> ElementPtrList;
   ElementPtrList getChildNodes(const XMLElement* element, const std::string & name)
   {
@@ -246,7 +229,6 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
-        tmp_str = toUtf8(tmp_str); //force value to utf-8 encoding
         action->setValue(tmp_str);
       }
 
@@ -323,7 +305,6 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "title", false, true, tmp_str, error))
       {
-        tmp_str = toUtf8(tmp_str); //force value to utf-8 encoding
         action->setTitle(tmp_str);
       }
 
@@ -332,7 +313,6 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "default", true, true, tmp_str, error))
       {
-        tmp_str = toUtf8(tmp_str); //force value to utf-8 encoding
         action->setDefault(tmp_str);
       }
 
@@ -450,14 +430,12 @@ namespace shellanything
       delete menu;
       return NULL;
     }
-    menu_name = toUtf8(menu_name); //force value to utf-8 encoding
     menu->setName(menu_name);
 
     //parse description
     std::string menu_desc;
     if (!parseAttribute(element, "description", true, true, menu_desc, error))
     {
-      menu_desc = toUtf8(menu_desc); //force value to utf-8 encoding
       menu->setDescription(menu_desc);
     }
 

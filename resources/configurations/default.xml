@@ -4,6 +4,8 @@ Help:
   This is a quick reminder about how to use the property system. 
   The following table defines the list of dynamic properties and their utility:
 
+  Selection-based properties:
+  
   | Property                     | Description                                                              |
   |------------------------------|--------------------------------------------------------------------------|
   | selection.path               | Matches the full path of the clicked element.                            |
@@ -13,7 +15,7 @@ Help:
   | selection.parent.filename    | Matches the filename  of the parent  element.                            |
   | selection.filename.extension | Matches the file extension of the clicked element.                       |
 
-  Environment variables:  
+  Environment variables properties:  
     ${env.XYZ} refers to environment variable XYZ
   
   Rules:

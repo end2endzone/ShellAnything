@@ -1,6 +1,7 @@
 Changes for 0.4.0
 
 * Fixed issue #38: Unable to load configuration if filename is utf-8 encoded.
+* Fixed issue #36: Support utf-8 strings in configuration files.
 * Using win32Clipboard version 0.3.0.
 * Using RapidAssist version 0.8.1.
 

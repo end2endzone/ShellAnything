@@ -23,6 +23,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Using properties](using-properties)
   * [Environment variables](#environment-variables)
   * [Selection-based properties](#selection-based-properties)
+  * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
 * [Use Cases](#use-cases)
   * [Integrate a third party application](#integrate-a-third-party-application)
@@ -688,6 +689,21 @@ The following table defines the list of dynamic properties and their utility:
 | selection.parent.path        | Matches the full path of the parent  element.                            |
 | selection.parent.filename    | Matches the filename  of the parent  element.                            |
 | selection.filename.extension | Matches the file extension of the clicked element.                       |
+
+
+
+## Fixed properties ##
+
+The application defines a list of properties about the current runtime. The values of these properties are constant (fixed) and do not change.
+
+The following table defines the list of fixed properties and their utility:
+
+| Property              | Description                                       |
+|-----------------------|---------------------------------------------------|
+| application.path      | Matches the full path of the shell extension DLL. |
+| application.directory | Matches the directory of the shell extension.     |
+| log.directory         | Matches the directory where the logs are created. |
+| config.directory      | Matches the directory of the configuration files. |
 
 
 

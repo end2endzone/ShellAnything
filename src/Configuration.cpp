@@ -150,13 +150,21 @@ namespace shellanything
       //cleanup
       ra::filesystem::DeleteFile(temp_path.c_str());
     }
-    if (result != XML_SUCCESS && doc.ErrorStr())
+    if (result != XML_SUCCESS)
     {
-      error = doc.ErrorStr();
-      return NULL;
+      if (doc.ErrorStr())
+      {
+        error = doc.ErrorStr();
+        return NULL;
+      }
+      else
+      {
+        error = "Unknown error reported by XML library.";
+        return NULL;
+      }
     }
 
-    //validate utf-8 encoding
+    //get xml encoding
     std::string encoding = GetXmlEncoding(doc, error);
     if (encoding.empty())
     {
@@ -166,7 +174,7 @@ namespace shellanything
       return NULL;
     }
 
-    //filter utf-8 encoding
+    //validate utf-8 encoding
     std::string tmp_encoding = ra::strings::Uppercase(encoding);
     ra::strings::Replace(tmp_encoding, "-", "");
     if (tmp_encoding != "UTF8")

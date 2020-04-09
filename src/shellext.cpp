@@ -26,11 +26,10 @@
 #undef CreateFile
 
 #include "rapidassist/strings.h"
-#include "rapidassist/environment.h"
-#include "rapidassist/filesystem.h"
-#include "rapidassist/process.h"
+#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/process_utf8.h"
 #include "rapidassist/errors.h"
-#include "rapidassist/user.h"
+#include "rapidassist/user_utf8.h"
 #include "rapidassist/unicode.h"
 
 #include "shellanything/ConfigManager.h"
@@ -80,6 +79,41 @@ std::string GetCurrentModulePath()
   if (buffer[0] != '\0')
   {
     path = buffer;
+  }
+  return path;
+}
+
+std::string GetCurrentModulePathUtf8()
+{
+  std::string path;
+  wchar_t buffer[MAX_PATH] = {0};
+  HMODULE hModule = NULL;
+  if (!GetModuleHandleExW( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                          (LPCWSTR) __FUNCTIONW__,
+                          &hModule))
+  {
+    uint32_t error_code = ra::errors::GetLastErrorCode();
+    std::string desc = ra::errors::GetErrorCodeDescription(error_code);
+    std::string message = std::string() +
+      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
+      "\n" +
+      "Failed getting the file path of the current module.\n" +
+      "The following error code was returned:\n" +
+      "\n" +
+      ra::strings::Format("0x%08x", error_code) + ": " + desc;
+
+    //display an error on 
+    shellanything::ShowErrorMessage("ShellAnything Error", message);
+
+    return EMPTY_STRING;
+  }
+
+  /*get the path of this DLL*/
+  GetModuleFileNameW(hModule, buffer, sizeof(buffer));
+  if (buffer[0] != '\0')
+  {
+    path = ra::unicode::UnicodeToUtf8(buffer);
   }
   return path;
 }
@@ -303,8 +337,9 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
       HICON hIconSmall = NULL;
       
       //
-      UINT numIconInFile = ExtractIconEx( icon_filename.c_str(), -1, NULL, NULL, 1 );
-      UINT numIconLoaded = ExtractIconEx( icon_filename.c_str(), icon_index, &hIconLarge, &hIconSmall, 1 );
+      std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(icon_filename);
+      UINT numIconInFile = ExtractIconExW( icon_filename_wide.c_str(), -1, NULL, NULL, 1 );
+      UINT numIconLoaded = ExtractIconExW( icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1 );
       if (numIconLoaded >= 1)
       {
         //Find the best icon
@@ -761,15 +796,16 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   {
     LOG(INFO) << "User right-clicked on a background directory.";
 
-    char szPath[MAX_PATH] = {0};
+    wchar_t szPath[2*MAX_PATH] = {0};
 
-    if (SHGetPathFromIDListA(pIDFolder, szPath))
+    if (SHGetPathFromIDListW(pIDFolder, szPath))
     {
       if (szPath[0] != '\0')
       {
-        LOG(INFO) << "Found directory '" << szPath << "'.";
+        std::string path_utf8 = ra::unicode::UnicodeToUtf8(szPath);
+        LOG(INFO) << "Found directory '" << path_utf8 << "'.";
         m_IsBackGround = true;
-        files.push_back(std::string(szPath));
+        files.push_back(path_utf8);
       }
       else
         return E_INVALIDARG;
@@ -801,26 +837,27 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       return E_INVALIDARG;
     }
 
-    UINT num_files = DragQueryFileA(hDropInfo, 0xFFFFFFFF, NULL, 0);
+    UINT num_files = DragQueryFileW(hDropInfo, 0xFFFFFFFF, NULL, 0);
     LOG(INFO) << "User right-clicked on " << num_files << " files/directories.";
 
     // For each files
     for (UINT i=0; i<num_files; i++)
     {
-      UINT length = DragQueryFileA(hDropInfo, i, NULL, 0);
+      UINT length = DragQueryFileW(hDropInfo, i, NULL, 0);
 
       // Allocate a temporary buffer
-      std::string path(length, '\0');
+      std::wstring path(length, '\0');
       if (path.size() != length)
         continue;
-      size_t buffer_size = length+1;
+      size_t num_characters = length+1;
 
       // Copy the element into the temporary buffer
-      DragQueryFile(hDropInfo, i, (char*)path.data(), (UINT)buffer_size);
+      DragQueryFileW(hDropInfo, i, (wchar_t*)path.data(), (UINT)num_characters);
 
       //add the new file
-      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d",i) << ": '" << path << "'.";
-      files.push_back(path);
+      std::string path_utf8 = ra::unicode::UnicodeToUtf8(path);
+      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d",i) << ": '" << path_utf8 << "'.";
+      files.push_back(path_utf8);
     }
     GlobalUnlock(stg.hGlobal);
     ReleaseStgMedium(&stg);
@@ -1255,7 +1292,7 @@ STDAPI DllUnregisterServer(void)
 
 void InstallDefaultConfigurations(const std::string & config_dir)
 {
-  std::string app_path = GetCurrentModulePath();
+  std::string app_path = GetCurrentModulePathUtf8();
   std::string app_dir = ra::filesystem::GetParentPath(app_path);
 
   static const char * default_files[] = {
@@ -1279,7 +1316,7 @@ void InstallDefaultConfigurations(const std::string & config_dir)
     std::string target_path = config_dir + "\\" + filename;
 
     LOG(INFO) << "Installing configuration file: " << target_path;
-    bool installed = ra::filesystem::CopyFile(source_path, target_path);
+    bool installed = ra::filesystem::CopyFileUtf8(source_path, target_path);
     if (!installed)
     {
       LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
@@ -1290,8 +1327,8 @@ void InstallDefaultConfigurations(const std::string & config_dir)
 void LogEnvironment()
 {
   LOG(INFO) << "Enabling logging";
-  LOG(INFO) << "DLL path: " << GetCurrentModulePath();
-  LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPath().c_str();
+  LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
+  LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
 
   LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
@@ -1309,7 +1346,7 @@ void InitConfigManager()
   static const std::string app_version = SHELLANYTHING_VERSION;
 
   //get home directory of the user
-  std::string home_dir = ra::user::GetHomeDirectory();
+  std::string home_dir = ra::user::GetHomeDirectoryUtf8();
   std::string config_dir = home_dir + "\\" + app_name;
   LOG(INFO) << "HOME   directory : " << home_dir.c_str();
   LOG(INFO) << "Config directory : " << config_dir.c_str();
@@ -1326,9 +1363,9 @@ void InitConfigManager()
   cmgr.refresh();
 
   //define global properties
-  std::string prop_application_path       = GetCurrentModulePath();
+  std::string prop_application_path       = GetCurrentModulePathUtf8();
   std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
-  std::string prop_log_directory          = shellanything::GetLogDirectory();
+  std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
   std::string prop_config_directory       = config_dir;
 
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
@@ -1351,8 +1388,6 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     // Initialize the configuration manager
     InitConfigManager();
-
-
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {

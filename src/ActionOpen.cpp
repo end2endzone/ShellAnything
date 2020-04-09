@@ -99,7 +99,7 @@ namespace shellanything
     }
 
     //is path a valid url?
-    std::wstring wide_path = ra::unicode::AnsiToUnicode(path);
+    std::wstring wide_path = ra::unicode::Utf8ToUnicode(path);
     if (IsValidURL(NULL, wide_path.c_str(), 0) == S_OK)
     {
       LOG(INFO) << "Open url '" << path << "'";
