@@ -701,12 +701,16 @@ The application defines a list of properties about the current runtime. The valu
 
 The following table defines the list of fixed properties and their utility:
 
-| Property              | Description                                       |
-|-----------------------|---------------------------------------------------|
-| application.path      | Matches the full path of the shell extension DLL. |
-| application.directory | Matches the directory of the shell extension.     |
-| log.directory         | Matches the directory where the logs are created. |
-| config.directory      | Matches the directory of the configuration files. |
+| Property              | Description                                              |
+|-----------------------|----------------------------------------------------------|
+| application.path      | Matches the full path of the shell extension DLL.        |
+| application.directory | Matches the directory of the shell extension.            |
+| log.directory         | Matches the directory where the logs are created.        |
+| config.directory      | Matches the directory of the configuration files.        |
+| home.directory        | Matches the home directory of the current user.          |
+| path.separator        | Matches the `\` character.                               |
+| line.separator        | Matches the `\n` character.                              |
+| newline               | Matches the `\n` character. Same as `${line.separator}`. |
 
 Fixed properties are encoded in utf-8.
 

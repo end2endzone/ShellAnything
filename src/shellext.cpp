@@ -31,6 +31,7 @@
 #include "rapidassist/errors.h"
 #include "rapidassist/user_utf8.h"
 #include "rapidassist/unicode.h"
+#include "rapidassist/environment.h"
 
 #include "shellanything/ConfigManager.h"
 #include "shellanything/version.h"
@@ -1366,13 +1367,18 @@ void InitConfigManager()
   std::string prop_application_path       = GetCurrentModulePathUtf8();
   std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
   std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
-  std::string prop_config_directory       = config_dir;
+  std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
+  std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
   pmgr.setProperty("application.path"     , prop_application_path     );
   pmgr.setProperty("application.directory", prop_application_directory);
   pmgr.setProperty("log.directory"        , prop_log_directory        );
-  pmgr.setProperty("config.directory"     , prop_config_directory     );
+  pmgr.setProperty("config.directory"     , config_dir                );
+  pmgr.setProperty("home.directory"       , home_dir                  );
+  pmgr.setProperty("path.separator"       , prop_path_separator       );
+  pmgr.setProperty("line.separator"       , prop_line_separator       );
+  pmgr.setProperty("newline"              , prop_line_separator       );
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
