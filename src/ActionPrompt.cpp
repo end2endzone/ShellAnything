@@ -61,6 +61,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::getInstance();
     const std::string name = pmgr.expand(mName);
     const std::string title = pmgr.expand(mTitle);
+    const std::string default_value = pmgr.expand(mDefault);
     const std::string & type = mType;
 
     static const char * caption = "Question / Prompt";
@@ -71,7 +72,7 @@ namespace shellanything
     //convert to windows unicode...
     std::wstring name_utf16    = ra::unicode::Utf8ToUnicode(name);
     std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);
-    std::wstring default_utf16 = ra::unicode::Utf8ToUnicode(mDefault);
+    std::wstring default_utf16 = ra::unicode::Utf8ToUnicode(default_value);
     std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
     //debug
