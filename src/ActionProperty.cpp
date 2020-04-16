@@ -48,7 +48,7 @@ namespace shellanything
     std::string value = pmgr.expand(mValue);
 
     //debug
-    LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'";
+    LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
     pmgr.setProperty(name, value);
 
     return true;

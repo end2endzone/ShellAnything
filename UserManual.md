@@ -673,6 +673,8 @@ For example, the following would create a menu with the current user login name:
 <menu name="Configure '${env.USERNAME}' settings.">
 ```
 
+Environment variables properties are encoded in utf-8.
+
 
 
 ## Selection-based properties ##
@@ -690,6 +692,7 @@ The following table defines the list of dynamic properties and their utility:
 | selection.parent.filename    | Matches the filename  of the parent  element.                            |
 | selection.filename.extension | Matches the file extension of the clicked element.                       |
 
+Selection-based properties are encoded in utf-8.
 
 
 ## Fixed properties ##
@@ -704,6 +707,8 @@ The following table defines the list of fixed properties and their utility:
 | application.directory | Matches the directory of the shell extension.     |
 | log.directory         | Matches the directory where the logs are created. |
 | config.directory      | Matches the directory of the configuration files. |
+
+Fixed properties are encoded in utf-8.
 
 
 

@@ -99,12 +99,12 @@ namespace shellanything
     uint32_t pId = ra::process::INVALID_PROCESS_ID;
     if (arguments_missing)
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'";
+      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir);
     }
     else
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'";
+      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir, arguments);
     }
 

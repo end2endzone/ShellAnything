@@ -666,7 +666,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 
       if (!success)
       {
-        //try to get an error mesage from win32
+        //try to get an error message from win32
         ra::errors::errorcode_t dwError = ra::errors::GetLastErrorCode();
         if (dwError)
         {

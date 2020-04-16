@@ -120,7 +120,7 @@ namespace shellanything
     }
 
     //update the property
-    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'";
+    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'.";
     pmgr.setProperty(name, answer);
 
     return true;

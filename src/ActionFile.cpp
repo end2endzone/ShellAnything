@@ -50,19 +50,19 @@ namespace shellanything
     std::string text = pmgr.expand(mText);
 
     //debug
-    LOG(INFO) << "Writing file '" << path << "'";
+    LOG(INFO) << "Writing file '" << path << "'.";
 
     //try to create the file
     bool write_ok = ra::filesystem::WriteTextFileUtf8(path, text);
     if (!write_ok)
     {
-      LOG(ERROR) << "Failed writing content to file '" << path << "'";
+      LOG(ERROR) << "Failed writing content to file '" << path << "'.";
       return false;
     }
 
     //get write size
     uint32_t write_size = ra::filesystem::GetFileSizeUtf8(path.c_str());
-    LOG(INFO) << "Wrote " << write_size << " bytes to file '" << path << "'";
+    LOG(INFO) << "Wrote " << write_size << " bytes to file '" << path << "'.";
 
     return true;
   }

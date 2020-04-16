@@ -56,7 +56,7 @@ namespace shellanything
     win32clipboard::Clipboard & clipboard = win32clipboard::Clipboard::GetInstance();
 
     //debug
-    LOG(INFO) << "Setting clipboard to '" << value << "'";
+    LOG(INFO) << "Setting clipboard to '" << value << "'.";
 
     //set clipboard value
     bool result = clipboard.SetTextUnicode(value_utf16);
