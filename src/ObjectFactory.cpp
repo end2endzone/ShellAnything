@@ -285,6 +285,14 @@ namespace shellanything
         action->setText(text);
       }
 
+      //parse encoding
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "encoding", true, true, tmp_str, error))
+      {
+        action->setEncoding(tmp_str);
+      }
+
       //done parsing
       return action;
     }

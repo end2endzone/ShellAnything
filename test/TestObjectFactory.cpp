@@ -241,22 +241,31 @@ namespace shellanything { namespace test
 
     //ASSERT a 3 menus are available
     Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
-    ASSERT_EQ( 3, menus.size() );
+    ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a file element as the first action
     ActionFile * file00 = getFirstActionFile(menus[00]);
     ActionFile * file01 = getFirstActionFile(menus[01]);
     ActionFile * file02 = getFirstActionFile(menus[02]);
+    ActionFile * file03 = getFirstActionFile(menus[03]);
 
     ASSERT_TRUE( file00 != NULL );
     ASSERT_TRUE( file01 != NULL );
     ASSERT_TRUE( file02 != NULL );
+    ASSERT_TRUE( file03 != NULL );
 
     //assert menus have text assigned
     static const std::string EMPTY_STRING;
     ASSERT_NE(EMPTY_STRING, file00->getText());
     ASSERT_NE(EMPTY_STRING, file01->getText());
-    //ASSERT_NE(EMPTY_STRING, file02->getText());
+    ASSERT_EQ(EMPTY_STRING, file02->getText());
+    ASSERT_NE(EMPTY_STRING, file03->getText());
+
+    //assert menus have encoding
+    ASSERT_EQ(EMPTY_STRING, file00->getEncoding());
+    ASSERT_EQ(EMPTY_STRING, file01->getEncoding());
+    ASSERT_EQ(EMPTY_STRING, file02->getEncoding());
+    ASSERT_NE(EMPTY_STRING, file03->getEncoding());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

@@ -66,9 +66,20 @@ namespace shellanything
     /// </summary>
     void setText(const std::string & iText);
 
+    /// <summary>
+    /// Getter for the 'encoding' parameter.
+    /// </summary>
+    const std::string & getEncoding() const;
+
+    /// <summary>
+    /// Setter for the 'encoding' parameter.
+    /// </summary>
+    void setEncoding(const std::string & iEncoding);
+
   private:
     std::string mPath;
     std::string mText;
+    std::string mEncoding;
   };
 
 } //namespace shellanything

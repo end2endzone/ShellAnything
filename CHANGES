@@ -6,6 +6,7 @@ Changes for 0.4.0
 * Fixed issue #38: Unable to load configuration if filename is utf-8 encoded.
 * Fixed issue #41: Prompt action does not expand default property value.
 * Fixed issue #42: Define new fixed properties for <file> action.
+* Fixed issue #44: Create an attribute for text encoding of <file> actions.
 
 
 Changes for 0.3.0

@@ -558,6 +558,17 @@ port=1562</file>
 
 
 
+#### encoding attribute: ####
+
+The `encoding` attribute defines the encoding of the text file. The `encoding` attribute supports the following values: `utf-8`, `ansi` and `unicode`. The default value for the encoding is `utf-8`.
+
+For example, the following action creates a new text file encoded in ANSI format, named `selection.txt` in the user's HOME directory :
+```xml
+<file path="${env.USERPROFILE}\selection.txt" encoding="ansi">${selection.path}</file>
+```
+
+
+
 ## Default ##
 
 A &lt;default&gt; element in a `Configuration File` defines the default settings of a configuration file. A &lt;default&gt; element must be inserted under the &lt;shell&gt; element.

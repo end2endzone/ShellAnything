@@ -24,5 +24,11 @@
       </actions>
     </menu>
 
+    <menu name="menu03">
+      <actions>
+        <file path="${env.TEMP}\menu00.txt" encoding="ansi">This is a single line text file created by ShellAnything.</file>
+      </actions>
+    </menu>
+ 
   </shell>
 </root>

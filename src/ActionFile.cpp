@@ -24,6 +24,7 @@
 
 #include "shellanything/ActionFile.h"
 #include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/unicode.h"
 #include "PropertyManager.h"
 #include "Platform.h"
 
@@ -48,12 +49,39 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::getInstance();
     std::string path = pmgr.expand(mPath);
     std::string text = pmgr.expand(mText);
+    std::string encoding = ra::strings::Uppercase(pmgr.expand(mEncoding));
 
     //debug
     LOG(INFO) << "Writing file '" << path << "'.";
 
+    //validate encoding
+    bool is_ansi = (encoding == "ANSI");
+    bool is_unicode = (encoding == "UNICODE");
+    bool is_utf8 = (encoding == "UTF-8" || encoding == "UTF8");
+    if (!is_ansi && !is_unicode && !is_utf8)
+    {
+      LOG(ERROR) << "Unknown encoding attribute '" << mEncoding << "'.";
+      return false;
+    }
+
+    //convert
+    if (is_ansi)
+      text = ra::unicode::Utf8ToAnsi(text);
+    else if (is_unicode)
+    {
+      std::wstring textW = ra::unicode::Utf8ToUnicode(text);
+      text.clear();
+      text.assign((const char *)textW.data(), text.size());
+    }
+    //note: utf-8 does not need conversion
+
+
     //try to create the file
-    bool write_ok = ra::filesystem::WriteTextFileUtf8(path, text);
+    bool write_ok = false;
+    if (is_ansi || is_utf8)
+      write_ok = ra::filesystem::WriteTextFileUtf8(path, text);
+    if (is_unicode)
+      write_ok = ra::filesystem::WriteFileUtf8(path, text);
     if (!write_ok)
     {
       LOG(ERROR) << "Failed writing content to file '" << path << "'.";
@@ -85,6 +113,16 @@ namespace shellanything
   void ActionFile::setText(const std::string & iText)
   {
     mText = iText;
+  }
+
+  const std::string & ActionFile::getEncoding() const
+  {
+    return mEncoding;
+  }
+
+  void ActionFile::setEncoding(const std::string & iEncoding)
+  {
+    mEncoding = iEncoding;
   }
 
 } //namespace shellanything
