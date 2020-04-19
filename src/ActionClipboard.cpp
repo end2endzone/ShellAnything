@@ -44,7 +44,7 @@ namespace shellanything
   {
   }
 
-  bool ActionClipboard::execute(const Context & iContext) const
+  bool ActionClipboard::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
     std::string value = pmgr.expand(mValue);

@@ -48,7 +48,7 @@ namespace shellanything { namespace test
 
     Context c;
 
-    bool result = prompt.execute(c);
+    bool result = prompt.Execute(c);
     
     ASSERT_TRUE(result);
   }
@@ -65,7 +65,7 @@ namespace shellanything { namespace test
     
     Context c;
 
-    bool result = prompt.execute(c);
+    bool result = prompt.Execute(c);
     
     ASSERT_TRUE(result);
 
@@ -85,7 +85,7 @@ namespace shellanything { namespace test
    
     Context c;
  
-    bool result = prompt.execute(c);
+    bool result = prompt.Execute(c);
    
     ASSERT_TRUE(result);
     ASSERT_TRUE(prompt.isOkQuestion());

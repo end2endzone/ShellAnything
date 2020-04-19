@@ -321,7 +321,7 @@ namespace shellanything
         if (action_property)
         {
           //no need to look for failures. ActionProperty never fails.
-          action_property->execute(empty_context);
+          action_property->Execute(empty_context);
         }
       }
 

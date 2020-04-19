@@ -45,7 +45,7 @@ namespace shellanything
   {
   }
 
-  bool ActionMessage::execute(const Context & iContext) const
+  bool ActionMessage::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
     const std::string title = pmgr.expand(mTitle);

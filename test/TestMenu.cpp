@@ -66,7 +66,7 @@ namespace shellanything { namespace test
     {
       (*deleted_flag) = true;
     }
-    virtual bool execute(const Context & iContext) const
+    virtual bool Execute(const Context & iContext) const
     {
       (*executed_flag) = true;
       return true;

@@ -663,7 +663,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
     if (action)
     {
       ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
-      bool success = action->execute(m_Context);
+      bool success = action->Execute(m_Context);
 
       if (!success)
       {

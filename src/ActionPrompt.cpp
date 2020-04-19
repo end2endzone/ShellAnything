@@ -56,7 +56,7 @@ namespace shellanything
     return ok_question;
   }
 
-  bool ActionPrompt::execute(const Context & iContext) const
+  bool ActionPrompt::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
     const std::string name = pmgr.expand(mName);
