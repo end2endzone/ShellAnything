@@ -49,12 +49,12 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const std::string & getPath() const;
+    const std::string & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void setPath(const std::string & iPath);
+    void SetPath(const std::string & iPath);
 
   private:
     std::string mPath;

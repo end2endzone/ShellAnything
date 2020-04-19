@@ -274,16 +274,16 @@ namespace shellanything { namespace test
 
     //assert menus have text assigned
     static const std::string EMPTY_STRING;
-    ASSERT_NE(EMPTY_STRING, file00->getText());
-    ASSERT_NE(EMPTY_STRING, file01->getText());
-    ASSERT_EQ(EMPTY_STRING, file02->getText());
-    ASSERT_NE(EMPTY_STRING, file03->getText());
+    ASSERT_NE(EMPTY_STRING, file00->GetText());
+    ASSERT_NE(EMPTY_STRING, file01->GetText());
+    ASSERT_EQ(EMPTY_STRING, file02->GetText());
+    ASSERT_NE(EMPTY_STRING, file03->GetText());
 
     //assert menus have encoding
-    ASSERT_EQ(EMPTY_STRING, file00->getEncoding());
-    ASSERT_EQ(EMPTY_STRING, file01->getEncoding());
-    ASSERT_EQ(EMPTY_STRING, file02->getEncoding());
-    ASSERT_NE(EMPTY_STRING, file03->getEncoding());
+    ASSERT_EQ(EMPTY_STRING, file00->GetEncoding());
+    ASSERT_EQ(EMPTY_STRING, file01->GetEncoding());
+    ASSERT_EQ(EMPTY_STRING, file02->GetEncoding());
+    ASSERT_NE(EMPTY_STRING, file03->GetEncoding());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -338,32 +338,32 @@ namespace shellanything { namespace test
 
     //assert menu #0 have no default values
     static const std::string EMPTY_STRING;
-    std::string prompt00_default = prompt00->getDefault();
+    std::string prompt00_default = prompt00->GetDefault();
     ASSERT_EQ( EMPTY_STRING, prompt00_default);
 
     //assert menu #1 have a default value
-    std::string prompt01_default = prompt01->getDefault();
+    std::string prompt01_default = prompt01->GetDefault();
     ASSERT_EQ( std::string("42"), prompt01_default);
 
     //assert menu #3 is a yesno question
-    ASSERT_FALSE( prompt00->isYesNoQuestion() );
-    ASSERT_FALSE( prompt01->isYesNoQuestion() );
-    ASSERT_FALSE( prompt02->isYesNoQuestion() );
-    ASSERT_TRUE ( prompt03->isYesNoQuestion() );
-    ASSERT_FALSE( prompt04->isYesNoQuestion() );
+    ASSERT_FALSE( prompt00->IsYesNoQuestion() );
+    ASSERT_FALSE( prompt01->IsYesNoQuestion() );
+    ASSERT_FALSE( prompt02->IsYesNoQuestion() );
+    ASSERT_TRUE ( prompt03->IsYesNoQuestion() );
+    ASSERT_FALSE( prompt04->IsYesNoQuestion() );
  
     //assert menu #3 have a "yes" and a "no" values defined
-    ASSERT_TRUE ( prompt00->getValueYes().empty() );
-    ASSERT_TRUE ( prompt00->getValueNo ().empty() );
-    ASSERT_FALSE( prompt03->getValueYes().empty() );
-    ASSERT_FALSE( prompt03->getValueNo ().empty() );
+    ASSERT_TRUE ( prompt00->GetValueYes().empty() );
+    ASSERT_TRUE ( prompt00->GetValueNo ().empty() );
+    ASSERT_FALSE( prompt03->GetValueYes().empty() );
+    ASSERT_FALSE( prompt03->GetValueNo ().empty() );
  
     //assert menu #4 is a OK only question
-    ASSERT_FALSE( prompt00->isOkQuestion() );
-    ASSERT_FALSE( prompt01->isOkQuestion() );
-    ASSERT_FALSE( prompt02->isOkQuestion() );
-    ASSERT_FALSE( prompt03->isOkQuestion() );
-    ASSERT_TRUE ( prompt04->isOkQuestion() );
+    ASSERT_FALSE( prompt00->IsOkQuestion() );
+    ASSERT_FALSE( prompt01->IsOkQuestion() );
+    ASSERT_FALSE( prompt02->IsOkQuestion() );
+    ASSERT_FALSE( prompt03->IsOkQuestion() );
+    ASSERT_TRUE ( prompt04->IsOkQuestion() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -416,24 +416,24 @@ namespace shellanything { namespace test
 
     //assert menu #0 caption and message
     static const std::string EMPTY_STRING;
-    ASSERT_EQ( "my_caption",  message00->getCaption());
-    ASSERT_EQ( "my_title",    message00->getTitle());
-    ASSERT_EQ( EMPTY_STRING,  message00->getIcon());
+    ASSERT_EQ( "my_caption",  message00->GetCaption());
+    ASSERT_EQ( "my_title",    message00->GetTitle());
+    ASSERT_EQ( EMPTY_STRING,  message00->GetIcon());
 
     //assert menu #1 have a default value
-    ASSERT_EQ( "hello",       message01->getCaption());
-    ASSERT_EQ( "world",       message01->getTitle());
-    ASSERT_EQ( EMPTY_STRING,  message01->getIcon());
+    ASSERT_EQ( "hello",       message01->GetCaption());
+    ASSERT_EQ( "world",       message01->GetTitle());
+    ASSERT_EQ( EMPTY_STRING,  message01->GetIcon());
 
     //assert menu #2 have a default value
-    ASSERT_EQ( "foo",         message02->getCaption());
-    ASSERT_EQ( "bar",         message02->getTitle());
-    ASSERT_EQ( "exclamation", message02->getIcon());
+    ASSERT_EQ( "foo",         message02->GetCaption());
+    ASSERT_EQ( "bar",         message02->GetTitle());
+    ASSERT_EQ( "exclamation", message02->GetIcon());
 
     //assert menu #3 have a default value
-    ASSERT_EQ( "foo",         message03->getCaption());
-    ASSERT_EQ( "bar",         message03->getTitle());
-    ASSERT_EQ( "warning",     message03->getIcon());
+    ASSERT_EQ( "foo",         message03->GetCaption());
+    ASSERT_EQ( "bar",         message03->GetTitle());
+    ASSERT_EQ( "warning",     message03->GetIcon());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -481,10 +481,10 @@ namespace shellanything { namespace test
     ASSERT_TRUE( property1 != NULL );
     ASSERT_TRUE( property2 != NULL );
 
-    ASSERT_EQ( std::string("services.command.start"), property1->getName());
-    ASSERT_EQ( std::string("services.command.stop" ), property2->getName());
-    ASSERT_EQ( std::string("runservice /start"), property1->getValue());
-    ASSERT_EQ( std::string("runservice /stop" ), property2->getValue());
+    ASSERT_EQ( std::string("services.command.start"), property1->GetName());
+    ASSERT_EQ( std::string("services.command.stop" ), property2->GetName());
+    ASSERT_EQ( std::string("runservice /start"), property1->GetValue());
+    ASSERT_EQ( std::string("runservice /stop" ), property2->GetValue());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

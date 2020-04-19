@@ -64,12 +64,12 @@ namespace shellanything
     return result;
   }
 
-  const std::string & ActionClipboard::getValue() const
+  const std::string & ActionClipboard::GetValue() const
   {
     return mValue;
   }
 
-  void ActionClipboard::setValue(const std::string & iValue)
+  void ActionClipboard::SetValue(const std::string & iValue)
   {
     mValue = iValue;
   }

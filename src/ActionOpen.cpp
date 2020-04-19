@@ -111,12 +111,12 @@ namespace shellanything
     return false; //file not found
   }
 
-  const std::string & ActionOpen::getPath() const
+  const std::string & ActionOpen::GetPath() const
   {
     return mPath;
   }
 
-  void ActionOpen::setPath(const std::string & iPath)
+  void ActionOpen::SetPath(const std::string & iPath)
   {
     mPath = iPath;
   }

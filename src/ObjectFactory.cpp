@@ -231,7 +231,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
-        action->setValue(tmp_str);
+        action->SetValue(tmp_str);
       }
 
       //done parsing
@@ -246,7 +246,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "path", false, true, tmp_str, error))
       {
-        action->setPath(tmp_str);
+        action->SetPath(tmp_str);
       }
 
       //parse arguments
@@ -254,7 +254,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "arguments", true, true, tmp_str, error))
       {
-        action->setArguments(tmp_str);
+        action->SetArguments(tmp_str);
       }
 
       //parse basedir
@@ -262,7 +262,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "basedir", true, true, tmp_str, error))
       {
-        action->setBaseDir(tmp_str);
+        action->SetBaseDir(tmp_str);
       }
 
       //done parsing
@@ -277,14 +277,14 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "path", false, true, tmp_str, error))
       {
-        action->setPath(tmp_str);
+        action->SetPath(tmp_str);
       }
 
       //parse text
       const char * text = element->GetText();
       if (text)
       {
-        action->setText(text);
+        action->SetText(text);
       }
 
       //parse encoding
@@ -292,7 +292,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "encoding", true, true, tmp_str, error))
       {
-        action->setEncoding(tmp_str);
+        action->SetEncoding(tmp_str);
       }
 
       //done parsing
@@ -307,7 +307,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "name", false, true, tmp_str, error))
       {
-        action->setName(tmp_str);
+        action->SetName(tmp_str);
       }
 
       //parse title
@@ -315,7 +315,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "title", false, true, tmp_str, error))
       {
-        action->setTitle(tmp_str);
+        action->SetTitle(tmp_str);
       }
 
       //parse default
@@ -323,7 +323,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "default", true, true, tmp_str, error))
       {
-        action->setDefault(tmp_str);
+        action->SetDefault(tmp_str);
       }
 
       //parse type
@@ -331,7 +331,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "type", true, true, tmp_str, error))
       {
-        action->setType(tmp_str);
+        action->SetType(tmp_str);
       }
 
       //parse valueyes
@@ -339,7 +339,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "valueyes", true, true, tmp_str, error))
       {
-        action->setValueYes(tmp_str);
+        action->SetValueYes(tmp_str);
       }
 
       //parse valueno
@@ -347,7 +347,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "valueno", true, true, tmp_str, error))
       {
-        action->setValueNo(tmp_str);
+        action->SetValueNo(tmp_str);
       }
 
       //done parsing
@@ -362,7 +362,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "name", false, true, tmp_str, error))
       {
-        action->setName(tmp_str);
+        action->SetName(tmp_str);
       }
 
       //parse value
@@ -370,7 +370,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "value", false, true, tmp_str, error))
       {
-        action->setValue(tmp_str);
+        action->SetValue(tmp_str);
       }
 
       //done parsing
@@ -385,7 +385,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "path", false, true, tmp_str, error))
       {
-        action->setPath(tmp_str);
+        action->SetPath(tmp_str);
       }
 
       //done parsing
@@ -400,7 +400,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "title", false, true, tmp_str, error))
       {
-        action->setTitle(tmp_str);
+        action->SetTitle(tmp_str);
       }
 
       //parse caption
@@ -408,7 +408,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "caption", false, true, tmp_str, error))
       {
-        action->setCaption(tmp_str);
+        action->SetCaption(tmp_str);
       }
 
       //parse icon
@@ -416,7 +416,7 @@ namespace shellanything
       tmp_int = -1;
       if (parseAttribute(element, "icon", true, true, tmp_str, error))
       {
-        action->setIcon(tmp_str);
+        action->SetIcon(tmp_str);
       }
 
       //done parsing

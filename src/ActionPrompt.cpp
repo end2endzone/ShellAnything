@@ -44,13 +44,13 @@ namespace shellanything
   {
   }
 
-  bool ActionPrompt::isYesNoQuestion() const
+  bool ActionPrompt::IsYesNoQuestion() const
   {
     bool yes_no_question = (!mType.empty() && ra::strings::Uppercase(mType) == "YESNO");
     return yes_no_question;
   }
 
-  bool ActionPrompt::isOkQuestion() const
+  bool ActionPrompt::IsOkQuestion() const
   {
     bool ok_question = (!mType.empty() && ra::strings::Uppercase(mType) == "OK");
     return ok_question;
@@ -78,7 +78,7 @@ namespace shellanything
     //debug
     LOG(INFO) << "Prompt: '" << title << "' ?";
 
-    if (isOkQuestion())
+    if (IsOkQuestion())
     {
       int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_OK | MB_ICONINFORMATION);
       if (result == IDCANCEL)
@@ -87,7 +87,7 @@ namespace shellanything
         return false;
       }
     }
-    else if (isYesNoQuestion())
+    else if (IsYesNoQuestion())
     {
       int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_YESNOCANCEL | MB_ICONQUESTION);
       switch(result)
@@ -127,62 +127,62 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionPrompt::getType() const
+  const std::string & ActionPrompt::GetType() const
   {
     return mType;
   }
 
-  void ActionPrompt::setType(const std::string & iType)
+  void ActionPrompt::SetType(const std::string & iType)
   {
     mType = iType;
   }
 
-  const std::string & ActionPrompt::getName() const
+  const std::string & ActionPrompt::GetName() const
   {
     return mName;
   }
 
-  void ActionPrompt::setName(const std::string & iName)
+  void ActionPrompt::SetName(const std::string & iName)
   {
     mName = iName;
   }
 
-  const std::string & ActionPrompt::getTitle() const
+  const std::string & ActionPrompt::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionPrompt::setTitle(const std::string & iTitle)
+  void ActionPrompt::SetTitle(const std::string & iTitle)
   {
     mTitle = iTitle;
   }
 
-  const std::string & ActionPrompt::getDefault() const
+  const std::string & ActionPrompt::GetDefault() const
   {
     return mDefault;
   }
 
-  void ActionPrompt::setDefault(const std::string & iDefault)
+  void ActionPrompt::SetDefault(const std::string & iDefault)
   {
     mDefault = iDefault;
   }
 
-  const std::string & ActionPrompt::getValueYes() const
+  const std::string & ActionPrompt::GetValueYes() const
   {
     return mValueYes;
   }
 
-  void ActionPrompt::setValueYes(const std::string & iValueYes)
+  void ActionPrompt::SetValueYes(const std::string & iValueYes)
   {
     mValueYes = iValueYes;
   }
 
-  const std::string & ActionPrompt::getValueNo() const
+  const std::string & ActionPrompt::GetValueNo() const
   {
     return mValueNo;
   }
 
-  void ActionPrompt::setValueNo(const std::string & iValueNo)
+  void ActionPrompt::SetValueNo(const std::string & iValueNo)
   {
     mValueNo = iValueNo;
   }

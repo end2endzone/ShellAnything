@@ -86,32 +86,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionMessage::getTitle() const
+  const std::string & ActionMessage::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionMessage::setTitle(const std::string & iTitle)
+  void ActionMessage::SetTitle(const std::string & iTitle)
   {
     mTitle = iTitle;
   }
 
-  const std::string & ActionMessage::getCaption() const
+  const std::string & ActionMessage::GetCaption() const
   {
     return mCaption;
   }
 
-  void ActionMessage::setCaption(const std::string & iCaption)
+  void ActionMessage::SetCaption(const std::string & iCaption)
   {
     mCaption = iCaption;
   }
 
-  const std::string & ActionMessage::getIcon() const
+  const std::string & ActionMessage::GetIcon() const
   {
     return mIcon;
   }
 
-  void ActionMessage::setIcon(const std::string & iIcon)
+  void ActionMessage::SetIcon(const std::string & iIcon)
   {
     mIcon = iIcon;
   }

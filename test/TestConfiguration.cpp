@@ -80,8 +80,8 @@ namespace shellanything { namespace test
     validity.setMaxDirectories(1); //a single directory is accepted
     Validator visibility; //no requirement, always visible
     ActionExecute * action = new ActionExecute();
-    action->setPath("C:\\windows\\system32\\cmd.exe");
-    action->setBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
+    action->SetPath("C:\\windows\\system32\\cmd.exe");
+    action->SetBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
     config->addChild(menu);

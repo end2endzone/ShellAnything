@@ -43,13 +43,13 @@ namespace shellanything
     /// Returns true if the ActionPrompt is configued as a Yes/No question.
     /// </summary>
     /// <returns>Returns true if the ActionPrompt is configued as a Yes/No question. Returns false otherwise.</returns>
-    virtual bool isYesNoQuestion() const;
+    virtual bool IsYesNoQuestion() const;
 
     /// <summary>
     /// Returns true if the ActionPrompt is configued as a OK only question.
     /// </summary>
     /// <returns>Returns true if the ActionPrompt is configued as a OK question. Returns false otherwise.</returns>
-    virtual bool isOkQuestion() const;
+    virtual bool IsOkQuestion() const;
 
     /// <summary>
     /// Prompts the user for a value.
@@ -61,62 +61,62 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const std::string & getName() const;
+    const std::string & GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void setName(const std::string & iName);
+    void SetName(const std::string & iName);
 
     /// <summary>
     /// Getter for the 'type' parameter.
     /// </summary>
-    const std::string & getType() const;
+    const std::string & GetType() const;
 
     /// <summary>
     /// Setter for the 'type' parameter.
     /// </summary>
-    void setType(const std::string & iType);
+    void SetType(const std::string & iType);
 
     /// <summary>
     /// Getter for the 'title' parameter.
     /// </summary>
-    const std::string & getTitle() const;
+    const std::string & GetTitle() const;
 
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void setTitle(const std::string & iTitle);
+    void SetTitle(const std::string & iTitle);
 
     /// <summary>
     /// Getter for the 'default' parameter.
     /// </summary>
-    const std::string & getDefault() const;
+    const std::string & GetDefault() const;
 
     /// <summary>
     /// Setter for the 'default' parameter.
     /// </summary>
-    void setDefault(const std::string & iDefault);
+    void SetDefault(const std::string & iDefault);
 
     /// <summary>
     /// Getter for the 'valueyes' parameter.
     /// </summary>
-    const std::string & getValueYes() const;
+    const std::string & GetValueYes() const;
 
     /// <summary>
     /// Setter for the 'valueyes' parameter.
     /// </summary>
-    void setValueYes(const std::string & iValueYes);
+    void SetValueYes(const std::string & iValueYes);
 
     /// <summary>
     /// Getter for the 'valueno' parameter.
     /// </summary>
-    const std::string & getValueNo() const;
+    const std::string & GetValueNo() const;
 
     /// <summary>
     /// Setter for the 'valueno' parameter.
     /// </summary>
-    void setValueNo(const std::string & iValueNo);
+    void SetValueNo(const std::string & iValueNo);
 
   private:
     std::string mType;

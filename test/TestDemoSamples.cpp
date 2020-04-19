@@ -42,9 +42,9 @@ namespace shellanything { namespace test
   TEST_F(TestDemoSamples, DISABLED_demoActionPromptQuestion)
   {
     ActionPrompt prompt;
-    prompt.setName("myproperty");
-    prompt.setTitle("What is your name?");
-    prompt.setDefault("Isabelle Ringing");
+    prompt.SetName("myproperty");
+    prompt.SetTitle("What is your name?");
+    prompt.SetDefault("Isabelle Ringing");
 
     Context c;
 
@@ -57,11 +57,11 @@ namespace shellanything { namespace test
   {
 
     ActionPrompt prompt;
-    prompt.setType("yesno");
-    prompt.setValueYes("yes");
-    prompt.setValueNo("no");
-    prompt.setName("myproperty");
-    prompt.setTitle("Are you afraid of the dark?");
+    prompt.SetType("yesno");
+    prompt.SetValueYes("yes");
+    prompt.SetValueNo("no");
+    prompt.SetName("myproperty");
+    prompt.SetTitle("Are you afraid of the dark?");
     
     Context c;
 
@@ -72,23 +72,23 @@ namespace shellanything { namespace test
     //assert user have answered "yes"
     PropertyManager & pmgr = PropertyManager::getInstance();
     std::string myproperty = pmgr.getProperty("myproperty");
-    ASSERT_TRUE(myproperty == prompt.getValueYes() || myproperty == prompt.getValueNo());
+    ASSERT_TRUE(myproperty == prompt.GetValueYes() || myproperty == prompt.GetValueNo());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestDemoSamples, DISABLED_demoActionPromptOk)
   {
  
     ActionPrompt prompt;
-    prompt.setType("ok");
-    prompt.setName("myproperty");
-    prompt.setTitle("Wait for the system to load and press OK button.");
+    prompt.SetType("ok");
+    prompt.SetName("myproperty");
+    prompt.SetTitle("Wait for the system to load and press OK button.");
    
     Context c;
  
     bool result = prompt.Execute(c);
    
     ASSERT_TRUE(result);
-    ASSERT_TRUE(prompt.isOkQuestion());
+    ASSERT_TRUE(prompt.IsOkQuestion());
  
     //assert property is unchanged
     PropertyManager & pmgr = PropertyManager::getInstance();

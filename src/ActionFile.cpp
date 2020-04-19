@@ -96,32 +96,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionFile::getPath() const
+  const std::string & ActionFile::GetPath() const
   {
     return mPath;
   }
 
-  void ActionFile::setPath(const std::string & iPath)
+  void ActionFile::SetPath(const std::string & iPath)
   {
     mPath = iPath;
   }
 
-  const std::string & ActionFile::getText() const
+  const std::string & ActionFile::GetText() const
   {
     return mText;
   }
 
-  void ActionFile::setText(const std::string & iText)
+  void ActionFile::SetText(const std::string & iText)
   {
     mText = iText;
   }
 
-  const std::string & ActionFile::getEncoding() const
+  const std::string & ActionFile::GetEncoding() const
   {
     return mEncoding;
   }
 
-  void ActionFile::setEncoding(const std::string & iEncoding)
+  void ActionFile::SetEncoding(const std::string & iEncoding)
   {
     mEncoding = iEncoding;
   }

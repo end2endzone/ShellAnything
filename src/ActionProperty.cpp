@@ -54,22 +54,22 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionProperty::getName() const
+  const std::string & ActionProperty::GetName() const
   {
     return mName;
   }
 
-  void ActionProperty::setName(const std::string & iName)
+  void ActionProperty::SetName(const std::string & iName)
   {
     mName = iName;
   }
 
-  const std::string & ActionProperty::getValue() const
+  const std::string & ActionProperty::GetValue() const
   {
     return mValue;
   }
 
-  void ActionProperty::setValue(const std::string & iValue)
+  void ActionProperty::SetValue(const std::string & iValue)
   {
     mValue = iValue;
   }

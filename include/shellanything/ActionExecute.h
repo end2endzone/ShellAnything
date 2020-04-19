@@ -49,32 +49,32 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const std::string & getPath() const;
+    const std::string & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void setPath(const std::string & iPath);
+    void SetPath(const std::string & iPath);
 
     /// <summary>
     /// Getter for the 'basedir' parameter.
     /// </summary>
-    const std::string & getBaseDir() const;
+    const std::string & GetBaseDir() const;
 
     /// <summary>
     /// Setter for the 'basedir' parameter.
     /// </summary>
-    void setBaseDir(const std::string & iBaseDir);
+    void SetBaseDir(const std::string & iBaseDir);
 
     /// <summary>
     /// Getter for the 'arguments' parameter.
     /// </summary>
-    const std::string & getArguments() const;
+    const std::string & GetArguments() const;
 
     /// <summary>
     /// Setter for the 'arguments' parameter.
     /// </summary>
-    void setArguments(const std::string & iArguments);
+    void SetArguments(const std::string & iArguments);
 
   private:
     std::string mPath;

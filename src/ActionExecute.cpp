@@ -117,32 +117,32 @@ namespace shellanything
     return success;
   }
 
-  const std::string & ActionExecute::getPath() const
+  const std::string & ActionExecute::GetPath() const
   {
     return mPath;
   }
 
-  void ActionExecute::setPath(const std::string & iPath)
+  void ActionExecute::SetPath(const std::string & iPath)
   {
     mPath = iPath;
   }
 
-  const std::string & ActionExecute::getBaseDir() const
+  const std::string & ActionExecute::GetBaseDir() const
   {
     return mBaseDir;
   }
 
-  void ActionExecute::setBaseDir(const std::string & iBaseDir)
+  void ActionExecute::SetBaseDir(const std::string & iBaseDir)
   {
     mBaseDir = iBaseDir;
   }
 
-  const std::string & ActionExecute::getArguments() const
+  const std::string & ActionExecute::GetArguments() const
   {
     return mArguments;
   }
 
-  void ActionExecute::setArguments(const std::string & iArguments)
+  void ActionExecute::SetArguments(const std::string & iArguments)
   {
     mArguments = iArguments;
   }
