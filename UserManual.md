@@ -14,6 +14,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;open&gt; action](#open-action)
     * [&lt;clipboard&gt; action](#clipboard-action)
     * [&lt;prompt&gt; action](#prompt-action)
+    * [&lt;message&gt; action](#message-action)
     * [&lt;property&gt; action](#property-action)
     * [&lt;file&gt; action](#file-action)
   * [Default](#Default)
