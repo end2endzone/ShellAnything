@@ -41,12 +41,12 @@ namespace shellanything
     mActions.clear();
   }
 
-  void DefaultSettings::addAction(Action * action)
+  void DefaultSettings::AddAction(Action * action)
   {
     mActions.push_back(action);
   }
 
-  const Action::ActionPtrList & DefaultSettings::getActions() const
+  const Action::ActionPtrList & DefaultSettings::GetActions() const
   {
     return mActions;
   }

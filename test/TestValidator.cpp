@@ -61,7 +61,7 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       elements.push_back("C:\\Windows\\System32\\services.msc");
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
@@ -73,15 +73,15 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.validate(c) );
 
     //assert higher value
-    v.setMaxFiles(c.getNumFiles() + 1);
+    v.setMaxFiles(c.GetNumFiles() + 1);
     ASSERT_TRUE( v.validate(c) );
 
     //assert exact value
-    v.setMaxFiles(c.getNumFiles());
+    v.setMaxFiles(c.GetNumFiles());
     ASSERT_TRUE( v.validate(c) );
 
     //assert lower value
-    v.setMaxFiles(c.getNumFiles() - 1);
+    v.setMaxFiles(c.GetNumFiles() - 1);
     ASSERT_FALSE( v.validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Program Files");
       elements.push_back("C:\\Users"        );
       elements.push_back("C:\\Windows"      );
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to directories
@@ -106,15 +106,15 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.validate(c) );
 
     //assert higher value
-    v.setMaxDirectories(c.getNumDirectories() + 1);
+    v.setMaxDirectories(c.GetNumDirectories() + 1);
     ASSERT_TRUE( v.validate(c) );
 
     //assert exact value
-    v.setMaxDirectories(c.getNumDirectories());
+    v.setMaxDirectories(c.GetNumDirectories());
     ASSERT_TRUE( v.validate(c) );
 
     //assert lower value
-    v.setMaxDirectories(c.getNumDirectories() - 1);
+    v.setMaxDirectories(c.GetNumDirectories() - 1);
     ASSERT_FALSE( v.validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       elements.push_back("C:\\Windows\\System32\\services.msc");
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
@@ -170,7 +170,7 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       elements.push_back("C:\\Windows\\System32\\services.msc");
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files

@@ -60,9 +60,9 @@ namespace shellanything
     //If not specified try to fill basedir with the best option available
     if (basedir.empty())
     {
-      const shellanything::Context::ElementList & elements = iContext.getElements();
-      size_t num_dir    = iContext.getNumDirectories();
-      size_t num_files  = iContext.getNumFiles();
+      const shellanything::Context::ElementList & elements = iContext.GetElements();
+      size_t num_dir    = iContext.GetNumDirectories();
+      size_t num_files  = iContext.GetNumFiles();
       if (num_dir == 1 && elements.size() == 1)
       {
         //if a single directory was selected

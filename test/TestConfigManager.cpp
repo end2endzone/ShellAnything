@@ -52,7 +52,7 @@ namespace shellanything { namespace test
 #else
     //TODO: complete with known path to files
 #endif
-    c.setElements(elements);
+    c.SetElements(elements);
 
     return c;
   }
@@ -66,7 +66,7 @@ namespace shellanything { namespace test
 #else
     //TODO: complete with known path to files
 #endif
-    c.setElements(elements);
+    c.SetElements(elements);
 
     return c;
   }

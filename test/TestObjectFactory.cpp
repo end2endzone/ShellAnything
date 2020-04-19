@@ -474,10 +474,10 @@ namespace shellanything { namespace test
     ASSERT_TRUE( defaults != NULL );
 
     //assert 2 properties parsed
-    ASSERT_EQ( 2, defaults->getActions().size() );
+    ASSERT_EQ( 2, defaults->GetActions().size() );
 
-    const ActionProperty * property1 = dynamic_cast<const ActionProperty *>(defaults->getActions()[0]);
-    const ActionProperty * property2 = dynamic_cast<const ActionProperty *>(defaults->getActions()[1]);
+    const ActionProperty * property1 = dynamic_cast<const ActionProperty *>(defaults->GetActions()[0]);
+    const ActionProperty * property2 = dynamic_cast<const ActionProperty *>(defaults->GetActions()[1]);
     ASSERT_TRUE( property1 != NULL );
     ASSERT_TRUE( property2 != NULL );
 

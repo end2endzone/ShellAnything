@@ -53,12 +53,12 @@ namespace shellanything
     /// Add a new Action to the DefaultSettings. The DefaultSettings instance takes ownership of the action.
     /// </summary>
     /// <param name="action">The given action to add to the DefaultSettings instance</param>
-    void addAction(Action * action);
+    void AddAction(Action * action);
     
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & getActions() const;
+    const Action::ActionPtrList & GetActions() const;
 
   private:
     Action::ActionPtrList mActions;

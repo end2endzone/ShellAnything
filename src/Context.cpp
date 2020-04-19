@@ -58,11 +58,11 @@ namespace shellanything
     return (*this);
   }
 
-  void Context::registerProperties() const
+  void Context::RegisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
-    const Context::ElementList & elements = getElements();
+    const Context::ElementList & elements = GetElements();
  
     if (elements.empty())
       return; //nothing to register
@@ -121,7 +121,7 @@ namespace shellanything
     pmgr.setProperty("selection.filename.extension" , selection_filename_ext   );
   }
  
-  void Context::unregisterProperties() const
+  void Context::UnregisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.clearProperty("selection.path"               );
@@ -132,12 +132,12 @@ namespace shellanything
     pmgr.clearProperty("selection.filename.extension" );
   }
  
-  const Context::ElementList & Context::getElements() const
+  const Context::ElementList & Context::GetElements() const
   {
     return mElements;
   }
 
-  void Context::setElements(const Context::ElementList & elements)
+  void Context::SetElements(const Context::ElementList & elements)
   {
     mElements = elements;
 
@@ -157,12 +157,12 @@ namespace shellanything
     }
   }
 
-  int Context::getNumFiles() const
+  int Context::GetNumFiles() const
   {
     return mNumFiles;
   }
 
-  int Context::getNumDirectories() const
+  int Context::GetNumDirectories() const
   {
     return mNumDirectories;
   }

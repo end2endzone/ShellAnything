@@ -549,7 +549,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //Filter out queries that have nothing selected.
   //This can happend if user is copy & pasting files (using CTRL+C and CTRL+V)
   //and if the shell extension is registered as a DragDropHandlers.
-  if ( m_Context.getElements().size() == 0 )
+  if ( m_Context.GetElements().size() == 0 )
   {
     //Don't know what to do with this
     LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
@@ -572,10 +572,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
   //Log what is selected by the user
-  const shellanything::Context::ElementList & elements = m_Context.getElements();
+  const shellanything::Context::ElementList & elements = m_Context.GetElements();
   size_t num_selected_total = elements.size();
-  int num_files       = m_Context.getNumFiles();
-  int num_directories = m_Context.getNumDirectories();
+  int num_files       = m_Context.GetNumFiles();
+  int num_directories = m_Context.GetNumDirectories();
   LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   UINT nextCommandId = idCmdFirst;
@@ -788,8 +788,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   shellanything::Context::ElementList files;
 
   // Cleanup
-  m_Context.unregisterProperties(); //Unregister the previous context properties
-  m_Context.setElements(files);
+  m_Context.UnregisterProperties(); //Unregister the previous context properties
+  m_Context.SetElements(files);
   m_IsBackGround = false;
 
   // Did we clicked on a folder's background or the desktop directory?
@@ -865,10 +865,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   }
 
   //update the selection context
-  m_Context.setElements(files);
+  m_Context.SetElements(files);
 
   //Register the current context properties so that menus can display the right caption
-  m_Context.registerProperties();
+  m_Context.RegisterProperties();
 
   return S_OK;
 }

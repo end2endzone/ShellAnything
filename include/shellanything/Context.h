@@ -51,32 +51,32 @@ namespace shellanything
     /// <summary>
     /// Register a list of 'properties' based on the context elements.
     /// </summary>
-    void registerProperties() const;
+    void RegisterProperties() const;
 
     /// <summary>
-    /// Unregister the list of 'properties' created by registerProperties().
+    /// Unregister the list of 'properties' created by RegisterProperties().
     /// </summary>
-    void unregisterProperties() const;
+    void UnregisterProperties() const;
 
     /// <summary>
     /// Get the list of elements of the Context.
     /// </summary>
-    const ElementList & getElements() const;
+    const ElementList & GetElements() const;
 
     /// <summary>
     /// Set the list of elements to the Context.
     /// </summary>
-    void setElements(const ElementList & elements);
+    void SetElements(const ElementList & elements);
 
     /// <summary>
     /// Get the number of files in the context.
     /// </summary>
-    int getNumFiles() const;
+    int GetNumFiles() const;
 
     /// <summary>
     /// Get the number of directories in the context.
     /// </summary>
-    int getNumDirectories() const;
+    int GetNumDirectories() const;
 
   private:
     ElementList mElements;

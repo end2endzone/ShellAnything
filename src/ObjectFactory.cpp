@@ -654,7 +654,7 @@ namespace shellanything
         if (property_action != NULL)
         {
           //add the new action node
-          defaults->addAction(property_action);
+          defaults->AddAction(property_action);
         }
         else
         {
@@ -664,7 +664,7 @@ namespace shellanything
     }
 
     //do not return a DefaultSettings instance if empty.
-    if (defaults->getActions().empty())
+    if (defaults->GetActions().empty())
     {
       delete defaults;
       return NULL;

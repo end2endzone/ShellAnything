@@ -55,8 +55,8 @@ namespace shellanything { namespace test
   TEST_F(TestContext, testDefaults)
   {
     Context c;
-    ASSERT_EQ( 0, c.getNumFiles() );
-    ASSERT_EQ( 0, c.getNumDirectories() );
+    ASSERT_EQ( 0, c.GetNumFiles() );
+    ASSERT_EQ( 0, c.GetNumDirectories() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testFileDirectoryAutoDetect)
@@ -72,14 +72,14 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Program Files");
       elements.push_back("C:\\Users"        );
       elements.push_back("C:\\Windows"      );
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
 #endif
 
-    ASSERT_EQ( 4, c.getNumFiles() );
-    ASSERT_EQ( 3, c.getNumDirectories() );
+    ASSERT_EQ( 4, c.GetNumFiles() );
+    ASSERT_EQ( 3, c.GetNumDirectories() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testCopy)
@@ -95,27 +95,27 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Program Files");
       elements.push_back("C:\\Users"        );
       elements.push_back("C:\\Windows"      );
-      c.setElements(elements);
+      c.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
 #endif
 
-    ASSERT_EQ( 4, c.getNumFiles() );
-    ASSERT_EQ( 3, c.getNumDirectories() );
+    ASSERT_EQ( 4, c.GetNumFiles() );
+    ASSERT_EQ( 3, c.GetNumDirectories() );
 
     //operator =
     Context c2;
     c2 = c;
 
     //assert both equals
-    ASSERT_EQ( c.getElements().size() , c2.getElements().size() );
-    ASSERT_EQ( c.getNumFiles()        , c2.getNumFiles()        );
-    ASSERT_EQ( c.getNumDirectories()  , c2.getNumDirectories()  );
-    for(size_t i=0; i<c.getElements().size(); i++)
+    ASSERT_EQ( c.GetElements().size() , c2.GetElements().size() );
+    ASSERT_EQ( c.GetNumFiles()        , c2.GetNumFiles()        );
+    ASSERT_EQ( c.GetNumDirectories()  , c2.GetNumDirectories()  );
+    for(size_t i=0; i<c.GetElements().size(); i++)
     {
-      const std::string & c1_element =  c.getElements()[i];
-      const std::string & c2_element = c2.getElements()[i];
+      const std::string & c1_element =  c.GetElements()[i];
+      const std::string & c2_element = c2.GetElements()[i];
       ASSERT_EQ(c1_element, c2_element);
     }
 
@@ -123,13 +123,13 @@ namespace shellanything { namespace test
     Context c3(c);
 
     //assert both equals
-    ASSERT_EQ( c.getElements().size() , c3.getElements().size() );
-    ASSERT_EQ( c.getNumFiles()        , c3.getNumFiles()        );
-    ASSERT_EQ( c.getNumDirectories()  , c3.getNumDirectories()  );
-    for(size_t i=0; i<c.getElements().size(); i++)
+    ASSERT_EQ( c.GetElements().size() , c3.GetElements().size() );
+    ASSERT_EQ( c.GetNumFiles()        , c3.GetNumFiles()        );
+    ASSERT_EQ( c.GetNumDirectories()  , c3.GetNumDirectories()  );
+    for(size_t i=0; i<c.GetElements().size(); i++)
     {
-      const std::string & c1_element =  c.getElements()[i];
-      const std::string & c3_element = c3.getElements()[i];
+      const std::string & c1_element =  c.GetElements()[i];
+      const std::string & c3_element = c3.GetElements()[i];
       ASSERT_EQ(c1_element, c3_element);
     }
 
@@ -144,7 +144,7 @@ namespace shellanything { namespace test
     {
       Context::ElementList elements;
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
-      context.setElements(elements);
+      context.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
@@ -153,13 +153,13 @@ namespace shellanything { namespace test
     ASSERT_FALSE( pmgr.hasProperty("selection.path") );
  
     //act
-    context.registerProperties();
+    context.RegisterProperties();
  
     //assert
     ASSERT_TRUE( pmgr.hasProperty("selection.path") );
  
     //act
-    context.unregisterProperties();
+    context.UnregisterProperties();
  
     //assert
     ASSERT_FALSE( pmgr.hasProperty("selection.path") );
@@ -174,7 +174,7 @@ namespace shellanything { namespace test
     {
       Context::ElementList elements;
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
-      context.setElements(elements);
+      context.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
@@ -183,7 +183,7 @@ namespace shellanything { namespace test
     ASSERT_FALSE( pmgr.hasProperty("selection.path") );
  
     //act
-    context.registerProperties();
+    context.RegisterProperties();
  
     //assert
     ASSERT_TRUE( pmgr.hasProperty("selection.path") );
@@ -208,7 +208,7 @@ namespace shellanything { namespace test
  
     ASSERT_EQ( std::string(expected_string), actual_string );
  
-    context.unregisterProperties();
+    context.UnregisterProperties();
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterPropertiesMultipleFiles)
@@ -223,7 +223,7 @@ namespace shellanything { namespace test
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       elements.push_back("C:\\Windows\\System32\\services.msc");
-      context.setElements(elements);
+      context.SetElements(elements);
     }
 #else
     //TODO: complete with known path to files
@@ -232,7 +232,7 @@ namespace shellanything { namespace test
     ASSERT_FALSE( pmgr.hasProperty("selection.path") );
  
     //act
-    context.registerProperties();
+    context.RegisterProperties();
  
     //assert
     ASSERT_TRUE( pmgr.hasProperty("selection.path") );
@@ -246,17 +246,17 @@ namespace shellanything { namespace test
     std::string selection_filename_ext     = pmgr.expand("${selection.filename.extension}");
  
     //assert 1 line per element (file or directory) in context
-    ASSERT_EQ( context.getElements().size(), countLines(selection_path           ) );
-    ASSERT_EQ( context.getElements().size(), countLines(selection_parent_path    ) );
-    ASSERT_EQ( context.getElements().size(), countLines(selection_parent_filename) );
-    ASSERT_EQ( context.getElements().size(), countLines(selection_filename       ) );
-    ASSERT_EQ( context.getElements().size(), countLines(selection_filename_noext ) );
-    ASSERT_EQ( context.getElements().size(), countLines(selection_filename_ext   ) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_path           ) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_parent_path    ) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_parent_filename) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename       ) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename_noext ) );
+    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename_ext   ) );
  
     //assert all elements are added to the ${selection.path}
-    for(size_t i=0; i<context.getElements().size(); i++)
+    for(size_t i=0; i<context.GetElements().size(); i++)
     {
-      const std::string & file_element = context.getElements()[i];
+      const std::string & file_element = context.GetElements()[i];
       bool file_element_found = (selection_path.find(file_element) != std::string::npos);
       ASSERT_TRUE( file_element_found ) << "selection_path=" << selection_path << "\n" << "file_element=" << file_element;
     }
