@@ -79,7 +79,7 @@ namespace shellanything
 
   bool ActionOpen::Execute(const Context & iContext) const
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.expand(mPath);
 
     //is path a file?

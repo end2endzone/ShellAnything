@@ -137,7 +137,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterUnregisterProperties)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
    
     Context context;
 #ifdef _WIN32
@@ -167,7 +167,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterPropertiesSingleFile)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
    
     Context context;
 #ifdef _WIN32
@@ -213,7 +213,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterPropertiesMultipleFiles)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
    
     Context context;
 #ifdef _WIN32

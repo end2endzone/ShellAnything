@@ -31,7 +31,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestPropertyManager::SetUp()
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.clear();
   }
   //--------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace shellanything { namespace test
   {
     const char * name = "foo";
     const char * value = "bar";
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.setProperty(name, value);
     ASSERT_TRUE( pmgr.hasProperty(name) );
     pmgr.clear();
@@ -53,7 +53,7 @@ namespace shellanything { namespace test
   TEST_F(TestPropertyManager, testSetProperty)
   {
     const char * name = "foo";
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.setProperty(name, "bar");
     ASSERT_TRUE( pmgr.hasProperty(name) );
     ASSERT_EQ("bar", pmgr.getProperty(name));
@@ -67,7 +67,7 @@ namespace shellanything { namespace test
   TEST_F(TestPropertyManager, testGetProperty)
   {
     const char * name = "foo";
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.setProperty(name, "bar");
     ASSERT_TRUE( pmgr.hasProperty(name) );
     ASSERT_EQ("bar", pmgr.getProperty(name));
@@ -79,7 +79,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testExpand)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.setProperty("job", "actor");
     pmgr.setProperty("name", "Brad Pitt");
     pmgr.setProperty("age", "53");
@@ -100,7 +100,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testEnvironmentVariableProperty)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
 
 #ifdef _WIN32
     const std::string name = "env.TEMP";
@@ -116,7 +116,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testClearProperty)
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.setProperty("job", "actor");
     pmgr.setProperty("name", "Brad Pitt");
     pmgr.setProperty("age", "53");

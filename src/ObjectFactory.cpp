@@ -65,7 +65,7 @@ namespace shellanything
   {
   }
 
-  ObjectFactory & ObjectFactory::getInstance()
+  ObjectFactory & ObjectFactory::GetInstance()
   {
     static ObjectFactory _instance;
     return _instance;
@@ -496,7 +496,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator validity;
-      if (!ObjectFactory::getInstance().parseValidator(elements[i], validity, error))
+      if (!ObjectFactory::GetInstance().parseValidator(elements[i], validity, error))
       {
         delete menu;
         return NULL;
@@ -509,7 +509,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator visibility;
-      if (!ObjectFactory::getInstance().parseValidator(elements[i], visibility, error))
+      if (!ObjectFactory::GetInstance().parseValidator(elements[i], visibility, error))
       {
         delete menu;
         return NULL;
@@ -528,7 +528,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Action * action = ObjectFactory::getInstance().parseAction(xml_action, error);
+        Action * action = ObjectFactory::GetInstance().parseAction(xml_action, error);
         if (action == NULL)
         {
           delete menu;
@@ -547,7 +547,7 @@ namespace shellanything
     elements = getChildNodes(element, NODE_MENU);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Menu * submenu = ObjectFactory::getInstance().parseMenu(elements[i], error);
+      Menu * submenu = ObjectFactory::GetInstance().parseMenu(elements[i], error);
       if (submenu == NULL)
       {
         delete menu;
@@ -561,7 +561,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Icon icon;
-      if (!ObjectFactory::getInstance().parseIcon(elements[i], icon, error))
+      if (!ObjectFactory::GetInstance().parseIcon(elements[i], icon, error))
       {
         //failed icon parsing
         delete menu;
@@ -646,7 +646,7 @@ namespace shellanything
       const tinyxml2::XMLElement * element = elements[i];
 
       //found a new action node
-      Action * abstract_action = ObjectFactory::getInstance().parseAction(element, error);
+      Action * abstract_action = ObjectFactory::GetInstance().parseAction(element, error);
       if (abstract_action)
       {
         //filter out all type of actions except ActionProperty actions

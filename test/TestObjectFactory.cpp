@@ -95,26 +95,26 @@ namespace shellanything { namespace test
   void TestObjectFactory::SetUp()
   {
     //Delete the configurations which source files are deleted
-    ConfigManager & cmgr = ConfigManager::getInstance();
-    cmgr.refresh();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+    cmgr.Refresh();
 
     //Delete the source file of all remaining Configuration instance
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {
       Configuration * config = configs[i];
       if (config)
       {
-        const std::string & file_path = config->getFilePath();
+        const std::string & file_path = config->GetFilePath();
         ASSERT_TRUE( ra::filesystem::DeleteFile(file_path.c_str()) ) << "Failed deleting file '" << file_path << "'.";
       }
     }
 
     //Now that all configuration files are deleted, refresh again
-    cmgr.refresh();
+    cmgr.Refresh();
 
     //ASSERT that no files are loaded
-    ASSERT_EQ( 0, cmgr.getConfigurations().size() );
+    ASSERT_EQ( 0, cmgr.GetConfigurations().size() );
   }
   //--------------------------------------------------------------------------------------------------
   void TestObjectFactory::TearDown()
@@ -123,7 +123,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseValidator)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
  
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
@@ -143,16 +143,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
  
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a 4 menus are available
-    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //assert <visibility> tag properly parsed
@@ -172,7 +172,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseIcon)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
  
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
@@ -192,16 +192,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
  
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a 3 menus are available
-    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
     //assert all icons are valid
@@ -229,7 +229,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionFile)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
 
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
 
@@ -249,16 +249,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
 
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 3 menus are available
-    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a file element as the first action
@@ -291,7 +291,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionPrompt)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
 
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
 
@@ -311,16 +311,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
 
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
     //assert all menus have a prompt element as the first action
@@ -371,7 +371,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionMessage)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
 
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
 
@@ -391,16 +391,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
 
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a message element as the first action
@@ -441,7 +441,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseDefaults)
   {
-    ConfigManager & cmgr = ConfigManager::getInstance();
+    ConfigManager & cmgr = ConfigManager::GetInstance();
  
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
  
@@ -461,16 +461,16 @@ namespace shellanything { namespace test
     ra::timing::Millisleep(1500);
 
     //setup ConfigManager to read files from template_target_dir
-    cmgr.clearSearchPath();
-    cmgr.addSearchPath(template_target_dir);
-    cmgr.refresh();
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
  
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a DefaultSettings section is available
-    const DefaultSettings * defaults = cmgr.getConfigurations()[0]->getDefaultSettings();
+    const DefaultSettings * defaults = cmgr.GetConfigurations()[0]->GetDefaultSettings();
     ASSERT_TRUE( defaults != NULL );
 
     //assert 2 properties parsed

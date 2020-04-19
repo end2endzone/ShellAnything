@@ -70,7 +70,7 @@ namespace shellanything
   void Icon::resolveFileExtensionIcon()
   {
     //is this menu have a file extension ?
-    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
     std::string file_extension = pmgr.expand(mFileExtension);
     if (!file_extension.empty())
     {

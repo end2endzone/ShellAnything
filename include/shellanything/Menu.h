@@ -121,14 +121,14 @@ namespace shellanything
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu * findMenuByCommandId(const uint32_t & iCommandId);
+    Menu * FindMenuByCommandId(const uint32_t & iCommandId);
 
     /// <summary>
     /// Assign unique command id to this menus and submenus.
     /// </summary>
     /// <param name="iFirstCommandId">The first command id available.</param>
     /// <returns>Returns the next available command id. Returns iFirstCommandId if no command id was assigned.</returns>
-    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+    uint32_t AssignCommandIds(const uint32_t & iFirstCommandId);
 
     /// <summary>
     /// Getter for the 'command-id' parameter.

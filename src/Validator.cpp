@@ -142,7 +142,7 @@ namespace shellanything
       return false; //too many directories selected
 
     //validate properties
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string properties = pmgr.expand(mProperties);
     if (!properties.empty())
     {

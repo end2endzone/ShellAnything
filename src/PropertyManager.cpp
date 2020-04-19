@@ -38,7 +38,7 @@ namespace shellanything
   {
   }
 
-  PropertyManager & PropertyManager::getInstance()
+  PropertyManager & PropertyManager::GetInstance()
   {
     static PropertyManager _instance;
     return _instance;

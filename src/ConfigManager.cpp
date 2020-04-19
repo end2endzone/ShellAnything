@@ -45,32 +45,32 @@ namespace shellanything
   {
   }
 
-  ConfigManager & ConfigManager::getInstance()
+  ConfigManager & ConfigManager::GetInstance()
   {
     static ConfigManager _instance;
     return _instance;
   }
 
-  void ConfigManager::clear()
+  void ConfigManager::Clear()
   {
-    clearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
+    ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
     mConfigurations.removeChildren();
-    refresh(); //forces all loaded configurations to be unloaded
+    Refresh(); //forces all loaded configurations to be unloaded
   }
 
-  void ConfigManager::refresh()
+  void ConfigManager::Refresh()
   {
     LOG(INFO) << __FUNCTION__ << "()";
     
     //validate existing configurations
-    Configuration::ConfigurationPtrList existing = getConfigurations();
+    Configuration::ConfigurationPtrList existing = GetConfigurations();
     for(size_t i=0; i<existing.size(); i++)
     {
       Configuration * config = existing[i];
 
       //compare the file's date at the load time and the current date
-      const std::string & file_path = config->getFilePath();
-      const uint64_t & old_file_date = config->getFileModifiedDate();
+      const std::string & file_path = config->GetFilePath();
+      const uint64_t & old_file_date = config->GetFileModifiedDate();
       const uint64_t new_file_date = ra::filesystem::GetFileModifiedDateUtf8(file_path);
       if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
       {
@@ -102,16 +102,16 @@ namespace shellanything
         for(size_t j=0; j<files.size(); j++)
         {
           const std::string & file_path = files[j];
-          if (Configuration::isValidConfigFile(file_path))
+          if (Configuration::IsValidConfigFile(file_path))
           {
             //is this file already loaded ?
-            if (!isConfigFileLoaded(file_path))
+            if (!IsConfigFileLoaded(file_path))
             {
               LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
               //parse the file
               std::string error;
-              Configuration * config = Configuration::loadFile(file_path, error);
+              Configuration * config = Configuration::LoadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
@@ -123,7 +123,7 @@ namespace shellanything
                 mConfigurations.addChild(config);
 
                 //apply default properties of the configuration
-                config->applyDefaultSettings();
+                config->ApplyDefaultSettings();
               }
             }
             else
@@ -141,25 +141,25 @@ namespace shellanything
     }
   }
 
-  void ConfigManager::update(const Context & c)
+  void ConfigManager::Update(const Context & c)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      config->update(c);
+      config->Update(c);
     }
   }
 
-  Menu * ConfigManager::findMenuByCommandId(const uint32_t & iCommandId)
+  Menu * ConfigManager::FindMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      Menu * match = config->findMenuByCommandId(iCommandId);
+      Menu * match = config->FindMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -167,44 +167,44 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t ConfigManager::assignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t ConfigManager::AssignCommandIds(const uint32_t & iFirstCommandId)
   {
     uint32_t nextCommandId = iFirstCommandId;
 
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::getConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      nextCommandId = config->assignCommandIds(nextCommandId);
+      nextCommandId = config->AssignCommandIds(nextCommandId);
     }
  
     return nextCommandId;
   }
  
-  Configuration::ConfigurationPtrList ConfigManager::getConfigurations()
+  Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
   {
     Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));
     return configurations;
   }
 
-  void ConfigManager::clearSearchPath()
+  void ConfigManager::ClearSearchPath()
   {
     mPaths.clear();
   }
 
-  void ConfigManager::addSearchPath(const std::string & path)
+  void ConfigManager::AddSearchPath(const std::string & path)
   {
     mPaths.push_back(path);
   }
 
-  bool ConfigManager::isConfigFileLoaded(const std::string & path) const
+  bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
   {
     for(size_t i=0; i<mConfigurations.size(); i++)
     {
       const Node * node = mConfigurations.getChild(i);
       const Configuration * config = dynamic_cast<const Configuration *>(node);
-      if (config != NULL && config->getFilePath() == path)
+      if (config != NULL && config->GetFilePath() == path)
         return true;
     }
     return false;

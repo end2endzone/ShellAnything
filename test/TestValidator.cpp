@@ -34,7 +34,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestValidator::SetUp()
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.clear();
   }
   //--------------------------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ namespace shellanything { namespace test
     //assert default
     ASSERT_TRUE( v.validate(c) );
 
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string property_name = ra::testing::GetTestQualifiedName();
 
     //assert failure when property is not defined

@@ -109,7 +109,7 @@ namespace shellanything
   {
   }
 
-  Configuration * Configuration::loadFile(const std::string & path, std::string & error)
+  Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
   {
     error = "";
 
@@ -193,19 +193,19 @@ namespace shellanything
     }
 
     Configuration * config = new Configuration();
-    config->setFilePath(path);
-    config->setFileModifiedDate(file_modified_date);
+    config->SetFilePath(path);
+    config->SetFileModifiedDate(file_modified_date);
 
     //find <default> nodes under <shell>
     const XMLElement* xml_defaults = xml_shell->FirstChildElement("default");
     while (xml_defaults)
     {
       //found a new menu node
-      DefaultSettings * defaults = ObjectFactory::getInstance().parseDefaults(xml_defaults, error);
+      DefaultSettings * defaults = ObjectFactory::GetInstance().parseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
-        config->setDefaultSettings(defaults);
+        config->SetDefaultSettings(defaults);
       }
 
       //next defaults node
@@ -217,7 +217,7 @@ namespace shellanything
     while (xml_menu)
     {
       //found a new menu node
-      Menu * menu = ObjectFactory::getInstance().parseMenu(xml_menu, error);
+      Menu * menu = ObjectFactory::GetInstance().parseMenu(xml_menu, error);
       if (menu == NULL)
       {
         delete config;
@@ -234,7 +234,7 @@ namespace shellanything
     return config;
   }
 
-  bool Configuration::isValidConfigFile(const std::string & path)
+  bool Configuration::IsValidConfigFile(const std::string & path)
   {
     std::string file_extension = ra::filesystem::GetFileExtention(path);
     file_extension = ra::strings::Uppercase(file_extension);
@@ -261,30 +261,30 @@ namespace shellanything
     return false;
   }
 
-  const std::string & Configuration::getFilePath() const
+  const std::string & Configuration::GetFilePath() const
   {
     return mFilePath;
   }
 
-  void Configuration::setFilePath(const std::string & iFilePath)
+  void Configuration::SetFilePath(const std::string & iFilePath)
   {
     mFilePath = iFilePath;
   }
 
-  const uint64_t & Configuration::getFileModifiedDate() const
+  const uint64_t & Configuration::GetFileModifiedDate() const
   {
     return mFileModifiedDate;
   }
 
-  void Configuration::setFileModifiedDate(const uint64_t & iFileModifiedDate)
+  void Configuration::SetFileModifiedDate(const uint64_t & iFileModifiedDate)
   {
     mFileModifiedDate = iFileModifiedDate;
   }
 
-  void Configuration::update(const Context & c)
+  void Configuration::Update(const Context & c)
   {
     //for each child
-    Menu::MenuPtrList children = getMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -292,7 +292,7 @@ namespace shellanything
     }
   }
 
-  void Configuration::applyDefaultSettings()
+  void Configuration::ApplyDefaultSettings()
   {
     if (mDefaults && mDefaults->getActions().size() > 0)
     {
@@ -329,14 +329,14 @@ namespace shellanything
     }
   }
 
-  Menu * Configuration::findMenuByCommandId(const uint32_t & iCommandId)
+  Menu * Configuration::FindMenuByCommandId(const uint32_t & iCommandId)
   {
     //for each child
-    Menu::MenuPtrList children = getMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      Menu * match = child->findMenuByCommandId(iCommandId);
+      Menu * match = child->FindMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -344,28 +344,28 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t Configuration::assignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t Configuration::AssignCommandIds(const uint32_t & iFirstCommandId)
   {
     uint32_t nextCommandId = iFirstCommandId;
 
     //for each child
-    Menu::MenuPtrList children = getMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      nextCommandId = child->assignCommandIds(nextCommandId);
+      nextCommandId = child->AssignCommandIds(nextCommandId);
     }
  
     return nextCommandId;
   }
  
-  Menu::MenuPtrList Configuration::getMenus()
+  Menu::MenuPtrList Configuration::GetMenus()
   {
     Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
     return sub_menus;
   }
 
-  void Configuration::setDefaultSettings(DefaultSettings * defaults)
+  void Configuration::SetDefaultSettings(DefaultSettings * defaults)
   {
     if (mDefaults)
       delete mDefaults;
@@ -373,7 +373,7 @@ namespace shellanything
     mDefaults = defaults;
   }
 
-  const DefaultSettings * Configuration::getDefaultSettings() const
+  const DefaultSettings * Configuration::GetDefaultSettings() const
   {
     return mDefaults;
   }

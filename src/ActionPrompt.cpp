@@ -58,7 +58,7 @@ namespace shellanything
 
   bool ActionPrompt::Execute(const Context & iContext) const
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string name = pmgr.expand(mName);
     const std::string title = pmgr.expand(mTitle);
     const std::string default_value = pmgr.expand(mDefault);

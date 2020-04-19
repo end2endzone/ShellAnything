@@ -208,7 +208,7 @@ namespace shellanything { namespace test
     body->addChild(child6);
  
     //act
-    uint32_t nextAvailableId = root->assignCommandIds(101);
+    uint32_t nextAvailableId = root->AssignCommandIds(101);
  
     //assert
     ASSERT_EQ(109, nextAvailableId);
@@ -247,19 +247,19 @@ namespace shellanything { namespace test
     body->addChild(child6);
  
     //act
-    uint32_t nextAvailableId = root->assignCommandIds(101);
+    uint32_t nextAvailableId = root->AssignCommandIds(101);
  
     //assert
-    ASSERT_EQ( (Menu*)NULL, root->findMenuByCommandId(9999999));
+    ASSERT_EQ( (Menu*)NULL, root->FindMenuByCommandId(9999999));
  
-    ASSERT_EQ(  root, root->findMenuByCommandId(101));
-    ASSERT_EQ(  body, root->findMenuByCommandId(102));
-    ASSERT_EQ(child1, root->findMenuByCommandId(103));
-    ASSERT_EQ(child2, root->findMenuByCommandId(104));
-    ASSERT_EQ(child3, root->findMenuByCommandId(105));
-    ASSERT_EQ(child4, root->findMenuByCommandId(106));
-    ASSERT_EQ(child5, root->findMenuByCommandId(107));
-    ASSERT_EQ(child6, root->findMenuByCommandId(108));
+    ASSERT_EQ(  root, root->FindMenuByCommandId(101));
+    ASSERT_EQ(  body, root->FindMenuByCommandId(102));
+    ASSERT_EQ(child1, root->FindMenuByCommandId(103));
+    ASSERT_EQ(child2, root->FindMenuByCommandId(104));
+    ASSERT_EQ(child3, root->FindMenuByCommandId(105));
+    ASSERT_EQ(child4, root->FindMenuByCommandId(106));
+    ASSERT_EQ(child5, root->FindMenuByCommandId(107));
+    ASSERT_EQ(child6, root->FindMenuByCommandId(108));
  
     //destroy the tree
     delete root;

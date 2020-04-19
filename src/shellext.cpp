@@ -248,7 +248,7 @@ public:
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos)
 {
   //Expanded the menu's strings
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
   std::string title       = pmgr.expand(menu->getName());
   std::string description = pmgr.expand(menu->getDescription());
 
@@ -290,7 +290,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   const shellanything::Icon & icon = menu->getIcon();
   if (!menu_separator && icon.isValid())
   {
-    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
     std::string file_extension  = pmgr.expand(icon.getFileExtension());
     std::string icon_filename   = pmgr.expand(icon.getPath());
     int icon_index              = icon.getIndex();
@@ -425,8 +425,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   //browse through all shellanything menus and build the win32 popup menus
 
   //for each configuration
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
-  shellanything::Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
   UINT insert_pos = 0;
   for(size_t i=0; i<configs.size(); i++)
   {
@@ -434,7 +434,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     if (config)
     {
       //for each menu child
-      shellanything::Menu::MenuPtrList menus = config->getMenus();
+      shellanything::Menu::MenuPtrList menus = config->GetMenus();
       for(size_t j=0; j<menus.size(); j++)
       {
         shellanything::Menu * menu = menus[j];
@@ -582,15 +582,15 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   m_FirstCommandId = idCmdFirst;
 
   //Refresh the list of loaded configuration files
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
-  cmgr.refresh();
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  cmgr.Refresh();
 
   //Update all menus with the new context
-  //This will refresh the visibility flags which is required before clalling ConfigManager::assignCommandIds()
-  cmgr.update(m_Context);
+  //This will refresh the visibility flags which is required before clalling ConfigManager::AssignCommandIds()
+  cmgr.Update(m_Context);
 
   //Assign unique command id to visible menus. Issue #5
-  nextCommandId = cmgr.assignCommandIds(m_FirstCommandId);
+  nextCommandId = cmgr.AssignCommandIds(m_FirstCommandId);
 
   //Build the menus
   BuildMenuTree(hMenu);
@@ -639,8 +639,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
-  shellanything::Menu * menu = cmgr.findMenuByCommandId(target_command_id);
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::Menu * menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
@@ -648,7 +648,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   }
 
   //compute the visual menu title
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
   std::string title = pmgr.expand(menu->getName());
 
   //found a menu match, execute menu action
@@ -718,8 +718,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
-  shellanything::Menu * menu = cmgr.findMenuByCommandId(target_command_id);
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::Menu * menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
@@ -727,7 +727,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   }
 
   //compute the visual menu description
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
   std::string description = pmgr.expand(menu->getDescription());
 
   //convert to windows unicode...
@@ -1341,7 +1341,7 @@ void LogEnvironment()
 
 void InitConfigManager()
 {
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::getInstance();
+  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
 
   static const std::string app_name = "ShellAnything";
   static const std::string app_version = SHELLANYTHING_VERSION;
@@ -1359,9 +1359,9 @@ void InitConfigManager()
   }
 
   //setup ConfigManager to read files from config_dir
-  cmgr.clearSearchPath();
-  cmgr.addSearchPath(config_dir);
-  cmgr.refresh();
+  cmgr.ClearSearchPath();
+  cmgr.AddSearchPath(config_dir);
+  cmgr.Refresh();
 
   //define global properties
   std::string prop_application_path       = GetCurrentModulePathUtf8();
@@ -1370,7 +1370,7 @@ void InitConfigManager()
   std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
   std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::getInstance();
+  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
   pmgr.setProperty("application.path"     , prop_application_path     );
   pmgr.setProperty("application.directory", prop_application_directory);
   pmgr.setProperty("log.directory"        , prop_log_directory        );

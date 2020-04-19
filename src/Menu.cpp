@@ -124,7 +124,7 @@ namespace shellanything
     }
   }
 
-  Menu * Menu::findMenuByCommandId(const uint32_t & iCommandId)
+  Menu * Menu::FindMenuByCommandId(const uint32_t & iCommandId)
   {
     if (mCommandId == iCommandId)
       return this;
@@ -134,7 +134,7 @@ namespace shellanything
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      Menu * match = child->findMenuByCommandId(iCommandId);
+      Menu * match = child->FindMenuByCommandId(iCommandId);
       if (match)
         return match;
     }
@@ -142,11 +142,11 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t Menu::assignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t Menu::AssignCommandIds(const uint32_t & iFirstCommandId)
   {
     uint32_t nextCommandId = iFirstCommandId;
 
-    //Issue #5 - ConfigManager::assignCommandIds() should skip invisible menus
+    //Issue #5 - ConfigManager::AssignCommandIds() should skip invisible menus
     if (!mVisible || iFirstCommandId == INVALID_COMMAND_ID)
     {
       this->setCommandId(INVALID_COMMAND_ID); //invalidate this menu's command id
@@ -165,9 +165,9 @@ namespace shellanything
       Menu * child = children[i];
 
       if (mCommandId == INVALID_COMMAND_ID)
-        child->assignCommandIds(INVALID_COMMAND_ID); //also assign invalid ids to sub menus
+        child->AssignCommandIds(INVALID_COMMAND_ID); //also assign invalid ids to sub menus
       else
-        nextCommandId = child->assignCommandIds(nextCommandId); //assign the next command ids to sub menus
+        nextCommandId = child->AssignCommandIds(nextCommandId); //assign the next command ids to sub menus
     }
  
     return nextCommandId;

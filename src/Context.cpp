@@ -60,7 +60,7 @@ namespace shellanything
 
   void Context::registerProperties() const
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
    
     const Context::ElementList & elements = getElements();
  
@@ -123,7 +123,7 @@ namespace shellanything
  
   void Context::unregisterProperties() const
   {
-    PropertyManager & pmgr = PropertyManager::getInstance();
+    PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.clearProperty("selection.path"               );
     pmgr.clearProperty("selection.parent.path"        );
     pmgr.clearProperty("selection.parent.filename"    );

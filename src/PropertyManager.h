@@ -36,7 +36,7 @@ namespace shellanything
   class PropertyManager
   {
   public:
-    static PropertyManager & getInstance();
+    static PropertyManager & GetInstance();
   private:
     PropertyManager();
     ~PropertyManager();

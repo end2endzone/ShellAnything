@@ -49,7 +49,7 @@ namespace shellanything
     ObjectFactory& operator=(const ObjectFactory&);
 
   public:
-    static ObjectFactory & getInstance();
+    static ObjectFactory & GetInstance();
 
     /// <summary>
     /// Parses an Icon class from xml. Returns false if the parsing failed.

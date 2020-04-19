@@ -53,24 +53,24 @@ namespace shellanything
     /// </summary>
     typedef std::vector<std::string> PathList;
 
-    static ConfigManager & getInstance();
+    static ConfigManager & GetInstance();
     
     /// <summary>
     /// Get the list of Configuration pointers handled by the manager
     /// </summary>
-    Configuration::ConfigurationPtrList getConfigurations();
+    Configuration::ConfigurationPtrList GetConfigurations();
 
     /// <summary>
     /// Returns true if the given path is a Configuration loaded by the manager.
     /// </summary>
     /// <param name="path">The path of a Configuration file</param>
     /// <returns>Returns true if the given path is a Configuration loaded by the manager. Returns false otherwise.</returns>
-    bool isConfigFileLoaded(const std::string & path) const;
+    bool IsConfigFileLoaded(const std::string & path) const;
 
     /// <summary>
     /// Clears the configuration manager of all loaded Configuration
     /// </summary>
-    void clear();
+    void Clear();
 
     /// <summary>
     /// Refresh the content of the configuration manager:
@@ -78,37 +78,37 @@ namespace shellanything
     /// * Deleted loaded configurations whose file are missing.
     /// * Discover new unloaded configuration files.
     /// </summary>
-    void refresh();
+    void Refresh();
 
     /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
-    void update(const Context & c);
+    void Update(const Context & c);
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu * findMenuByCommandId(const uint32_t & iCommandId);
+    Menu * FindMenuByCommandId(const uint32_t & iCommandId);
 
     /// <summary>
     /// Assign unique command id to all menus loaded by the configuration manager.
     /// </summary>
     /// <param name="iFirstCommandId">The first command id available.</param>
     /// <returns>Returns the next available command id. Returns iFirstCommandId if it failed assining command id.</returns>
-    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+    uint32_t AssignCommandIds(const uint32_t & iFirstCommandId);
 
     /// <summary>
     /// Clears all the registered search paths
     /// </summary>
-    void clearSearchPath();
+    void ClearSearchPath();
 
     /// <summary>
     /// Add a new search path to the path list.
     /// </summary>
     /// <param name="path">The path to add to the search list.</param>
-    void addSearchPath(const std::string & path);
+    void AddSearchPath(const std::string & path);
 
   private:
     //attributes

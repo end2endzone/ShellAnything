@@ -59,75 +59,75 @@ namespace shellanything
     /// <param name="path">The file path to load</param>
     /// <param name="error">The error desription if the file cannot be loaded.</param>
     /// <returns>Returns a valid Configuration pointer if the file can be loaded. Returns NULL otherwise.</returns>
-    static Configuration * loadFile(const std::string & path, std::string & error);
+    static Configuration * LoadFile(const std::string & path, std::string & error);
 
     /// <summary>
     /// Detect if a given file is a valid configuration file.
     /// </summary>
     /// <param name="path">The file path to load</param>
     /// <returns>Returns true if the file is a valid configuration file. Returns false otherwise.</returns>
-    static bool isValidConfigFile(const std::string & path);
+    static bool IsValidConfigFile(const std::string & path);
 
     /// <summary>
     /// Returns the file path of this configuration.
     /// </summary>
-    const std::string & getFilePath() const;
+    const std::string & GetFilePath() const;
 
     /// <summary>
     /// Set the file path of this configuration.
     /// </summary>
-    void setFilePath(const std::string & iFilePath);
+    void SetFilePath(const std::string & iFilePath);
 
     /// <summary>
     /// Returns the configuration file's modified date.
     /// </summary>
-    const uint64_t & getFileModifiedDate() const;
+    const uint64_t & GetFileModifiedDate() const;
 
     /// <summary>
     /// Set the configuration file's modified date.
     /// </summary>
-    void setFileModifiedDate(const uint64_t & iFileModifiedDate);
+    void SetFileModifiedDate(const uint64_t & iFileModifiedDate);
 
     /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
-    void update(const Context & c);
+    void Update(const Context & c);
 
     /// <summary>
     /// Apply the configuration's default properties.
     /// </summary>
-    void applyDefaultSettings();
+    void ApplyDefaultSettings();
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
     /// </summary>
     /// <param name="iCommandId">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu * findMenuByCommandId(const uint32_t & iCommandId);
+    Menu * FindMenuByCommandId(const uint32_t & iCommandId);
 
     /// <summary>
     /// Assign unique command id to all menus loaded by the configuration manager.
     /// </summary>
     /// <param name="iFirstCommandId">The first command id available.</param>
     /// <returns>Returns the next available command id. Returns iFirstCommandId if it failed assining command id.</returns>
-    uint32_t assignCommandIds(const uint32_t & iFirstCommandId);
+    uint32_t AssignCommandIds(const uint32_t & iFirstCommandId);
 
     /// <summary>
     /// Get the list of menu pointers handled by the configuration.
     /// </summary>
-    Menu::MenuPtrList getMenus();
+    Menu::MenuPtrList GetMenus();
 
     /// <summary>
     /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
     /// </summary>
     /// <param name="defaults">The given DefaultSettings to add to the configuration</param>
-    void setDefaultSettings(DefaultSettings * defaults);
+    void SetDefaultSettings(DefaultSettings * defaults);
 
     /// <summary>
     /// Get the DefaultSettings instance of the Configuration.
     /// </summary>
     /// <returns>Returns the DefaultSettings instance of the Configuration. Returns NULL if no DefaultSettings is set.</returns>
-    const DefaultSettings * getDefaultSettings() const;
+    const DefaultSettings * GetDefaultSettings() const;
 
   private:
     DefaultSettings * mDefaults;
