@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <!--basic message usage-->
+        <message caption="my_caption" title="my_title" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu01">
+      <actions>
+        <message caption="hello" title="world" icon="" />
+      </actions>
+    </menu>
+
+    <menu name="menu02">
+      <actions>
+        <message caption="foo" title="bar" icon="exclamation" />
+      </actions>
+    </menu>
+
+    <menu name="menu03">
+      <actions>
+        <message caption="foo" title="bar" icon="warning" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

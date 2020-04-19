@@ -27,6 +27,7 @@
 #include "shellanything/Context.h"
 #include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
+#include "shellanything/ActionMessage.h"
 #include "shellanything/ActionProperty.h"
 #include "Platform.h"
 
@@ -52,6 +53,23 @@ namespace shellanything { namespace test
       ActionPrompt * action_prompt = dynamic_cast<ActionPrompt *>(action);
       if (action_prompt)
         return action_prompt;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  ActionMessage * getFirstActionMessage(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->getActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionMessage * action_message = dynamic_cast<ActionMessage *>(action);
+      if (action_message)
+        return action_message;
     }
  
     return NULL;
@@ -346,6 +364,76 @@ namespace shellanything { namespace test
     ASSERT_FALSE( prompt02->isOkQuestion() );
     ASSERT_FALSE( prompt03->isOkQuestion() );
     ASSERT_TRUE ( prompt04->isOkQuestion() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionMessage)
+  {
+    ConfigManager & cmgr = ConfigManager::getInstance();
+
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::timing::Millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.clearSearchPath();
+    cmgr.addSearchPath(template_target_dir);
+    cmgr.refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.getConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT a multiple menus are available
+    Menu::MenuPtrList menus = cmgr.getConfigurations()[0]->getMenus();
+    ASSERT_EQ( 4, menus.size() );
+
+    //assert all menus have a message element as the first action
+    ActionMessage * message00 = getFirstActionMessage(menus[00]);
+    ActionMessage * message01 = getFirstActionMessage(menus[01]);
+    ActionMessage * message02 = getFirstActionMessage(menus[02]);
+    ActionMessage * message03 = getFirstActionMessage(menus[03]);
+
+    ASSERT_TRUE( message00 != NULL );
+    ASSERT_TRUE( message01 != NULL );
+    ASSERT_TRUE( message02 != NULL );
+    ASSERT_TRUE( message03 != NULL );
+
+    //assert menu #0 caption and message
+    static const std::string EMPTY_STRING;
+    ASSERT_EQ( "my_caption",  message00->getCaption());
+    ASSERT_EQ( "my_title",    message00->getTitle());
+    ASSERT_EQ( EMPTY_STRING,  message00->getIcon());
+
+    //assert menu #1 have a default value
+    ASSERT_EQ( "hello",       message01->getCaption());
+    ASSERT_EQ( "world",       message01->getTitle());
+    ASSERT_EQ( EMPTY_STRING,  message01->getIcon());
+
+    //assert menu #2 have a default value
+    ASSERT_EQ( "foo",         message02->getCaption());
+    ASSERT_EQ( "bar",         message02->getTitle());
+    ASSERT_EQ( "exclamation", message02->getIcon());
+
+    //assert menu #3 have a default value
+    ASSERT_EQ( "foo",         message03->getCaption());
+    ASSERT_EQ( "bar",         message03->getTitle());
+    ASSERT_EQ( "warning",     message03->getIcon());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

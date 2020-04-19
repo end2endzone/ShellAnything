@@ -33,6 +33,7 @@
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionProperty.h"
 #include "shellanything/ActionOpen.h"
+#include "shellanything/ActionMessage.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
@@ -54,6 +55,7 @@ namespace shellanything
   static const std::string NODE_ACTION_PROMPT = "prompt";
   static const std::string NODE_ACTION_PROPERTY = "property";
   static const std::string NODE_ACTION_OPEN = "open";
+  static const std::string NODE_ACTION_MESSAGE = "message";
 
   ObjectFactory::ObjectFactory()
   {
@@ -384,6 +386,37 @@ namespace shellanything
       if (parseAttribute(element, "path", false, true, tmp_str, error))
       {
         action->setPath(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+    else if (NODE_ACTION_MESSAGE == element->Name())
+    {
+      ActionMessage * action = new ActionMessage();
+
+      //parse title
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "title", false, true, tmp_str, error))
+      {
+        action->setTitle(tmp_str);
+      }
+
+      //parse caption
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "caption", false, true, tmp_str, error))
+      {
+        action->setCaption(tmp_str);
+      }
+
+      //parse icon
+      tmp_str = "";
+      tmp_int = -1;
+      if (parseAttribute(element, "icon", true, true, tmp_str, error))
+      {
+        action->setIcon(tmp_str);
       }
 
       //done parsing

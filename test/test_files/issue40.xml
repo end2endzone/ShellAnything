@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu separator="true" />
+    <menu name="*** issue40 *** (test message action)">
+      <menu name="test caption and title">
+        <actions>
+          <!--basic message usage-->
+          <message caption="my_caption" title="my_title" />
+        </actions>
+      </menu>
+   
+      <menu name="test empty icon attribute">
+        <actions>
+          <message caption="hello" title="world" icon="" />
+        </actions>
+      </menu>
+
+      <menu name="information">
+        <actions>
+          <message caption="caption" title="title" icon="information" />
+        </actions>
+      </menu>
+
+      <menu name="asterisk">
+        <actions>
+          <message caption="caption" title="title" icon="asterisk" />
+        </actions>
+      </menu>
+
+      <menu name="exclamation">
+        <actions>
+          <message caption="caption" title="title" icon="exclamation" />
+        </actions>
+      </menu>
+
+      <menu name="hand">
+        <actions>
+          <message caption="caption" title="title" icon="hand" />
+        </actions>
+      </menu>
+
+      <menu name="warning">
+        <actions>
+          <message caption="caption" title="title" icon="warning" />
+        </actions>
+      </menu>
+
+      <menu name="none">
+        <actions>
+          <message caption="caption" title="title" icon="none" />
+        </actions>
+      </menu>
+      
+    </menu>
+    <menu separator="true" />
+  </shell>
+</root>

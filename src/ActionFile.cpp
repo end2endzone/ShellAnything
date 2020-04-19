@@ -47,20 +47,21 @@ namespace shellanything
   bool ActionFile::execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::getInstance();
-    std::string path = pmgr.expand(mPath);
+    const std::string path = pmgr.expand(mPath);
     std::string text = pmgr.expand(mText);
-    std::string encoding = ra::strings::Uppercase(pmgr.expand(mEncoding));
+    const std::string encoding = pmgr.expand(mEncoding);
 
     //debug
     LOG(INFO) << "Writing file '" << path << "'.";
 
     //validate encoding
-    bool is_ansi = (encoding == "ANSI");
-    bool is_unicode = (encoding == "UNICODE");
-    bool is_utf8 = (encoding == "UTF-8" || encoding == "UTF8");
+    const std::string tmp = ra::strings::Uppercase(encoding);
+    bool is_ansi = (tmp == "ANSI");
+    bool is_unicode = (tmp == "UNICODE");
+    bool is_utf8 = (tmp == "UTF-8" || tmp == "UTF8");
     if (!is_ansi && !is_unicode && !is_utf8)
     {
-      LOG(ERROR) << "Unknown encoding attribute '" << mEncoding << "'.";
+      LOG(ERROR) << "Unknown encoding attribute '" << encoding << "'.";
       return false;
     }
 

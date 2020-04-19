@@ -496,6 +496,59 @@ For example, the following sets `verbose` property to `/normal` when if the user
 
 
 
+### &lt;message&gt; action ###
+
+The &lt;message&gt; element is used to display a message to the user. The &lt;message&gt; element must be added under the &lt;actions&gt; element.
+
+The &lt;message&gt; elements have the following attributes:
+
+
+
+#### title attribute: ####
+
+The `title` attribute defines the text of the message displayed to the user.
+
+For example, the following show a confirmation message to the user before opening a file :
+```xml
+<message title="Opening document ${selection.path}. Press OK to continue." />
+```
+
+
+
+#### caption attribute: ####
+
+The `caption` attribute defines the caption of the window that displays the message.
+
+For example, the following show a status message to the user :
+```xml
+<message caption="Status" title="The Operation Completed Successfully." />
+```
+
+
+
+#### icon attribute: ####
+
+The `icon` attribute defines the type of icon for the message. The attribute is optional.
+If the `icon` attribute is not specified, an information icon is displayed.
+
+The following table shows the attribute supported values:
+
+| Values      | Description                                                                             |
+|-------------|-----------------------------------------------------------------------------------------|
+| Asterisk    | Show an icon consisting of a lowercase letter i in a circle.                            |
+| Exclamation | Show an icon with an exclamation point in a triangle with a yellow background.          |
+| Hand        | Show an icon consisting of a white X in a circle with a red background.                 |
+| Information | Show an icon consisting of a lowercase letter i in a circle (default option).           |
+| Warning     | Show an icon consisting of an exclamation point in a triangle with a yellow background. |
+| None        | No icon is displayed.                                                                   |
+
+For example, the following show a warning message :
+```xml
+<message caption="Message to user" title="Do not press the X button before the download is completed." icon="warning" />
+```
+
+
+
 ### &lt;property&gt; action ###
 
 The &lt;property&gt; element is used to set a property to a specific value. The modified property can be used with the &lt;visibility&gt; and &lt;validity&gt; elements to create advanced dynamic menus.
