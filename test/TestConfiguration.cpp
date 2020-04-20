@@ -74,7 +74,7 @@ namespace shellanything { namespace test
     //   </actions>
     // </menu>
     Menu * menu = new Menu();
-    menu->setName("Command line from here...");
+    menu->SetName("Command line from here...");
     Validator validity;
     validity.setMaxFiles(0); //no files accepted
     validity.setMaxDirectories(1); //a single directory is accepted
@@ -85,9 +85,9 @@ namespace shellanything { namespace test
 
     //link everything
     config->addChild(menu);
-    menu->setValidity(validity);
-    menu->setVisibility(visibility);
-    menu->addAction(action);
+    menu->SetValidity(validity);
+    menu->SetVisibility(visibility);
+    menu->AddAction(action);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfiguration, testIsValidConfigFile)

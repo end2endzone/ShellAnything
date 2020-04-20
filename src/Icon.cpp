@@ -58,7 +58,7 @@ namespace shellanything
     return (*this);
   }
 
-  bool Icon::isValid() const
+  bool Icon::IsValid() const
   {
     if (!mFileExtension.empty())
       return true;
@@ -67,7 +67,7 @@ namespace shellanything
     return true;
   }
 
-  void Icon::resolveFileExtensionIcon()
+  void Icon::ResolveFileExtensionIcon()
   {
     //is this menu have a file extension ?
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
@@ -98,32 +98,32 @@ namespace shellanything
     }
   }
 
-  const std::string & Icon::getFileExtension() const
+  const std::string & Icon::GetFileExtension() const
   {
     return mFileExtension;
   }
 
-  void Icon::setFileExtension(const std::string & iFileExtension)
+  void Icon::SetFileExtension(const std::string & iFileExtension)
   {
     mFileExtension = iFileExtension;
   }
 
-  const std::string & Icon::getPath() const
+  const std::string & Icon::GetPath() const
   {
     return mPath;
   }
 
-  void Icon::setPath(const std::string & iPath)
+  void Icon::SetPath(const std::string & iPath)
   {
     mPath = iPath;
   }
 
-  const int & Icon::getIndex() const
+  const int & Icon::GetIndex() const
   {
     return mIndex;
   }
 
-  void Icon::setIndex(const int & iIndex)
+  void Icon::SetIndex(const int & iIndex)
   {
     mIndex = iIndex;
   }

@@ -459,7 +459,7 @@ namespace shellanything
       is_separator = ra::strings::ParseBoolean(menu_separator);
       if (is_separator)
       {
-        menu->setSeparator(true);
+        menu->SetSeparator(true);
         return menu;
       }
     }
@@ -471,13 +471,13 @@ namespace shellanything
       delete menu;
       return NULL;
     }
-    menu->setName(menu_name);
+    menu->SetName(menu_name);
 
     //parse description
     std::string menu_desc;
     if (!parseAttribute(element, "description", true, true, menu_desc, error))
     {
-      menu->setDescription(menu_desc);
+      menu->SetDescription(menu_desc);
     }
 
     //parse icon
@@ -485,8 +485,8 @@ namespace shellanything
     if (parseAttribute(element, "icon", true, true, icon_path, error))
     {
       Icon icon;
-      icon.setPath(icon_path);
-      menu->setIcon(icon);
+      icon.SetPath(icon_path);
+      menu->SetIcon(icon);
     }
 
     ElementPtrList elements; //temporary xml element containers
@@ -501,7 +501,7 @@ namespace shellanything
         delete menu;
         return NULL;
       }
-      menu->setValidity(validity);
+      menu->SetValidity(validity);
     }
 
     //find <visibility> node under <menu>
@@ -514,7 +514,7 @@ namespace shellanything
         delete menu;
         return NULL;
       }
-      menu->setVisibility(visibility);
+      menu->SetVisibility(visibility);
     }
 
     //find <actions> node under <menu>
@@ -536,7 +536,7 @@ namespace shellanything
         }
 
         //add the new action node
-        menu->addAction(action);
+        menu->AddAction(action);
 
         //next action node
         xml_action = xml_action->NextSiblingElement();
@@ -567,7 +567,7 @@ namespace shellanything
         delete menu;
         return NULL;
       }
-      menu->setIcon(icon);
+      menu->SetIcon(icon);
     }
 
     return menu;
@@ -604,15 +604,15 @@ namespace shellanything
 
     Icon result;
     if (hasPath)
-      result.setPath(icon_path);
+      result.SetPath(icon_path);
     if (hasFileExtension)
-      result.setFileExtension(icon_fileextension);
+      result.SetFileExtension(icon_fileextension);
 
     //parse index
     int icon_index = -1;
     if (parseAttribute(element, "index", true, true, icon_index, error))
     {
-      result.setIndex(icon_index);
+      result.SetIndex(icon_index);
     }
 
     //success

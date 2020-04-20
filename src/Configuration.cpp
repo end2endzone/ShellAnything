@@ -288,7 +288,7 @@ namespace shellanything
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      child->update(c);
+      child->Update(c);
     }
   }
 

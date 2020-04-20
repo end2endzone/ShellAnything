@@ -46,7 +46,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->getActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -63,7 +63,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->getActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -80,7 +80,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->getActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -160,11 +160,11 @@ namespace shellanything { namespace test
     static const std::string expected_file_extension = "com;exe;bat;cmd";
     static const std::string expected_file_exists = "C:\\Users\\Public;C:\\Program Files (x86)";
 
-    ASSERT_EQ( expected_property,       menus[00]->getVisibility().getProperties() );
-    ASSERT_EQ( 5,                       menus[01]->getVisibility().getMaxFiles() );
-    ASSERT_EQ( 6,                       menus[01]->getVisibility().getMaxDirectories() );
-    ASSERT_EQ( expected_file_extension, menus[02]->getVisibility().getFileExtensions() );
-    ASSERT_EQ( expected_file_exists,    menus[03]->getVisibility().getFileExists() );
+    ASSERT_EQ( expected_property,       menus[00]->GetVisibility().getProperties() );
+    ASSERT_EQ( 5,                       menus[01]->GetVisibility().getMaxFiles() );
+    ASSERT_EQ( 6,                       menus[01]->GetVisibility().getMaxDirectories() );
+    ASSERT_EQ( expected_file_extension, menus[02]->GetVisibility().getFileExtensions() );
+    ASSERT_EQ( expected_file_exists,    menus[03]->GetVisibility().getFileExists() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -205,23 +205,23 @@ namespace shellanything { namespace test
     ASSERT_EQ( 3, menus.size() );
 
     //assert all icons are valid
-    ASSERT_TRUE( menus[00]->getIcon().isValid() );
-    ASSERT_TRUE( menus[01]->getIcon().isValid() );
-    ASSERT_TRUE( menus[02]->getIcon().isValid() );
+    ASSERT_TRUE( menus[00]->GetIcon().IsValid() );
+    ASSERT_TRUE( menus[01]->GetIcon().IsValid() );
+    ASSERT_TRUE( menus[02]->GetIcon().IsValid() );
 
     //assert <icon> tag properly parsed
     //menu #00
-    ASSERT_EQ( std::string("C:\\Windows\\System32\\shell32.dll"), menus[00]->getIcon().getPath() );
-    ASSERT_EQ( 42,                                                menus[00]->getIcon().getIndex() );
+    ASSERT_EQ( std::string("C:\\Windows\\System32\\shell32.dll"), menus[00]->GetIcon().GetPath() );
+    ASSERT_EQ( 42,                                                menus[00]->GetIcon().GetIndex() );
 
     //menu #01
-    ASSERT_EQ( std::string("${application.path}"),  menus[01]->getIcon().getPath() );
-    ASSERT_EQ( 0,                                   menus[01]->getIcon().getIndex() );
+    ASSERT_EQ( std::string("${application.path}"),  menus[01]->GetIcon().GetPath() );
+    ASSERT_EQ( 0,                                   menus[01]->GetIcon().GetIndex() );
 
     //menu #02
-    ASSERT_EQ( std::string("txt"),        menus[02]->getIcon().getFileExtension() );
-    ASSERT_EQ( std::string(""),           menus[02]->getIcon().getPath() );
-    ASSERT_EQ( Icon::INVALID_ICON_INDEX,  menus[02]->getIcon().getIndex() );
+    ASSERT_EQ( std::string("txt"),        menus[02]->GetIcon().GetFileExtension() );
+    ASSERT_EQ( std::string(""),           menus[02]->GetIcon().GetPath() );
+    ASSERT_EQ( Icon::INVALID_ICON_INDEX,  menus[02]->GetIcon().GetIndex() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

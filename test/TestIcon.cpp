@@ -39,14 +39,14 @@ namespace shellanything { namespace test
   TEST_F(TestIcon, testResolveFileExtensionIcon)
   {
     Icon icon;
-    icon.setFileExtension("txt");
+    icon.SetFileExtension("txt");
  
     //act
-    icon.resolveFileExtensionIcon();
+    icon.ResolveFileExtensionIcon();
 
-    ASSERT_TRUE( icon.getFileExtension().empty() );
-    ASSERT_FALSE( icon.getPath().empty() );
-    ASSERT_NE( Icon::INVALID_ICON_INDEX, icon.getIndex() );
+    ASSERT_TRUE( icon.GetFileExtension().empty() );
+    ASSERT_FALSE( icon.GetPath().empty() );
+    ASSERT_NE( Icon::INVALID_ICON_INDEX, icon.GetIndex() );
   }
   //--------------------------------------------------------------------------------------------------
 

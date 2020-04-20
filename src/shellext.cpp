@@ -249,13 +249,13 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 {
   //Expanded the menu's strings
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title       = pmgr.expand(menu->getName());
-  std::string description = pmgr.expand(menu->getDescription());
+  std::string title       = pmgr.expand(menu->GetName());
+  std::string description = pmgr.expand(menu->GetDescription());
 
   //Get visible/enable properties based on current context.
-  bool menu_visible   = menu->isVisible();
-  bool menu_enabled   = menu->isEnabled();
-  bool menu_separator = menu->isSeparator();
+  bool menu_visible   = menu->IsVisible();
+  bool menu_enabled   = menu->IsEnabled();
+  bool menu_separator = menu->IsSeparator();
 
   //Skip this menu if not visible
   if (!menu_visible)
@@ -265,7 +265,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   }
 
   //Validate menus integrity
-  const uint32_t & menu_command_id = menu->getCommandId();
+  const uint32_t & menu_command_id = menu->GetCommandId();
   if (menu_command_id == shellanything::Menu::INVALID_COMMAND_ID)
   {
     LOG(ERROR) << __FUNCTION__ << "(), menu '" << title << "' have invalid command id.";
@@ -287,13 +287,13 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   menuinfo.cch = (UINT)title_utf16.size();
 
   //add an icon
-  const shellanything::Icon & icon = menu->getIcon();
-  if (!menu_separator && icon.isValid())
+  const shellanything::Icon & icon = menu->GetIcon();
+  if (!menu_separator && icon.IsValid())
   {
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    std::string file_extension  = pmgr.expand(icon.getFileExtension());
-    std::string icon_filename   = pmgr.expand(icon.getPath());
-    int icon_index              = icon.getIndex();
+    std::string file_extension  = pmgr.expand(icon.GetFileExtension());
+    std::string icon_filename   = pmgr.expand(icon.GetPath());
+    int icon_index              = icon.GetIndex();
 
     //if the icon is pointing to a file extension
     if (!file_extension.empty())
@@ -307,8 +307,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
       {
         //already resolved
         const shellanything::Icon & resolved_icon = wExtensionsIterator->second;
-        icon_filename = resolved_icon.getPath();
-        icon_index    = resolved_icon.getIndex();
+        icon_filename = resolved_icon.GetPath();
+        icon_index    = resolved_icon.GetIndex();
       }
       else
       {
@@ -316,14 +316,14 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
         
         //make a copy of the icon and resolve the file extension to a system icon.
         shellanything::Icon resolved_icon = icon;
-        resolved_icon.resolveFileExtensionIcon();
+        resolved_icon.ResolveFileExtensionIcon();
 
         //save the icon for a future use
         m_FileExtensionCache[file_extension] = resolved_icon;
 
         //use the resolved icon location
-        icon_filename = resolved_icon.getPath();
-        icon_index    = resolved_icon.getIndex();
+        icon_filename = resolved_icon.GetPath();
+        icon_index    = resolved_icon.GetIndex();
       }
     }
 
@@ -373,12 +373,12 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   }
 
   //handle submenus
-  if (menu->isParentMenu())
+  if (menu->IsParentMenu())
   {
     menuinfo.fMask |= MIIM_SUBMENU;
     HMENU hSubMenu = CreatePopupMenu();
 
-    shellanything::Menu::MenuPtrList subs = menu->getSubMenus();
+    shellanything::Menu::MenuPtrList subs = menu->GetSubMenus();
     UINT sub_insert_pos = 0;
     for(size_t i=0; i<subs.size(); i++)
     {
@@ -649,13 +649,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 
   //compute the visual menu title
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title = pmgr.expand(menu->getName());
+  std::string title = pmgr.expand(menu->GetName());
 
   //found a menu match, execute menu action
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::Action::ActionPtrList & actions = menu->getActions();
+  const shellanything::Action::ActionPtrList & actions = menu->GetActions();
   for(size_t i=0; i<actions.size(); i++)
   {
     LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
@@ -728,7 +728,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 
   //compute the visual menu description
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string description = pmgr.expand(menu->getDescription());
+  std::string description = pmgr.expand(menu->GetDescription());
 
   //convert to windows unicode...
   std::wstring desc_utf16 = ra::unicode::Utf8ToUnicode(description);

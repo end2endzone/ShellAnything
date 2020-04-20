@@ -46,81 +46,81 @@ namespace shellanything
     mActions.clear();
   }
 
-  bool Menu::isSeparator() const
+  bool Menu::IsSeparator() const
   {
     return mSeparator;
   }
 
-  void Menu::setSeparator(bool iSeparator)
+  void Menu::SetSeparator(bool iSeparator)
   {
     mSeparator = iSeparator;
   }
 
-  bool Menu::isParentMenu() const
+  bool Menu::IsParentMenu() const
   {
     Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
     bool parent_menu = (sub_menus.size() != 0);
     return parent_menu;
   }
 
-  const std::string & Menu::getName() const
+  const std::string & Menu::GetName() const
   {
     return mName;
   }
 
-  void Menu::setName(const std::string & iName)
+  void Menu::SetName(const std::string & iName)
   {
     mName = iName;
   }
 
-  const std::string & Menu::getDescription() const
+  const std::string & Menu::GetDescription() const
   {
     return mDescription;
   }
 
-  void Menu::setDescription(const std::string & iDescription)
+  void Menu::SetDescription(const std::string & iDescription)
   {
     mDescription = iDescription;
   }
 
-  const Icon & Menu::getIcon() const
+  const Icon & Menu::GetIcon() const
   {
     return mIcon;
   }
 
-  void Menu::setIcon(const Icon & icon)
+  void Menu::SetIcon(const Icon & icon)
   {
     mIcon = icon;
   }
 
-  void Menu::update(const Context & c)
+  void Menu::Update(const Context & c)
   {
     //update current menu
     bool visible = mVisibility.validate(c);
     bool enabled = mValidity.validate(c);
-    setVisible(visible);
-    setEnabled(enabled);
+    SetVisible(visible);
+    SetEnabled(enabled);
 
     //update children
     bool all_invisible_children = true;
 
     //for each child
-    Menu::MenuPtrList children = getSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      child->update(c);
+      child->Update(c);
 
       //refresh the flag
-      all_invisible_children = all_invisible_children && !child->isVisible();
+      all_invisible_children = all_invisible_children && !child->IsVisible();
     }
 
     //Issue #4 - Parent menu with no children.
     //if all the direct children of this menu are invisible
-    if (isParentMenu() && visible && all_invisible_children)
+    if (IsParentMenu() && visible && all_invisible_children)
     {
       //force this node as invisible.
-      setVisible(false);
+      SetVisible(false);
     }
   }
 
@@ -130,7 +130,7 @@ namespace shellanything
       return this;
  
     //for each child
-    Menu::MenuPtrList children = getSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -149,17 +149,17 @@ namespace shellanything
     //Issue #5 - ConfigManager::AssignCommandIds() should skip invisible menus
     if (!mVisible || iFirstCommandId == INVALID_COMMAND_ID)
     {
-      this->setCommandId(INVALID_COMMAND_ID); //invalidate this menu's command id
+      this->SetCommandId(INVALID_COMMAND_ID); //invalidate this menu's command id
     }
     else
     {
       //assign a command id to this menu
-      this->setCommandId(nextCommandId);
+      this->SetCommandId(nextCommandId);
       nextCommandId++;
     }
 
     //for each child
-    Menu::MenuPtrList children = getSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -173,68 +173,68 @@ namespace shellanything
     return nextCommandId;
   }
  
-  const uint32_t & Menu::getCommandId() const
+  const uint32_t & Menu::GetCommandId() const
   {
     return mCommandId;
   }
  
-  void Menu::setCommandId(const uint32_t & iCommandId)
+  void Menu::SetCommandId(const uint32_t & iCommandId)
   {
     mCommandId = iCommandId;
   }
  
-  bool Menu::isVisible() const
+  bool Menu::IsVisible() const
   {
     return mVisible;
   }
 
-  bool Menu::isEnabled() const
+  bool Menu::IsEnabled() const
   {
     return mEnabled;
   }
 
-  void Menu::setVisible(bool visible)
+  void Menu::SetVisible(bool visible)
   {
     mVisible = visible;
   }
 
-  void Menu::setEnabled(bool enabled)
+  void Menu::SetEnabled(bool enabled)
   {
     mEnabled = enabled;
   }
 
-  const Validator & Menu::getValidity()
+  const Validator & Menu::GetValidity()
   {
     return mValidity;
   }
 
-  void Menu::setValidity(const Validator & iValidity)
+  void Menu::SetValidity(const Validator & iValidity)
   {
     mValidity = iValidity;
   }
 
-  const Validator & Menu::getVisibility()
+  const Validator & Menu::GetVisibility()
   {
     return mVisibility;
   }
 
-  void Menu::setVisibility(const Validator & iVisibility)
+  void Menu::SetVisibility(const Validator & iVisibility)
   {
     mVisibility = iVisibility;
   }
 
-  Menu::MenuPtrList Menu::getSubMenus()
+  Menu::MenuPtrList Menu::GetSubMenus()
   {
     Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
     return sub_menus;
   }
 
-  void Menu::addAction(Action * action)
+  void Menu::AddAction(Action * action)
   {
     mActions.push_back(action);
   }
 
-  const Action::ActionPtrList & Menu::getActions() const
+  const Action::ActionPtrList & Menu::GetActions() const
   {
     return mActions;
   }

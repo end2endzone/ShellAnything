@@ -55,42 +55,42 @@ namespace shellanything
     /// Returns true if the icon have a valid path and index.
     /// </summary>
     /// <returns>Returns true if the icon have a valid path and index. Returns false otherwise.</returns>
-    bool isValid() const;
+    bool IsValid() const;
 
     /// <summary>
     /// Resolve the icon's file extension to the system icon for this file extension.
     /// </summary>
-    void resolveFileExtensionIcon();
+    void ResolveFileExtensionIcon();
 
     /// <summary>
     /// Getter for the 'fileextension' parameter.
     /// </summary>
-    const std::string & getFileExtension() const;
+    const std::string & GetFileExtension() const;
 
     /// <summary>
     /// Setter for the 'fileextension' parameter.
     /// </summary>
-    void setFileExtension(const std::string & iFileExtension);
+    void SetFileExtension(const std::string & iFileExtension);
 
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const std::string & getPath() const;
+    const std::string & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void setPath(const std::string & iPath);
+    void SetPath(const std::string & iPath);
 
     /// <summary>
     /// Getter for the 'index' parameter.
     /// </summary>
-    const int & getIndex() const;
+    const int & GetIndex() const;
 
     /// <summary>
     /// Setter for the 'index' parameter.
     /// </summary>
-    void setIndex(const int & iIndex);
+    void SetIndex(const int & iIndex);
 
   private:
     std::string mFileExtension;

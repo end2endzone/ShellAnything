@@ -32,7 +32,7 @@ namespace shellanything { namespace test
   Menu * newMenu(const std::string & name)
   {
     Menu * menu = new Menu();
-    menu->setName(name);
+    menu->SetName(name);
     return menu;
   }
 
@@ -149,7 +149,7 @@ namespace shellanything { namespace test
     body->addChild(child1);
     body->addChild(child2);
     body->addChild(child3);
-    child3->addAction(my_test_action); //child3 takes ownership of my_test_menu
+    child3->AddAction(my_test_action); //child3 takes ownership of my_test_menu
 
     //destroy the tree
     delete root;
@@ -168,7 +168,7 @@ namespace shellanything { namespace test
     Menu * child3 = newMenu("p");
 
     //no children yet
-    ASSERT_TRUE( root->getSubMenus().empty() );
+    ASSERT_TRUE( root->GetSubMenus().empty() );
 
     //build tree
     root->addChild(body);
@@ -176,7 +176,7 @@ namespace shellanything { namespace test
     body->addChild(child2);
     body->addChild(child3);
 
-    Menu::MenuPtrList subs = body->getSubMenus();
+    Menu::MenuPtrList subs = body->GetSubMenus();
     ASSERT_EQ(3, subs.size());
     ASSERT_EQ( child1, subs[0] );
     ASSERT_EQ( child2, subs[1] );
@@ -212,14 +212,14 @@ namespace shellanything { namespace test
  
     //assert
     ASSERT_EQ(109, nextAvailableId);
-    ASSERT_EQ(101,   root->getCommandId());
-    ASSERT_EQ(102,   body->getCommandId());
-    ASSERT_EQ(103, child1->getCommandId());
-    ASSERT_EQ(104, child2->getCommandId());
-    ASSERT_EQ(105, child3->getCommandId());
-    ASSERT_EQ(106, child4->getCommandId());
-    ASSERT_EQ(107, child5->getCommandId());
-    ASSERT_EQ(108, child6->getCommandId());
+    ASSERT_EQ(101,   root->GetCommandId());
+    ASSERT_EQ(102,   body->GetCommandId());
+    ASSERT_EQ(103, child1->GetCommandId());
+    ASSERT_EQ(104, child2->GetCommandId());
+    ASSERT_EQ(105, child3->GetCommandId());
+    ASSERT_EQ(106, child4->GetCommandId());
+    ASSERT_EQ(107, child5->GetCommandId());
+    ASSERT_EQ(108, child6->GetCommandId());
  
     //destroy the tree
     delete root;

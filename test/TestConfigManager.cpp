@@ -78,7 +78,7 @@ namespace shellanything { namespace test
 
     list.push_back(menu);
 
-    Menu::MenuPtrList submenus = menu->getSubMenus();
+    Menu::MenuPtrList submenus = menu->GetSubMenus();
     for(size_t i=0; i<submenus.size(); i++)
     {
       Menu * submenu = submenus[i];
@@ -104,7 +104,7 @@ namespace shellanything { namespace test
     if (parent == NULL)
       return NULL;
 
-    Menu::MenuPtrList menus = parent->getSubMenus();
+    Menu::MenuPtrList menus = parent->GetSubMenus();
     if (index >= menus.size())
       return NULL; //out of bounds
 
@@ -331,9 +331,9 @@ namespace shellanything { namespace test
     ASSERT_TRUE( wFooServiceMenu != NULL );
     ASSERT_TRUE(    wRestartMenu != NULL );
     ASSERT_TRUE(     wWinzipMenu != NULL );
-    ASSERT_EQ( std::string("Foo Service"),  wFooServiceMenu->getName() );
-    ASSERT_EQ( std::string("Restart"),      wRestartMenu->getName() );
-    ASSERT_EQ( std::string("Winzip"),       wWinzipMenu->getName() );
+    ASSERT_EQ( std::string("Foo Service"),  wFooServiceMenu->GetName() );
+    ASSERT_EQ( std::string("Restart"),      wRestartMenu->GetName() );
+    ASSERT_EQ( std::string("Winzip"),       wWinzipMenu->GetName() );
  
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
@@ -357,7 +357,7 @@ namespace shellanything { namespace test
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * menu = menus[i];
-      const std::string & name = menu->getName();
+      const std::string & name = menu->GetName();
       if (name.find("Run") != std::string::npos && name.find("parameters") != std::string::npos)
       {
         //found our Menu
@@ -367,7 +367,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( run_with_params != NULL );
 
     //look for a description
-    const std::string & desc = run_with_params->getDescription();
+    const std::string & desc = run_with_params->GetDescription();
     ASSERT_EQ(std::string(""), desc);
 
     //cleanup
@@ -456,14 +456,14 @@ namespace shellanything { namespace test
     cmgr.Update(context);
 
     //ASSERT top menu is visible (default option)
-    ASSERT_TRUE( first->isVisible() );
+    ASSERT_TRUE( first->IsVisible() );
 
     //update the menus based on a context with a single directory
     context = getContextSingleDirectory();
     cmgr.Update(context);
 
     //ASSERT top menu is invisible (issue #4)
-    ASSERT_FALSE( first->isVisible() );
+    ASSERT_FALSE( first->IsVisible() );
 
     //get all submenus
     Menu * option1 = first;
@@ -472,12 +472,12 @@ namespace shellanything { namespace test
     ASSERT_TRUE( option1_1 != NULL );
     Menu * option1_1_1 = querySubMenu(option1_1, 0);
     ASSERT_TRUE( option1_1_1 != NULL );
-    ASSERT_FALSE( option1_1_1->isParentMenu() ); //menu is a leaf
+    ASSERT_FALSE( option1_1_1->IsParentMenu() ); //menu is a leaf
 
     //assert all sub menus are also invisible
-    ASSERT_FALSE( option1->isVisible() );
-    ASSERT_FALSE( option1_1->isVisible() );
-    ASSERT_FALSE( option1_1_1->isVisible() );
+    ASSERT_FALSE( option1->IsVisible() );
+    ASSERT_FALSE( option1_1->IsVisible() );
+    ASSERT_FALSE( option1_1_1->IsVisible() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -543,20 +543,20 @@ namespace shellanything { namespace test
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * m = menus[i];
-      std::string message = ra::strings::Format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->getName().c_str(), toString(m->isVisible()), m->getCommandId());
-      if (m->isVisible())
-        ASSERT_NE(Menu::INVALID_COMMAND_ID, m->getCommandId() ) << message; //visible menus must have a valid command id
+      std::string message = ra::strings::Format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->GetName().c_str(), toString(m->IsVisible()), m->GetCommandId());
+      if (m->IsVisible())
+        ASSERT_NE(Menu::INVALID_COMMAND_ID, m->GetCommandId() ) << message; //visible menus must have a valid command id
       else
-        ASSERT_EQ(Menu::INVALID_COMMAND_ID, m->getCommandId() ) << message; //invisible menus must have an invalid command id
+        ASSERT_EQ(Menu::INVALID_COMMAND_ID, m->GetCommandId() ) << message; //invisible menus must have an invalid command id
     }
 
     //expected assigned command ids
-    ASSERT_EQ( 101, option1->getCommandId() );
-    ASSERT_EQ( 102, option1_1->getCommandId() );
-    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2->getCommandId() );
-    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_3->getCommandId() );
-    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1  ->getCommandId() );
-    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1_1->getCommandId() );
+    ASSERT_EQ( 101, option1->GetCommandId() );
+    ASSERT_EQ( 102, option1_1->GetCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2->GetCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_3->GetCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1  ->GetCommandId() );
+    ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1_1->GetCommandId() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
