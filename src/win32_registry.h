@@ -57,38 +57,38 @@ namespace win32_registry
   typedef std::vector<RGS_ENTRY> RGS_ENTRY_LIST;
   typedef std::string MemoryBuffer;
 
-  static const REGISTRY_ICON NULL_ICON = { std::string(), 0 };
   static const int & INVALID_ICON_INDEX = -1;
+  static const REGISTRY_ICON NULL_ICON = { std::string(), INVALID_ICON_INDEX };
   
-  std::string toString(const RGS_ENTRY & entry);
-  bool parseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries);
-  bool createRegistry(const RGS_ENTRY_LIST & entries);
-  bool deleteRegistry(const RGS_ENTRY_LIST & entries);
+  std::string ToString(const RGS_ENTRY & entry);
+  bool ParseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries);
+  bool CreateRegistry(const RGS_ENTRY_LIST & entries);
+  bool DeleteRegistry(const RGS_ENTRY_LIST & entries);
 
-  bool getValue( const char * iKeyPath,
+  bool GetValue( const char * iKeyPath,
                  const char * iValueName,
                  REGISTRY_TYPE & oType,
                  MemoryBuffer & oValue);
-  bool getDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue);
+  bool GetDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue);
   
-  bool hasKey(const char* iKeyPath);
-  bool createKey(const char* iKeyPath);
-  bool createKey(const char* iKeyPath, const char* iDefaultValue);
-  bool deleteKey(const char* iKeyPath);
-  bool setValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize);
-  bool setValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue);
-  bool setValue(const char* iKeyPath, const char* iValueName, const char *iValue);
-  bool deleteValue(const char* iKeyPath, const char* iValueName);
+  bool HasKey(const char* iKeyPath);
+  bool CreateKey(const char* iKeyPath);
+  bool CreateKey(const char* iKeyPath, const char* iDefaultValue);
+  bool DeleteKey(const char* iKeyPath);
+  bool SetValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize);
+  bool SetValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue);
+  bool SetValue(const char* iKeyPath, const char* iValueName, const char *iValue);
+  bool DeleteValue(const char* iKeyPath, const char* iValueName);
 
-  bool getAssociatedProgram(const char* iFileExtention, std::string & oCmdLine);
-  bool setAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine);
+  bool GetAssociatedProgram(const char* iFileExtention, std::string & oCmdLine);
+  bool SetAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine);
 
-  bool registerCommandForFile(const char * iName, const char * iCommand);
-  bool registerCommandForFolder(const char * iName, const char * iCommand);
+  bool RegisterCommandForFile(const char * iName, const char * iCommand);
+  bool RegisterCommandForFolder(const char * iName, const char * iCommand);
 
-  bool isValid(const REGISTRY_ICON & icon);
-  REGISTRY_ICON getFileTypeIcon(const char * iFileExtention);
-  REGISTRY_ICON getUnknownFileTypeIcon();
+  bool IsValid(const REGISTRY_ICON & icon);
+  REGISTRY_ICON GetFileTypeIcon(const char * iFileExtention);
+  REGISTRY_ICON GetUnknownFileTypeIcon();
 
 } //namespace win32_registry
 

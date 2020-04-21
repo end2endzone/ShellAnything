@@ -40,13 +40,13 @@ namespace shellanything
    
     static const HBITMAP INVALID_BITMAP_HANDLE;
    
-    void clear();
-    void clear_and_destroy();
-    void reset_counters();
-    int destroy_old_handles();
-    void add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
-    HBITMAP find_handle(const std::string & iFilename, const int & iIndex);
-    int get_usage(const std::string & iFilename, const int & iIndex);
+    void Clear();
+    void ClearAndDestroy();
+    void ResetCounters();
+    int DestroyOldHandles();
+    void AddHandle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
+    HBITMAP FindHandle(const std::string & iFilename, const int & iIndex);
+    int GetUsage(const std::string & iFilename, const int & iIndex);
    
   private:
     // Typedef

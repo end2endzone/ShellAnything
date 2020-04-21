@@ -92,10 +92,10 @@ namespace shellanything { namespace test
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hBitmap );
 
     //add
-    cache.add_handle(filename, index, hBitmap);
+    cache.AddHandle(filename, index, hBitmap);
 
     //assert it is added
-    HBITMAP hDuplicate = cache.find_handle(filename, index);
+    HBITMAP hDuplicate = cache.FindHandle(filename, index);
     ASSERT_EQ( hBitmap, hDuplicate );
 
     DeleteObject(hBitmap);
@@ -112,20 +112,20 @@ namespace shellanything { namespace test
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hBitmap );
 
     //add
-    cache.add_handle(filename, index, hBitmap);
+    cache.AddHandle(filename, index, hBitmap);
 
     //assert it is added
-    HBITMAP hDuplicate1 = cache.find_handle(filename, index);
+    HBITMAP hDuplicate1 = cache.FindHandle(filename, index);
     ASSERT_EQ( hBitmap, hDuplicate1 );
 
-    int count = cache.get_usage(filename, index);
+    int count = cache.GetUsage(filename, index);
     ASSERT_EQ( 1, count );
 
-    //assert usage increases for every find_handle() call
-    HBITMAP hDuplicate2 = cache.find_handle(filename, index);
-    HBITMAP hDuplicate3 = cache.find_handle(filename, index);
-    HBITMAP hDuplicate4 = cache.find_handle(filename, index);
-    count = cache.get_usage(filename, index);
+    //assert usage increases for every FindHandle() call
+    HBITMAP hDuplicate2 = cache.FindHandle(filename, index);
+    HBITMAP hDuplicate3 = cache.FindHandle(filename, index);
+    HBITMAP hDuplicate4 = cache.FindHandle(filename, index);
+    count = cache.GetUsage(filename, index);
     ASSERT_EQ( 4, count );
 
     DeleteObject(hBitmap);
@@ -142,20 +142,20 @@ namespace shellanything { namespace test
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hBitmap );
 
     //add
-    cache.add_handle(filename, index, hBitmap);
+    cache.AddHandle(filename, index, hBitmap);
 
     //increase usage
-    HBITMAP hDuplicate1 = cache.find_handle(filename, index);
-    HBITMAP hDuplicate2 = cache.find_handle(filename, index);
-    HBITMAP hDuplicate3 = cache.find_handle(filename, index);
-    HBITMAP hDuplicate4 = cache.find_handle(filename, index);
-    int count = cache.get_usage(filename, index);
+    HBITMAP hDuplicate1 = cache.FindHandle(filename, index);
+    HBITMAP hDuplicate2 = cache.FindHandle(filename, index);
+    HBITMAP hDuplicate3 = cache.FindHandle(filename, index);
+    HBITMAP hDuplicate4 = cache.FindHandle(filename, index);
+    int count = cache.GetUsage(filename, index);
     ASSERT_EQ( 4, count );
 
-    cache.reset_counters();
+    cache.ResetCounters();
 
     //get usage again
-    count = cache.get_usage(filename, index);
+    count = cache.GetUsage(filename, index);
     ASSERT_EQ( 0, count ); //assert unused
 
     DeleteObject(hBitmap);
@@ -172,14 +172,14 @@ namespace shellanything { namespace test
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hBitmap );
 
     //add
-    cache.add_handle(filename, index, hBitmap);
+    cache.AddHandle(filename, index, hBitmap);
 
     //act
-    cache.reset_counters(); //make sure that all bitmap in the cache will be destroyed
-    cache.clear_and_destroy();
+    cache.ResetCounters(); //make sure that all bitmap in the cache will be destroyed
+    cache.ClearAndDestroy();
 
     //get usage
-    int count = cache.get_usage(filename, index);
+    int count = cache.GetUsage(filename, index);
     ASSERT_EQ( -1, count ); //assert not found
 
     //try to destroy in main scope
@@ -205,22 +205,22 @@ namespace shellanything { namespace test
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hBitmap4 );
 
     //add
-    cache.add_handle(filename, 0, hBitmap0);
-    cache.add_handle(filename, 1, hBitmap1);
-    cache.add_handle(filename, 2, hBitmap2);
-    cache.add_handle(filename, 3, hBitmap3);
-    cache.add_handle(filename, 4, hBitmap4);
+    cache.AddHandle(filename, 0, hBitmap0);
+    cache.AddHandle(filename, 1, hBitmap1);
+    cache.AddHandle(filename, 2, hBitmap2);
+    cache.AddHandle(filename, 3, hBitmap3);
+    cache.AddHandle(filename, 4, hBitmap4);
 
     //inserse usage of the first 3
-    HBITMAP hFound0 = cache.find_handle(filename, 0);
-    HBITMAP hFound1 = cache.find_handle(filename, 1);
-    HBITMAP hFound2 = cache.find_handle(filename, 2);
+    HBITMAP hFound0 = cache.FindHandle(filename, 0);
+    HBITMAP hFound1 = cache.FindHandle(filename, 1);
+    HBITMAP hFound2 = cache.FindHandle(filename, 2);
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hFound0 );
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hFound1 );
     ASSERT_NE( BitmapCache::INVALID_BITMAP_HANDLE, hFound2 );
 
     //act
-    int num_destroyed = cache.destroy_old_handles();
+    int num_destroyed = cache.DestroyOldHandles();
     ASSERT_EQ( 2, num_destroyed ); //hBitmap3 and hBitmap4
 
     //assert some are destroyed, some not

@@ -35,15 +35,15 @@ namespace shellanything
    
   BitmapCache::~BitmapCache()
   {
-    clear_and_destroy();
+    ClearAndDestroy();
   }
    
-  void BitmapCache::clear()
+  void BitmapCache::Clear()
   {
     mFiles.clear();
   }
    
-  void BitmapCache::clear_and_destroy()
+  void BitmapCache::ClearAndDestroy()
   {
     //for each files
     for (FilenameMap::const_iterator wFilesIterator = mFiles.begin(); wFilesIterator != mFiles.end(); wFilesIterator++)
@@ -65,7 +65,7 @@ namespace shellanything
     mFiles.clear();
   }
    
-  void BitmapCache::reset_counters()
+  void BitmapCache::ResetCounters()
   {
     //for each files
     for (FilenameMap::iterator wFilesIterator = mFiles.begin(); wFilesIterator != mFiles.end(); wFilesIterator++)
@@ -85,7 +85,7 @@ namespace shellanything
     }
   }
    
-  int BitmapCache::destroy_old_handles()
+  int BitmapCache::DestroyOldHandles()
   {
     int num_destroyed = 0;
 
@@ -168,7 +168,7 @@ namespace shellanything
     return num_destroyed;
   }
    
-  void BitmapCache::add_handle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap)
+  void BitmapCache::AddHandle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap)
   {
     USAGE usage;
     usage.hBitmap = hBitmap;
@@ -177,7 +177,7 @@ namespace shellanything
     mFiles[iFilename][iIndex] = usage;
   }
    
-  HBITMAP BitmapCache::find_handle(const std::string & iFilename, const int & iIndex)
+  HBITMAP BitmapCache::FindHandle(const std::string & iFilename, const int & iIndex)
   {
     //search within 1st map level
     FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);
@@ -201,7 +201,7 @@ namespace shellanything
     return usage.hBitmap;
   }
 
-  int BitmapCache::get_usage(const std::string & iFilename, const int & iIndex)
+  int BitmapCache::GetUsage(const std::string & iFilename, const int & iIndex)
   {
     //search within 1st map level
     FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);

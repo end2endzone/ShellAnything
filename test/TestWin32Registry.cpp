@@ -129,13 +129,13 @@ namespace shellanything { namespace test
   TEST_F(TestWin32Registry, testParseRgs)
   {
     win32_registry::RGS_ENTRY_LIST entries;
-    bool result = win32_registry::parseRgsRegistry(test_rgs, "c:\\foo\\bar\\myshellextension.dll", entries);
+    bool result = win32_registry::ParseRgsRegistry(test_rgs, "c:\\foo\\bar\\myshellextension.dll", entries);
     ASSERT_TRUE( result );
 
     for(size_t i=0; i<entries.size(); i++)
     {
       const win32_registry::RGS_ENTRY & entry = entries[i];
-      std::string str = win32_registry::toString(entry);
+      std::string str = win32_registry::ToString(entry);
       printf("%s\n", str.c_str());
     }
   }
@@ -203,13 +203,13 @@ namespace shellanything { namespace test
       ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
 
       //get the icon matching this file's extension
-      win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
+      win32_registry::REGISTRY_ICON icon = win32_registry::GetFileTypeIcon(file_extension);
       if (icon.path.empty())
       {
         printf("Failed to find icon for file extension. Is this expected? file_extension='%s'. \n", file_extension);
 
         //use default unknown icon
-        icon = win32_registry::getUnknownFileTypeIcon();
+        icon = win32_registry::GetUnknownFileTypeIcon();
       }
 
       //load and save the found icon to a file
@@ -285,7 +285,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
 
     //get the icon matching this file's extension
-    win32_registry::REGISTRY_ICON icon = win32_registry::getFileTypeIcon(file_extension);
+    win32_registry::REGISTRY_ICON icon = win32_registry::GetFileTypeIcon(file_extension);
 
     //For debugging on each system where the test is executed.
     printf("Found icon in file '%s', index '%d'.\n", icon.path.c_str(), icon.index);
