@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestGlogUtils.h"
-#include "glog_utils.h"
+#include "GlogUtils.h"
 
 #include "Platform.h"
 #include <Windows.h>

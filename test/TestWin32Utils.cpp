@@ -28,7 +28,7 @@
 #pragma warning( pop )
 
 #include "TestWin32Utils.h"
-#include "win32_utils.h"
+#include "Win32Utils.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
 
@@ -56,12 +56,12 @@ namespace shellanything { namespace test
       ASSERT_TRUE( hIconLarge != NULL );
 
       //Convert the icon to a bitmap (with invisible background)
-      SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-      HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+      SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
+      HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
       //Remove the invisible background and replace by red color
       COLORREF background_color = RGB(255,0,255); //pink
-      win32_utils::FillTransparentPixels(hBitmap, background_color);
+      Win32Utils::FillTransparentPixels(hBitmap, background_color);
 
       DestroyIcon(hIconLarge);
       DestroyIcon(hIconSmall);
@@ -72,7 +72,7 @@ namespace shellanything { namespace test
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".shell32.dll.index%03d.bmp", i);
       file_path.append(post_filename);
-      win32_utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);
@@ -109,13 +109,13 @@ namespace shellanything { namespace test
       ASSERT_TRUE( hIconLarge != NULL );
 
       //Convert the icon to a bitmap (with invisible background)
-      SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-      HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+      SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
+      HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
       //Remove the invisible background and replace by red color
       static const COLORREF color_pink  = RGB(255,  0,255);
       static const COLORREF color_white = RGB(255,255,255);
-      win32_utils::FillTransparentPixels(hBitmap, color_pink);
+      Win32Utils::FillTransparentPixels(hBitmap, color_pink);
 
       DestroyIcon(hIconLarge);
       DestroyIcon(hIconSmall);
@@ -127,7 +127,7 @@ namespace shellanything { namespace test
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".%s.index%03d.bmp", dll_filename.c_str(), index);
       file_path.append(post_filename);
-      win32_utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);

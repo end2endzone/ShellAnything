@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "win32_registry.h"
+#include "Win32Registry.h"
 
 //#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
@@ -40,7 +40,7 @@
 #include <assert.h>
 #include <algorithm>
 
-namespace win32_registry
+namespace Win32Registry
 {
   bool IsIconEquals(const REGISTRY_ICON & a, const REGISTRY_ICON & b)
   {
@@ -257,7 +257,7 @@ namespace win32_registry
     //set default value
     if (iDefaultValue)
     {
-      if (!win32_registry::SetValue(iKeyPath, "", iDefaultValue))
+      if (!Win32Registry::SetValue(iKeyPath, "", iDefaultValue))
         return false;
     }
 
@@ -955,7 +955,7 @@ namespace win32_registry
         entries.push_back(entry);
       }
 
-      //process root key acronyms for win32_registry functions
+      //process root key acronyms for Win32Registry functions
       else if (line == "HKCR")
         previous_key_name = "HKEY_CLASSES_ROOT";
       else if (line == "HKCU")
@@ -1054,7 +1054,7 @@ namespace win32_registry
 
     for(size_t i=0; i<entries.size(); i++)
     {
-      const win32_registry::RGS_ENTRY & entry = entries[i];
+      const Win32Registry::RGS_ENTRY & entry = entries[i];
       if (entry.isKey)
       {
         //std::string debug_message;
@@ -1104,7 +1104,7 @@ namespace win32_registry
 
     for(size_t i=0; i<entries.size(); i++)
     {
-      const win32_registry::RGS_ENTRY & entry = entries[i];
+      const Win32Registry::RGS_ENTRY & entry = entries[i];
       if (entry.isNoRemove)
         continue;
 
@@ -1150,4 +1150,4 @@ namespace win32_registry
     return icon;
   }
 
-} //namespace win32_registry
+} //namespace Win32Registry

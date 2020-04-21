@@ -24,7 +24,7 @@
 
 #include "shellanything/Icon.h"
 #include "PropertyManager.h"
-#include "win32_registry.h"
+#include "Win32Registry.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -75,8 +75,8 @@ namespace shellanything
     if (!file_extension.empty())
     {
       //try to find the path to the icon module for the given file extension.
-      win32_registry::REGISTRY_ICON resolved_icon = win32_registry::GetFileTypeIcon(file_extension.c_str());
-      if (!resolved_icon.path.empty() && resolved_icon.index != win32_registry::INVALID_ICON_INDEX)
+      Win32Registry::REGISTRY_ICON resolved_icon = Win32Registry::GetFileTypeIcon(file_extension.c_str());
+      if (!resolved_icon.path.empty() && resolved_icon.index != Win32Registry::INVALID_ICON_INDEX)
       {
         //found the icon for the file extension
         //replace this menu's icon with the new information
@@ -89,7 +89,7 @@ namespace shellanything
       {
         //failed to find a valid icon.
         //using the default "unknown" icon
-        win32_registry::REGISTRY_ICON unknown_file_icon = win32_registry::GetUnknownFileTypeIcon();
+        Win32Registry::REGISTRY_ICON unknown_file_icon = Win32Registry::GetUnknownFileTypeIcon();
         LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
         mPath = unknown_file_icon.path;
         mIndex = unknown_file_icon.index;

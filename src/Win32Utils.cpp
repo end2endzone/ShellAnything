@@ -1,5 +1,5 @@
 //#define WIN32_LEAN_AND_MEAN 1
-#include "win32_utils.h"
+#include "Win32Utils.h"
 #undef GetEnvironmentVariable
 #undef DeleteFile
 #undef CreateDirectory
@@ -11,7 +11,7 @@
 #include <string>
 #include <assert.h>
 
-namespace win32_utils
+namespace Win32Utils
 {
   static const size_t BITS_PER_PIXEL = 32;
   static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
@@ -556,4 +556,4 @@ namespace win32_utils
     return output;
   }
 
-} //namespace win32_utils
+} //namespace Win32Utils

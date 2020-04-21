@@ -24,7 +24,7 @@
 
 #include "TestBitmapCache.h"
 #include "BitmapCache.h"
-#include "win32_utils.h"
+#include "Win32Utils.h"
 #include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
@@ -37,12 +37,12 @@ namespace shellanything { namespace test
     UINT numIconLoaded = ExtractIconEx( "c:\\windows\\system32\\shell32.dll", index, &hIconLarge, &hIconSmall, 1 );
 
     //Convert the icon to a bitmap (with invisible background)
-    SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-    HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+    SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
+    HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
     //Remove the invisible background and replace by red color
     COLORREF background_color = RGB(255,0,255); //pink
-    win32_utils::FillTransparentPixels(hBitmap, background_color);
+    Win32Utils::FillTransparentPixels(hBitmap, background_color);
 
     DestroyIcon(hIconLarge);
     DestroyIcon(hIconSmall);
@@ -58,12 +58,12 @@ namespace shellanything { namespace test
     UINT numIconLoaded = ExtractIconEx( filename.c_str(), index, &hIconLarge, &hIconSmall, 1 );
 
     //Convert the icon to a bitmap (with invisible background)
-    SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-    HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+    SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
+    HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
     //Remove the invisible background and replace by red color
     COLORREF background_color = RGB(255,0,255); //pink
-    win32_utils::FillTransparentPixels(hBitmap, background_color);
+    Win32Utils::FillTransparentPixels(hBitmap, background_color);
 
     DestroyIcon(hIconLarge);
     DestroyIcon(hIconSmall);

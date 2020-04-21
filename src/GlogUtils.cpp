@@ -1,4 +1,4 @@
-#include "glog_utils.h"
+#include "GlogUtils.h"
 #include "Platform.h"
 
 #define WIN32_LEAN_AND_MEAN 1

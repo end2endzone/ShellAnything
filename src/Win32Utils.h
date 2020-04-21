@@ -28,7 +28,7 @@
 #include <Windows.h>
 #include <string>
 
-namespace win32_utils
+namespace Win32Utils
 {
   SIZE GetIconSize(HICON hIcon);
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
@@ -42,6 +42,6 @@ namespace win32_utils
   BOOL IsFullyTransparent(const std::string & buffer);
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos);
   std::string GetMenuTree(HMENU hMenu, int indent);
-} //namespace win32_utils
+} //namespace Win32Utils
 
 #endif //WIN32_UTILS_H

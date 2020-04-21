@@ -29,7 +29,7 @@
 #include <vector>
 #include <string>
 
-namespace win32_registry
+namespace Win32Registry
 {
   enum REGISTRY_TYPE
   {
@@ -90,6 +90,6 @@ namespace win32_registry
   REGISTRY_ICON GetFileTypeIcon(const char * iFileExtention);
   REGISTRY_ICON GetUnknownFileTypeIcon();
 
-} //namespace win32_registry
+} //namespace Win32Registry
 
 #endif //WIN32_REGISTRY_H

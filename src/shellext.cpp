@@ -15,9 +15,9 @@
 
 #include "Platform.h"
 #include "shellext.h"
-#include "win32_registry.h"
-#include "win32_utils.h"
-#include "glog_utils.h"
+#include "Win32Registry.h"
+#include "Win32Utils.h"
+#include "GlogUtils.h"
 
 #undef GetEnvironmentVariable
 #undef DeleteFile
@@ -153,7 +153,7 @@ std::string GuidToInterfaceName(GUID guid)
 bool isFirstApplicationRun(const std::string & name, const std::string & version)
 {
   std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
-  if (!win32_registry::CreateKey(key.c_str(), NULL))
+  if (!Win32Registry::CreateKey(key.c_str(), NULL))
   {
     // unable to get to the application's key.
     // assume it is not the first run.
@@ -163,15 +163,15 @@ bool isFirstApplicationRun(const std::string & name, const std::string & version
   static const char * FIRST_RUN_VALUE_NAME = "first_run";
  
   // try to read the value
-  win32_registry::MemoryBuffer value;
-  win32_registry::REGISTRY_TYPE value_type;
-  if (!win32_registry::GetValue(key.c_str(), FIRST_RUN_VALUE_NAME, value_type, value))
+  Win32Registry::MemoryBuffer value;
+  Win32Registry::REGISTRY_TYPE value_type;
+  if (!Win32Registry::GetValue(key.c_str(), FIRST_RUN_VALUE_NAME, value_type, value))
   {
     // the registry value is not found.
     // assume the application is run for the first time.
  
     // update the flag to "false" for the next call
-    win32_registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
  
     return true;
   }
@@ -181,7 +181,7 @@ bool isFirstApplicationRun(const std::string & name, const std::string & version
   if (first_run)
   {
     //update the flag to "false"
-    win32_registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
   }
  
   return first_run;
@@ -344,14 +344,14 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
       if (numIconLoaded >= 1)
       {
         //Find the best icon
-        HICON hIcon = win32_utils::GetBestIconForMenu(hIconLarge, hIconSmall);
+        HICON hIcon = Win32Utils::GetBestIconForMenu(hIconLarge, hIconSmall);
 
         //Convert the icon to a bitmap (with invisible background)
-        hBitmap = win32_utils::CopyAsBitmap(hIcon);
+        hBitmap = Win32Utils::CopyAsBitmap(hIcon);
 
         //Remove the invisible background and replace by the default popup menu color
         COLORREF menu_background_color = GetSysColor(COLOR_MENU);
-        win32_utils::FillTransparentPixels(hBitmap, menu_background_color);
+        Win32Utils::FillTransparentPixels(hBitmap, menu_background_color);
 
         DestroyIcon(hIconLarge);
         DestroyIcon(hIconSmall);
@@ -600,7 +600,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   UINT numItems = nextCommandId - idCmdFirst;
   LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " lastCommandId=" << lastCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n";
 #ifdef _DEBUG
-  std::string menu_tree = win32_utils::GetMenuTree(hMenu, 2);
+  std::string menu_tree = Win32Utils::GetMenuTree(hMenu, 2);
   LOG(INFO) << "Menu tree:\n" << menu_tree.c_str();
 #endif
 
@@ -1101,104 +1101,104 @@ STDAPI DllRegisterServer(void)
   //Register version 1 of our class
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
-    if (!win32_registry::CreateKey(key.c_str(), ShellExtensionDescription))
+    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   //Register current version of our class
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), ShellExtensionDescription))
+    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), class_name_version1.c_str()))
+    if (!Win32Registry::CreateKey(key.c_str(), class_name_version1.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Add the CLSID of this DLL to the registry
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!win32_registry::CreateKey(key.c_str(), ShellExtensionDescription))
+    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
 
   // Define the path and parameters of our DLL:
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
-    if (!win32_registry::CreateKey(key.c_str(), class_name_version1.c_str()))
+    if (!Win32Registry::CreateKey(key.c_str(), class_name_version1.c_str()))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
-    if (!win32_registry::CreateKey(key.c_str(), ShellExtensionClassName))
+    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionClassName))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
-    if (!win32_registry::CreateKey(key.c_str()))
+    if (!Win32Registry::CreateKey(key.c_str()))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
-    if (!win32_registry::CreateKey(key.c_str(), module_path.c_str() ))
+    if (!Win32Registry::CreateKey(key.c_str(), module_path.c_str() ))
       return E_ACCESSDENIED;
-    if (!win32_registry::SetValue(key.c_str(), "ThreadingModel", "Apartment"))
+    if (!Win32Registry::SetValue(key.c_str(), "ThreadingModel", "Apartment"))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for all the file types
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for directories
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for folders
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for drives
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::CreateKey(key.c_str(), guid_str))
+    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension to the system's approved Shell Extensions
   {
     std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!win32_registry::CreateKey(key.c_str()))
+    if (!Win32Registry::CreateKey(key.c_str()))
       return E_ACCESSDENIED;
-    if (!win32_registry::SetValue(key.c_str(), guid_str, ShellExtensionDescription))
+    if (!Win32Registry::SetValue(key.c_str(), guid_str, ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
 
@@ -1223,61 +1223,61 @@ STDAPI DllUnregisterServer(void)
   // Unregister the shell extension from the system's approved Shell Extensions
   {
     std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!win32_registry::DeleteValue(key.c_str(), guid_str))
+    if (!Win32Registry::DeleteValue(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for drives
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for the desktop or the file explorer's background
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for folders
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for directories
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister the shell extension for all the file types
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Remove the CLSID of this DLL from the registry
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 
   // Unregister current and version 1 of our extension
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
-    if (!win32_registry::DeleteKey(key.c_str()))
+    if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
 

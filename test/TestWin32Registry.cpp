@@ -28,8 +28,8 @@
 #pragma warning( pop )
 
 #include "TestWin32Registry.h"
-#include "win32_registry.h"
-#include "win32_utils.h"
+#include "Win32Registry.h"
+#include "Win32Utils.h"
 #include <Windows.h>
 #undef GetEnvironmentVariable
 #undef DeleteFile
@@ -128,14 +128,14 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestWin32Registry, testParseRgs)
   {
-    win32_registry::RGS_ENTRY_LIST entries;
-    bool result = win32_registry::ParseRgsRegistry(test_rgs, "c:\\foo\\bar\\myshellextension.dll", entries);
+    Win32Registry::RGS_ENTRY_LIST entries;
+    bool result = Win32Registry::ParseRgsRegistry(test_rgs, "c:\\foo\\bar\\myshellextension.dll", entries);
     ASSERT_TRUE( result );
 
     for(size_t i=0; i<entries.size(); i++)
     {
-      const win32_registry::RGS_ENTRY & entry = entries[i];
-      std::string str = win32_registry::ToString(entry);
+      const Win32Registry::RGS_ENTRY & entry = entries[i];
+      std::string str = Win32Registry::ToString(entry);
       printf("%s\n", str.c_str());
     }
   }
@@ -203,13 +203,13 @@ namespace shellanything { namespace test
       ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
 
       //get the icon matching this file's extension
-      win32_registry::REGISTRY_ICON icon = win32_registry::GetFileTypeIcon(file_extension);
+      Win32Registry::REGISTRY_ICON icon = Win32Registry::GetFileTypeIcon(file_extension);
       if (icon.path.empty())
       {
         printf("Failed to find icon for file extension. Is this expected? file_extension='%s'. \n", file_extension);
 
         //use default unknown icon
-        icon = win32_registry::GetUnknownFileTypeIcon();
+        icon = Win32Registry::GetUnknownFileTypeIcon();
       }
 
       //load and save the found icon to a file
@@ -231,12 +231,12 @@ namespace shellanything { namespace test
         ASSERT_TRUE( hIconBest != NULL ) << "Unable to load large/small icon from file '" << icon.path << "' for file extension '" << file_extension << "'.";
 
         //Convert the icon to a bitmap (with invisible background)
-        SIZE icon_size = win32_utils::GetIconSize(hIconBest);
-        HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconBest, icon_size.cx, icon_size.cy);
+        SIZE icon_size = Win32Utils::GetIconSize(hIconBest);
+        HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconBest, icon_size.cx, icon_size.cy);
 
         //Remove the invisible background and replace by red color
         COLORREF background_color = RGB(255,0,255); //pink
-        win32_utils::FillTransparentPixels(hBitmap, background_color);
+        Win32Utils::FillTransparentPixels(hBitmap, background_color);
 
         DestroyIcon(hIconLarge);
         DestroyIcon(hIconSmall);
@@ -245,7 +245,7 @@ namespace shellanything { namespace test
         file_path = ra::testing::GetTestQualifiedName();
         sprintf(post_filename, ".%03d.icon_%s.bmp", i, file_extension);
         file_path.append(post_filename);
-        win32_utils::CreateBMPFile(file_path.c_str(), hBitmap);
+        Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -285,7 +285,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
 
     //get the icon matching this file's extension
-    win32_registry::REGISTRY_ICON icon = win32_registry::GetFileTypeIcon(file_extension);
+    Win32Registry::REGISTRY_ICON icon = Win32Registry::GetFileTypeIcon(file_extension);
 
     //For debugging on each system where the test is executed.
     printf("Found icon in file '%s', index '%d'.\n", icon.path.c_str(), icon.index);
@@ -316,12 +316,12 @@ namespace shellanything { namespace test
       ASSERT_TRUE( hIconBest != NULL ) << "Unable to load large/small icon from file '" << icon.path << "' for file extension '" << file_extension << "'.";
 
       //Convert the icon to a bitmap (with invisible background)
-      SIZE icon_size = win32_utils::GetIconSize(hIconLarge);
-      HBITMAP hBitmap = win32_utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
+      SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
+      HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
       //Remove the invisible background and replace by red color
       COLORREF background_color = RGB(255,0,255); //pink
-      win32_utils::FillTransparentPixels(hBitmap, background_color);
+      Win32Utils::FillTransparentPixels(hBitmap, background_color);
 
       DestroyIcon(hIconLarge);
       DestroyIcon(hIconSmall);
@@ -330,7 +330,7 @@ namespace shellanything { namespace test
       file_path = ra::testing::GetTestQualifiedName();
       sprintf(post_filename, ".icon_%s.bmp", file_extension);
       file_path.append(post_filename);
-      win32_utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);

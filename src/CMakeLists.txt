@@ -85,15 +85,15 @@ add_library(shellext SHARED
   ${CMAKE_SOURCE_DIR}/src/version.rc.in
   BitmapCache.cpp
   BitmapCache.h
-  glog_utils.cpp
-  glog_utils.h
+  GlogUtils.cpp
+  GlogUtils.h
   shellext.cpp
   shellext.h
   shellext.def
-  win32_utils.cpp
-  win32_utils.h
-  win32_registry.cpp
-  win32_registry.h
+  Win32Utils.cpp
+  Win32Utils.h
+  Win32Registry.cpp
+  Win32Registry.h
 )
 
 # Group external files as filter for Visual Studio
