@@ -47,7 +47,7 @@ namespace shellanything
   bool ActionClipboard::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string value = pmgr.expand(mValue);
+    std::string value = pmgr.Expand(mValue);
 
     //convert to windows unicode...
     std::wstring value_utf16 = ra::unicode::Utf8ToUnicode(value);

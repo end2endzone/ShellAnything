@@ -47,9 +47,9 @@ namespace shellanything
   bool ActionFile::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string path = pmgr.expand(mPath);
-    std::string text = pmgr.expand(mText);
-    const std::string encoding = pmgr.expand(mEncoding);
+    const std::string path = pmgr.Expand(mPath);
+    std::string text = pmgr.Expand(mText);
+    const std::string encoding = pmgr.Expand(mEncoding);
 
     //debug
     LOG(INFO) << "Writing file '" << path << "'.";

@@ -160,11 +160,11 @@ namespace shellanything { namespace test
     static const std::string expected_file_extension = "com;exe;bat;cmd";
     static const std::string expected_file_exists = "C:\\Users\\Public;C:\\Program Files (x86)";
 
-    ASSERT_EQ( expected_property,       menus[00]->GetVisibility().getProperties() );
-    ASSERT_EQ( 5,                       menus[01]->GetVisibility().getMaxFiles() );
-    ASSERT_EQ( 6,                       menus[01]->GetVisibility().getMaxDirectories() );
-    ASSERT_EQ( expected_file_extension, menus[02]->GetVisibility().getFileExtensions() );
-    ASSERT_EQ( expected_file_exists,    menus[03]->GetVisibility().getFileExists() );
+    ASSERT_EQ( expected_property,       menus[00]->GetVisibility().GetProperties() );
+    ASSERT_EQ( 5,                       menus[01]->GetVisibility().GetMaxFiles() );
+    ASSERT_EQ( 6,                       menus[01]->GetVisibility().GetMaxDirectories() );
+    ASSERT_EQ( expected_file_extension, menus[02]->GetVisibility().GetFileExtensions() );
+    ASSERT_EQ( expected_file_exists,    menus[03]->GetVisibility().GetFileExists() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

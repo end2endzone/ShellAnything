@@ -80,7 +80,7 @@ namespace shellanything
   bool ActionOpen::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.expand(mPath);
+    std::string path = pmgr.Expand(mPath);
 
     //is path a file?
     if (ra::filesystem::FileExistsUtf8(path.c_str()))

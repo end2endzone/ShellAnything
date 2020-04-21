@@ -31,7 +31,7 @@ namespace shellanything
 
   PropertyManager::PropertyManager()
   {
-    registerEnvironmentVariables();
+    RegisterEnvironmentVariables();
   }
 
   PropertyManager::~PropertyManager()
@@ -44,13 +44,13 @@ namespace shellanything
     return _instance;
   }
 
-  void PropertyManager::clear()
+  void PropertyManager::Clear()
   {
     properties.clear();
-    registerEnvironmentVariables();
+    RegisterEnvironmentVariables();
   }
 
-  void PropertyManager::clearProperty(const std::string & name)
+  void PropertyManager::ClearProperty(const std::string & name)
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
@@ -60,20 +60,20 @@ namespace shellanything
     }
   }
 
-  bool PropertyManager::hasProperty(const std::string & name) const
+  bool PropertyManager::HasProperty(const std::string & name) const
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
     return found;
   }
 
-  void PropertyManager::setProperty(const std::string & name, const std::string & value)
+  void PropertyManager::SetProperty(const std::string & name, const std::string & value)
   {
     //overwrite previous property
     properties[name] = value;
   }
 
-  const std::string & PropertyManager::getProperty(const std::string & name) const
+  const std::string & PropertyManager::GetProperty(const std::string & name) const
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
@@ -87,7 +87,7 @@ namespace shellanything
     return EMPTY_VALUE;
   }
 
-  std::string PropertyManager::expand(const std::string & value) const
+  std::string PropertyManager::Expand(const std::string & value) const
   {
     std::string output = value;
 
@@ -110,7 +110,7 @@ namespace shellanything
     return output;
   }
 
-  void PropertyManager::registerEnvironmentVariables()
+  void PropertyManager::RegisterEnvironmentVariables()
   {
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
     ra::environment::GetEnvironmentVariableUtf8("foo");
@@ -125,9 +125,8 @@ namespace shellanything
       std::string value = ra::environment::GetEnvironmentVariableUtf8(var.c_str());
       
       //register the variable as a valid property
-      setProperty(name, value);
+      SetProperty(name, value);
     }
   }
-
 
 } //namespace shellanything

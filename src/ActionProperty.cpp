@@ -44,12 +44,12 @@ namespace shellanything
   bool ActionProperty::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string name = pmgr.expand(mName);
-    std::string value = pmgr.expand(mValue);
+    std::string name = pmgr.Expand(mName);
+    std::string value = pmgr.Expand(mValue);
 
     //debug
     LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
-    pmgr.setProperty(name, value);
+    pmgr.SetProperty(name, value);
 
     return true;
   }

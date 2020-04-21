@@ -145,7 +145,7 @@ namespace shellanything
     return true;
   }
 
-  bool ObjectFactory::parseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
+  bool ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
   {
     if (element == NULL)
     {
@@ -165,14 +165,14 @@ namespace shellanything
     int maxfiles = -1;
     if (parseAttribute(element, "maxfiles", true, true, maxfiles, error))
     {
-      result.setMaxFiles(maxfiles);
+      result.SetMaxFiles(maxfiles);
     }
 
     //parse maxfolders
     int maxfolders = -1;
     if (parseAttribute(element, "maxfolders", true, true, maxfolders, error))
     {
-      result.setMaxDirectories(maxfolders);
+      result.SetMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
@@ -181,7 +181,7 @@ namespace shellanything
     {
       if (!fileextensions.empty())
       {
-        result.setFileExtensions(fileextensions);
+        result.SetFileExtensions(fileextensions);
       }
     }
 
@@ -191,7 +191,7 @@ namespace shellanything
     {
       if (!exists.empty())
       {
-        result.setFileExists(exists);
+        result.SetFileExists(exists);
       }
     }
 
@@ -201,7 +201,7 @@ namespace shellanything
     {
       if (!properties.empty())
       {
-        result.setProperties(properties);
+        result.SetProperties(properties);
       }
     }
 
@@ -210,7 +210,7 @@ namespace shellanything
     return true;
   }
 
-  Action * ObjectFactory::parseAction(const XMLElement* element, std::string & error)
+  Action * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -432,7 +432,7 @@ namespace shellanything
     return NULL;
   }
 
-  Menu * ObjectFactory::parseMenu(const XMLElement* element, std::string & error)
+  Menu * ObjectFactory::ParseMenu(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -496,7 +496,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator validity;
-      if (!ObjectFactory::GetInstance().parseValidator(elements[i], validity, error))
+      if (!ObjectFactory::GetInstance().ParseValidator(elements[i], validity, error))
       {
         delete menu;
         return NULL;
@@ -509,7 +509,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator visibility;
-      if (!ObjectFactory::GetInstance().parseValidator(elements[i], visibility, error))
+      if (!ObjectFactory::GetInstance().ParseValidator(elements[i], visibility, error))
       {
         delete menu;
         return NULL;
@@ -528,7 +528,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Action * action = ObjectFactory::GetInstance().parseAction(xml_action, error);
+        Action * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
         if (action == NULL)
         {
           delete menu;
@@ -547,13 +547,13 @@ namespace shellanything
     elements = getChildNodes(element, NODE_MENU);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Menu * submenu = ObjectFactory::GetInstance().parseMenu(elements[i], error);
+      Menu * submenu = ObjectFactory::GetInstance().ParseMenu(elements[i], error);
       if (submenu == NULL)
       {
         delete menu;
         return NULL;
       }
-      menu->addChild(submenu);
+      menu->AddChild(submenu);
     }
 
     //find <icon> node under <menu>
@@ -561,7 +561,7 @@ namespace shellanything
     for(size_t i=0; i<elements.size(); i++)
     {
       Icon icon;
-      if (!ObjectFactory::GetInstance().parseIcon(elements[i], icon, error))
+      if (!ObjectFactory::GetInstance().ParseIcon(elements[i], icon, error))
       {
         //failed icon parsing
         delete menu;
@@ -573,7 +573,7 @@ namespace shellanything
     return menu;
   }
 
-  bool ObjectFactory::parseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
+  bool ObjectFactory::ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
   {
     if (element == NULL)
     {
@@ -620,7 +620,7 @@ namespace shellanything
     return true;
   }
 
-  DefaultSettings * ObjectFactory::parseDefaults(const XMLElement* element, std::string & error)
+  DefaultSettings * ObjectFactory::ParseDefaults(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -646,7 +646,7 @@ namespace shellanything
       const tinyxml2::XMLElement * element = elements[i];
 
       //found a new action node
-      Action * abstract_action = ObjectFactory::GetInstance().parseAction(element, error);
+      Action * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
       if (abstract_action)
       {
         //filter out all type of actions except ActionProperty actions

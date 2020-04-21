@@ -71,7 +71,7 @@ namespace shellanything
   {
     //is this menu have a file extension ?
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    std::string file_extension = pmgr.expand(mFileExtension);
+    std::string file_extension = pmgr.Expand(mFileExtension);
     if (!file_extension.empty())
     {
       //try to find the path to the icon module for the given file extension.

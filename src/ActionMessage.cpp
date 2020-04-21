@@ -48,9 +48,9 @@ namespace shellanything
   bool ActionMessage::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string title = pmgr.expand(mTitle);
-    const std::string caption = pmgr.expand(mCaption);
-    const std::string icon = pmgr.expand(mIcon);
+    const std::string title = pmgr.Expand(mTitle);
+    const std::string caption = pmgr.Expand(mCaption);
+    const std::string icon = pmgr.Expand(mIcon);
 
     //convert to windows unicode...
     std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);

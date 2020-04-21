@@ -76,15 +76,15 @@ namespace shellanything { namespace test
     Menu * menu = new Menu();
     menu->SetName("Command line from here...");
     Validator validity;
-    validity.setMaxFiles(0); //no files accepted
-    validity.setMaxDirectories(1); //a single directory is accepted
+    validity.SetMaxFiles(0); //no files accepted
+    validity.SetMaxDirectories(1); //a single directory is accepted
     Validator visibility; //no requirement, always visible
     ActionExecute * action = new ActionExecute();
     action->SetPath("C:\\windows\\system32\\cmd.exe");
     action->SetBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
-    config->addChild(menu);
+    config->AddChild(menu);
     menu->SetValidity(validity);
     menu->SetVisibility(visibility);
     menu->AddAction(action);
@@ -283,7 +283,7 @@ namespace shellanything { namespace test
 
     //cleanup properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.clear();
+    pmgr.Clear();
 
     //setup ConfigManager to read files from template_target_dir
     cmgr.ClearSearchPath();
@@ -296,8 +296,8 @@ namespace shellanything { namespace test
  
     //ASSERT that properties was applied
     static const std::string EMPTY_STRING;
-    std::string services_command_start = pmgr.getProperty("services.command.start");
-    std::string services_command_stop  = pmgr.getProperty("services.command.stop");
+    std::string services_command_start = pmgr.GetProperty("services.command.start");
+    std::string services_command_stop  = pmgr.GetProperty("services.command.stop");
     ASSERT_NE( EMPTY_STRING, services_command_start );
     ASSERT_NE( EMPTY_STRING, services_command_stop  );
 

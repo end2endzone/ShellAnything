@@ -56,13 +56,13 @@ namespace shellanything
     /// Clears all the registered properties.
     /// Note that environement variable properties are still registered to the manager.
     /// </summary>
-    void clear();
+    void Clear();
 
     /// <summary>
     /// Delete the given property.
     /// </summary>
     /// <param name="name">The name of the property to delete.</param>
-    void clearProperty(const std::string & name);
+    void ClearProperty(const std::string & name);
 
     /// <summary>
     /// Check if a property have been set.
@@ -70,21 +70,21 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the property to check.</param>
     /// <returns>Returns true if the property is set. Returns false otherwise.</returns>
-    bool hasProperty(const std::string & name) const;
+    bool HasProperty(const std::string & name) const;
 
     /// <summary>
     /// Sets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to set.</param>
     /// <param name="value">The new value of the property.</param>
-    void setProperty(const std::string & name, const std::string & value);
+    void SetProperty(const std::string & name, const std::string & value);
 
     /// <summary>
     /// Gets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
-    const std::string & getProperty(const std::string & name) const;
+    const std::string & GetProperty(const std::string & name) const;
 
     /// <summary>
     /// Expands the given string by replacing property variable reference by the actual variable's value.
@@ -92,11 +92,11 @@ namespace shellanything
     /// </summary>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    std::string expand(const std::string & value) const;
+    std::string Expand(const std::string & value) const;
 
   private:
 
-    void registerEnvironmentVariables();
+    void RegisterEnvironmentVariables();
     PropertyMap properties;
   };
 

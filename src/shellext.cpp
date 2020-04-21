@@ -249,8 +249,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 {
   //Expanded the menu's strings
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title       = pmgr.expand(menu->GetName());
-  std::string description = pmgr.expand(menu->GetDescription());
+  std::string title       = pmgr.Expand(menu->GetName());
+  std::string description = pmgr.Expand(menu->GetDescription());
 
   //Get visible/enable properties based on current context.
   bool menu_visible   = menu->IsVisible();
@@ -291,8 +291,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   if (!menu_separator && icon.IsValid())
   {
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    std::string file_extension  = pmgr.expand(icon.GetFileExtension());
-    std::string icon_filename   = pmgr.expand(icon.GetPath());
+    std::string file_extension  = pmgr.Expand(icon.GetFileExtension());
+    std::string icon_filename   = pmgr.Expand(icon.GetPath());
     int icon_index              = icon.GetIndex();
 
     //if the icon is pointing to a file extension
@@ -649,7 +649,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
 
   //compute the visual menu title
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title = pmgr.expand(menu->GetName());
+  std::string title = pmgr.Expand(menu->GetName());
 
   //found a menu match, execute menu action
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
@@ -728,7 +728,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
 
   //compute the visual menu description
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string description = pmgr.expand(menu->GetDescription());
+  std::string description = pmgr.Expand(menu->GetDescription());
 
   //convert to windows unicode...
   std::wstring desc_utf16 = ra::unicode::Utf8ToUnicode(description);
@@ -1371,14 +1371,14 @@ void InitConfigManager()
   std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.setProperty("application.path"     , prop_application_path     );
-  pmgr.setProperty("application.directory", prop_application_directory);
-  pmgr.setProperty("log.directory"        , prop_log_directory        );
-  pmgr.setProperty("config.directory"     , config_dir                );
-  pmgr.setProperty("home.directory"       , home_dir                  );
-  pmgr.setProperty("path.separator"       , prop_path_separator       );
-  pmgr.setProperty("line.separator"       , prop_line_separator       );
-  pmgr.setProperty("newline"              , prop_line_separator       );
+  pmgr.SetProperty("application.path"     , prop_application_path     );
+  pmgr.SetProperty("application.directory", prop_application_directory);
+  pmgr.SetProperty("log.directory"        , prop_log_directory        );
+  pmgr.SetProperty("config.directory"     , config_dir                );
+  pmgr.SetProperty("home.directory"       , home_dir                  );
+  pmgr.SetProperty("path.separator"       , prop_path_separator       );
+  pmgr.SetProperty("line.separator"       , prop_line_separator       );
+  pmgr.SetProperty("newline"              , prop_line_separator       );
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)

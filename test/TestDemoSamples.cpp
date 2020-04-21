@@ -32,7 +32,7 @@ namespace shellanything { namespace test
   void TestDemoSamples::SetUp()
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.clear();
+    pmgr.Clear();
   }
   //--------------------------------------------------------------------------------------------------
   void TestDemoSamples::TearDown()
@@ -71,7 +71,7 @@ namespace shellanything { namespace test
 
     //assert user have answered "yes"
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string myproperty = pmgr.getProperty("myproperty");
+    std::string myproperty = pmgr.GetProperty("myproperty");
     ASSERT_TRUE(myproperty == prompt.GetValueYes() || myproperty == prompt.GetValueNo());
   }
   //--------------------------------------------------------------------------------------------------
@@ -92,8 +92,8 @@ namespace shellanything { namespace test
  
     //assert property is unchanged
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty("myproperty", "test");
-    std::string myproperty = pmgr.getProperty("myproperty");
+    pmgr.SetProperty("myproperty", "test");
+    std::string myproperty = pmgr.GetProperty("myproperty");
     ASSERT_EQ( std::string("test"), myproperty );
   }
   //--------------------------------------------------------------------------------------------------

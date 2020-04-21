@@ -89,7 +89,7 @@ namespace shellanything { namespace test
  
     CInputBox box(hWnd);
  
-    box.setTextAnsi("my default text");
+    box.SetTextAnsi("my default text");
  
     bool ok = box.DoModal(caption, prompt);
   }

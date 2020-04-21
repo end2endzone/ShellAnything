@@ -201,7 +201,7 @@ namespace shellanything
     while (xml_defaults)
     {
       //found a new menu node
-      DefaultSettings * defaults = ObjectFactory::GetInstance().parseDefaults(xml_defaults, error);
+      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
@@ -217,7 +217,7 @@ namespace shellanything
     while (xml_menu)
     {
       //found a new menu node
-      Menu * menu = ObjectFactory::GetInstance().parseMenu(xml_menu, error);
+      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error);
       if (menu == NULL)
       {
         delete config;
@@ -225,7 +225,7 @@ namespace shellanything
       }
 
       //add the new menu to the current configuration
-      config->addChild(menu);
+      config->AddChild(menu);
 
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
@@ -361,7 +361,7 @@ namespace shellanything
  
   Menu::MenuPtrList Configuration::GetMenus()
   {
-    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
     return sub_menus;
   }
 

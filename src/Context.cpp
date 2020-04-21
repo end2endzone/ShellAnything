@@ -113,23 +113,23 @@ namespace shellanything
       selection_filename_ext   .append( element_selection_filename_ext    );
     }
  
-    pmgr.setProperty("selection.path"               , selection_path           );
-    pmgr.setProperty("selection.parent.path"        , selection_parent_path    );
-    pmgr.setProperty("selection.parent.filename"    , selection_parent_filename);
-    pmgr.setProperty("selection.filename"           , selection_filename       );
-    pmgr.setProperty("selection.filename.noext"     , selection_filename_noext );
-    pmgr.setProperty("selection.filename.extension" , selection_filename_ext   );
+    pmgr.SetProperty("selection.path"               , selection_path           );
+    pmgr.SetProperty("selection.parent.path"        , selection_parent_path    );
+    pmgr.SetProperty("selection.parent.filename"    , selection_parent_filename);
+    pmgr.SetProperty("selection.filename"           , selection_filename       );
+    pmgr.SetProperty("selection.filename.noext"     , selection_filename_noext );
+    pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   );
   }
  
   void Context::UnregisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.clearProperty("selection.path"               );
-    pmgr.clearProperty("selection.parent.path"        );
-    pmgr.clearProperty("selection.parent.filename"    );
-    pmgr.clearProperty("selection.filename"           );
-    pmgr.clearProperty("selection.filename.noext"     );
-    pmgr.clearProperty("selection.filename.extension" );
+    pmgr.ClearProperty("selection.path"               );
+    pmgr.ClearProperty("selection.parent.path"        );
+    pmgr.ClearProperty("selection.parent.filename"    );
+    pmgr.ClearProperty("selection.filename"           );
+    pmgr.ClearProperty("selection.filename.noext"     );
+    pmgr.ClearProperty("selection.filename.extension" );
   }
  
   const Context::ElementList & Context::GetElements() const

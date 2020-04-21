@@ -35,7 +35,7 @@ namespace shellanything { namespace test
   void TestValidator::SetUp()
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.clear();
+    pmgr.Clear();
   }
   //--------------------------------------------------------------------------------------------------
   void TestValidator::TearDown()
@@ -48,7 +48,7 @@ namespace shellanything { namespace test
     Validator v;
 
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxFiles)
@@ -70,19 +70,19 @@ namespace shellanything { namespace test
     Validator v;
 
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert higher value
-    v.setMaxFiles(c.GetNumFiles() + 1);
-    ASSERT_TRUE( v.validate(c) );
+    v.SetMaxFiles(c.GetNumFiles() + 1);
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert exact value
-    v.setMaxFiles(c.GetNumFiles());
-    ASSERT_TRUE( v.validate(c) );
+    v.SetMaxFiles(c.GetNumFiles());
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert lower value
-    v.setMaxFiles(c.GetNumFiles() - 1);
-    ASSERT_FALSE( v.validate(c) );
+    v.SetMaxFiles(c.GetNumFiles() - 1);
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxDirectories)
@@ -103,19 +103,19 @@ namespace shellanything { namespace test
     Validator v;
 
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert higher value
-    v.setMaxDirectories(c.GetNumDirectories() + 1);
-    ASSERT_TRUE( v.validate(c) );
+    v.SetMaxDirectories(c.GetNumDirectories() + 1);
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert exact value
-    v.setMaxDirectories(c.GetNumDirectories());
-    ASSERT_TRUE( v.validate(c) );
+    v.SetMaxDirectories(c.GetNumDirectories());
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert lower value
-    v.setMaxDirectories(c.GetNumDirectories() - 1);
-    ASSERT_FALSE( v.validate(c) );
+    v.SetMaxDirectories(c.GetNumDirectories() - 1);
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testProperties)
@@ -137,27 +137,27 @@ namespace shellanything { namespace test
     Validator v;
 
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
 
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string property_name = ra::testing::GetTestQualifiedName();
 
     //assert failure when property is not defined
-    v.setProperties(property_name);
-    ASSERT_FALSE( v.validate(c) );
+    v.SetProperties(property_name);
+    ASSERT_FALSE( v.Validate(c) );
 
     //assert success when property is defined
-    v.setProperties(property_name);
-    pmgr.setProperty(property_name, "defined");
-    ASSERT_TRUE( v.validate(c) );
+    v.SetProperties(property_name);
+    pmgr.SetProperty(property_name, "defined");
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert failure when at least one property is not defined
-    v.setProperties(property_name + ";foo");
-    ASSERT_FALSE( v.validate(c) );
+    v.SetProperties(property_name + ";foo");
+    ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all properties are defined
-    pmgr.setProperty("foo", "bar");
-    ASSERT_TRUE( v.validate(c) );
+    pmgr.SetProperty("foo", "bar");
+    ASSERT_TRUE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExtensions)
@@ -179,25 +179,25 @@ namespace shellanything { namespace test
     Validator v;
 
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert failure when no file extension is matching
-    v.setFileExtensions("foo");
-    ASSERT_FALSE( v.validate(c) );
+    v.SetFileExtensions("foo");
+    ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when a single file extension is matching
-    v.setFileExtensions("dll");
-    ASSERT_FALSE( v.validate(c) );
+    v.SetFileExtensions("dll");
+    ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all properties are defined
-    v.setFileExtensions("dll;exe;msc");
-    ASSERT_TRUE( v.validate(c) );
-    v.setFileExtensions(""); //random order
-    ASSERT_TRUE( v.validate(c) );
+    v.SetFileExtensions("dll;exe;msc");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetFileExtensions(""); //random order
+    ASSERT_TRUE( v.Validate(c) );
 
     //assert success when more file extensions are allowed
-    v.setFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
-    ASSERT_TRUE( v.validate(c) );
+    v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
+    ASSERT_TRUE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExists)
@@ -214,27 +214,27 @@ namespace shellanything { namespace test
     Validator v;
  
     //assert default
-    ASSERT_TRUE( v.validate(c) );
+    ASSERT_TRUE( v.Validate(c) );
  
     //assert failure when a specified file/directory is not found
-    v.setFileExists("foo");
-    ASSERT_FALSE( v.validate(c) );
+    v.SetFileExists("foo");
+    ASSERT_FALSE( v.Validate(c) );
  
     //assert success if the specified file is found
-    v.setFileExists(file_path);
-    ASSERT_TRUE( v.validate(c) );
+    v.SetFileExists(file_path);
+    ASSERT_TRUE( v.Validate(c) );
  
     //assert success if the specified directory is found
-    v.setFileExists(dir_path);
-    ASSERT_TRUE( v.validate(c) );
+    v.SetFileExists(dir_path);
+    ASSERT_TRUE( v.Validate(c) );
  
     //assert success if multiple element is specified
-    v.setFileExists(file_path + ";" + dir_path);
-    ASSERT_TRUE( v.validate(c) );
+    v.SetFileExists(file_path + ";" + dir_path);
+    ASSERT_TRUE( v.Validate(c) );
  
     //assert failure if the last element is not found
-    v.setFileExists(file_path + ";" + dir_path + ";foo");
-    ASSERT_FALSE( v.validate(c) );
+    v.SetFileExists(file_path + ";" + dir_path + ";foo");
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
 

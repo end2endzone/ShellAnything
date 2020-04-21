@@ -58,7 +58,7 @@ namespace shellanything
 
   bool Menu::IsParentMenu() const
   {
-    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
     bool parent_menu = (sub_menus.size() != 0);
     return parent_menu;
   }
@@ -96,8 +96,8 @@ namespace shellanything
   void Menu::Update(const Context & c)
   {
     //update current menu
-    bool visible = mVisibility.validate(c);
-    bool enabled = mValidity.validate(c);
+    bool visible = mVisibility.Validate(c);
+    bool enabled = mValidity.Validate(c);
     SetVisible(visible);
     SetEnabled(enabled);
 
@@ -225,7 +225,7 @@ namespace shellanything
 
   Menu::MenuPtrList Menu::GetSubMenus()
   {
-    Menu::MenuPtrList sub_menus = filterNodes<Menu*>(this->findChildren("Menu"));
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
     return sub_menus;
   }
 

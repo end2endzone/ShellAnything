@@ -83,57 +83,57 @@ namespace shellanything
     return (*this);
   }
 
-  const int & Validator::getMaxFiles() const
+  const int & Validator::GetMaxFiles() const
   {
     return mMaxFiles;
   }
 
-  void Validator::setMaxFiles(const int & iMaxFiles)
+  void Validator::SetMaxFiles(const int & iMaxFiles)
   {
     mMaxFiles = iMaxFiles;
   }
 
-  const int & Validator::getMaxDirectories() const
+  const int & Validator::GetMaxDirectories() const
   {
     return mMaxDirectories;
   }
 
-  void Validator::setMaxDirectories(const int & iMaxDirectories)
+  void Validator::SetMaxDirectories(const int & iMaxDirectories)
   {
     mMaxDirectories = iMaxDirectories;
   }
 
-  const std::string & Validator::getProperties() const
+  const std::string & Validator::GetProperties() const
   {
     return mProperties;
   }
 
-  void Validator::setProperties(const std::string & iProperties)
+  void Validator::SetProperties(const std::string & iProperties)
   {
     mProperties = iProperties;
   }
 
-  const std::string & Validator::getFileExtensions() const
+  const std::string & Validator::GetFileExtensions() const
   {
     return mFileExtensions;
   }
 
-  void Validator::setFileExtensions(const std::string & iFileExtensions)
+  void Validator::SetFileExtensions(const std::string & iFileExtensions)
   {
     mFileExtensions = iFileExtensions;
   }
 
-  const std::string & Validator::getFileExists() const
+  const std::string & Validator::GetFileExists() const
   {
     return mFileExists;
   }
 
-  void Validator::setFileExists(const std::string & iFileExists)
+  void Validator::SetFileExists(const std::string & iFileExists)
   {
     mFileExists = iFileExists;
   }
 
-  bool Validator::validate(const Context & iContext) const
+  bool Validator::Validate(const Context & iContext) const
   {
     if (iContext.GetNumFiles() > mMaxFiles)
       return false; //too many files selected
@@ -143,7 +143,7 @@ namespace shellanything
 
     //validate properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string properties = pmgr.expand(mProperties);
+    const std::string properties = pmgr.Expand(mProperties);
     if (!properties.empty())
     {
       //split
@@ -153,16 +153,16 @@ namespace shellanything
       for(size_t i=0; i<property_list.size(); i++)
       {
         const std::string & p = property_list[i];
-        if (!pmgr.hasProperty(p))
+        if (!pmgr.HasProperty(p))
           return false; //missing property
-        const std::string & p_value = pmgr.getProperty(p);
+        const std::string & p_value = pmgr.GetProperty(p);
         if (p_value.empty())
           return false; //empty
       }
     }
 
     //validate file extentions
-    const std::string file_extensions = pmgr.expand(mFileExtensions);
+    const std::string file_extensions = pmgr.Expand(mFileExtensions);
     if (!file_extensions.empty())
     {
       //split
@@ -184,7 +184,7 @@ namespace shellanything
     }
 
     //validate file/directory exists
-    const std::string file_exists = pmgr.expand(mFileExists);
+    const std::string file_exists = pmgr.Expand(mFileExists);
     if (!file_exists.empty())
     {
       //split

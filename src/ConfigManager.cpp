@@ -54,7 +54,7 @@ namespace shellanything
   void ConfigManager::Clear()
   {
     ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
-    mConfigurations.removeChildren();
+    mConfigurations.RemoveChildren();
     Refresh(); //forces all loaded configurations to be unloaded
   }
 
@@ -82,7 +82,7 @@ namespace shellanything
         //file is missing or current configuration is out of date
         //forget about existing config
         LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
-        mConfigurations.removeChild(config);
+        mConfigurations.RemoveChild(config);
       }
     }
    
@@ -120,7 +120,7 @@ namespace shellanything
               else
               {
                 //add to current list of configurations
-                mConfigurations.addChild(config);
+                mConfigurations.AddChild(config);
 
                 //apply default properties of the configuration
                 config->ApplyDefaultSettings();
@@ -184,7 +184,7 @@ namespace shellanything
  
   Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
   {
-    Configuration::ConfigurationPtrList configurations = filterNodes<Configuration*>(mConfigurations.findChildren("Configuration"));
+    Configuration::ConfigurationPtrList configurations = FilterNodes<Configuration*>(mConfigurations.FindChildren("Configuration"));
     return configurations;
   }
 
@@ -200,9 +200,9 @@ namespace shellanything
 
   bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
   {
-    for(size_t i=0; i<mConfigurations.size(); i++)
+    for(size_t i=0; i<mConfigurations.Size(); i++)
     {
-      const Node * node = mConfigurations.getChild(i);
+      const Node * node = mConfigurations.GetChild(i);
       const Configuration * config = dynamic_cast<const Configuration *>(node);
       if (config != NULL && config->GetFilePath() == path)
         return true;

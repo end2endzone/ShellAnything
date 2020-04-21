@@ -51,17 +51,17 @@ namespace shellanything
     mChildren.clear();
   }
 
-  const std::string & Node::getNodeType() const
+  const std::string & Node::GetNodeType() const
   {
     return mNodeType;
   }
 
-  Node * Node::getParent() const
+  Node * Node::GetParent() const
   {
     return mParent;
   }
 
-  Node * Node::addChild(Node * child)
+  Node * Node::AddChild(Node * child)
   {
     if (child->mParent != NULL)
     {
@@ -74,7 +74,7 @@ namespace shellanything
     return child;
   }
 
-  bool Node::removeChild(Node * child)
+  bool Node::RemoveChild(Node * child)
   {
     Node::NodePtrList::iterator it = std::find(mChildren.begin(), mChildren.end(), child);
     if (it != mChildren.end())
@@ -88,12 +88,12 @@ namespace shellanything
     return false;
   }
 
-  Node::NodePtrList Node::getChildren() const
+  Node::NodePtrList Node::GetChildren() const
   {
     return mChildren;
   }
 
-  Node::NodePtrList Node::findChildren(const std::string & type) const
+  Node::NodePtrList Node::FindChildren(const std::string & type) const
   {
     Node::NodePtrList nodes;
     for(size_t i=0; i<mChildren.size(); i++) 
@@ -105,7 +105,7 @@ namespace shellanything
     return nodes;
   }
 
-  Node * Node::findFirst(const std::string & type) const
+  Node * Node::FindFirst(const std::string & type) const
   {
     for(size_t i=0; i<mChildren.size(); i++) 
     {
@@ -116,12 +116,12 @@ namespace shellanything
     return NULL;
   }
 
-  size_t Node::getNumChildren() const
+  size_t Node::GetNumChildren() const
   {
     return mChildren.size();
   }
 
-  Node * Node::getChild(size_t index) const
+  Node * Node::GetChild(size_t index) const
   {
     if (index < mChildren.size())
     {
@@ -131,7 +131,7 @@ namespace shellanything
     return NULL;
   }
 
-  bool Node::removeChild(size_t index)
+  bool Node::RemoveChild(size_t index)
   {
     if (index < mChildren.size())
     {
@@ -143,29 +143,29 @@ namespace shellanything
     return false;
   }
 
-  bool Node::removeChildren()
+  bool Node::RemoveChildren()
   {
     bool success = true;
     while(mChildren.size() > 0)
     {
-      success = success && removeChild((size_t)0);
+      success = success && RemoveChild((size_t)0);
     }
     return success;
   }
  
-  bool Node::removeChildren(const std::string & type)
+  bool Node::RemoveChildren(const std::string & type)
   {
     bool success = true;
-    Node * node = findFirst(type);
+    Node * node = FindFirst(type);
     while(node != NULL)
     {
-      success = success && removeChild(node);
-      node = findFirst(type);
+      success = success && RemoveChild(node);
+      node = FindFirst(type);
     }
     return success;
   }
 
-  size_t Node::depth() const
+  size_t Node::Depth() const
   {
     size_t depth = 0;
     Node * ancestor = mParent;
@@ -176,23 +176,23 @@ namespace shellanything
     return depth;
   }
 
-  bool Node::isLeaf() const
+  bool Node::IsLeaf() const
   {
     return (mChildren.size() == 0);
   }
 
-  bool Node::isRoot() const
+  bool Node::IsRoot() const
   {
     return (mParent == NULL);
   }
 
-  size_t Node::size() const
+  size_t Node::Size() const
   {
     size_t total = 1;
     for(size_t i=0; i<mChildren.size(); i++) 
     {
       Node * n = mChildren[i];
-      size_t node_size = n->size();
+      size_t node_size = n->Size();
       total += node_size;
     }
     return total;

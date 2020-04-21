@@ -47,54 +47,54 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'maxfiles' parameter.
     /// </summary>
-    const int & getMaxFiles() const;
+    const int & GetMaxFiles() const;
 
     /// <summary>
     /// Setter for the 'maxfiles' parameter.
     /// </summary>
-    void setMaxFiles(const int & iMaxFiles);
+    void SetMaxFiles(const int & iMaxFiles);
 
     /// <summary>
     /// Getter for the 'maxdirectories' parameter.
     /// </summary>
-    const int & getMaxDirectories() const;
+    const int & GetMaxDirectories() const;
 
     /// <summary>
     /// Setter for the 'maxdirectories' parameter.
     /// </summary>
-    void setMaxDirectories(const int & iMaxDirectories);
+    void SetMaxDirectories(const int & iMaxDirectories);
 
     /// <summary>
     /// Getter for the 'properties' parameter.
     /// </summary>
-    const std::string & getProperties() const;
+    const std::string & GetProperties() const;
 
     /// <summary>
     /// Setter for the 'properties' parameter.
     /// </summary>
-    void setProperties(const std::string & iProperties);
+    void SetProperties(const std::string & iProperties);
 
     /// <summary>
     /// Getter for the 'fileextensions' parameter.
     /// </summary>
-    const std::string & getFileExtensions() const;
+    const std::string & GetFileExtensions() const;
 
     /// <summary>
     /// Setter for the 'fileextensions' parameter.
     /// </summary>
-    void setFileExtensions(const std::string & iFileExtensions);
+    void SetFileExtensions(const std::string & iFileExtensions);
 
     /// <summary>
     /// Getter for the 'fileexists' parameter.
     /// </summary>
-    const std::string & getFileExists() const;
+    const std::string & GetFileExists() const;
 
     /// <summary>
     /// Setter for the 'fileexists' parameter.
     /// </summary>
-    void setFileExists(const std::string & iFileExists);
+    void SetFileExists(const std::string & iFileExists);
 
-    bool validate(const Context & iContext) const;
+    bool Validate(const Context & iContext) const;
 
   private:
     int mMaxFiles;

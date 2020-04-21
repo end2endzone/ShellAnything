@@ -84,7 +84,7 @@ CInputBox::CInputBox(HWND hParent) :
   m_Width(DEFAULT_INPUTBOX_WIDTH),
   m_Height(DEFAULT_INPUTBOX_HEIGHT)
 {
-  m_hInstance = GetModuleHandle(NULL);
+  m_hInstance = GetModuleHandleW(NULL);
   m_hParent = hParent;
 
   WNDCLASSEXW wcex = {0};
@@ -130,82 +130,82 @@ CInputBox::~CInputBox()
   UnregisterClassW(INPUTBOX_CLASS_NAME, m_hInstance);
 }
 
-void CInputBox::setWidth(const int & width)
+void CInputBox::SetWidth(const int & width)
 {
   m_Width = width;
 }
 
-const int & CInputBox::getWidth() const
+const int & CInputBox::GetWidth() const
 {
   return m_Width;
 }
 
-void CInputBox::setHeight(const int & height)
+void CInputBox::SetHeight(const int & height)
 {
   m_Height = height;
 }
 
-const int & CInputBox::getHeight() const
+const int & CInputBox::GetHeight() const
 {
   return m_Height;
 }
 
-void CInputBox::setWindowFont(HFONT hFont)
+void CInputBox::SetWindowFont(HFONT hFont)
 {
   m_hWindowFont = hFont;
 }
 
-HFONT CInputBox::getWindowFont() const
+HFONT CInputBox::GetWindowFont() const
 {
   return m_hWindowFont;
 }
 
-void CInputBox::setPromptFont(HFONT hFont)
+void CInputBox::SetPromptFont(HFONT hFont)
 {
   m_hPromptFont = hFont;
 }
 
-HFONT CInputBox::getPromptFont() const
+HFONT CInputBox::GetPromptFont() const
 {
   return m_hPromptFont;
 }
 
-void CInputBox::setIcon(HICON hIcon)
+void CInputBox::SetIcon(HICON hIcon)
 {
   m_hIcon = hIcon;
 }
 
-HICON CInputBox::getIcon() const
+HICON CInputBox::GetIcon() const
 {
   return m_hIcon;
 }
 
-void CInputBox::setParentWindow(HWND hWnd)
+void CInputBox::SetParentWindow(HWND hWnd)
 {
   m_hParent = hWnd;
 }
 
-HWND CInputBox::getParentWindow() const
+HWND CInputBox::GetParentWindow() const
 {
   return m_hParent;
 }
 
-//void CInputBox::setWindow(HWND hWnd)
+//void CInputBox::SetWindow(HWND hWnd)
 //{
 //  m_hInputBox = hWnd;
 //}
 
-HWND CInputBox::getWindow() const
+HWND CInputBox::GetWindow() const
 {
   return m_hInputBox;
 }
 
-HINSTANCE CInputBox::getModuleHandle() const
+HINSTANCE CInputBox::GetModuleHandle() const
 {
   return m_hInstance;
 }
 
-void CInputBox::setCtrl(CONTROLS ctrl, HWND hWnd)
+void CInputBox::SetCtrl(CONTROLS ctrl, HWND hWnd)
 {
   switch(ctrl)
   {
@@ -230,7 +230,7 @@ void CInputBox::setCtrl(CONTROLS ctrl, HWND hWnd)
   };
 }
 
-HWND CInputBox::getCtrl(CONTROLS ctrl) const
+HWND CInputBox::GetCtrl(CONTROLS ctrl) const
 {
   switch(ctrl)
   {
@@ -256,24 +256,24 @@ HWND CInputBox::getCtrl(CONTROLS ctrl) const
   };
 }
 
-void CInputBox::setTextAnsi(const std::string & text)
+void CInputBox::SetTextAnsi(const std::string & text)
 {
   std::wstring text_unicode = ra::unicode::AnsiToUnicode(text);
   m_Text = text_unicode;
 }
 
-std::string CInputBox::getTextAnsi() const
+std::string CInputBox::GetTextAnsi() const
 {
   std::string text_ansi = ra::unicode::UnicodeToAnsi(m_Text);
   return text_ansi;
 }
 
-void CInputBox::setTextUnicode(const std::wstring & text)
+void CInputBox::SetTextUnicode(const std::wstring & text)
 {
   m_Text = text;
 }
 
-std::wstring CInputBox::getTextUnicode() const
+std::wstring CInputBox::GetTextUnicode() const
 {
   return m_Text;
 }
@@ -303,7 +303,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
       //create window font (default system font)
       HFONT hWindowFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-      pInputBox->setWindowFont(hWindowFont);
+      pInputBox->SetWindowFont(hWindowFont);
 
       //create font for prompt label
       //https://stackoverflow.com/questions/221411/how-can-i-specify-a-font-for-a-window-created-through-createwindow
@@ -318,10 +318,10 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       lfont.lfQuality = CLEARTYPE_QUALITY; //ANTIALIASED_QUALITY; //DEFAULT_QUALITY;
       lfont.lfPitchAndFamily = DEFAULT_PITCH;
       HFONT hPromptFont = CreateFontIndirect(&lfont);
-      pInputBox->setPromptFont(hPromptFont);
+      pInputBox->SetPromptFont(hPromptFont);
 
       //get the module instance
-      HINSTANCE hInstance = pInputBox->getModuleHandle();
+      HINSTANCE hInstance = pInputBox->GetModuleHandle();
 
       //get the window dimensions
       RECT window_rect = {0};
@@ -340,11 +340,11 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         NULL,
         hInstance,
         NULL);
-      pInputBox->setCtrl(CInputBox::TEXTBOX_ANSWER, hTextBoxAnswer);
+      pInputBox->SetCtrl(CInputBox::TEXTBOX_ANSWER, hTextBoxAnswer);
       SendMessage(hTextBoxAnswer, WM_SETFONT, (WPARAM)hWindowFont, 0);
 
       //default value for anwser
-      std::wstring default_text = pInputBox->getTextUnicode();
+      std::wstring default_text = pInputBox->GetTextUnicode();
       if (!default_text.empty())
       {
         SetWindowTextW(hTextBoxAnswer, default_text.c_str());
@@ -359,7 +359,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         NULL,
         hInstance,
         NULL);
-      pInputBox->setCtrl(CInputBox::BUTTON_OK, hButtonOK);
+      pInputBox->SetCtrl(CInputBox::BUTTON_OK, hButtonOK);
       SendMessage(hButtonOK, WM_SETFONT, (WPARAM)hWindowFont, 0);
 
       // button Cancel
@@ -371,7 +371,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         NULL,
         hInstance,
         NULL);
-      pInputBox->setCtrl(CInputBox::BUTTON_CANCEL, hButtonCancel);
+      pInputBox->SetCtrl(CInputBox::BUTTON_CANCEL, hButtonCancel);
       SendMessage(hButtonCancel, WM_SETFONT, (WPARAM)hWindowFont, 0);
 
       // label Prompt
@@ -383,7 +383,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         NULL,
         hInstance,
         NULL);
-      pInputBox->setCtrl(CInputBox::LABEL_PROMPT, hLabelPrompt);
+      pInputBox->SetCtrl(CInputBox::LABEL_PROMPT, hLabelPrompt);
       SendMessage(hLabelPrompt, WM_SETFONT, (WPARAM)hPromptFont, 0);
 
       //set default focus on textbox
@@ -403,17 +403,17 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       //https://stackoverflow.com/questions/3155782/what-is-the-difference-between-wm-quit-wm-close-and-wm-destroy-in-a-windows-pr
       //https://docs.microsoft.com/en-us/windows/desktop/winmsg/using-messages-and-message-queues#posting
 
-      HWND thisWindow = pInputBox->getWindow();
+      HWND thisWindow = pInputBox->GetWindow();
 
       //Do we get exceptions from HydraDMH64.dll!000000001000fd74() and HydraDMH64.dll!000000001000b4bc()
       //'C:\Program Files (x86)\ATI Technologies\HydraVision\HydraDMH64.dll'
       //because we are deleting FONT objects before deleting the buttons/label/inputbox first?
       //According to http://www.winprog.org/tutorial/simple_window.html, this is not required
       /*
-      HWND hTextBoxAnswer = pInputBox->getCtrl(TEXTBOX_ANSWER);
-      HWND hButtonOK      = pInputBox->getCtrl(BUTTON_OK);
-      HWND hButtonCancel  = pInputBox->getCtrl(BUTTON_CANCEL);
-      HWND hLabelPrompt   = pInputBox->getCtrl(LABEL_PROMPT);
+      HWND hTextBoxAnswer = pInputBox->GetCtrl(TEXTBOX_ANSWER);
+      HWND hButtonOK      = pInputBox->GetCtrl(BUTTON_OK);
+      HWND hButtonCancel  = pInputBox->GetCtrl(BUTTON_CANCEL);
+      HWND hLabelPrompt   = pInputBox->GetCtrl(LABEL_PROMPT);
       DestroyWindow(hTextBoxAnswer);
       DestroyWindow(hButtonOK     );
       DestroyWindow(hButtonCancel );
@@ -421,17 +421,17 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       */
 
       //window font
-      HFONT hFont = pInputBox->getWindowFont();
+      HFONT hFont = pInputBox->GetWindowFont();
       DeleteObject(hFont);
-      pInputBox->setWindowFont(NULL);
+      pInputBox->SetWindowFont(NULL);
 
       //prompt font
-      hFont = pInputBox->getPromptFont();
+      hFont = pInputBox->GetPromptFont();
       DeleteObject(hFont);
-      pInputBox->setPromptFont(NULL);
+      pInputBox->SetPromptFont(NULL);
 
       //set parent back in focus
-      HWND hParent = pInputBox->getParentWindow();
+      HWND hParent = pInputBox->GetParentWindow();
       EnableWindow(hParent, TRUE);
       SetForegroundWindow(hParent);
 
@@ -442,9 +442,9 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     switch (HIWORD(wParam))
     {
     case BN_CLICKED:
-      HWND hInputBox      = pInputBox->getWindow();
-      HWND hButtonOK      = pInputBox->getCtrl(BUTTON_OK);
-      HWND hButtonCancel  = pInputBox->getCtrl(BUTTON_CANCEL);
+      HWND hInputBox      = pInputBox->GetWindow();
+      HWND hButtonOK      = pInputBox->GetCtrl(BUTTON_OK);
+      HWND hButtonCancel  = pInputBox->GetCtrl(BUTTON_CANCEL);
 
       HWND hButtonClicked = (HWND)lParam;
       if (hButtonClicked == hButtonOK)

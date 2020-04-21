@@ -32,7 +32,7 @@ namespace shellanything { namespace test
   void TestPropertyManager::SetUp()
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.clear();
+    pmgr.Clear();
   }
   //--------------------------------------------------------------------------------------------------
   void TestPropertyManager::TearDown()
@@ -44,56 +44,56 @@ namespace shellanything { namespace test
     const char * name = "foo";
     const char * value = "bar";
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty(name, value);
-    ASSERT_TRUE( pmgr.hasProperty(name) );
-    pmgr.clear();
-    ASSERT_FALSE( pmgr.hasProperty(name) );
+    pmgr.SetProperty(name, value);
+    ASSERT_TRUE( pmgr.HasProperty(name) );
+    pmgr.Clear();
+    ASSERT_FALSE( pmgr.HasProperty(name) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testSetProperty)
   {
     const char * name = "foo";
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty(name, "bar");
-    ASSERT_TRUE( pmgr.hasProperty(name) );
-    ASSERT_EQ("bar", pmgr.getProperty(name));
+    pmgr.SetProperty(name, "bar");
+    ASSERT_TRUE( pmgr.HasProperty(name) );
+    ASSERT_EQ("bar", pmgr.GetProperty(name));
 
     //overwirte existing
-    pmgr.setProperty(name, "baz");
-    ASSERT_TRUE( pmgr.hasProperty(name) );
-    ASSERT_EQ("baz", pmgr.getProperty(name));
+    pmgr.SetProperty(name, "baz");
+    ASSERT_TRUE( pmgr.HasProperty(name) );
+    ASSERT_EQ("baz", pmgr.GetProperty(name));
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testGetProperty)
   {
     const char * name = "foo";
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty(name, "bar");
-    ASSERT_TRUE( pmgr.hasProperty(name) );
-    ASSERT_EQ("bar", pmgr.getProperty(name));
+    pmgr.SetProperty(name, "bar");
+    ASSERT_TRUE( pmgr.HasProperty(name) );
+    ASSERT_EQ("bar", pmgr.GetProperty(name));
 
     //test unknown property
-    ASSERT_FALSE( pmgr.hasProperty("unknown") );
-    ASSERT_EQ("", pmgr.getProperty("unknown") );
+    ASSERT_FALSE( pmgr.HasProperty("unknown") );
+    ASSERT_EQ("", pmgr.GetProperty("unknown") );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testExpand)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty("job", "actor");
-    pmgr.setProperty("name", "Brad Pitt");
-    pmgr.setProperty("age", "53");
-    pmgr.setProperty("animal", "fox");
+    pmgr.SetProperty("job", "actor");
+    pmgr.SetProperty("name", "Brad Pitt");
+    pmgr.SetProperty("age", "53");
+    pmgr.SetProperty("animal", "fox");
 
     //default behavior
     {
-      std::string expanded = pmgr.expand("${name} is a ${age} years old ${job}.");
+      std::string expanded = pmgr.Expand("${name} is a ${age} years old ${job}.");
       ASSERT_EQ("Brad Pitt is a 53 years old actor.", expanded);
     }
 
     //unknown properties
     {
-      std::string expanded = pmgr.expand("The quick ${color} ${animal} jumps over the ${characteristics} dog.");
+      std::string expanded = pmgr.Expand("The quick ${color} ${animal} jumps over the ${characteristics} dog.");
       ASSERT_EQ("The quick ${color} fox jumps over the ${characteristics} dog.", expanded);
     }
   }
@@ -108,25 +108,25 @@ namespace shellanything { namespace test
     const std::string name = "env.HOME";
 #endif
 
-    ASSERT_TRUE( pmgr.hasProperty(name) ) << "Missing registered property '" << name << "'.";
+    ASSERT_TRUE( pmgr.HasProperty(name) ) << "Missing registered property '" << name << "'.";
 
-    const std::string value = pmgr.getProperty(name);
+    const std::string value = pmgr.GetProperty(name);
     ASSERT_FALSE( value.empty() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testClearProperty)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.setProperty("job", "actor");
-    pmgr.setProperty("name", "Brad Pitt");
-    pmgr.setProperty("age", "53");
-    pmgr.setProperty("animal", "fox");
+    pmgr.SetProperty("job", "actor");
+    pmgr.SetProperty("name", "Brad Pitt");
+    pmgr.SetProperty("age", "53");
+    pmgr.SetProperty("animal", "fox");
     
-    ASSERT_TRUE( pmgr.hasProperty("job") );
+    ASSERT_TRUE( pmgr.HasProperty("job") );
     
-    pmgr.clearProperty("job");
+    pmgr.ClearProperty("job");
     
-    ASSERT_FALSE( pmgr.hasProperty("job") );
+    ASSERT_FALSE( pmgr.HasProperty("job") );
   }
   //--------------------------------------------------------------------------------------------------
 

@@ -44,22 +44,22 @@ public:
   CInputBox& operator=(const CInputBox&);
   public:
 
-  void setWidth(const int & width);
-  const int & getWidth() const;
-  void setHeight(const int & height);
-  const int & getHeight() const;
-  void setPromptFont(HFONT hFont);
-  HFONT getPromptFont() const;
-  void setWindowFont(HFONT hFont);
-  HFONT getWindowFont() const;
-  void setIcon(HICON hIcon);
-  HICON getIcon() const;
-  void setParentWindow(HWND hParentWindow);
-  HWND getParentWindow() const;
-  //void setWindow(HWND hWindow);
-  HWND getWindow() const;
-  //void setModuleHandle(HINSTANCE hInstance);
-  HINSTANCE getModuleHandle() const;
+  void SetWidth(const int & width);
+  const int & GetWidth() const;
+  void SetHeight(const int & height);
+  const int & GetHeight() const;
+  void SetPromptFont(HFONT hFont);
+  HFONT GetPromptFont() const;
+  void SetWindowFont(HFONT hFont);
+  HFONT GetWindowFont() const;
+  void SetIcon(HICON hIcon);
+  HICON GetIcon() const;
+  void SetParentWindow(HWND hParentWindow);
+  HWND GetParentWindow() const;
+  //void SetWindow(HWND hWindow);
+  HWND GetWindow() const;
+  //void SetModuleHandle(HINSTANCE hInstance);
+  HINSTANCE GetModuleHandle() const;
   enum CONTROLS
   {
     TEXTBOX_ANSWER,
@@ -67,30 +67,30 @@ public:
     BUTTON_CANCEL,
     LABEL_PROMPT,
   };
-  void setCtrl(CONTROLS ctrl, HWND hWnd);
-  HWND getCtrl(CONTROLS ctrl) const;
+  void SetCtrl(CONTROLS ctrl, HWND hWnd);
+  HWND GetCtrl(CONTROLS ctrl) const;
 
   /// <summary>
   /// Set the default text from an ansi string.
   /// </summary>
   /// <param name="text">The new text to display</param>
-  void setTextAnsi(const std::string & text);
+  void SetTextAnsi(const std::string & text);
 
   /// <summary>
   /// Get the default text as an ansi string.
   /// </summary>
-  std::string getTextAnsi() const;
+  std::string GetTextAnsi() const;
 
   /// <summary>
   /// Set the default text from an unicode string.
   /// </summary>
   /// <param name="text">The new text to display</param>
-  void setTextUnicode(const std::wstring & text);
+  void SetTextUnicode(const std::wstring & text);
 
   /// <summary>
   /// Get the default text as an unicode string.
   /// </summary>
-  std::wstring getTextUnicode() const;
+  std::wstring GetTextUnicode() const;
 
   /// <summary>
   /// Display the input box to the user and wait for the user to click the OK or CANCEL buttons.

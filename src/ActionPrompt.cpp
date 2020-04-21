@@ -59,9 +59,9 @@ namespace shellanything
   bool ActionPrompt::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string name = pmgr.expand(mName);
-    const std::string title = pmgr.expand(mTitle);
-    const std::string default_value = pmgr.expand(mDefault);
+    const std::string name = pmgr.Expand(mName);
+    const std::string title = pmgr.Expand(mTitle);
+    const std::string default_value = pmgr.Expand(mDefault);
     const std::string & type = mType;
 
     static const char * caption = "Question / Prompt";
@@ -107,7 +107,7 @@ namespace shellanything
     else
     {
       CInputBox box(parent_window);
-      box.setTextUnicode(default_utf16);
+      box.SetTextUnicode(default_utf16);
       bool result = box.DoModal(caption_utf16, title_utf16);
       if (!result)
       {
@@ -116,13 +116,13 @@ namespace shellanything
       }
 
       //convert from windows unicode back to utf-8
-      std::wstring answer_utf16 = box.getTextUnicode();
+      std::wstring answer_utf16 = box.GetTextUnicode();
       answer = ra::unicode::UnicodeToUtf8(answer_utf16);
     }
 
     //update the property
     LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'.";
-    pmgr.setProperty(name, answer);
+    pmgr.SetProperty(name, answer);
 
     return true;
   }

@@ -42,12 +42,12 @@ namespace shellanything { namespace test
     Node root("root");
     Node * child1 = (new Node("child1"));
 
-    ASSERT_TRUE( root.getParent() == NULL );
+    ASSERT_TRUE( root.GetParent() == NULL );
 
-    root.addChild(child1);
+    root.AddChild(child1);
 
-    ASSERT_TRUE(    root.getParent() == NULL );
-    ASSERT_TRUE( child1->getParent() != NULL );
+    ASSERT_TRUE(    root.GetParent() == NULL );
+    ASSERT_TRUE( child1->GetParent() != NULL );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testGetChildren)
@@ -57,13 +57,13 @@ namespace shellanything { namespace test
     Node * child2 = (new Node("child2"));
 
     //no children yet
-    ASSERT_EQ(0, root.getChildren().size());
+    ASSERT_EQ(0, root.GetChildren().size());
 
-    root.addChild(child1);
-    root.addChild(child2);
+    root.AddChild(child1);
+    root.AddChild(child2);
 
     //assert 2 children
-    ASSERT_EQ(2, root.getChildren().size());
+    ASSERT_EQ(2, root.GetChildren().size());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testFindChildren)
@@ -75,19 +75,19 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_EQ(0, root.findChildren("").size());
+    ASSERT_EQ(0, root.FindChildren("").size());
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //search for a node that is not found
-    ASSERT_EQ(0, body->findChildren("a").size());
+    ASSERT_EQ(0, body->FindChildren("a").size());
 
     //search for multiple nodes
-    ASSERT_EQ(2, body->findChildren("p").size());
+    ASSERT_EQ(2, body->FindChildren("p").size());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testFindFirst)
@@ -99,19 +99,19 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_TRUE( root.findFirst("") == NULL );
+    ASSERT_TRUE( root.FindFirst("") == NULL );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //search for a node that is not found
-    ASSERT_EQ( NULL, body->findFirst("a") );
+    ASSERT_EQ( NULL, body->FindFirst("a") );
 
     //search for multiple nodes
-    ASSERT_EQ(child2, body->findFirst("p") );
+    ASSERT_EQ(child2, body->FindFirst("p") );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testGetNumChildren)
@@ -121,13 +121,13 @@ namespace shellanything { namespace test
     Node * child2 = (new Node("child2"));
 
     //no children yet
-    ASSERT_EQ(0, root.getNumChildren());
+    ASSERT_EQ(0, root.GetNumChildren());
 
-    root.addChild(child1);
-    root.addChild(child2);
+    root.AddChild(child1);
+    root.AddChild(child2);
 
     //assert 2 children
-    ASSERT_EQ(2, root.getNumChildren());
+    ASSERT_EQ(2, root.GetNumChildren());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testGetChild)
@@ -139,21 +139,21 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_TRUE( root.getChild(0) == NULL );
+    ASSERT_TRUE( root.GetChild(0) == NULL );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //search for a node that is not found
-    ASSERT_EQ( NULL, body->getChild(999) );
+    ASSERT_EQ( NULL, body->GetChild(999) );
 
     //search specific nodes
-    ASSERT_EQ(child1, body->getChild(0) );
-    ASSERT_EQ(child2, body->getChild(1) );
-    ASSERT_EQ(child3, body->getChild(2) );
+    ASSERT_EQ(child1, body->GetChild(0) );
+    ASSERT_EQ(child2, body->GetChild(1) );
+    ASSERT_EQ(child3, body->GetChild(2) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testDepth)
@@ -165,20 +165,20 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_EQ( 0, root.depth() );
+    ASSERT_EQ( 0, root.Depth() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_EQ( 0, root.depth() );
-    ASSERT_EQ( 1, body->depth() );
-    ASSERT_EQ( 2, child1->depth() );
-    ASSERT_EQ( 2, child2->depth() );
-    ASSERT_EQ( 2, child3->depth() );
+    ASSERT_EQ( 0, root.Depth() );
+    ASSERT_EQ( 1, body->Depth() );
+    ASSERT_EQ( 2, child1->Depth() );
+    ASSERT_EQ( 2, child2->Depth() );
+    ASSERT_EQ( 2, child3->Depth() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testLeaf)
@@ -190,20 +190,20 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_TRUE( root.isLeaf() );
+    ASSERT_TRUE( root.IsLeaf() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_FALSE(    root.isLeaf() );
-    ASSERT_FALSE(   body->isLeaf() );
-    ASSERT_TRUE ( child1->isLeaf() );
-    ASSERT_TRUE ( child2->isLeaf() );
-    ASSERT_TRUE ( child3->isLeaf() );
+    ASSERT_FALSE(    root.IsLeaf() );
+    ASSERT_FALSE(   body->IsLeaf() );
+    ASSERT_TRUE ( child1->IsLeaf() );
+    ASSERT_TRUE ( child2->IsLeaf() );
+    ASSERT_TRUE ( child3->IsLeaf() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testRoot)
@@ -215,20 +215,20 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_TRUE( root.isRoot() );
+    ASSERT_TRUE( root.IsRoot() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_TRUE (    root.isRoot() );
-    ASSERT_FALSE(   body->isRoot() );
-    ASSERT_FALSE( child1->isRoot() );
-    ASSERT_FALSE( child2->isRoot() );
-    ASSERT_FALSE( child3->isRoot() );
+    ASSERT_TRUE (    root.IsRoot() );
+    ASSERT_FALSE(   body->IsRoot() );
+    ASSERT_FALSE( child1->IsRoot() );
+    ASSERT_FALSE( child2->IsRoot() );
+    ASSERT_FALSE( child3->IsRoot() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testSize)
@@ -240,20 +240,20 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //no children yet
-    ASSERT_EQ( 1, root.size() );
+    ASSERT_EQ( 1, root.Size() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_EQ( 5, root.size() );
-    ASSERT_EQ( 4, body->size() );
-    ASSERT_EQ( 1, child1->size() );
-    ASSERT_EQ( 1, child2->size() );
-    ASSERT_EQ( 1, child3->size() );
+    ASSERT_EQ( 5, root.Size() );
+    ASSERT_EQ( 4, body->Size() );
+    ASSERT_EQ( 1, child1->Size() );
+    ASSERT_EQ( 1, child2->Size() );
+    ASSERT_EQ( 1, child3->Size() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testRemoveChild)
@@ -265,22 +265,22 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //invalid values
-    ASSERT_FALSE( root.removeChild( (Node*)NULL ) );
-    ASSERT_FALSE( root.removeChild( child3 ) );
-    ASSERT_FALSE( root.removeChild(9999) ); //out of bounds
+    ASSERT_FALSE( root.RemoveChild( (Node*)NULL ) );
+    ASSERT_FALSE( root.RemoveChild( child3 ) );
+    ASSERT_FALSE( root.RemoveChild(9999) ); //out of bounds
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_EQ( 5, root.size() );
-    ASSERT_TRUE( body->removeChild(child3) );
-    ASSERT_EQ( 4, root.size() );
-    ASSERT_TRUE( body->removeChild(1) ); //matches child2
-    ASSERT_EQ( 3, root.size() );
+    ASSERT_EQ( 5, root.Size() );
+    ASSERT_TRUE( body->RemoveChild(child3) );
+    ASSERT_EQ( 4, root.Size() );
+    ASSERT_TRUE( body->RemoveChild(1) ); //matches child2
+    ASSERT_EQ( 3, root.Size() );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testRemoveChildren)
@@ -292,17 +292,17 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //removeChildren empty nodes
-    ASSERT_TRUE( root.removeChildren() );
+    ASSERT_TRUE( root.RemoveChildren() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_TRUE( body->removeChildren() );
-    ASSERT_EQ( 1, body->size() ); //body should be a leaf since we removed all children 
+    ASSERT_TRUE( body->RemoveChildren() );
+    ASSERT_EQ( 1, body->Size() ); //body should be a leaf since we removed all children 
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestNode, testRemoveChildrenType)
@@ -314,18 +314,18 @@ namespace shellanything { namespace test
     Node * child3 = (new Node("p"));
 
     //removeChildren empty nodes
-    ASSERT_TRUE( root.removeChildren() );
+    ASSERT_TRUE( root.RemoveChildren() );
 
     //build tree
-    root.addChild(body);
-    body->addChild(child1);
-    body->addChild(child2);
-    body->addChild(child3);
+    root.AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
     //assert
-    ASSERT_TRUE( body->removeChildren("p") );
-    ASSERT_EQ( 2, body->size() ); //body should only contain child1 of type "h1"
-    ASSERT_EQ( child1, body->getChildren()[0] );
+    ASSERT_TRUE( body->RemoveChildren("p") );
+    ASSERT_EQ( 2, body->Size() ); //body should only contain child1 of type "h1"
+    ASSERT_EQ( child1, body->GetChildren()[0] );
   }
   //--------------------------------------------------------------------------------------------------
 

@@ -150,19 +150,19 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
  
-    ASSERT_FALSE( pmgr.hasProperty("selection.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.path") );
  
     //act
     context.RegisterProperties();
  
     //assert
-    ASSERT_TRUE( pmgr.hasProperty("selection.path") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.path") );
  
     //act
     context.UnregisterProperties();
  
     //assert
-    ASSERT_FALSE( pmgr.hasProperty("selection.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.path") );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterPropertiesSingleFile)
@@ -180,13 +180,13 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
  
-    ASSERT_FALSE( pmgr.hasProperty("selection.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.path") );
  
     //act
     context.RegisterProperties();
  
     //assert
-    ASSERT_TRUE( pmgr.hasProperty("selection.path") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.path") );
  
     const char * test_string = ""
       "selection.path"                "=${selection.path}"                "\n"
@@ -204,7 +204,7 @@ namespace shellanything { namespace test
       "selection.filename.noext"      "=notepad\n"
       "selection.filename.extension"  "=exe\n";
  
-    std::string actual_string = pmgr.expand(test_string);
+    std::string actual_string = pmgr.Expand(test_string);
  
     ASSERT_EQ( std::string(expected_string), actual_string );
  
@@ -229,21 +229,21 @@ namespace shellanything { namespace test
     //TODO: complete with known path to files
 #endif
  
-    ASSERT_FALSE( pmgr.hasProperty("selection.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.path") );
  
     //act
     context.RegisterProperties();
  
     //assert
-    ASSERT_TRUE( pmgr.hasProperty("selection.path") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.path") );
  
     //get all expanded properties
-    std::string selection_path             = pmgr.expand("${selection.path}");
-    std::string selection_parent_path      = pmgr.expand("${selection.parent.path}");
-    std::string selection_parent_filename  = pmgr.expand("${selection.parent.filename}");
-    std::string selection_filename         = pmgr.expand("${selection.filename}");
-    std::string selection_filename_noext   = pmgr.expand("${selection.filename.noext}");
-    std::string selection_filename_ext     = pmgr.expand("${selection.filename.extension}");
+    std::string selection_path             = pmgr.Expand("${selection.path}");
+    std::string selection_parent_path      = pmgr.Expand("${selection.parent.path}");
+    std::string selection_parent_filename  = pmgr.Expand("${selection.parent.filename}");
+    std::string selection_filename         = pmgr.Expand("${selection.filename}");
+    std::string selection_filename_noext   = pmgr.Expand("${selection.filename.noext}");
+    std::string selection_filename_ext     = pmgr.Expand("${selection.filename.extension}");
  
     //assert 1 line per element (file or directory) in context
     ASSERT_EQ( context.GetElements().size(), countLines(selection_path           ) );

@@ -49,9 +49,9 @@ namespace shellanything
   bool ActionExecute::Execute(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.expand(mPath);
-    std::string basedir = pmgr.expand(mBaseDir);
-    std::string arguments = pmgr.expand(mArguments);
+    std::string path = pmgr.Expand(mPath);
+    std::string basedir = pmgr.Expand(mBaseDir);
+    std::string arguments = pmgr.Expand(mArguments);
 
     bool basedir_missing = basedir.empty();
     bool arguments_missing = arguments.empty();
