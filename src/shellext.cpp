@@ -13,7 +13,7 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-#include "Platform.h"
+#include "ErrorManager.h"
 #include "shellext.h"
 #include "Win32Registry.h"
 #include "Win32Utils.h"

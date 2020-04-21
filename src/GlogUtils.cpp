@@ -1,5 +1,5 @@
 #include "GlogUtils.h"
-#include "Platform.h"
+#include "ErrorManager.h"
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h> //for MAX_PATH

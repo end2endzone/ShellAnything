@@ -38,8 +38,6 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
 
-#include "Platform.h"
-
 using namespace tinyxml2;
 
 namespace shellanything

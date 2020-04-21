@@ -33,8 +33,6 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-#include "Platform.h"
-
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
 

@@ -29,7 +29,6 @@
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionMessage.h"
 #include "shellanything/ActionProperty.h"
-#include "Platform.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"

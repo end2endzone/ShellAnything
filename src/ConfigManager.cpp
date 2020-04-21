@@ -24,7 +24,6 @@
 
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Menu.h"
-#include "Platform.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"

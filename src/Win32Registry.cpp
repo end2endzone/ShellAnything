@@ -35,7 +35,6 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
-#include "Platform.h"
 
 #include <assert.h>
 #include <algorithm>

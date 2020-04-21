@@ -23,7 +23,6 @@
  *********************************************************************************/
 
 #include "PropertyManager.h"
-#include "Platform.h"
 #include "rapidassist/environment_utf8.h"
 
 namespace shellanything

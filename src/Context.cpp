@@ -24,7 +24,6 @@
 
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
-#include "Platform.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/environment_utf8.h"

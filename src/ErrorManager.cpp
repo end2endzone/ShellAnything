@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "Platform.h"
+#include "ErrorManager.h"
 #include <stdio.h>
 #include <direct.h>
 

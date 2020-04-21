@@ -27,7 +27,6 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
-#include "Platform.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list

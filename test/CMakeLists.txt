@@ -29,8 +29,8 @@ set(SHELLANYTHING_PRIVATE_FILES ""
   ${CMAKE_SOURCE_DIR}/src/GlogUtils.cpp
   ${CMAKE_SOURCE_DIR}/src/InputBox.h
   ${CMAKE_SOURCE_DIR}/src/InputBox.cpp
-  ${CMAKE_SOURCE_DIR}/src/Platform.h
-  ${CMAKE_SOURCE_DIR}/src/Platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/ErrorManager.h
+  ${CMAKE_SOURCE_DIR}/src/ErrorManager.cpp
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
   ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
   ${CMAKE_SOURCE_DIR}/src/Win32Registry.h

@@ -33,7 +33,6 @@
 #include "rapidassist/timing.h"
 
 #include "PropertyManager.h"
-#include "Platform.h"
 
 namespace shellanything { namespace test
 {

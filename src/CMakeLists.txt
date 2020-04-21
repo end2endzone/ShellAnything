@@ -69,8 +69,8 @@ add_library(shellanything STATIC
   ObjectFactory.h
   ObjectFactory.cpp
   Validator.cpp
-  Platform.h
-  Platform.cpp
+  ErrorManager.h
+  ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
 )

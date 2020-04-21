@@ -28,7 +28,6 @@
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
-#include "Platform.h"
 #include "ObjectFactory.h"
 
 #include "tinyxml2.h"

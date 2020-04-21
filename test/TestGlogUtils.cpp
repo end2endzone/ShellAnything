@@ -25,7 +25,7 @@
 #include "TestGlogUtils.h"
 #include "GlogUtils.h"
 
-#include "Platform.h"
+#include "ErrorManager.h"
 #include <Windows.h>
 #undef GetEnvironmentVariable
 #undef DeleteFile
