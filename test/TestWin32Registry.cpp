@@ -245,7 +245,7 @@ namespace shellanything { namespace test
         file_path = ra::testing::GetTestQualifiedName();
         sprintf(post_filename, ".%03d.icon_%s.bmp", i, file_extension);
         file_path.append(post_filename);
-        Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
+        Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -330,7 +330,7 @@ namespace shellanything { namespace test
       file_path = ra::testing::GetTestQualifiedName();
       sprintf(post_filename, ".icon_%s.bmp", file_extension);
       file_path.append(post_filename);
-      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);

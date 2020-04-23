@@ -29,7 +29,7 @@
 
 namespace shellanything { namespace test
 {
-  Menu * newMenu(const std::string & name)
+  Menu * NewMenu(const std::string & name)
   {
     Menu * menu = new Menu();
     menu->SetName(name);
@@ -104,11 +104,11 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testMenuOwnership)
   {
-    Menu * root =   newMenu("html");
-    Menu * body =   newMenu("body");
-    Menu * child1 = newMenu("h1");
-    Menu * child2 = newMenu("p");
-    Menu * child3 = newMenu("p");
+    Menu * root =   NewMenu("html");
+    Menu * body =   NewMenu("body");
+    Menu * child1 = NewMenu("h1");
+    Menu * child2 = NewMenu("p");
+    Menu * child3 = NewMenu("p");
 
     //no children yet
     bool deleted = false;
@@ -132,11 +132,11 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testActionOwnership)
   {
-    Menu * root =   newMenu("html");
-    Menu * body =   newMenu("body");
-    Menu * child1 = newMenu("h1");
-    Menu * child2 = newMenu("p");
-    Menu * child3 = newMenu("p");
+    Menu * root =   NewMenu("html");
+    Menu * body =   NewMenu("body");
+    Menu * child1 = NewMenu("h1");
+    Menu * child2 = NewMenu("p");
+    Menu * child3 = NewMenu("p");
 
     //no children yet
     bool deleted = false;
@@ -161,11 +161,11 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testSubMenus)
   {
-    Menu * root =   newMenu("html");
-    Menu * body =   newMenu("body");
-    Menu * child1 = newMenu("h1");
-    Menu * child2 = newMenu("p");
-    Menu * child3 = newMenu("p");
+    Menu * root =   NewMenu("html");
+    Menu * body =   NewMenu("body");
+    Menu * child1 = NewMenu("h1");
+    Menu * child2 = NewMenu("p");
+    Menu * child3 = NewMenu("p");
 
     //no children yet
     ASSERT_TRUE( root->GetSubMenus().empty() );
@@ -189,14 +189,14 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testAssignCommandIds)
   {
-    Menu * root =   newMenu("html");
-    Menu * body =   newMenu("body");
-    Menu * child1 = newMenu("h1");
-    Menu * child2 = newMenu("p0");
-    Menu * child3 = newMenu("p1");
-    Menu * child4 = newMenu("p1.1");
-    Menu * child5 = newMenu("p1.2");
-    Menu * child6 = newMenu("p2");
+    Menu * root =   NewMenu("html");
+    Menu * body =   NewMenu("body");
+    Menu * child1 = NewMenu("h1");
+    Menu * child2 = NewMenu("p0");
+    Menu * child3 = NewMenu("p1");
+    Menu * child4 = NewMenu("p1.1");
+    Menu * child5 = NewMenu("p1.2");
+    Menu * child6 = NewMenu("p2");
  
     //build tree
     root->AddChild(body);
@@ -228,14 +228,14 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testFindMenuByCommandId)
   {
-    Menu * root =   newMenu("html");
-    Menu * body =   newMenu("body");
-    Menu * child1 = newMenu("h1");
-    Menu * child2 = newMenu("p0");
-    Menu * child3 = newMenu("p1");
-    Menu * child4 = newMenu("p1.1");
-    Menu * child5 = newMenu("p1.2");
-    Menu * child6 = newMenu("p2");
+    Menu * root =   NewMenu("html");
+    Menu * body =   NewMenu("body");
+    Menu * child1 = NewMenu("h1");
+    Menu * child2 = NewMenu("p0");
+    Menu * child3 = NewMenu("p1");
+    Menu * child4 = NewMenu("p1.1");
+    Menu * child5 = NewMenu("p1.2");
+    Menu * child6 = NewMenu("p2");
  
     //build tree
     root->AddChild(body);

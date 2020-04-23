@@ -70,7 +70,7 @@ namespace shellanything
   }
 
   typedef std::vector<const XMLElement *> ElementPtrList;
-  ElementPtrList getChildNodes(const XMLElement* element, const std::string & name)
+  ElementPtrList GetChildNodes(const XMLElement* element, const std::string & name)
   {
     ElementPtrList elements;
 
@@ -90,7 +90,7 @@ namespace shellanything
     return elements;
   }
 
-  bool parseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
+  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
   {
     if (element == NULL)
     {
@@ -123,10 +123,10 @@ namespace shellanything
     return true;
   }
 
-  bool parseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
+  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
   {
     std::string str_value;    
-    if (!parseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
+    if (!ParseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
       return false; //error is already set
 
     //convert string to int
@@ -161,21 +161,21 @@ namespace shellanything
 
     //parse maxfiles
     int maxfiles = -1;
-    if (parseAttribute(element, "maxfiles", true, true, maxfiles, error))
+    if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
     {
       result.SetMaxFiles(maxfiles);
     }
 
     //parse maxfolders
     int maxfolders = -1;
-    if (parseAttribute(element, "maxfolders", true, true, maxfolders, error))
+    if (ParseAttribute(element, "maxfolders", true, true, maxfolders, error))
     {
       result.SetMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
     std::string fileextensions;
-    if (parseAttribute(element, "fileextensions", true, true, fileextensions, error))
+    if (ParseAttribute(element, "fileextensions", true, true, fileextensions, error))
     {
       if (!fileextensions.empty())
       {
@@ -185,7 +185,7 @@ namespace shellanything
 
     //parse exists
     std::string exists;
-    if (parseAttribute(element, "exists", true, true, exists, error))
+    if (ParseAttribute(element, "exists", true, true, exists, error))
     {
       if (!exists.empty())
       {
@@ -195,7 +195,7 @@ namespace shellanything
 
     //parse properties
     std::string properties;
-    if (parseAttribute(element, "properties", true, true, properties, error))
+    if (ParseAttribute(element, "properties", true, true, properties, error))
     {
       if (!properties.empty())
       {
@@ -227,7 +227,7 @@ namespace shellanything
       //parse value
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "value", false, true, tmp_str, error))
+      if (ParseAttribute(element, "value", false, true, tmp_str, error))
       {
         action->SetValue(tmp_str);
       }
@@ -242,7 +242,7 @@ namespace shellanything
       //parse path
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "path", false, true, tmp_str, error))
+      if (ParseAttribute(element, "path", false, true, tmp_str, error))
       {
         action->SetPath(tmp_str);
       }
@@ -250,7 +250,7 @@ namespace shellanything
       //parse arguments
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "arguments", true, true, tmp_str, error))
+      if (ParseAttribute(element, "arguments", true, true, tmp_str, error))
       {
         action->SetArguments(tmp_str);
       }
@@ -258,7 +258,7 @@ namespace shellanything
       //parse basedir
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "basedir", true, true, tmp_str, error))
+      if (ParseAttribute(element, "basedir", true, true, tmp_str, error))
       {
         action->SetBaseDir(tmp_str);
       }
@@ -273,7 +273,7 @@ namespace shellanything
       //parse path
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "path", false, true, tmp_str, error))
+      if (ParseAttribute(element, "path", false, true, tmp_str, error))
       {
         action->SetPath(tmp_str);
       }
@@ -288,7 +288,7 @@ namespace shellanything
       //parse encoding
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "encoding", true, true, tmp_str, error))
+      if (ParseAttribute(element, "encoding", true, true, tmp_str, error))
       {
         action->SetEncoding(tmp_str);
       }
@@ -303,7 +303,7 @@ namespace shellanything
       //parse name
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "name", false, true, tmp_str, error))
+      if (ParseAttribute(element, "name", false, true, tmp_str, error))
       {
         action->SetName(tmp_str);
       }
@@ -311,7 +311,7 @@ namespace shellanything
       //parse title
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "title", false, true, tmp_str, error))
+      if (ParseAttribute(element, "title", false, true, tmp_str, error))
       {
         action->SetTitle(tmp_str);
       }
@@ -319,7 +319,7 @@ namespace shellanything
       //parse default
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "default", true, true, tmp_str, error))
+      if (ParseAttribute(element, "default", true, true, tmp_str, error))
       {
         action->SetDefault(tmp_str);
       }
@@ -327,7 +327,7 @@ namespace shellanything
       //parse type
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "type", true, true, tmp_str, error))
+      if (ParseAttribute(element, "type", true, true, tmp_str, error))
       {
         action->SetType(tmp_str);
       }
@@ -335,7 +335,7 @@ namespace shellanything
       //parse valueyes
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "valueyes", true, true, tmp_str, error))
+      if (ParseAttribute(element, "valueyes", true, true, tmp_str, error))
       {
         action->SetValueYes(tmp_str);
       }
@@ -343,7 +343,7 @@ namespace shellanything
       //parse valueno
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "valueno", true, true, tmp_str, error))
+      if (ParseAttribute(element, "valueno", true, true, tmp_str, error))
       {
         action->SetValueNo(tmp_str);
       }
@@ -358,7 +358,7 @@ namespace shellanything
       //parse name
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "name", false, true, tmp_str, error))
+      if (ParseAttribute(element, "name", false, true, tmp_str, error))
       {
         action->SetName(tmp_str);
       }
@@ -366,7 +366,7 @@ namespace shellanything
       //parse value
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "value", false, true, tmp_str, error))
+      if (ParseAttribute(element, "value", false, true, tmp_str, error))
       {
         action->SetValue(tmp_str);
       }
@@ -381,7 +381,7 @@ namespace shellanything
       //parse path
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "path", false, true, tmp_str, error))
+      if (ParseAttribute(element, "path", false, true, tmp_str, error))
       {
         action->SetPath(tmp_str);
       }
@@ -396,7 +396,7 @@ namespace shellanything
       //parse title
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "title", false, true, tmp_str, error))
+      if (ParseAttribute(element, "title", false, true, tmp_str, error))
       {
         action->SetTitle(tmp_str);
       }
@@ -404,7 +404,7 @@ namespace shellanything
       //parse caption
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "caption", false, true, tmp_str, error))
+      if (ParseAttribute(element, "caption", false, true, tmp_str, error))
       {
         action->SetCaption(tmp_str);
       }
@@ -412,7 +412,7 @@ namespace shellanything
       //parse icon
       tmp_str = "";
       tmp_int = -1;
-      if (parseAttribute(element, "icon", true, true, tmp_str, error))
+      if (ParseAttribute(element, "icon", true, true, tmp_str, error))
       {
         action->SetIcon(tmp_str);
       }
@@ -450,7 +450,7 @@ namespace shellanything
 
     //parse separator
     std::string menu_separator;
-    bool have_separetor = parseAttribute(element, "separator", true, true, menu_separator, error);
+    bool have_separetor = ParseAttribute(element, "separator", true, true, menu_separator, error);
     bool is_separator = false;
     if (have_separetor)
     {
@@ -464,7 +464,7 @@ namespace shellanything
 
     //parse name
     std::string menu_name;
-    if (!parseAttribute(element, "name", false, false, menu_name, error))
+    if (!ParseAttribute(element, "name", false, false, menu_name, error))
     {
       delete menu;
       return NULL;
@@ -473,14 +473,14 @@ namespace shellanything
 
     //parse description
     std::string menu_desc;
-    if (!parseAttribute(element, "description", true, true, menu_desc, error))
+    if (!ParseAttribute(element, "description", true, true, menu_desc, error))
     {
       menu->SetDescription(menu_desc);
     }
 
     //parse icon
     std::string icon_path;
-    if (parseAttribute(element, "icon", true, true, icon_path, error))
+    if (ParseAttribute(element, "icon", true, true, icon_path, error))
     {
       Icon icon;
       icon.SetPath(icon_path);
@@ -490,7 +490,7 @@ namespace shellanything
     ElementPtrList elements; //temporary xml element containers
 
     //find <validity> node under <menu>
-    elements = getChildNodes(element, NODE_VALIDITY);
+    elements = GetChildNodes(element, NODE_VALIDITY);
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator validity;
@@ -503,7 +503,7 @@ namespace shellanything
     }
 
     //find <visibility> node under <menu>
-    elements = getChildNodes(element, NODE_VISIBILITY);
+    elements = GetChildNodes(element, NODE_VISIBILITY);
     for(size_t i=0; i<elements.size(); i++)
     {
       Validator visibility;
@@ -542,7 +542,7 @@ namespace shellanything
     }
 
     //find <menu> node under <menu>
-    elements = getChildNodes(element, NODE_MENU);
+    elements = GetChildNodes(element, NODE_MENU);
     for(size_t i=0; i<elements.size(); i++)
     {
       Menu * submenu = ObjectFactory::GetInstance().ParseMenu(elements[i], error);
@@ -555,7 +555,7 @@ namespace shellanything
     }
 
     //find <icon> node under <menu>
-    elements = getChildNodes(element, "icon");
+    elements = GetChildNodes(element, "icon");
     for(size_t i=0; i<elements.size(); i++)
     {
       Icon icon;
@@ -588,11 +588,11 @@ namespace shellanything
 
     //parse path
     std::string icon_path;
-    bool hasPath = parseAttribute(element, "path", true, true, icon_path, error);
+    bool hasPath = ParseAttribute(element, "path", true, true, icon_path, error);
 
     //parse fileextension
     std::string icon_fileextension;
-    bool hasFileExtension = parseAttribute(element, "fileextension", true, true, icon_fileextension, error);
+    bool hasFileExtension = ParseAttribute(element, "fileextension", true, true, icon_fileextension, error);
     
     if (!hasPath && !hasFileExtension)
     {
@@ -608,7 +608,7 @@ namespace shellanything
 
     //parse index
     int icon_index = -1;
-    if (parseAttribute(element, "index", true, true, icon_index, error))
+    if (ParseAttribute(element, "index", true, true, icon_index, error))
     {
       result.SetIndex(icon_index);
     }
@@ -638,7 +638,7 @@ namespace shellanything
     ElementPtrList elements; //temporary xml element containers
 
     //find <property> node under <default>
-    elements = getChildNodes(element, NODE_ACTION_PROPERTY);
+    elements = GetChildNodes(element, NODE_ACTION_PROPERTY);
     for(size_t i=0; i<elements.size(); i++)
     {
       const tinyxml2::XMLElement * element = elements[i];

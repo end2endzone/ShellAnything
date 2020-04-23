@@ -35,14 +35,14 @@ namespace shellanything { namespace test
 {
   static const Configuration * INVALID_CONFIGURATION = NULL;
  
-  const char * toString(bool value)
+  const char * ToBooleanString(bool value)
   {
     if (value)
       return "true";
     return "false";
   }
 
-  Context getContextSingleFile()
+  Context GetContextSingleFile()
   {
     Context c;
     Context::ElementList elements;
@@ -56,7 +56,7 @@ namespace shellanything { namespace test
     return c;
   }
 
-  Context getContextSingleDirectory()
+  Context GetContextSingleDirectory()
   {
     Context c;
     Context::ElementList elements;
@@ -70,7 +70,7 @@ namespace shellanything { namespace test
     return c;
   }
 
-  void queryAllMenusRecursive(Menu * menu, Menu::MenuPtrList & list)
+  void QueryAllMenusRecursive(Menu * menu, Menu::MenuPtrList & list)
   {
     if (menu == NULL)
       return;
@@ -81,11 +81,11 @@ namespace shellanything { namespace test
     for(size_t i=0; i<submenus.size(); i++)
     {
       Menu * submenu = submenus[i];
-      queryAllMenusRecursive(submenu, list);
+      QueryAllMenusRecursive(submenu, list);
     }
   }
 
-  void queryAllMenusRecursive(Configuration * config, Menu::MenuPtrList & list)
+  void QueryAllMenusRecursive(Configuration * config, Menu::MenuPtrList & list)
   {
     if (config == NULL)
       return;
@@ -94,11 +94,11 @@ namespace shellanything { namespace test
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * menu = menus[i];
-      queryAllMenusRecursive(menu, list);
+      QueryAllMenusRecursive(menu, list);
     }
   }
   
-  Menu * querySubMenu(Menu * parent, size_t index)
+  Menu * QuerySubMenu(Menu * parent, size_t index)
   {
     if (parent == NULL)
       return NULL;
@@ -111,7 +111,7 @@ namespace shellanything { namespace test
     return m;
   }
 
-  Menu * querySubMenu(Configuration * config, size_t index)
+  Menu * QuerySubMenu(Configuration * config, size_t index)
   {
     if (config == NULL)
       return NULL;
@@ -451,14 +451,14 @@ namespace shellanything { namespace test
     ASSERT_TRUE( first != NULL );
 
     //update the menus based on a context with a single file
-    Context context = getContextSingleFile();
+    Context context = GetContextSingleFile();
     cmgr.Update(context);
 
     //ASSERT top menu is visible (default option)
     ASSERT_TRUE( first->IsVisible() );
 
     //update the menus based on a context with a single directory
-    context = getContextSingleDirectory();
+    context = GetContextSingleDirectory();
     cmgr.Update(context);
 
     //ASSERT top menu is invisible (issue #4)
@@ -467,9 +467,9 @@ namespace shellanything { namespace test
     //get all submenus
     Menu * option1 = first;
     ASSERT_TRUE( option1 != NULL );
-    Menu * option1_1 = querySubMenu(option1, 0);
+    Menu * option1_1 = QuerySubMenu(option1, 0);
     ASSERT_TRUE( option1_1 != NULL );
-    Menu * option1_1_1 = querySubMenu(option1_1, 0);
+    Menu * option1_1_1 = QuerySubMenu(option1_1, 0);
     ASSERT_TRUE( option1_1_1 != NULL );
     ASSERT_FALSE( option1_1_1->IsParentMenu() ); //menu is a leaf
 
@@ -513,25 +513,25 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //query all menus
-    Menu * option1 = querySubMenu(configs[0], 0);
+    Menu * option1 = QuerySubMenu(configs[0], 0);
     ASSERT_TRUE( option1 != NULL );
-    Menu * option1_1 = querySubMenu(option1, 0);
-    Menu * option1_2 = querySubMenu(option1, 1);
-    Menu * option1_3 = querySubMenu(option1, 2);
+    Menu * option1_1 = QuerySubMenu(option1, 0);
+    Menu * option1_2 = QuerySubMenu(option1, 1);
+    Menu * option1_3 = QuerySubMenu(option1, 2);
     ASSERT_TRUE( option1_1 != NULL );
     ASSERT_TRUE( option1_2 != NULL );
     ASSERT_TRUE( option1_3 != NULL );
-    Menu * option1_2_1    = querySubMenu(option1_2,   0);
-    Menu * option1_2_1_1  = querySubMenu(option1_2_1, 0);
+    Menu * option1_2_1    = QuerySubMenu(option1_2,   0);
+    Menu * option1_2_1_1  = QuerySubMenu(option1_2_1, 0);
     ASSERT_TRUE( option1_2_1    != NULL );
     ASSERT_TRUE( option1_2_1_1  != NULL );
 
     //query all menus
     Menu::MenuPtrList menus;
-    queryAllMenusRecursive(configs[0], menus);
+    QueryAllMenusRecursive(configs[0], menus);
 
     //update the menus based on a context with a single file
-    Context context = getContextSingleFile();
+    Context context = GetContextSingleFile();
     cmgr.Update(context);
 
     //assign unique command ids
@@ -542,7 +542,7 @@ namespace shellanything { namespace test
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * m = menus[i];
-      std::string message = ra::strings::Format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->GetName().c_str(), toString(m->IsVisible()), m->GetCommandId());
+      std::string message = ra::strings::Format("Error. Menu '%s' which visible is '%s' and command_id is '%d' was not expected.", m->GetName().c_str(), ToBooleanString(m->IsVisible()), m->GetCommandId());
       if (m->IsVisible())
         ASSERT_NE(Menu::INVALID_COMMAND_ID, m->GetCommandId() ) << message; //visible menus must have a valid command id
       else

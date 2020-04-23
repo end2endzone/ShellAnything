@@ -37,7 +37,7 @@
 
 static const wchar_t * INPUTBOX_CLASS_NAME = L"InputBox";
 
-HFONT createInputBoxFont()
+HFONT CreateInputBoxFont()
 {
   //https://stackoverflow.com/questions/221411/how-can-i-specify-a-font-for-a-window-created-through-createwindow
 

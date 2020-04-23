@@ -63,7 +63,7 @@ namespace Win32Utils
     return hIconLarge;
   }
 
-  RGBQUAD toRGBQUAD(const DWORD & iColor)
+  RGBQUAD ToRgbQuad(const DWORD & iColor)
   {
     RGBQUAD output = {0};
     output.rgbRed   = (BYTE)((iColor&0x000000FF)    );
@@ -73,7 +73,7 @@ namespace Win32Utils
     return output;
   }
 
-  template <typename T> inline static T interpolate_color( const T& a, const T& b, const double factor /* from 0.0 to 1.0 */)
+  template <typename T> inline static T InterpolateColor( const T& a, const T& b, const double factor /* from 0.0 to 1.0 */)
   {
     if (factor <= 0.0)
       return a;
@@ -103,7 +103,7 @@ namespace Win32Utils
     //It also allows the bitmap to be properly saved to *.bmp file format.
     //Note: The alpha channel is still available but all values are 0xFF (fully opaque).
  
-    const RGBQUAD BACKGROUND_COLOR = toRGBQUAD(background_color);
+    const RGBQUAD BACKGROUND_COLOR = ToRgbQuad(background_color);
  
     SIZE bitmap_size = GetBitmapSize(hBitmap);
     const LONG num_pixels = bitmap_size.cx * bitmap_size.cy;
@@ -130,9 +130,9 @@ namespace Win32Utils
       {
         //blend pixel with the given background color
         double alpha_factor = (double)pixel.rgbReserved / 255.0;
-        pixel.rgbRed    = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbRed,    pixel.rgbRed,   alpha_factor);
-        pixel.rgbGreen  = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbGreen,  pixel.rgbGreen, alpha_factor);
-        pixel.rgbBlue   = interpolate_color<BYTE>(BACKGROUND_COLOR.rgbBlue,   pixel.rgbBlue,  alpha_factor);
+        pixel.rgbRed    = InterpolateColor<BYTE>(BACKGROUND_COLOR.rgbRed,    pixel.rgbRed,   alpha_factor);
+        pixel.rgbGreen  = InterpolateColor<BYTE>(BACKGROUND_COLOR.rgbGreen,  pixel.rgbGreen, alpha_factor);
+        pixel.rgbBlue   = InterpolateColor<BYTE>(BACKGROUND_COLOR.rgbBlue,   pixel.rgbBlue,  alpha_factor);
         pixel.rgbReserved = full_opacity;
       }
     }
@@ -145,7 +145,8 @@ namespace Win32Utils
     return TRUE;
   }
  
-  void dumpString(const std::string file_path, const std::string & buffer)
+  #if 0
+  void DumpString(const std::string file_path, const std::string & buffer)
   {
     FILE * f = fopen(file_path.c_str(), "wb");
     if (!f)
@@ -154,6 +155,7 @@ namespace Win32Utils
     fwrite(buffer.data(), 1, buffer.size(), f);
     fclose(f);
   }
+  #endif
 
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
   {
@@ -199,7 +201,7 @@ namespace Win32Utils
     // Make sure the destination bitmap is fully transparent by default
     LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
     assert(numPixelsRead == image_size);
-    dumpString("c:\\temp\\destination_bitmap.data", color_pixels);
+    DumpString("c:\\temp\\destination_bitmap.data", color_pixels);
   #endif
  
     //Extract the mask first in case something goes wrong with DI_NORMAL
@@ -258,7 +260,7 @@ namespace Win32Utils
       }
     }
 
-    dumpString("c:\\temp\\blended_bitmap.data", color_pixels);
+    DumpString("c:\\temp\\blended_bitmap.data", color_pixels);
   #endif
  
     // Clean up.
@@ -346,7 +348,7 @@ namespace Win32Utils
   } 
 
   //https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
-  void CreateBMPFile(const char * pszFile, HBITMAP hBMP) 
+  void CreateBmpFile(const char * pszFile, HBITMAP hBMP) 
   { 
     HANDLE hf;                 // file handle  
     BITMAPFILEHEADER hdr;       // bitmap file-header  

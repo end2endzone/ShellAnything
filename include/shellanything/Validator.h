@@ -94,6 +94,14 @@ namespace shellanything
     /// </summary>
     void SetFileExists(const std::string & iFileExists);
 
+    /// <summary>
+    /// Validate the given context against a set of constraints.
+    /// The possible constraints includes a minimum/maximum number of files/directories selected,
+    /// a list of properties that must be defined,
+    /// a list of file extensions,
+    /// ...
+    /// Note: this function is used to enable or disable a menu.
+    /// </summary>
     bool Validate(const Context & iContext) const;
 
   private:

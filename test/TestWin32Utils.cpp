@@ -72,7 +72,7 @@ namespace shellanything { namespace test
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".shell32.dll.index%03d.bmp", i);
       file_path.append(post_filename);
-      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);
@@ -127,7 +127,7 @@ namespace shellanything { namespace test
       char post_filename[BUFFER_SIZE];
       sprintf(post_filename, ".%s.index%03d.bmp", dll_filename.c_str(), index);
       file_path.append(post_filename);
-      Win32Utils::CreateBMPFile(file_path.c_str(), hBitmap);
+      Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
 
       //delete the bitmap
       DeleteObject(hBitmap);

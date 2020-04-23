@@ -31,7 +31,7 @@
 
 namespace shellanything
 {
-  bool hasValue(const ra::strings::StringVector & values, const std::string & token)
+  bool HasValue(const ra::strings::StringVector & values, const std::string & token)
   {
     for(size_t i=0; i<values.size(); i++)
     {
@@ -42,7 +42,7 @@ namespace shellanything
     return false;
   }
 
-  void uppercase(ra::strings::StringVector & values)
+  void Uppercase(ra::strings::StringVector & values)
   {
     for(size_t i=0; i<values.size(); i++)
     {
@@ -167,7 +167,7 @@ namespace shellanything
     {
       //split
       ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
-      uppercase(accepted_file_extensions);
+      Uppercase(accepted_file_extensions);
 
       //for each file selected
       const Context::ElementList & elements = iContext.GetElements();
@@ -177,7 +177,7 @@ namespace shellanything
         std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
 
         //each file extension must be part of accepted_file_extensions
-        bool found = hasValue(accepted_file_extensions, current_file_extension);
+        bool found = HasValue(accepted_file_extensions, current_file_extension);
         if (!found)
           return false; //current file extension is not accepted
       }

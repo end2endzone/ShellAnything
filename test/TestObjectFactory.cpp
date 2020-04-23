@@ -40,7 +40,7 @@ namespace shellanything { namespace test
   static const Configuration * INVALID_CONFIGURATION = NULL;
  
   //--------------------------------------------------------------------------------------------------
-  ActionPrompt * getFirstActionPrompt(Menu * m)
+  ActionPrompt * GetFirstActionPrompt(Menu * m)
   {
     if (!m)
       return NULL;
@@ -57,7 +57,7 @@ namespace shellanything { namespace test
     return NULL;
   }
   //--------------------------------------------------------------------------------------------------
-  ActionMessage * getFirstActionMessage(Menu * m)
+  ActionMessage * GetFirstActionMessage(Menu * m)
   {
     if (!m)
       return NULL;
@@ -74,7 +74,7 @@ namespace shellanything { namespace test
     return NULL;
   }
   //--------------------------------------------------------------------------------------------------
-  ActionFile * getFirstActionFile(Menu * m)
+  ActionFile * GetFirstActionFile(Menu * m)
   {
     if (!m)
       return NULL;
@@ -261,10 +261,10 @@ namespace shellanything { namespace test
     ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a file element as the first action
-    ActionFile * file00 = getFirstActionFile(menus[00]);
-    ActionFile * file01 = getFirstActionFile(menus[01]);
-    ActionFile * file02 = getFirstActionFile(menus[02]);
-    ActionFile * file03 = getFirstActionFile(menus[03]);
+    ActionFile * file00 = GetFirstActionFile(menus[00]);
+    ActionFile * file01 = GetFirstActionFile(menus[01]);
+    ActionFile * file02 = GetFirstActionFile(menus[02]);
+    ActionFile * file03 = GetFirstActionFile(menus[03]);
 
     ASSERT_TRUE( file00 != NULL );
     ASSERT_TRUE( file01 != NULL );
@@ -323,11 +323,11 @@ namespace shellanything { namespace test
     ASSERT_EQ( 5, menus.size() );
 
     //assert all menus have a prompt element as the first action
-    ActionPrompt * prompt00 = getFirstActionPrompt(menus[00]);
-    ActionPrompt * prompt01 = getFirstActionPrompt(menus[01]);
-    ActionPrompt * prompt02 = getFirstActionPrompt(menus[02]);
-    ActionPrompt * prompt03 = getFirstActionPrompt(menus[03]);
-    ActionPrompt * prompt04 = getFirstActionPrompt(menus[04]);
+    ActionPrompt * prompt00 = GetFirstActionPrompt(menus[00]);
+    ActionPrompt * prompt01 = GetFirstActionPrompt(menus[01]);
+    ActionPrompt * prompt02 = GetFirstActionPrompt(menus[02]);
+    ActionPrompt * prompt03 = GetFirstActionPrompt(menus[03]);
+    ActionPrompt * prompt04 = GetFirstActionPrompt(menus[04]);
 
     ASSERT_TRUE( prompt00 != NULL );
     ASSERT_TRUE( prompt01 != NULL );
@@ -403,10 +403,10 @@ namespace shellanything { namespace test
     ASSERT_EQ( 4, menus.size() );
 
     //assert all menus have a message element as the first action
-    ActionMessage * message00 = getFirstActionMessage(menus[00]);
-    ActionMessage * message01 = getFirstActionMessage(menus[01]);
-    ActionMessage * message02 = getFirstActionMessage(menus[02]);
-    ActionMessage * message03 = getFirstActionMessage(menus[03]);
+    ActionMessage * message00 = GetFirstActionMessage(menus[00]);
+    ActionMessage * message01 = GetFirstActionMessage(menus[01]);
+    ActionMessage * message02 = GetFirstActionMessage(menus[02]);
+    ActionMessage * message03 = GetFirstActionMessage(menus[03]);
 
     ASSERT_TRUE( message00 != NULL );
     ASSERT_TRUE( message01 != NULL );

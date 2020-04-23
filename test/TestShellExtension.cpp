@@ -43,7 +43,7 @@ namespace shellanything { namespace test
   static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } };
   static const GUID CLSID_INVALID = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
 
-  std::string getShellExtensionDllPath()
+  std::string GetShellExtensionDllPath()
   {
     std::string cur_process = ra::process::GetCurrentProcessPath();
 
@@ -70,19 +70,19 @@ namespace shellanything { namespace test
 
     ~ComHandler()
     {
-      if (!hasFailed())
+      if (!HasFailed())
       {
 	      // Uninitialize COM Library
 	      CoUninitialize();
       }
     }
 
-    bool hasFailed()
+    bool HasFailed()
     {
       return mFailed;
     }
 
-    const std::string & getErrorMessage()
+    const std::string & GetErrorMessage()
     {
       return mErrorMessage;
     }
@@ -102,7 +102,7 @@ namespace shellanything { namespace test
       mFailed(true),
       mModule(NULL)
     {
-      std::string path = getShellExtensionDllPath();
+      std::string path = GetShellExtensionDllPath();
 
 	    // Load the library
       mModule = ::LoadLibrary(path.c_str());
@@ -120,7 +120,7 @@ namespace shellanything { namespace test
 
     ~ShellExtensionLibraryHandler()
     {
-      if (!hasFailed())
+      if (!HasFailed())
       {
 	      // Unload the library
 		    ::FreeLibrary(mModule);
@@ -139,12 +139,12 @@ namespace shellanything { namespace test
       return result;
     }
 
-    bool hasFailed()
+    bool HasFailed()
     {
       return mFailed;
     }
 
-    const std::string & getErrorMessage()
+    const std::string & GetErrorMessage()
     {
       return mErrorMessage;
     }
@@ -174,14 +174,14 @@ namespace shellanything { namespace test
   {
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
-    std::string path = getShellExtensionDllPath();
+    std::string path = GetShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
-    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( com_handler.HasFailed() ) << "Failed initializing COM: '" << com_handler.GetErrorMessage() << "'.";
 
     ShellExtensionLibraryHandler lib_handler;
-    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( lib_handler.HasFailed() ) << "Failed loading the library: '" << lib_handler.GetErrorMessage() << "'.";
 
     //assert ok to unload the dll of no classes was instanciated
     ASSERT_EQ( S_OK, lib_handler.DllCanUnloadNow() );
@@ -193,14 +193,14 @@ namespace shellanything { namespace test
   {
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
-    std::string path = getShellExtensionDllPath();
+    std::string path = GetShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
-    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( com_handler.HasFailed() ) << "Failed initializing COM: '" << com_handler.GetErrorMessage() << "'.";
 
     ShellExtensionLibraryHandler lib_handler;
-    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( lib_handler.HasFailed() ) << "Failed loading the library: '" << lib_handler.GetErrorMessage() << "'.";
 
     IClassFactory * pClassFactory = NULL;
 
@@ -232,14 +232,14 @@ namespace shellanything { namespace test
   {
     LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
-    std::string path = getShellExtensionDllPath();
+    std::string path = GetShellExtensionDllPath();
     ASSERT_TRUE( ra::filesystem::FileExists(path.c_str()) ) << "File not found: '" << path << "'.";
 
     ComHandler com_handler;
-    ASSERT_FALSE( com_handler.hasFailed() ) << "Failed initializing COM: '" << com_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( com_handler.HasFailed() ) << "Failed initializing COM: '" << com_handler.GetErrorMessage() << "'.";
 
     ShellExtensionLibraryHandler lib_handler;
-    ASSERT_FALSE( lib_handler.hasFailed() ) << "Failed loading the library: '" << lib_handler.getErrorMessage() << "'.";
+    ASSERT_FALSE( lib_handler.HasFailed() ) << "Failed loading the library: '" << lib_handler.GetErrorMessage() << "'.";
 
     //get IClassFactory interface pointer
     IClassFactory * pClassFactory = NULL;

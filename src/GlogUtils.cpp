@@ -320,4 +320,5 @@ namespace shellanything
     //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
     google::InitGoogleLogging(g_argv[0]);
   }
+
 } //namespace shellanything

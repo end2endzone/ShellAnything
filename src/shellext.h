@@ -50,8 +50,8 @@ public:
   CCriticalSection();
   virtual ~CCriticalSection();
 
-  void enter();
-  void leave();
+  void Enter();
+  void Leave();
 };
 
 class CCriticalSectionGuard

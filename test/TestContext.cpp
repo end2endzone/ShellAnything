@@ -28,7 +28,7 @@
 
 namespace shellanything { namespace test
 {
-  size_t countLines(const std::string & value)
+  size_t CountLines(const std::string & value)
   {
     size_t count = 0;
     if (!value.empty())
@@ -246,12 +246,12 @@ namespace shellanything { namespace test
     std::string selection_filename_ext     = pmgr.Expand("${selection.filename.extension}");
  
     //assert 1 line per element (file or directory) in context
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_path           ) );
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_parent_path    ) );
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_parent_filename) );
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename       ) );
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename_noext ) );
-    ASSERT_EQ( context.GetElements().size(), countLines(selection_filename_ext   ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_path           ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_parent_path    ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_parent_filename) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_filename       ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_filename_noext ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_filename_ext   ) );
  
     //assert all elements are added to the ${selection.path}
     for(size_t i=0; i<context.GetElements().size(); i++)

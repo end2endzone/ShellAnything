@@ -150,7 +150,7 @@ std::string GuidToInterfaceName(GUID guid)
 /// <param name="name">The name of the application.</param>
 /// <param name="version">The version of the application.</param>
 /// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
-bool isFirstApplicationRun(const std::string & name, const std::string & version)
+bool IsFirstApplicationRun(const std::string & name, const std::string & version)
 {
   std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
   if (!Win32Registry::CreateKey(key.c_str(), NULL))
@@ -196,7 +196,7 @@ public:
     const char * name;
   };
  
-  static std::string toBitString(T value, const FLAGS * flags)
+  static std::string ToBitString(T value, const FLAGS * flags)
   {
     std::string desc;
  
@@ -220,7 +220,7 @@ public:
     return desc;
   }
 
-  static std::string toValueString(T value, const FLAGS * flags)
+  static std::string ToValueString(T value, const FLAGS * flags)
   {
     std::string desc;
  
@@ -456,12 +456,12 @@ CCriticalSection::~CCriticalSection()
   DeleteCriticalSection(&mCS);
 }
 
-void CCriticalSection::enter()
+void CCriticalSection::Enter()
 {
   EnterCriticalSection(&mCS);
 }
 
-void CCriticalSection::leave()
+void CCriticalSection::Leave()
 {
   LeaveCriticalSection(&mCS);
 }
@@ -471,7 +471,7 @@ CCriticalSectionGuard::CCriticalSectionGuard(CCriticalSection * cs)
   mCS = cs;
   if (mCS)
   {
-    mCS->enter();
+    mCS->Enter();
   }
 }
 
@@ -479,7 +479,7 @@ CCriticalSectionGuard::~CCriticalSectionGuard()
 {
   if (mCS)
   {
-    mCS->leave();
+    mCS->Leave();
   }
   mCS = NULL;
 }
@@ -527,7 +527,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
     {CMF_DONOTPICKDEFAULT , "CMF_DONOTPICKDEFAULT" },
     {NULL, NULL},
   };
-  std::string uFlagsStr = FlagDescriptor<UINT>::toBitString(uFlags, flags);
+  std::string uFlagsStr = FlagDescriptor<UINT>::ToBitString(uFlags, flags);
   std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
@@ -705,7 +705,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
     {GCS_UNICODE  , "GCS_UNICODE"  },
     {NULL, NULL},
   };
-  std::string uFlagsStr = FlagDescriptor<UINT>::toValueString(uFlags, flags);
+  std::string uFlagsStr = FlagDescriptor<UINT>::ToValueString(uFlags, flags);
   std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
@@ -1352,7 +1352,7 @@ void InitConfigManager()
   LOG(INFO) << "HOME   directory : " << home_dir.c_str();
   LOG(INFO) << "Config directory : " << config_dir.c_str();
 
-  bool first_run = isFirstApplicationRun(app_name, app_version);
+  bool first_run = IsFirstApplicationRun(app_name, app_version);
   if (first_run)
   {
     InstallDefaultConfigurations(config_dir);
