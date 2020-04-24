@@ -71,7 +71,7 @@ namespace shellanything
     {
       std::wstring textW = ra::unicode::Utf8ToUnicode(text);
       text.clear();
-      text.assign((const char *)textW.data(), text.size());
+      text.assign((const char *)textW.data(), textW.size()*2);
     }
     //note: utf-8 does not need conversion
 

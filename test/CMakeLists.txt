@@ -46,6 +46,8 @@ add_executable(shellanything_unittest
   ${CONFIGURATION_TEST_FILES}
   ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
+  TestActionFile.cpp
+  TestActionFile.h
   TestBitmapCache.cpp
   TestBitmapCache.h
   TestConfigManager.cpp
