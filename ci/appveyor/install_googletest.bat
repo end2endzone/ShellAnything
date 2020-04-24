@@ -11,8 +11,8 @@ set GTEST_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\googletest\install
 echo ============================================================================
 echo Cloning googletest into %APPVEYOR_BUILD_FOLDER%\third_parties\googletest
 echo ============================================================================
-mkdir %APPVEYOR_BUILD_FOLDER%\third_parties2 >NUL 2>NUL
-cd %APPVEYOR_BUILD_FOLDER%\third_parties2
+mkdir %APPVEYOR_BUILD_FOLDER%\third_parties >NUL 2>NUL
+cd %APPVEYOR_BUILD_FOLDER%\third_parties
 git clone "https://github.com/google/googletest.git"
 cd googletest
 echo.
