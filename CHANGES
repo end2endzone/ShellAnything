@@ -4,6 +4,7 @@ Changes for 0.4.0
 * Using RapidAssist version 0.8.1.
 * Fixed issue #36: Support utf-8 strings in configuration files.
 * Fixed issue #38: Unable to load configuration if filename is utf-8 encoded.
+* Fixed issue #39: Update coding guidelines to Google's C++ Style Guide.
 * Fixed issue #40: Create a <message> action to show a simple popup message.
 * Fixed issue #41: Prompt action does not expand default property value.
 * Fixed issue #42: Define new fixed properties for <file> action.
