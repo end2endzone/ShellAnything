@@ -19,7 +19,7 @@ cd tinyxml2
 echo.
 
 echo Checking out version 6.2.0...
-git checkout 6.2.0
+git -c advice.detachedHead=false checkout 6.2.0
 echo.
 
 echo ============================================================================
@@ -27,7 +27,7 @@ echo Compiling...
 echo ============================================================================
 mkdir build >NUL 2>NUL
 cd build
-cmake -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%tinyxml2_DIR% -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_LIBS:BOOL=ON -DBUILD_TESTS:BOOL=OFF ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%tinyxml2_DIR% -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_LIBS:BOOL=ON -DBUILD_TESTS:BOOL=OFF ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%

@@ -19,7 +19,7 @@ cd glog
 echo.
 
 echo Checking out version v0.4.0...
-git checkout v0.4.0
+git -c advice.detachedHead=false checkout v0.4.0
 echo.
 
 echo ============================================================================
@@ -36,7 +36,7 @@ echo Compiling...
 echo ============================================================================
 mkdir build_dir >NUL 2>NUL
 cd build_dir
-cmake -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%glog_DIR% -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_LIBS:BOOL=ON ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%glog_DIR% -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_STATIC_LIBS:BOOL=ON ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%

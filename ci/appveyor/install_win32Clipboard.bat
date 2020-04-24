@@ -20,7 +20,7 @@ cd win32Clipboard
 echo.
 
 echo Checking out version v0.3.0...
-git checkout 0.3.0
+git -c advice.detachedHead=false checkout 0.3.0
 echo.
 
 echo ============================================================================
@@ -28,7 +28,7 @@ echo Compiling...
 echo ============================================================================
 mkdir build >NUL 2>NUL
 cd build
-cmake -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX=%INSTALL_LOCATION% ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
