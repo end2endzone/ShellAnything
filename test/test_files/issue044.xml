@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu separator="true" />
+    <menu name="*** issue44 ***">
+      <menu name="save selection">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <file encoding="utf-8"   path="${env.USERPROFILE}\shellanything.issue44.selection.utf-8.txt"   >selection=${selection.path}</file>
+          <file encoding="ansi"    path="${env.USERPROFILE}\shellanything.issue44.selection.ansi.txt"    >selection=${selection.path}</file>
+          <file encoding="unicode" path="${env.USERPROFILE}\shellanything.issue44.selection.unicode.txt" >selection=${selection.path}</file>
+        </actions>
+      </menu>
+    </menu>
+    <menu separator="true" />
+  </shell>
+</root>

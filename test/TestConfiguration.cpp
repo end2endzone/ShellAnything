@@ -104,7 +104,6 @@ namespace shellanything { namespace test
 
       //test configuration files
       "test_files\\samples.xml",
-      "test_files\\test_issue011.xml",
       "test_files\\TestConfigManager.testAssignCommandId.1.xml",
       "test_files\\TestConfigManager.testAssignCommandId.2.xml",
       "test_files\\TestConfigManager.testAssignCommandIdsInvalid.xml",
@@ -121,7 +120,7 @@ namespace shellanything { namespace test
       "test_files\\tests.xml",
     };
     const size_t num_files = sizeof(files)/sizeof(files[0]);
-
+    
     //for each test files
     for(size_t i=0; i<num_files; i++)
     {

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu separator="true" />
+    <menu name="*** issue36 *** (test unicode icon)">
+      <icon path="${env.USERPROFILE}\ShellAnything\issue36.psiΨpsi.ico" index="0" />
+      
+      <menu name="test unicode prompt" description="test for copyright and omega characters">
+        <actions>
+          <prompt name="myarguments" title="z©z" default="Hugh _Ω_ Jass" />
+        </actions>
+      </menu>
+      
+      <menu name="test unicode clipboard" description="test for psi letter">
+        <actions>
+          <clipboard value="psi letter: _Ψ_"/>
+        </actions>
+      </menu>
+      
+      <menu name="test unicode file" description="test for psi letter">
+        <actions>
+          <property name="my_file" value="${env.USERPROFILE}\config.ini" />
+          <prompt name="foo" title="FILE:${my_file}" default="${my_file}" />
+          <file path="${env.USERPROFILE}\myapp.ini">selection=${selection.path}</file>
+          <prompt name="foo" title="File saved succesfuly" default="${my_file}" />
+        </actions>
+      </menu>
+      
+      <menu name="test unicode menu: '${selection.filename}'" description="test for utf-8 string in ${selection.filename}" />
+      
+      <menu name="test exec #1 (open in notepad)" description="test for utf-8 start process with arguments">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="C:\Windows\notepad.exe" arguments="${selection.path}" />
+        </actions>
+      </menu>
+      <menu name="test exec #2 (echo in cmd.exe)" description="test for utf-8 start process">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="C:\Windows\system32\cmd.exe" arguments="/k echo You clicked on file '${selection.path}'" />
+        </actions>
+      </menu>
+      <menu name="test exec #3 (popargsA)" description="">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="G:\ftp\printargs\printargsA\Debug\popargsA.exe" arguments="${selection.path}" />
+        </actions>
+      </menu>
+      <menu name="test exec #4 (popargsW)" description="">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="G:\ftp\printargs\printargsA\Debug\popargsW.exe" arguments="${selection.path}" />
+        </actions>
+      </menu>
+      <menu name="test exec #5 (printargsA)" description="">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="G:\ftp\printargs\printargsA\Debug\printargsA.exe" arguments="${selection.path}" />
+        </actions>
+      </menu>
+      <menu name="test exec #6 (printargsW)" description="">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <exec path="G:\ftp\printargs\printargsA\Debug\printargsW.exe" arguments="${selection.path}" />
+        </actions>
+      </menu>
+
+    </menu>
+    <menu separator="true" />
+  </shell>
+</root>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu separator="true" />
+    <menu name="*** issue41 ***">
+      <menu name="test prompt" description="">
+        <actions>
+          <prompt name="myarguments" title="foo${newline}bar" default="${selection.path}" type="ok" />
+        </actions>
+      </menu>
+    </menu>
+    <menu separator="true" />
+  </shell>
+</root>
