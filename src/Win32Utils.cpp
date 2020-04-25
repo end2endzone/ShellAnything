@@ -283,7 +283,7 @@ namespace Win32Utils
 
   PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
   { 
-    BITMAP bmp; 
+    BITMAP bmp = {0}; 
     PBITMAPINFO pbmi; 
     WORD    cClrBits; 
 
@@ -348,7 +348,7 @@ namespace Win32Utils
   } 
 
   //https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
-  void CreateBmpFile(const char * pszFile, HBITMAP hBMP) 
+  bool CreateBmpFile(const char * pszFile, HBITMAP hBMP) 
   { 
     HANDLE hf;                 // file handle  
     BITMAPFILEHEADER hdr;       // bitmap file-header  
@@ -368,13 +368,12 @@ namespace Win32Utils
 
     pbih = (PBITMAPINFOHEADER) pbi; 
     lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
-
-    assert(lpBits) ;
+    if (!lpBits)
+      return false;
 
     // Retrieve the color table (RGBQUAD array) and the bits  
     // (array of palette indices) from the DIB.  
-    assert(GetDIBits(hDC, hBMP, 0, (WORD) pbih->biHeight, lpBits, pbi, 
-      DIB_RGB_COLORS));
+    GetDIBits(hDC, hBMP, 0, (WORD) pbih->biHeight, lpBits, pbi, DIB_RGB_COLORS);
 
     // Create the .BMP file.  
     hf = ::CreateFileA(pszFile, 
@@ -383,41 +382,40 @@ namespace Win32Utils
       NULL, 
       CREATE_ALWAYS, 
       FILE_ATTRIBUTE_NORMAL, 
-      (HANDLE) NULL); 
-    assert(hf != INVALID_HANDLE_VALUE) ;
+      (HANDLE) NULL);
+    if (hf == INVALID_HANDLE_VALUE)
+    {
+      GlobalFree((HGLOBAL)lpBits);
+      return false;
+    }
 
     hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M"  
     // Compute the size of the entire file.  
-    hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + 
-      pbih->biSize + pbih->biClrUsed 
-      * sizeof(RGBQUAD) + pbih->biSizeImage); 
+    hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD) + pbih->biSizeImage); 
     hdr.bfReserved1 = 0; 
     hdr.bfReserved2 = 0; 
 
     // Compute the offset to the array of color indices.  
-    hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + 
-      pbih->biSize + pbih->biClrUsed 
-      * sizeof (RGBQUAD); 
+    hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof (RGBQUAD); 
 
     // Copy the BITMAPFILEHEADER into the .BMP file.  
-    assert(WriteFile(hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER), 
-      (LPDWORD) &dwTmp,  NULL)); 
+    WriteFile(hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER), (LPDWORD) &dwTmp,  NULL); 
 
     // Copy the BITMAPINFOHEADER and RGBQUAD array into the file.  
-    assert(WriteFile(hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER) 
-      + pbih->biClrUsed * sizeof (RGBQUAD), 
-      (LPDWORD) &dwTmp, ( NULL)));
+    WriteFile(hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof (RGBQUAD), (LPDWORD) &dwTmp, (NULL));
 
     // Copy the array of color indices into the .BMP file.  
     dwTotal = cb = pbih->biSizeImage; 
     hp = lpBits; 
-    assert(WriteFile(hf, (LPSTR) hp, (int) cb, (LPDWORD) &dwTmp,NULL)); 
+    WriteFile(hf, (LPSTR) hp, (int) cb, (LPDWORD) &dwTmp,NULL); 
 
-    // Close the .BMP file.  
-    assert(CloseHandle(hf)); 
+    // Close the .BMP file.
+    CloseHandle(hf); 
 
     // Free memory.  
     GlobalFree((HGLOBAL)lpBits);
+
+    return true;
   }
 
   BOOL IsFullyTransparent(HBITMAP hBitmap)
@@ -457,10 +455,10 @@ namespace Win32Utils
 
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos)
   {
-    MENUITEMINFOA info = {0};
-    info.cbSize = sizeof(MENUITEMINFOA);
+    MENUITEMINFOW info = {0};
+    info.cbSize = sizeof(MENUITEMINFOW);
     info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
-    BOOL wInfoSuccess = GetMenuItemInfoA(hMenu, pos, TRUE, &info);
+    BOOL wInfoSuccess = GetMenuItemInfoW(hMenu, pos, TRUE, &info);
     if (!wInfoSuccess)
       return "";
  
@@ -472,39 +470,34 @@ namespace Win32Utils
  
     //compute display name
     static const int BUFFER_SIZE = 1024;
-    char title[BUFFER_SIZE] = {0};
+    char title_utf8[BUFFER_SIZE] = {0};
     char tmp[BUFFER_SIZE] = {0};
+    wchar_t tmpW[BUFFER_SIZE] = {0};
     if (IsSeparator)
     {
-      strcpy(title, "------------------------");
+      strcpy(title_utf8, "------------------------");
     }
     //try with ansi text
-    else if (GetMenuStringA(hMenu, id, tmp, BUFFER_SIZE, 0))
+    else if (GetMenuStringW(hMenu, id, tmpW, BUFFER_SIZE, 0))
     {
-      sprintf(title, "%s", tmp, pos, id);
-    }
-    else if (GetMenuStringW(hMenu, id, (WCHAR*)tmp, BUFFER_SIZE/2, 0))
-    {
-      //Can't log unicode characters, convert to ansi.
-      //Assume some characters might get dropped
-      std::wstring wtext = (WCHAR*)tmp;
-      std::string atext = ra::unicode::UnicodeToAnsi(wtext);
-      sprintf(title, "%s", atext.c_str(), pos, id);
+      //Can't log unicode characters, convert to utf-8.
+      std::string atext = ra::unicode::UnicodeToUtf8(tmpW);
+      sprintf(title_utf8, "%s", atext.c_str());
     }
  
     //build full menu description string
-    std::string description;
-    description.append(title);
-    description.append(" (");
+    std::string description_utf8;
+    description_utf8.append(title_utf8);
+    description_utf8.append(" (");
     sprintf(tmp, "pos=%lu, id=%lu", pos, id);
-    description.append(tmp);
+    description_utf8.append(tmp);
     if (isChecked)
-      description.append(", checked");
+      description_utf8.append(", checked");
     if (isDisabled && !IsSeparator)
-      description.append(", disabled");
-    description.append(")");
+      description_utf8.append(", disabled");
+    description_utf8.append(")");
  
-    return description;
+    return description_utf8;
   }
 
   std::string GetMenuTree(HMENU hMenu, int indent)
@@ -520,10 +513,10 @@ namespace Win32Utils
       //Detect if this menu is a parent menu
       HMENU hSubMenu = NULL;
       {
-        MENUITEMINFOA info = {0};
-        info.cbSize = sizeof(MENUITEMINFOA);
+        MENUITEMINFOW info = {0};
+        info.cbSize = sizeof(MENUITEMINFOW);
         info.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING | MIIM_SUBMENU;
-        BOOL wInfoSuccess = GetMenuItemInfoA(hMenu, i, TRUE, &info);
+        BOOL wInfoSuccess = GetMenuItemInfoW(hMenu, i, TRUE, &info);
         if (wInfoSuccess)
         {
           if (info.hSubMenu)

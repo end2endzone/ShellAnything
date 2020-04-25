@@ -37,7 +37,7 @@ namespace Win32Utils
   BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
   HBITMAP CopyAsBitmap(HICON hIcon);
-  void CreateBmpFile(const char * path, HBITMAP hBitmap);
+  bool CreateBmpFile(const char * path, HBITMAP hBitmap);
   BOOL IsFullyTransparent(HBITMAP hBitmap);
   BOOL IsFullyTransparent(const std::string & buffer);
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos);
