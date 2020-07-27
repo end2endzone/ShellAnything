@@ -17,6 +17,7 @@ version: "{branch} (#{build})"
 branches:
   only:
     - master
+    - feature-issue52
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -50,7 +51,7 @@ environment:
   
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform:
-  - Win32
+#  - Win32
   - x64
 
 # build Configuration, i.e. Debug, Release, etc.
