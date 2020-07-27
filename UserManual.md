@@ -1,6 +1,7 @@
+
 # Overview #
 
-This *User Manual* contains all essential information for the end-user to make full use of the ShellAnything application.
+This *User Manual* contains all essential information for the end-user to make full use of ShellAnything application.
 This manual includes a description of the system functionalities and capabilities with examples divided in the following sections:
 
 * [Post Installation](#post-installation)
@@ -8,6 +9,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Unregister the shell extension](#unregister-the-shell-extension)
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
+    * [Keyboard mnemonics](#mnemonics--keyboard-shortcuts)
   * [Visibility / Validity](#visibility-validity)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
@@ -57,7 +59,7 @@ To register the shell extension, execute the following commands:
 
 2) Navigate to ShellAnything installation directory.
    Enter the command: `cd /d <insert-installation-directory-here>`, replacing `<insert-installation-directory-here>` by the actual installation directory.
-   For instance, `cd /d C:\Program Files\Shellanything`.
+   For instance, `cd /d C:\Program Files\ShellAnything`.
 
 3) Register the shell extension with the command:
    `regsvr32 shellext.dll`
@@ -94,7 +96,7 @@ To unregister the shell extension, execute the following commands:
 
 2) Navigate to ShellAnything installation directory.
    Enter the command: `cd /d <insert-installation-directory-here>`, replacing `<insert-installation-directory-here>` by the actual installation directory.
-   For instance, `cd /d C:\Program Files\Shellanything`.
+   For instance, `cd /d C:\Program Files\ShellAnything`.
 
 3) Register the shell extension with the following command:
    `regsvr32 /u shellext.dll`
@@ -167,12 +169,58 @@ The `name` attribute is the actual text that will be displayed on the context me
 
 
 
+#### Mnemonics / keyboard shortcuts: ####
+
+Menu names supports [keyboard mnemonics]([https://en.wikipedia.org/wiki/Mnemonics_(keyboard)](https://en.wikipedia.org/wiki/Mnemonics_(keyboard))), a.k.a *Access Keys*, *Keyboard shortcuts* or *Keybindings*.  A mnemonic indicates to the user which key to press (often in conjunction with the Alt key) to activate a menu and execute its associated actions. They provides a method of quickly navigating a menu using the only the keyboard.  
+
+To assign a specific key to a menu,  add an ampersand character (`&`) before the character of the associated keyboard key.
+
+For example, the following would create a menu that is activated when one presses the `z` key:
+```xml
+<menu name="Press the &z key to execute this menu" >
+  <actions>
+    <message title="It works!" />
+  </actions>
+</menu>
+```
+
+The `&` character is a special character in menu names and must be escaped to be used as a plain text character. To escape an `&` character, one must double the character.
+
+For example, the following would create a menu named `Smith&Co` :
+```xml
+<menu name="Smith&&Co" />
+```
+Note the use of the double `&` which prevents creating a keyboard shortcut with the `C` key.
+
+**Note:** By default, mnemonics are not activated on Windows. Please read [this SuperUser article]([https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items](https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items)) to know how to activate them on Windows.
+
+
+
 ### separator attribute: ###
 
 The `separator` attribute allows one to define a separator between menu options. To define a separator, one must set the `separator` attributes to one of the following values: `true`, `yes` or `on`. For example, add the following menu element in a *configuration file*:
 
 ```xml
 <menu separator="true" />
+```
+
+
+
+### maxlength attribute: ###
+
+The `maxlength` attribute allows one to define a maximum length of a menu name. This allows one to limit the width of the menu and prevent system (or at least, File Explorer) stability issues.
+
+If a menu name expands to a string longer than `maxlength` characters, the name is truncated to exactly `maxlength` characters.
+
+The length validation is applied to the expanded value of the `name` attribute.
+
+If `maxlength` attribute is not specified, the value `250` is used. If the menu name expands to a string longer than 250 characters, the name is trimmed to 250 characters and a trailing "..." is added at the end to indicate that menu name reached the maximum value supported by ShellAnything. The trailing "..." is not added if `maxlength` is set to a value different than 250.
+
+To set a maximum length, one must set the `maxlength` attributes to a value between 1 and 250.
+
+For example, the following limits a menu name to 40 characters :
+```xml
+<menu name="${super_long_property}" maxlength="40" />
 ```
 
 
@@ -983,6 +1031,18 @@ On application startup, the existing log files are all validated and files older
 To force the application restart, reboot the computer and open a new Windows Explorer or close all Windows Explorer before opening a new Window Explorer window.
 
 There are no plan for keeping the log files for more than 5 days.
+
+
+
+## Missing ampersand character (`&`) in menus ##
+
+One might be puzzled as to why his menus do not display ampersand character (`&`) properly.
+
+For example, if one create a menu with the name set to `Smith&Co`,  ShellAnything will render the menu as `SmithCo` or "Smith<u>C</u>o". This is beause the `&` character is a special character used in keyboard mnemonics. 
+
+Because the `&` character is a special character in menu names, it must be escaped to be used as a plain character. To escape an `&` character, one must double the character.
+
+Refer to the [keyboard mnemonics](#mnemonics--keyboard-shortcuts) section for details.
 
 
 
