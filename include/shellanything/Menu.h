@@ -52,6 +52,12 @@ namespace shellanything
     /// </summary>
     static const uint32_t INVALID_COMMAND_ID;
 
+    /// <summary>
+    /// The default maximum length for the 'name' parameter.
+    /// Default initialization value for the 'GetNameMaxLength()' method.
+    /// </summary>
+    static const int DEFAULT_NAME_MAX_LENGTH;
+
     Menu();
     virtual ~Menu();
 
@@ -88,6 +94,29 @@ namespace shellanything
     /// Setter for the 'name' parameter.
     /// </summary>
     void SetName(const std::string & iName);
+
+    /// <summary>
+    /// Getter for the 'max_length' parameter.
+    /// </summary>
+    const int & GetNameMaxLength() const;
+
+    /// <summary>
+    /// Setter for the 'max_length' parameter.
+    /// </summary>
+    void SetNameMaxLength(const int & iNameMaxLength);
+
+    /// <summary>
+    /// Truncate a string to the maximum length allowed by this menu.
+    /// Note, the given string must be already expanded.
+    /// If the length of the given string is longer than DEFAULT_NAME_MAX_LENGTH, a trailing "..." will
+    /// be added at the end of a string to indicate that the maximum supported length is reached.
+    /// </summary>
+    /// <remarks>
+    /// There is no need to validate the maximum length of a given string if it is not already expanded
+    /// because property expansion can shorten or lengthen the given string.
+    /// </remarks>
+    /// <param name="str">The expanded string value which length must be validated.</param>
+    void TruncateName(std::string & str);
 
     /// <summary>
     /// Getter for the 'description' parameter.
@@ -207,6 +236,7 @@ namespace shellanything
     bool mSeparator;
     uint32_t mCommandId;
     std::string mName;
+    int mNameMaxLength;
     std::string mDescription;
     Action::ActionPtrList mActions;
   };

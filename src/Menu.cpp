@@ -23,12 +23,15 @@
  *********************************************************************************/
 
 #include "shellanything/Menu.h"
+#include "Unicode.h"
 
 namespace shellanything
 {
   const uint32_t Menu::INVALID_COMMAND_ID = 0;
+  const int Menu::DEFAULT_NAME_MAX_LENGTH = 250;
 
   Menu::Menu() : Node("Menu"),
+    mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mCommandId(INVALID_COMMAND_ID),
     mVisible(true),
@@ -71,6 +74,42 @@ namespace shellanything
   void Menu::SetName(const std::string & iName)
   {
     mName = iName;
+  }
+
+  const int & Menu::GetNameMaxLength() const
+  {
+    return mNameMaxLength;
+  }
+
+  void Menu::SetNameMaxLength(const int & iNameMaxLength)
+  {
+    mNameMaxLength = iNameMaxLength;
+
+    // Limit out of range values
+    if (mNameMaxLength < 1)
+      mNameMaxLength = 1;
+    if (mNameMaxLength > DEFAULT_NAME_MAX_LENGTH)
+      mNameMaxLength = DEFAULT_NAME_MAX_LENGTH;
+  }
+
+  void Menu::TruncateName(std::string & str)
+  {
+    // Issue #55: Menu name maximum length limit and escape string
+  
+    // Test if we need to truncate the input string.
+    if (mNameMaxLength <= 0)
+      return; // Nothing to do.
+    size_t num_cp = GetLengthUtf8(str.c_str());
+    if (num_cp <= mNameMaxLength)
+      return; // Nothing to do.
+
+    std::string truncated_str = SubstringUtf8(str.c_str(), 0, mNameMaxLength);
+
+    // Add a trailing "..." indicating that we reached the maximum length for a menu
+    if (num_cp > DEFAULT_NAME_MAX_LENGTH)
+      truncated_str += "..."; // Indicate that string is much longer than maximum allowed by ShellAnything.
+
+    str = truncated_str;
   }
 
   const std::string & Menu::GetDescription() const

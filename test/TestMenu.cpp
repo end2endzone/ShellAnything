@@ -266,6 +266,62 @@ namespace shellanything { namespace test
     root = NULL;
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestMenu, testGetNameMaxLength)
+  {
+    //test default value
+    Menu m;
+    ASSERT_EQ(Menu::DEFAULT_NAME_MAX_LENGTH, m.GetNameMaxLength());
+
+    m.SetNameMaxLength(34);
+    ASSERT_EQ(34, m.GetNameMaxLength());
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestMenu, testTruncateName)
+  {
+    //Test no truncation required
+    {
+      const std::string expected = "foobar";
+      std::string actual = expected;
+      Menu menu;
+      menu.TruncateName(actual);
+      ASSERT_EQ(expected, actual);
+    }
+
+    //Test truncation
+    {
+      const std::string expected = "foobar";
+      std::string actual = expected;
+      Menu menu;
+      menu.SetNameMaxLength(3);
+      menu.TruncateName(actual);
+      ASSERT_EQ("foo", actual);
+    }
+
+    // Test maximum length
+    {
+      std::string actual(3000, 'z');
+      Menu menu;
+      menu.TruncateName(actual);
+
+      int expected_length = Menu::DEFAULT_NAME_MAX_LENGTH + 3; // for the trailing "..."
+      ASSERT_EQ(expected_length, actual.size());
+
+      // Look for the trailing "..."
+      ASSERT_EQ('.', actual[actual.size() - 1]);
+      ASSERT_EQ('.', actual[actual.size() - 2]);
+      ASSERT_EQ('.', actual[actual.size() - 3]);
+    }
+
+    // Test maximum length with no trailing
+    {
+      std::string actual(Menu::DEFAULT_NAME_MAX_LENGTH, 'z');
+      Menu menu;
+      menu.TruncateName(actual);
+
+      ASSERT_EQ(Menu::DEFAULT_NAME_MAX_LENGTH, actual.size());
+    }
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
