@@ -1,3 +1,4 @@
+
 # Overview #
 
 This *User Manual* contains all essential information for the end-user to make full use of the ShellAnything application.
@@ -8,7 +9,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Unregister the shell extension](#unregister-the-shell-extension)
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
-  * [Visibility / Validity](#visibility-validity)
+  * [Visibility / Validity](#visibility--validity)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
     * [&lt;open&gt; action](#open-action)
@@ -17,11 +18,11 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;message&gt; action](#message-action)
     * [&lt;property&gt; action](#property-action)
     * [&lt;file&gt; action](#file-action)
-  * [Default](#Default)
+  * [Default](#default)
 * [Properties](#properties)
   * [Setting properties](#setting-properties)
   * [Property expansion](#property-expansion)
-  * [Using properties](using-properties)
+  * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
   * [Selection-based properties](#selection-based-properties)
   * [Fixed properties](#fixed-properties)
