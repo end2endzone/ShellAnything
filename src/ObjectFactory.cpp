@@ -487,6 +487,17 @@ namespace shellanything
       menu->SetIcon(icon);
     }
 
+    //parse maxlength
+    std::string maxlength_str;
+    if (ParseAttribute(element, "maxlength", true, true, maxlength_str, error))
+    {
+      int maxlength = 0;
+      if (ra::strings::Parse(maxlength_str, maxlength) && maxlength > 0)
+      {
+        menu->SetNameMaxLength(maxlength);
+      }
+    }
+
     ElementPtrList elements; //temporary xml element containers
 
     //find <validity> node under <menu>
