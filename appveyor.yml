@@ -51,7 +51,7 @@ environment:
   
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform:
-  - Win32
+#  - Win32
   - x64
 
 # build Configuration, i.e. Debug, Release, etc.
