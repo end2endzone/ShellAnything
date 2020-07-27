@@ -18,6 +18,7 @@
 #include "Win32Registry.h"
 #include "Win32Utils.h"
 #include "GlogUtils.h"
+#include "Unicode.h"
 
 #undef GetEnvironmentVariable
 #undef DeleteFile
@@ -260,6 +261,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   //Skip this menu if not visible
   if (!menu_visible)
   {
+    menu->TruncateName(title);
     LOG(INFO) << __FUNCTION__ << "(), skipped menu '" << title << "', not visible.";
     return;
   }
@@ -268,9 +270,14 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   const uint32_t & menu_command_id = menu->GetCommandId();
   if (menu_command_id == shellanything::Menu::INVALID_COMMAND_ID)
   {
+    menu->TruncateName(title);
     LOG(ERROR) << __FUNCTION__ << "(), menu '" << title << "' have invalid command id.";
     return;
   }
+
+  // Truncate if required, issue #55.
+  menu->TruncateName(title);
+  menu->TruncateName(description);
 
   //convert to windows unicode...
   std::wstring title_utf16 = ra::unicode::Utf8ToUnicode(title);
