@@ -1367,8 +1367,6 @@ void InitConfigManager()
   std::string prop_application_path       = GetCurrentModulePathUtf8();
   std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
   std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
-  std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
-  std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
   pmgr.SetProperty("application.path"     , prop_application_path     );
@@ -1376,9 +1374,6 @@ void InitConfigManager()
   pmgr.SetProperty("log.directory"        , prop_log_directory        );
   pmgr.SetProperty("config.directory"     , config_dir                );
   pmgr.SetProperty("home.directory"       , home_dir                  );
-  pmgr.SetProperty("path.separator"       , prop_path_separator       );
-  pmgr.SetProperty("line.separator"       , prop_line_separator       );
-  pmgr.SetProperty("newline"              , prop_line_separator       );
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)

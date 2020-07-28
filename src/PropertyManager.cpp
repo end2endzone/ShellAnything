@@ -24,6 +24,7 @@
 
 #include "PropertyManager.h"
 #include "rapidassist/environment_utf8.h"
+#include "rapidassist/filesystem_utf8.h"
 
 namespace shellanything
 {
@@ -31,6 +32,7 @@ namespace shellanything
   PropertyManager::PropertyManager()
   {
     RegisterEnvironmentVariables();
+    RegisterDefaultProperties();
   }
 
   PropertyManager::~PropertyManager()
@@ -47,6 +49,7 @@ namespace shellanything
   {
     properties.clear();
     RegisterEnvironmentVariables();
+    RegisterDefaultProperties();
   }
 
   void PropertyManager::ClearProperty(const std::string & name)
@@ -126,6 +129,17 @@ namespace shellanything
       //register the variable as a valid property
       SetProperty(name, value);
     }
+  }
+
+  void PropertyManager::RegisterDefaultProperties()
+  {
+    //define global properties
+    std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
+    std::string prop_line_separator         = ra::environment::GetLineSeparator();
+
+    SetProperty("path.separator"       , prop_path_separator       );
+    SetProperty("line.separator"       , prop_line_separator       );
+    SetProperty("newline"              , prop_line_separator       );
   }
 
 } //namespace shellanything
