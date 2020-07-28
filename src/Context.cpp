@@ -30,6 +30,8 @@
 
 namespace shellanything
 {
+  const std::string Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME = "selection.multi.separator";
+  const std::string Context::DEFAULT_MULTI_SELECTION_SEPARATOR = ra::environment::GetLineSeparator();
 
   Context::Context() :
     mNumFiles(0),
@@ -64,7 +66,7 @@ namespace shellanything
     const Context::ElementList & elements = GetElements();
  
     if (elements.empty())
-      return; //nothing to register
+      return; // Nothing to register
  
     std::string selection_path           ;
     std::string selection_parent_path    ;
@@ -72,8 +74,11 @@ namespace shellanything
     std::string selection_filename       ;
     std::string selection_filename_noext ;
     std::string selection_filename_ext   ;
- 
-    //for each element
+
+    // Get the separator string for multiple selection 
+    const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+
+    // For each element
     for(size_t i=0; i<elements.size(); i++)
     {
       const std::string & element = elements[i];
@@ -93,16 +98,15 @@ namespace shellanything
       std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
  
-      //append this specific element properties to the global property string
+      // Append this specific element properties to the global property string
  
-      //add a newline if the property value is not empty. This allows printing all file path on individual lines
-      static const char * line_separator = ra::environment::GetLineSeparator();
-      if (!selection_path           .empty()) selection_path            .append( line_separator );
-      if (!selection_parent_path    .empty()) selection_parent_path     .append( line_separator );
-      if (!selection_parent_filename.empty()) selection_parent_filename .append( line_separator );
-      if (!selection_filename       .empty()) selection_filename        .append( line_separator );
-      if (!selection_filename_noext .empty()) selection_filename_noext  .append( line_separator );
-      if (!selection_filename_ext   .empty()) selection_filename_ext    .append( line_separator );
+      // Add a newline if the property value is not empty. This allows printing all file path on individual lines
+      if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );
+      if (!selection_parent_path    .empty()) selection_parent_path     .append( selection_multi_separator );
+      if (!selection_parent_filename.empty()) selection_parent_filename .append( selection_multi_separator );
+      if (!selection_filename       .empty()) selection_filename        .append( selection_multi_separator );
+      if (!selection_filename_noext .empty()) selection_filename_noext  .append( selection_multi_separator );
+      if (!selection_filename_ext   .empty()) selection_filename_ext    .append( selection_multi_separator );
  
       selection_path           .append( element_selection_path            );
       selection_parent_path    .append( element_selection_parent_path     );
@@ -143,7 +147,7 @@ namespace shellanything
     mNumFiles = 0;
     mNumDirectories = 0;
 
-    //get elements stats
+    // Update stats
     for(size_t i=0; i<elements.size(); i++)
     {
       const std::string & element = elements[i];

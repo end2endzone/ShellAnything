@@ -23,6 +23,9 @@
  *********************************************************************************/
 
 #include "PropertyManager.h"
+
+#include "shellanything/Context.h"
+
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -140,6 +143,9 @@ namespace shellanything
     SetProperty("path.separator"       , prop_path_separator       );
     SetProperty("line.separator"       , prop_line_separator       );
     SetProperty("newline"              , prop_line_separator       );
+
+    // Set default property for multi selection. Issue #52.
+    SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, Context::DEFAULT_MULTI_SELECTION_SEPARATOR);
   }
 
 } //namespace shellanything

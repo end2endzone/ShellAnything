@@ -39,6 +39,16 @@ namespace shellanything
   public:
     typedef std::vector<std::string> ElementList;
 
+    /// <summary>
+    /// Name of the property that contains the separator for multi-selection separator.
+    /// </summary>
+    static const std::string MULTI_SELECTION_SEPARATOR_PROPERTY_NAME;
+
+    /// <summary>
+    /// Default value for the property 'MULTI_SELECTION_SEPARATOR_PROPERTY_NAME'.
+    /// </summary>
+    static const std::string DEFAULT_MULTI_SELECTION_SEPARATOR;
+
     Context();
     Context(const Context & c);
     virtual ~Context();

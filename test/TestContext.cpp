@@ -50,6 +50,9 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestContext::TearDown()
   {
+    // Force default properties back to their default values.
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testDefaults)
@@ -214,6 +217,7 @@ namespace shellanything { namespace test
   TEST_F(TestContext, testRegisterPropertiesMultipleFiles)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
    
     Context context;
 #ifdef _WIN32
@@ -260,6 +264,63 @@ namespace shellanything { namespace test
       bool file_element_found = (selection_path.find(file_element) != std::string::npos);
       ASSERT_TRUE( file_element_found ) << "selection_path=" << selection_path << "\n" << "file_element=" << file_element;
     }
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testCustomMultiSelectionSeparator)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
+   
+    // Force 'selection.path' and other selection based properties to be separated by a ',' character.
+    // All properties should be single-line.
+    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
+
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    ASSERT_FALSE( pmgr.HasProperty("selection.path") );
+ 
+    //act
+    context.RegisterProperties();
+ 
+    //assert
+    ASSERT_TRUE( pmgr.HasProperty("selection.path") );
+ 
+    //get all expanded properties
+    std::string selection_path             = pmgr.Expand("${selection.path}");
+    std::string selection_parent_path      = pmgr.Expand("${selection.parent.path}");
+    std::string selection_parent_filename  = pmgr.Expand("${selection.parent.filename}");
+    std::string selection_filename         = pmgr.Expand("${selection.filename}");
+    std::string selection_filename_noext   = pmgr.Expand("${selection.filename.noext}");
+    std::string selection_filename_ext     = pmgr.Expand("${selection.filename.extension}");
+ 
+    //assert 1 line for each properties
+    ASSERT_EQ( 1, CountLines(selection_path           ) );
+    ASSERT_EQ( 1, CountLines(selection_parent_path    ) );
+    ASSERT_EQ( 1, CountLines(selection_parent_filename) );
+    ASSERT_EQ( 1, CountLines(selection_filename       ) );
+    ASSERT_EQ( 1, CountLines(selection_filename_noext ) );
+    ASSERT_EQ( 1, CountLines(selection_filename_ext   ) );
+ 
+    //assert specific values of each property
+    ASSERT_EQ( "C:\\Windows\\System32\\kernel32.dll,C:\\Windows\\System32\\cmd.exe,C:\\Windows\\System32\\notepad.exe,C:\\Windows\\System32\\services.msc", selection_path);
+    ASSERT_EQ( "C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32", selection_parent_path);
+    ASSERT_EQ( "System32,System32,System32,System32", selection_parent_filename);
+    ASSERT_EQ( "kernel32.dll,cmd.exe,notepad.exe,services.msc", selection_filename);
+    ASSERT_EQ( "kernel32,cmd,notepad,services", selection_filename_noext);
+    ASSERT_EQ( "dll,exe,exe,msc", selection_filename_ext);
+
   }
   //--------------------------------------------------------------------------------------------------
 
