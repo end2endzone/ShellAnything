@@ -25,6 +25,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
   * [Selection-based properties](#selection-based-properties)
+  * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
 * [Use Cases](#use-cases)
@@ -762,9 +763,9 @@ Selection-based properties are encoded in utf-8.
 
 
 
-### Multi-selection-based properties ###
+## Multi-selection-based properties ##
 
-If multiple files are selected, the application generates the properties by combining the selected elements on multiple lines. In other words, each selected files are separated by the string `\r\n` (carriage return). 
+If multiple files are selected, the application generates the same properties but combines the selected elements on multiple lines. In other words, each selected files are separated by the string `\r\n` (carriage return). 
 
 For example, assume the following files are selected:
 * C:\Program Files (x86)\Winamp\libFLAC.dll
@@ -772,14 +773,15 @@ For example, assume the following files are selected:
 * C:\Program Files (x86)\Winamp\zlib.dll
 
 The system will generates the following property values (note the `\r\n` characters) :
-| Property                     | Value                                                                                                                               |
-|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll |
-| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                                                                                           |
-| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib                                                                                                       |
-| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                                 |
-| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                                                                                                      |
-| selection.filename.extension | dll`\r\n`exe`\r\n`dll                                                                                                               |
+| Property                     | Value                                                              |
+|------------------------------|--------------------------------------------------------------------------|
+| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll                          |
+| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                            |
+| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib|
+| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                            |
+| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                            |
+| selection.filename.extension | dll`\r\n`exe`\r\n`dll                       |
+
 
 
 ### selection.multi.separator property ###
@@ -797,7 +799,16 @@ To reset the property back to the default value, use the following &lt;property&
 
 **Example #1:**
 
-If an executable must get the list of selected files in a single command line (one after the other), one can set the property `selection.multi.separator` to  `" "` (double quote, space, double quote) and use the string `"${selection.path}"` (including the double quotes) to get the following expanded value:
+If an executable must get the list of selected files in a single command line (one after the other), one can set the property `selection.multi.separator` to  `" "` (double quote, space, double quote) and use the string `"${selection.path}"` (including the double quotes) to get the required expanded value:
+
+```xml
+<actions>
+  <property name="selection.multi.separator" value="&quot; &quot;" />
+  <exec path="myprogram.exe" arguments="&quot;${selection.path}&quot;" />
+  <property name="selection.multi.separator" value="${line.separator}" />
+</actions>
+```
+Which result in the following expanded value:
 ```
 "C:\Program Files (x86)\Winamp\libFLAC.dll" "C:\Program Files (x86)\Winamp\winamp.exe" "C:\Program Files (x86)\Winamp\zlib.dll"
 ```
