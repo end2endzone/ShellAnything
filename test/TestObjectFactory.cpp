@@ -199,7 +199,7 @@ namespace shellanything { namespace test
     Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT a 3 menus are available
+    //ASSERT all 3 menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
@@ -221,6 +221,51 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string("txt"),        menus[02]->GetIcon().GetFileExtension() );
     ASSERT_EQ( std::string(""),           menus[02]->GetIcon().GetPath() );
     ASSERT_EQ( Icon::INVALID_ICON_INDEX,  menus[02]->GetIcon().GetIndex() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseMenuMaxLength)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+ 
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+ 
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+ 
+    //copy the file
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::timing::Millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT all 4 menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ( 5, menus.size() );
+
+    //assert maxlength properly value for each menus
+    ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[00]->GetNameMaxLength() );  // maxlength attribute not specified.
+    ASSERT_EQ( 3,                             menus[01]->GetNameMaxLength() );  // maxlength attribute set to "3".
+    ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[02]->GetNameMaxLength() );  // maxlength attribute set to "a" which is not numeric (invalid).
+    ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[03]->GetNameMaxLength() );  // maxlength attribute set to "0" which is out of range (invalid).
+    ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[04]->GetNameMaxLength() );  // maxlength attribute set to "9999" which is out of range (invalid).
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

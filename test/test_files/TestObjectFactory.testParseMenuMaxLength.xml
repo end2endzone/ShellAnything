@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <!-- maxlength attribute not specified -->
+      <actions>
+        <property name="foo" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu01" maxlength="3">
+      <!-- maxlength attribute value -->
+      <actions>
+        <property name="bar" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu02" maxlength="a">
+      <!-- maxlength not parsable into an int -->
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu03" maxlength="0">
+      <!-- maxlength invalid value -->
+      <actions>
+        <property name="bat" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu04" maxlength="9999">
+      <!-- maxlength an out of range value -->
+      <actions>
+        <property name="bat" value="true" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

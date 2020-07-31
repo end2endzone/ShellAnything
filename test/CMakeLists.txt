@@ -18,6 +18,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseValidator.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseDefaults.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseMenuMaxLength.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
 
@@ -76,6 +77,8 @@ add_executable(shellanything_unittest
   TestPropertyManager.h
   TestShellExtension.cpp
   TestShellExtension.h
+  TestUnicode.cpp
+  TestUnicode.h
   TestValidator.cpp
   TestValidator.h
   TestWin32Registry.cpp

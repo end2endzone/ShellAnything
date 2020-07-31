@@ -86,7 +86,7 @@ The main features of ShellAnything are:
   * and many more.
 * Powerful property-based system for rich dynamic content and filters.
 * Easily integrate any third party application with custom menus.
-
+* Supports windows [keyboard mnemonics]([https://en.wikipedia.org/wiki/Mnemonics_(keyboard)](https://en.wikipedia.org/wiki/Mnemonics_(keyboard).
 
 
 

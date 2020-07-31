@@ -68,6 +68,8 @@ add_library(shellanything STATIC
   Node.cpp
   ObjectFactory.h
   ObjectFactory.cpp
+  Unicode.h
+  Unicode.cpp
   Validator.cpp
   ErrorManager.h
   ErrorManager.cpp
