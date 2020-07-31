@@ -129,6 +129,31 @@ namespace shellanything { namespace test
     ASSERT_FALSE( pmgr.HasProperty("job") );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testPropertiesAfterClear)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+#ifdef _WIN32
+    const std::string env_var_name = "env.TEMP";
+#else
+    const std::string env_var_name = "env.HOME";
+#endif
+
+    // Test for existance of a default property.
+    ASSERT_TRUE( pmgr.HasProperty("line.separator") );
+
+    // Test for existance of an environment property.
+    ASSERT_TRUE( pmgr.HasProperty(env_var_name) );
+
+    pmgr.Clear();
+
+    // Test for existance of a default property.
+    ASSERT_TRUE( pmgr.HasProperty("line.separator") );
+
+    // Test for existance of an environment property.
+    ASSERT_TRUE( pmgr.HasProperty(env_var_name) );
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything

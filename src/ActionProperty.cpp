@@ -51,6 +51,14 @@ namespace shellanything
     LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
     pmgr.SetProperty(name, value);
 
+    // If a user has changed property 'selection.multi.separator', the context must rebuild selection-based properties.
+    // See issue #52 for details.
+    if (name == Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
+    {
+      // Force the context to rebuild selection.* properties.
+      iContext.RegisterProperties();
+    }
+
     return true;
   }
 

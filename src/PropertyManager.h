@@ -97,6 +97,7 @@ namespace shellanything
   private:
 
     void RegisterEnvironmentVariables();
+    void RegisterDefaultProperties();
     PropertyMap properties;
   };
 

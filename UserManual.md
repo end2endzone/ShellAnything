@@ -25,6 +25,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
   * [Selection-based properties](#selection-based-properties)
+  * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
 * [Use Cases](#use-cases)
@@ -690,15 +691,15 @@ The implementation of such menus would be like this:
 ```xml
   <menu name="Select first file">
     <actions>
-      <property name="first.selection.path" value="${selection.path}" />
+      <property name="compare.first.selection.path" value="${selection.path}" />
     </actions>
   </menu>
   <menu name="Compare with first file">
     <actions>
       <!--Store this file into a property for convenience reason.-->
-      <property name="second.selection.path" value="${selection.path}" />
+      <property name="compare.second.selection.path" value="${selection.path}" />
 
-      <!-- run application that compares file "${first.selection.path}" with "${second.selection.path}" -->
+      <!-- run application that compares file "${compare.first.selection.path}" with "${compare.second.selection.path}" -->
     </actions>
   </menu>
 ```
@@ -761,6 +762,81 @@ The following table defines the list of dynamic properties and their utility:
 Selection-based properties are encoded in utf-8.
 
 
+
+## Multi-selection-based properties ##
+
+If multiple files are selected, the application generates the same properties but combines the selected elements on multiple lines. In other words, each selected files are separated by the string `\r\n` (carriage return). 
+
+For example, assume the following files are selected:
+* C:\Program Files (x86)\Winamp\libFLAC.dll
+* C:\Program Files (x86)\Winamp\winamp.exe
+* C:\Program Files (x86)\Winamp\zlib.dll
+
+The system will generates the following property values (note the `\r\n` characters) :
+| Property                     | Value                                                              |
+|------------------------------|--------------------------------------------------------------------------|
+| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll                          |
+| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                            |
+| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib|
+| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                            |
+| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                            |
+| selection.filename.extension | dll`\r\n`exe`\r\n`dll                       |
+
+
+
+### selection.multi.separator property ###
+
+If you need more flexibility when dealing with multiple files, the system defines the property `selection.multi.separator` that allows customizing the separator when combining multiple files.
+
+By default, this property is set to the value `\r\n` (new line)  when the application initialize.
+
+The property can be modified at any time using a [&lt;property&gt;](#property-action) action for changing the property when a menu is executed or with the  [&lt;default&gt;](#default) element to change the value globally (when the `Configuration File` is loaded).
+
+To reset the property back to the default value, use the following &lt;property&gt; action:
+```xml
+<property name="selection.multi.separator" value="${line.separator}" />
+``` 
+
+**Example #1:**
+
+If an executable must get the list of selected files in a single command line (one after the other), one can set the property `selection.multi.separator` to  `" "` (double quote, space, double quote) and use the string `"${selection.path}"` (including the double quotes) to get the required expanded value:
+
+```xml
+<actions>
+  <property name="selection.multi.separator" value="&quot; &quot;" />
+  <exec path="myprogram.exe" arguments="&quot;${selection.path}&quot;" />
+  <property name="selection.multi.separator" value="${line.separator}" />
+</actions>
+```
+Which result in the following expanded value:
+```
+"C:\Program Files (x86)\Winamp\libFLAC.dll" "C:\Program Files (x86)\Winamp\winamp.exe" "C:\Program Files (x86)\Winamp\zlib.dll"
+```
+**Example #2:**
+
+Assume that you want to run a specific command on each of the selected files (for example reset the files attributes), one can set the property `selection.multi.separator` to  `${line.separator}attrib -r -a -s -h "` (including the ending double quote character) and use the string `attrib -r -a -s -h "${selection.filename}"` (including the double quotes) to get the following expanded value:
+```
+attrib -r -a -s -h "C:\Program Files (x86)\Winamp\libFLAC.dll"
+attrib -r -a -s -h "C:\Program Files (x86)\Winamp\winamp.exe"
+attrib -r -a -s -h "C:\Program Files (x86)\Winamp\zlib.dll"
+```
+The result can then be used to:
+* Copy the commands to the clipboard:
+
+```xml
+<clipboard  value="attrib -r -a -s -h &quot;${selection.filename}&quot;"  />
+```
+
+* Create a batch file which content is the commands:
+```xml
+<file path="${env.TEMP}\reset_attribs.bat">@echo off
+attrib -r -a -s -h &quot;${selection.filename}&quot;
+</file>
+```
+
+
+
+
 ## Fixed properties ##
 
 The application defines a list of properties about the current runtime. The values of these properties are constant (fixed) and do not change.
@@ -775,8 +851,9 @@ The following table defines the list of fixed properties and their utility:
 | config.directory      | Matches the directory of the configuration files.        |
 | home.directory        | Matches the home directory of the current user.          |
 | path.separator        | Matches the `\` character.                               |
-| line.separator        | Matches the `\n` character.                              |
-| newline               | Matches the `\n` character. Same as `${line.separator}`. |
+| line.separator        | Matches the `\r\n` string.                               |
+| newline               | Matches the `\r\n` string. Same as `${line.separator}`.  |
+
 
 Fixed properties are encoded in utf-8.
 
