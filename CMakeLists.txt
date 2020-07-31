@@ -196,6 +196,10 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config-version.cma
 configure_file(${CMAKE_SOURCE_DIR}/cmake/shellanything-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake DESTINATION ${SHELLANYTHING_INSTALL_CMAKE_DIR})
 
+install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
+              ${CMAKE_SOURCE_DIR}/resources/unregister.bat
+              DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/shellanything DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR})
 install(FILES ${SHELLANYTHING_EXPORT_HEADER}
               ${SHELLANYTHING_VERSION_HEADER}
