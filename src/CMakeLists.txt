@@ -107,6 +107,16 @@ add_custom_command( TARGET shellanything POST_BUILD
                     ${CMAKE_SOURCE_DIR}/resources/configurations $<TARGET_FILE_DIR:shellanything>/configurations
                     COMMENT "Copying default configurations files database.")
 
+# Copy registration and unregistration scripts to target dir
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_SOURCE_DIR}/resources/register.bat $<TARGET_FILE_DIR:shellanything>/register.bat
+                    COMMENT "Copying register.bat script.")
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_SOURCE_DIR}/resources/unregister.bat $<TARGET_FILE_DIR:shellanything>/unregister.bat
+                    COMMENT "Copying unregister.bat script.")
+
 # Unit test projects requires to link with pthread if also linking with gtest
 if(SHELLANYTHING_BUILD_GTESTHELP)
   if(NOT WIN32)
