@@ -16,9 +16,9 @@ if %errorLevel% == 0 (
 echo Proceeding with the Shell Extension registration.
 cd /d %~dp0
 if exist "shellext.dll" (
-  regsvr32 /u shellext.dll
+  regsvr32 shellext.dll
 ) else (
-  regsvr32 /u shellext-d.dll
+  regsvr32 shellext-d.dll
 )
 
 pause
