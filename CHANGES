@@ -2,6 +2,7 @@ Changes for 0.5.0
 
 * Fixed issue #45: Registration and unregistration scripts are missing from installer and portable version.
 * Fixed issue #46: Typo in register and unregister scripts filenames.
+* Fixed issue #47: Installer should create shotcuts to register and unregister scripts.
 * Fixed issue #48: User Manual: Validity / Visibility hyperlink does not work.
 * Fixed issue #51: Action "Open command prompt here" from default.xml configuration does not work.
 * Fixed issue #52: Define a specific property for use as separator for handling multiple file selection.

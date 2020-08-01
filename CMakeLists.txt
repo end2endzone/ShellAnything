@@ -91,7 +91,7 @@ set(SHELLANYTHING_INSTALL_BIN_DIR      "bin")
 set(SHELLANYTHING_INSTALL_LIB_DIR      "lib/shellanything-${SHELLANYTHING_VERSION}")
 set(SHELLANYTHING_INSTALL_INCLUDE_DIR  "include/shellanything-${SHELLANYTHING_VERSION}")
 set(SHELLANYTHING_INSTALL_CMAKE_DIR    ${SHELLANYTHING_INSTALL_LIB_DIR}) # CMake files (*.cmake) should have the same destination as the library files. Some also prefers to use "cmake".
-set(SHELLANYTHING_INSTALL_DOC_DIR      "doc")
+set(SHELLANYTHING_INSTALL_DOC_DIR      "docs")
 
 ##############################################################################################################################################
 # Project settings
@@ -181,6 +181,55 @@ if (SHELLANYTHING_BUILD_DOC)
 endif()
 
 ##############################################################################################################################################
+# Convert markdown files to html for publishing with installers.
+##############################################################################################################################################
+
+# Setup the command for searching for a process.
+if(WIN32)
+  set(EXEC_SEARCH_COMMAND "where.exe")
+else()
+  set(EXEC_SEARCH_COMMAND "which")
+endif()
+
+# Search for grip executable.
+# This is an optional package.
+# See file ci\appveyor\install_grip.bat
+# See https://github.com/joeyespo/grip and https://pypi.org/project/grip/
+execute_process(COMMAND ${EXEC_SEARCH_COMMAND} grip RESULT_VARIABLE res_var)
+if("${res_var}" STREQUAL "0")
+  message("Found grip.")
+  set(GRIP_FOUND TRUE)
+else()
+  set(GRIP_FOUND FALSE)
+  message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
+endif()
+
+# Set the default filenames to be published with the install/package.
+set (README_FILENAME README.md)
+set (USERMANUAL_FILENAME UserManual.md)
+
+if (GRIP_FOUND)
+
+  # Convert README.md
+  execute_process(COMMAND grip README.md --export README.html RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if("${res_var}" STREQUAL "0")
+    set (README_FILENAME README.html)
+  else()
+    message(FATAL_ERROR "grip failed converting README.md with res_var='${res_var}'")
+  endif()
+
+  # Convert UserManual.md
+  execute_process(COMMAND grip UserManual.md --export UserManual.html RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if("${res_var}" STREQUAL "0")
+    set (USERMANUAL_FILENAME UserManual.html)
+  else()
+    message(FATAL_ERROR "grip failed converting UserManual.md with res_var='${res_var}'")
+  endif()
+
+endif()
+
+
+##############################################################################################################################################
 # Install
 ##############################################################################################################################################
 
@@ -207,12 +256,16 @@ install(FILES ${SHELLANYTHING_EXPORT_HEADER}
               DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR}/shellanything)
 install(EXPORT shellanything-targets DESTINATION ${SHELLANYTHING_INSTALL_CMAKE_DIR})
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/licenses DESTINATION ${SHELLANYTHING_INSTALL_ROOT_DIR})
-install(FILES ${CMAKE_SOURCE_DIR}/README.md
-              ${CMAKE_SOURCE_DIR}/UserManual.md
-              ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
+install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
               ${CMAKE_SOURCE_DIR}/docs/screenshot_folder.png
               ${CMAKE_SOURCE_DIR}/docs/ShellAnything-splashscreen.jpg
               DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR})
+
+install(FILES ${CMAKE_SOURCE_DIR}/README.md
+              ${CMAKE_SOURCE_DIR}/UserManual.md
+              ${CMAKE_SOURCE_DIR}/${README_FILENAME}
+              ${CMAKE_SOURCE_DIR}/${USERMANUAL_FILENAME}
+              DESTINATION ${SHELLANYTHING_INSTALL_ROOT_DIR})
 
 ##############################################################################################################################################
 # Packaging
@@ -227,6 +280,38 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_GENERATOR "ZIP;NSIS")
+
+# Add information about author
+set(CPACK_PACKAGE_VENDOR "https://github.com/end2endzone")
+set(CPACK_NSIS_CONTACT "end2endzone@gmail.com")
+set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/end2endzone/ShellAnything")
+set(CPACK_NSIS_HELP_LINK "https://github.com/end2endzone/ShellAnything")
+
+# Icon in the add/remove control panel. Must be an .exe file.
+# Use the main dll as we do not have main exe.
+# The filename will be wrong in debug builds.
+set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\shellext.dll)
+
+# Define "main" shortcuts for our execuables.
+# This methods cannot be used to define shortcuts with arguments.
+# For more flexibility, see the following: 
+# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
+set(CPACK_PACKAGE_EXECUTABLES
+ "shellanything_unittest" "Run Unit Tests"
+)
+
+# Create custom shortcuts for files that are not our "main" executables.
+# See the following for details:
+# https://stackoverflow.com/questions/14831739/how-do-i-add-a-start-menu-entry-for-a-text-file-in-cpack-ans-nsis
+# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
+set(CPACK_NSIS_MENU_LINKS
+  "${README_FILENAME}" "${README_FILENAME}"
+  "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
+  "licenses" "Third party licenses"
+  "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
+  "bin/register.bat" "Register shell extension"
+  "bin/unregister.bat" "Unregister shell extension"
+)
 
 # we don't want to split our program up into several things
 set(CPACK_MONOLITHIC_INSTALL 1)

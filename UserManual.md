@@ -1,3 +1,5 @@
+![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+
 
 # Overview #
 
