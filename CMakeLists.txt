@@ -211,7 +211,7 @@ set (USERMANUAL_FILENAME UserManual.md)
 if (GRIP_FOUND)
 
   # Convert README.md
-  execute_process(COMMAND grip README.md --export README.html RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (README_FILENAME README.html)
   else()
@@ -219,7 +219,7 @@ if (GRIP_FOUND)
   endif()
 
   # Convert UserManual.md
-  execute_process(COMMAND grip UserManual.md --export UserManual.html RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip UserManual.md --export UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (USERMANUAL_FILENAME UserManual.html)
   else()

@@ -14,7 +14,7 @@ if errorlevel 1 (
 :: Validate if pip is installed
 where pip.exe >NUL 2>NUL
 if errorlevel 1 (
-  echo Command failed. Please install pip ^(Python package installer^) to continue.
+  echo Command failed. Please install pip ^(Package Installer Python^) to continue.
   exit /B %errorlevel%
 )
 
@@ -25,3 +25,6 @@ if errorlevel 1 (
   echo Command failed. An error was found while installing grip.
   exit /B %errorlevel%
 )
+
+echo grip was installed on the system without error.
+echo.
