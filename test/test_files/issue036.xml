@@ -5,6 +5,8 @@
     <menu name="*** issue36 *** (test unicode icon)">
       <icon path="${env.USERPROFILE}\ShellAnything\issue36.psiΨpsi.ico" index="0" />
       
+      <menu name="note: unzip icon issue36_icon.7z into issue36.psiΨpsi.ico to see icon" />
+      
       <menu name="test unicode prompt" description="test for copyright and omega characters">
         <actions>
           <prompt name="myarguments" title="z©z" default="Hugh _Ω_ Jass" />
