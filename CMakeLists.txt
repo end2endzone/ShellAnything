@@ -279,7 +279,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${SHELLANYTHING_VERSION_PATCH}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one to integrate third party applications with Windows File Explorer.")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_GENERATOR "ZIP;NSIS")
+set(CPACK_GENERATOR "ZIP;NSIS;WIX")
 
 # Add information about author
 set(CPACK_PACKAGE_VENDOR "https://github.com/end2endzone")
