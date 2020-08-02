@@ -7,6 +7,7 @@ Changes for 0.5.0
 * Fixed issue #51: Action "Open command prompt here" from default.xml configuration does not work.
 * Fixed issue #52: Define a specific property for use as separator for handling multiple file selection.
 * Fixed issue #55: Menu name maximum length limit and escape string.
+* Fixed issue #61: Support for WIX installer.
 
 
 Changes for 0.4.0

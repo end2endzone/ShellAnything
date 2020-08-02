@@ -34,6 +34,8 @@ The following software must be installed on the system for compiling source code
 ### Windows Requirements ###
 
 * Microsoft Visual C++ 2010 or newer
+* (optional) [NSIS (Nullsoft Scriptable Install System)](https://nsis.sourceforge.io/)  v3.0a1 (or newer)
+* (optional) [WiX toolset](https://wixtoolset.org/)  v3.11.2 (or newer)
 
 
 

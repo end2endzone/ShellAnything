@@ -277,30 +277,40 @@ set(CPACK_PACKAGE_VERSION_MAJOR "${SHELLANYTHING_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${SHELLANYTHING_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${SHELLANYTHING_VERSION_PATCH}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one to integrate third party applications with Windows File Explorer.")
+set(CPACK_PACKAGE_VENDOR "end2endzone")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_GENERATOR "ZIP;NSIS;WIX")
 
-# Add information about author
-set(CPACK_PACKAGE_VENDOR "https://github.com/end2endzone")
+#######################
+# NSIS specific stuff #
+#######################
+
 set(CPACK_NSIS_CONTACT "end2endzone@gmail.com")
 set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/end2endzone/ShellAnything")
 set(CPACK_NSIS_HELP_LINK "https://github.com/end2endzone/ShellAnything")
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 
 # Icon in the add/remove control panel. Must be an .exe file.
 # Use the main dll as we do not have main exe.
 # The filename will be wrong in debug builds.
 set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\shellext.dll)
 
-# Define "main" shortcuts for our execuables.
-# This methods cannot be used to define shortcuts with arguments.
+# Define our "main" start menu shortcuts for our execuables.
+# NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
+# It only supports creating shortcuts to target executable. Nothing else.
+# To create custom shortcuts, including shortcuts with arguments, one must use another method.
 # For more flexibility, see the following: 
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
 set(CPACK_PACKAGE_EXECUTABLES
- "shellanything_unittest" "Run Unit Tests"
+  # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
+  # "$<TARGET_FILE_NAME:shellanything_unittest>" "Run Unit Tests"
+
+  # Won't work in debug build but its the best we dan do.
+  "shellanything_unittest" "Run Unit Tests"
 )
 
-# Create custom shortcuts for files that are not our "main" executables.
+# Define our secondaries start menu shortcuts (for files that are not direct target executables).
 # See the following for details:
 # https://stackoverflow.com/questions/14831739/how-do-i-add-a-start-menu-entry-for-a-text-file-in-cpack-ans-nsis
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
@@ -309,9 +319,36 @@ set(CPACK_NSIS_MENU_LINKS
   "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
   "licenses" "Third party licenses"
   "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
-  "bin/register.bat" "Register shell extension"
+  "bin/register.bat"   "Register shell extension"
   "bin/unregister.bat" "Unregister shell extension"
 )
+
+#######################
+# WIX specific stuff #
+#######################
+
+# Set variables for WIX installer
+set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
+set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/LICENSE.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/0.2.0.ico")
+set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
+
+# Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
+# Set CPACK_WIX_UPGRADE_GUID to something fixed while leaving CPACK_WIX_PRODUCT_GUID unset
+# (so that you get a unique new product GUID for every package you create).
+# This would cause an existing installation (with the same upgrade GUID) to be replaced 
+# (files of the old package are removed)
+# rather than installed in parallel.
+# See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
+
+# Define start menu shortcuts for WIX
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:shellext>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
+set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
+set_property(INSTALL "./licenses"                                       PROPERTY CPACK_START_MENU_SHORTCUTS "Third party licenses"      ) # This one does not work!
+set_property(INSTALL "https://github.com/end2endzone/ShellAnything"     PROPERTY CPACK_START_MENU_SHORTCUTS "ShellAnything Web Site"    )
+set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register shell extension"  )
+set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister shell extension")
 
 # we don't want to split our program up into several things
 set(CPACK_MONOLITHIC_INSTALL 1)
