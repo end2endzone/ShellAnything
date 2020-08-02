@@ -11,7 +11,6 @@ This manual includes a description of the system functionalities and capabilitie
   * [Unregister the shell extension](#unregister-the-shell-extension)
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
-    * [Keyboard mnemonics](#mnemonics--keyboard-shortcuts)
   * [Visibility / Validity](#visibility--validity)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
@@ -36,8 +35,11 @@ This manual includes a description of the system functionalities and capabilitie
   * [Run an application with parameters](#run-an-application-with-parameters)
   * [Open a command prompt in directory](#open-a-command-prompt-in-directory)
   * [Select two files for an operation](#select-two-files-for-an-operation)
+* [Other](#other)
+  * [Keyboard mnemonics](#mnemonics--keyboard-shortcuts) 
 * [Troubleshooting](#troubleshooting)
   * [Logging support](#logging-support)
+  * [Missing ampersand character (`&`) in menus](#missing-ampersand-character--in-menus)
   * [Reporting bugs](#reporting-bugs)
 
 
@@ -170,32 +172,7 @@ The `name` attribute is the actual text that will be displayed on the context me
 </menu>
 ```
 
-
-
-#### Mnemonics / keyboard shortcuts: ####
-
-Menu names supports [keyboard mnemonics]([https://en.wikipedia.org/wiki/Mnemonics_(keyboard)](https://en.wikipedia.org/wiki/Mnemonics_(keyboard))), a.k.a *Access Keys*, *Keyboard shortcuts* or *Keybindings*.  A mnemonic indicates to the user which key to press (often in conjunction with the Alt key) to activate a menu and execute its associated actions. They provides a method of quickly navigating a menu using the only the keyboard.  
-
-To assign a specific key to a menu,  add an ampersand character (`&`) before the character of the associated keyboard key.
-
-For example, the following would create a menu that is activated when one presses the `z` key:
-```xml
-<menu name="Press the &z key to execute this menu" >
-  <actions>
-    <message title="It works!" />
-  </actions>
-</menu>
-```
-
-The `&` character is a special character in menu names and must be escaped to be used as a plain text character. To escape an `&` character, one must double the character.
-
-For example, the following would create a menu named `Smith&Co` :
-```xml
-<menu name="Smith&&Co" />
-```
-Note the use of the double `&` which prevents creating a keyboard shortcut with the `C` key.
-
-**Note:** By default, mnemonics are not activated on Windows. Please read [this SuperUser article]([https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items](https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items)) to know how to activate them on Windows.
+Menu names supports _keyboard mnemonics_, see the [Mnemonics / keyboard shortcuts](#mnemonics--keyboard-shortcuts) section for details.
 
 
 
@@ -1032,6 +1009,38 @@ The following xml sample can select two files for an operation :
   </shell>
 </root>
 ```
+
+
+
+
+# Other #
+
+
+
+## Mnemonics / keyboard shortcuts: ##
+
+Menu names supports [keyboard mnemonics](https://en.wikipedia.org/wiki/Mnemonics_(keyboard)), a.k.a *Access Keys*, *Keyboard shortcuts* or *Keybindings*.  A mnemonic indicates to the user which key to press (often in conjunction with the Alt key) to activate a menu and execute its associated actions. They provides a method of quickly navigating a menu using the only the keyboard.  
+
+To assign a specific key to a menu,  add an ampersand character (`&`) before the character of the associated keyboard key.
+
+For example, the following would create a menu that is activated when one presses the `z` key:
+```xml
+<menu name="Press the &z key to execute this menu" >
+  <actions>
+    <message title="It works!" />
+  </actions>
+</menu>
+```
+
+The `&` character is a special character in menu names and must be escaped to be used as a plain text character. To escape an `&` character, one must double the character.
+
+For example, the following would create a menu named `Smith&Co` :
+```xml
+<menu name="Smith&&Co" />
+```
+Note the use of the double `&` which prevents creating a keyboard shortcut with the `C` key.
+
+**Note:** By default, mnemonics are not activated on Windows. Please read [this SuperUser article]([https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items](https://superuser.com/questions/16952/how-to-enable-underscore-shortcut-mnemonics-for-menu-items)) to know how to activate them on Windows.
 
 
 
