@@ -192,7 +192,7 @@ namespace shellanything { namespace test
     //assert success when all properties are defined
     v.SetFileExtensions("dll;exe;msc");
     ASSERT_TRUE( v.Validate(c) );
-    v.SetFileExtensions(""); //random order
+    v.SetFileExtensions("exe;dll;msc"); //random order
     ASSERT_TRUE( v.Validate(c) );
 
     //assert success when more file extensions are allowed
@@ -228,12 +228,270 @@ namespace shellanything { namespace test
     v.SetFileExists(dir_path);
     ASSERT_TRUE( v.Validate(c) );
  
-    //assert success if multiple element is specified
+    //assert success if all elements exists
     v.SetFileExists(file_path + ";" + dir_path);
     ASSERT_TRUE( v.Validate(c) );
  
     //assert failure if the last element is not found
     v.SetFileExists(file_path + ";" + dir_path + ";foo");
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsInversed)
+  {
+    Validator v;
+ 
+    // Invalid attribute name
+    ASSERT_FALSE( v.IsInversed(NULL) );
+    ASSERT_FALSE( v.IsInversed("") );
+
+    v.SetInserve("foo");
+
+    // Wrong attribute name
+    ASSERT_FALSE( v.IsInversed("bar") );
+
+    // Good attribute name;
+    ASSERT_TRUE( v.IsInversed("foo") );
+
+    // Longer attribute name
+    ASSERT_FALSE( v.IsInversed("foobar") );
+
+    // Shorter name
+    ASSERT_FALSE( v.IsInversed("barfoo") );
+
+
+
+    v.SetInserve("foobar");
+
+    // Searching subsets of the inserve string
+    ASSERT_FALSE( v.IsInversed("foo") );
+    ASSERT_FALSE( v.IsInversed("bar") );
+    ASSERT_FALSE( v.IsInversed("ooba") );
+
+
+
+    v.SetInserve("foo;bar;baz");
+
+    // Search first, middle, last attribute names
+    ASSERT_TRUE( v.IsInversed("foo") );
+    ASSERT_TRUE( v.IsInversed("bar") );
+    ASSERT_TRUE( v.IsInversed("baz") );
+
+    // Search is case sensitive
+    ASSERT_FALSE( v.IsInversed("fOo") );
+    ASSERT_FALSE( v.IsInversed("bAr") );
+    ASSERT_FALSE( v.IsInversed("bAz") );
+
+
+    // Assert the search go beyond its first match.
+    // There is a substring match at bart and bars but they should then
+    // be rejected. The last 'bar' should be where the match occurs.
+    v.SetInserve("bart;bars;bar");
+    ASSERT_TRUE( v.IsInversed("bar") );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testMaxFilesInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+    v.SetInserve("maxfiles"); // now the maxfiles attribute means "more than x"
+
+    //assert default
+    ASSERT_FALSE( v.Validate(c) ); // matches <visibility inverse="maxfiles" /> inversing maxfiles without specifying a maxfiles attribute...
+
+    //assert higher value
+    v.SetMaxFiles(c.GetNumFiles() + 1);
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert exact value
+    v.SetMaxFiles(c.GetNumFiles());
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert lower value
+    v.SetMaxFiles(c.GetNumFiles() - 1);
+    ASSERT_TRUE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testMaxDirectoriesInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Program Files");
+      elements.push_back("C:\\Users"        );
+      elements.push_back("C:\\Windows"      );
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to directories
+#endif
+
+    Validator v;
+    v.SetInserve("maxfolders"); // now the maxfolders attribute means "more than x"
+
+    //assert default
+    ASSERT_FALSE( v.Validate(c) ); // matches <visibility inverse="maxfolders" /> inversing maxfolders without specifying a maxfolders attribute...
+
+    //assert higher value
+    v.SetMaxDirectories(c.GetNumDirectories() + 1);
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert exact value
+    v.SetMaxDirectories(c.GetNumDirectories());
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert lower value
+    v.SetMaxDirectories(c.GetNumDirectories() - 1);
+    ASSERT_TRUE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testPropertiesInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+    v.SetInserve("properties"); // now the properties attribute means "valid when the property is not defined or empty"
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    std::string property_name = ra::testing::GetTestQualifiedName();
+
+    //assert success when property is not defined
+    pmgr.Clear();
+    v.SetProperties(property_name);
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when property is defined
+    pmgr.Clear();
+    pmgr.SetProperty(property_name, "defined");
+    v.SetProperties(property_name);
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when at least one property is defined
+    pmgr.Clear();
+    pmgr.SetProperty(property_name, "defined"); // property_name is defined
+    v.SetProperties(property_name + ";foo"); // foo is not defined
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when all properties are defined
+    pmgr.Clear();
+    pmgr.SetProperty(property_name, "defined");
+    pmgr.SetProperty("foo", "bar");
+    v.SetProperties(property_name + ";foo"); // all defined
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when all properties are not defined
+    pmgr.Clear();
+    v.SetProperties(property_name + ";foo"); // all not defined
+    ASSERT_TRUE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testFileExtensionsInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+    v.SetInserve("fileextensions");
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when no file extension is matching
+    v.SetFileExtensions("foo");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when a single file extension is matching
+    v.SetFileExtensions("dll");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when all properties are defined
+    v.SetFileExtensions("dll;exe;msc");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetFileExtensions("exe;dll;msc"); //random order
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when more file extensions are matching
+    v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testFileExistsInversed)
+  {
+    Context c;
+ 
+#ifdef _WIN32
+    const std::string file_path = "C:\\Windows\\System32\\kernel32.dll";
+    const std::string dir_path = "C:\\Program Files (x86)";
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    Validator v;
+    v.SetInserve("exists");
+ 
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+ 
+    //assert success when a specified file/directory is not found
+    v.SetFileExists("foo");
+    ASSERT_TRUE( v.Validate(c) );
+ 
+    //assert failure if the specified file is found
+    v.SetFileExists(file_path);
+    ASSERT_FALSE( v.Validate(c) );
+ 
+    //assert failure if the specified directory is found
+    v.SetFileExists(dir_path);
+    ASSERT_FALSE( v.Validate(c) );
+ 
+    //assert failure if all elements exists
+    v.SetFileExists(file_path + ";" + dir_path);
+    ASSERT_FALSE( v.Validate(c) );
+ 
+    //assert failure if at least one of all elements is found
+    v.SetFileExists("bar;" + dir_path + ";foo");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetFileExists("bar;" + file_path + ";foo");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
