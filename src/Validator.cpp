@@ -79,6 +79,7 @@ namespace shellanything
       mProperties     = validator.mProperties     ;
       mFileExtensions = validator.mFileExtensions ;
       mFileExists     = validator.mFileExists     ;
+      mInverse        = validator.mInverse        ;
     }
     return (*this);
   }
@@ -133,17 +134,83 @@ namespace shellanything
     mFileExists = iFileExists;
   }
 
+  const std::string & Validator::GetInserve() const
+  {
+    return mInverse;
+  }
+
+  void Validator::SetInserve(const std::string & iInserve)
+  {
+    mInverse = iInserve;
+  }
+
+  bool Validator::IsInversed(const char * name) const
+  {
+    if (name == NULL)
+      return false;
+    if (name[0] == '\0')
+      return false;
+
+    size_t name_length = std::string(name).size();
+    size_t search_index = 0;
+    size_t pos = mInverse.find(name, search_index);
+    while( pos != std::string::npos)
+    {
+      // The name of the attribute was found.
+
+      // To prevent finding attribute 'foo' from attribute 'foobar',
+      // The end of the attribute should match the end of the mInverse string or
+      // followed by a ';' character.
+      char next = '\0';
+      if (pos + name_length < mInverse.size())
+        next = mInverse[pos + name_length];
+
+      if (next == '\0' || next == ';')
+      {
+        // Good. Keep looking
+
+        // To prevent finding attribute 'bar' from attribute 'foobar',
+        // The beginning of the attribute should match the beginning of the mInverse string or
+        // the previous character must be a ';' character.
+        if (pos == 0)
+          return true; // We have a match!
+
+        char previous = ';';
+        if (pos >= 1)
+          previous = mInverse[pos - 1];
+        
+        if (previous == ';')
+          return true; // We have a match!
+      }
+
+      // This is not the attribute we are looking for.
+      // Move the searched position at the next possible offset
+      // and search again.
+      search_index += name_length;
+      pos = mInverse.find(name, search_index);
+    }
+
+    return false;
+  }
+
   bool Validator::Validate(const Context & iContext) const
   {
-    if (iContext.GetNumFiles() > mMaxFiles)
-      return false; //too many files selected
+    bool maxfiles_inversed = IsInversed("maxfiles");
+    if (!maxfiles_inversed && iContext.GetNumFiles() > mMaxFiles)
+        return false; //too many files selected
+    if (maxfiles_inversed && iContext.GetNumFiles() <= mMaxFiles)
+        return false; //too many files selected
 
-    if (iContext.GetNumDirectories() > mMaxDirectories)
+    bool maxfolders_inversed = IsInversed("maxfolders");
+    if (!maxfolders_inversed && iContext.GetNumDirectories() > mMaxDirectories)
+      return false; //too many directories selected
+    if (maxfolders_inversed && iContext.GetNumDirectories() <= mMaxDirectories)
       return false; //too many directories selected
 
     //validate properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string properties = pmgr.Expand(mProperties);
+    bool properties_inversed = IsInversed("properties");
     if (!properties.empty())
     {
       //split
@@ -153,16 +220,32 @@ namespace shellanything
       for(size_t i=0; i<property_list.size(); i++)
       {
         const std::string & p = property_list[i];
-        if (!pmgr.HasProperty(p))
-          return false; //missing property
-        const std::string & p_value = pmgr.GetProperty(p);
-        if (p_value.empty())
-          return false; //empty
+
+        if (!properties_inversed)
+        {
+          if (!pmgr.HasProperty(p))
+            return false; //missing property
+          const std::string & p_value = pmgr.GetProperty(p);
+          if (p_value.empty())
+            return false; //empty
+        }
+        else
+        {
+          // properties_inversed=true
+          if (pmgr.HasProperty(p))
+          {
+            const std::string & p_value = pmgr.GetProperty(p);
+            if (!p_value.empty())
+              return false; //not empty
+          }
+        }
+
       }
     }
 
     //validate file extentions
     const std::string file_extensions = pmgr.Expand(mFileExtensions);
+    bool fileextensions_inversed = IsInversed("fileextensions");
     if (!file_extensions.empty())
     {
       //split
@@ -178,13 +261,16 @@ namespace shellanything
 
         //each file extension must be part of accepted_file_extensions
         bool found = HasValue(accepted_file_extensions, current_file_extension);
-        if (!found)
+        if (!fileextensions_inversed && !found)
+          return false; //current file extension is not accepted
+        if (fileextensions_inversed && found)
           return false; //current file extension is not accepted
       }
     }
 
     //validate file/directory exists
     const std::string file_exists = pmgr.Expand(mFileExists);
+    bool exists_inversed = IsInversed("exists");
     if (!file_exists.empty())
     {
       //split
@@ -194,9 +280,12 @@ namespace shellanything
       for(size_t i=0; i<mandatory_files.size(); i++)
       {
         const std::string & element = mandatory_files[i];
-        bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
-        bool isDir  = ra::filesystem::DirectoryExistsUtf8(element.c_str());
-        if (!isFile && !isDir)
+        bool element_exists = false;
+        element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
+        element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
+        if (!exists_inversed && !element_exists)
+          return false; //mandatory file/directory not found
+        if (exists_inversed && element_exists)
           return false; //mandatory file/directory not found
       }
     }

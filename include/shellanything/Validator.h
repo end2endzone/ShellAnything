@@ -95,6 +95,25 @@ namespace shellanything
     void SetFileExists(const std::string & iFileExists);
 
     /// <summary>
+    /// Getter for the 'inserve' parameter.
+    /// </summary>
+    const std::string & GetInserve() const;
+
+    /// <summary>
+    /// Setter for the 'inserve' parameter.
+    /// </summary>
+    void SetInserve(const std::string & iInserve);
+
+    /// <summary>
+    /// Returns true if the given attribute name is in the list of inversed attributes.
+    /// The accepted attribute names matches the list of attributes of <validity> or <visibility> elements in a Configuration File.
+    /// See the 'User Manual' for details.
+    /// </summary>
+    /// <param name="name">The name of the attribute. The name is case sensitive.</param>
+    /// <returns>Returns true if the given attribute name is in the list of inversed attributes. Returns false otherwise.</returns>
+    bool IsInversed(const char * name) const;
+
+    /// <summary>
     /// Validate the given context against a set of constraints.
     /// The possible constraints includes a minimum/maximum number of files/directories selected,
     /// a list of properties that must be defined,
@@ -102,6 +121,8 @@ namespace shellanything
     /// ...
     /// Note: this function is used to enable or disable a menu.
     /// </summary>
+    /// <param name="iContext">The context used for validating.</param>
+    /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
     bool Validate(const Context & iContext) const;
 
   private:
@@ -110,6 +131,7 @@ namespace shellanything
     std::string mProperties;
     std::string mFileExtensions;
     std::string mFileExists;
+    std::string mInverse;
   };
 
 } //namespace shellanything

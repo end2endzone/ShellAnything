@@ -262,7 +262,7 @@ For example, the following set a menu visible only when the user right-click on 
 
 The `fileextensions` attribute validates a menu based on the file's extension selected by the user.
 
-If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple extension, one must separate each extensions with the `;` character. If multiple extension are specified, **at least one** extension must match for the validation to be successful.
+If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple extension, one must separate each extensions with the `;` character. If multiple file extensions are specified, **at least one** extension must match for the validation to be successful.
 
 If `fileextensions` attribute is not specified, then the validation is successful.
 
@@ -302,6 +302,69 @@ For example, the following set a menu visible when `process.started` property is
 ```
 
 See [properties](#properties) section for how to define custom properties.
+
+
+
+### inverse attribute: ###
+
+The `inverse` attribute inverts the logic of one or multiple attributes. For example, to inverse the meaning of the `maxfiles` attribute, set `inverse` attribute to the value `maxfiles`. 
+
+To specify multiple inverted attributes, one must separate each attribute names with the `;` character.
+
+If `inverse` attribute is not specified, then the validation is successful.
+
+The meaning of each inversed attribute in explained in the following table:
+
+| Attribute      | Meaning                                                                                                                                                                                                                   |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.             |
+| maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.  |
+| fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match for the validation to be successful. |
+| exists         | Validates a menu if the specified file **does not** exists.<br>If multiple files are specified, **all files** must _not exists_ on the system for the validation to be successful.                                        |
+| properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.             |
+
+Typical use case of the `inverse` attribute is about filtering out known file extensions.
+
+For examples:
+
+
+
+#### Split File and Join File menus: ####
+
+* A  `split file`  menu accept only a single file. When executed, it split the selected file `foo.dat` into multiple files of which the first "part" has the file extension  `001`. For example, `foo.dat.001`, `foo.dat.002`, `foo.dat.003` and `foo.dat.004`.
+-   A  `join files`  menu accept all files that matches  `fileextensions="001"`
+
+To prevent the `split file` menu to be displayed when user selects a *.001 file (we don't need to split a file twice), the menu should also ***not*** accept files that matches `fileextensions="001"`.
+
+In the end, the `split file` menu validity should be:
+1. accept only a **single file**.
+2. accept files which file extension **is not** `001`.
+
+The validity element should look like this:
+```xml
+<validity maxfiles="1" maxfolders="0" fileextensions="001" inverse="fileextensions" />
+```
+
+
+
+#### Compress menu: ####
+
+A `Compress File` menu which main action compresses the selected files should not be available when one (or more) of the selected files is already compressed. 
+
+The validity element should look like this:
+```xml
+<validity maxfolders="0" fileextensions="zip;7z;bz2;gz;gzip;rar;tar" inverse="fileextensions" />
+```
+
+
+
+#### More examples: ####
+
+* `<validity maxfiles="1" maxfolders="0" inverse="maxfiles" />`, valid when _**more than**_ one file is selected.
+* `<validity properties="process.started" inverse="properties" />`, valid when a process **_is not_** started  (assuming the property `process.started` is set when the process is started.
+* `<validity exists="${env.USERPROFILE}\config.ini" inverse="exists"  />`, valid only when the user's configuration file **_is not_** yet created.
+
+
 
 
 

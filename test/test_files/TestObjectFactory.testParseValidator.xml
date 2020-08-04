@@ -2,6 +2,7 @@
 <root>
   <shell>
     <menu name="menu00">
+      <!-- properties attribute is set -->
       <visibility properties="bar" />
       <actions>
         <property name="foo" value="true" />
@@ -9,6 +10,7 @@
     </menu>
 
     <menu name="menu01">
+      <!-- maxfiles and maxfolders attributes are set -->
       <visibility maxfiles="5" maxfolders="6" />
       <actions>
         <property name="baz" value="true" />
@@ -16,6 +18,7 @@
     </menu>
 
     <menu name="menu02">
+      <!-- fileextensions attribute is set -->
       <visibility fileextensions="com;exe;bat;cmd" />
       <actions>
         <property name="baz" value="true" />
@@ -23,7 +26,40 @@
     </menu>
 
     <menu name="menu03">
+      <!-- exists attribute is set -->
       <visibility exists="C:\Users\Public;C:\Program Files (x86)" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu04">
+      <!-- inverse attribute not specified -->
+      <visibility />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu05" inverse="maxfiles">
+      <!-- inverse attribute set to maxfiles -->
+      <visibility inverse="maxfiles" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu06" inverse="maxfiles;maxfolders">
+      <!-- inverse multiple value -->
+      <visibility inverse="maxfiles;maxfolders" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu07" inverse="foo">
+      <!-- inverse unknown attribute -->
+      <visibility inverse="foo" />
       <actions>
         <property name="baz" value="true" />
       </actions>
