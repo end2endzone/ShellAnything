@@ -412,6 +412,15 @@ namespace shellanything { namespace test
     pmgr.Clear();
     v.SetProperties(property_name + ";foo"); // all not defined
     ASSERT_TRUE( v.Validate(c) );
+
+    // If multiple properties are specified, all properties must be empty or not defined for the validation to be successful.
+    pmgr.Clear();
+    v.SetProperties("foo;bar;baz");
+    ASSERT_TRUE( v.Validate(c) );
+
+    pmgr.SetProperty(property_name, "defined");
+    v.SetProperties("foo;bar;baz;" + property_name);
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExtensionsInversed)
@@ -453,6 +462,12 @@ namespace shellanything { namespace test
     //assert failure when more file extensions are matching
     v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
     ASSERT_FALSE( v.Validate(c) );
+
+    // If multiple file extensions are specified, no extension must match for the validation to be successful.
+    v.SetFileExtensions("aaa;bbb;ccc;");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetFileExtensions("aaa;bbb;exe;ccc;");
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExistsInversed)
@@ -492,6 +507,12 @@ namespace shellanything { namespace test
     v.SetFileExists("bar;" + dir_path + ";foo");
     ASSERT_FALSE( v.Validate(c) );
     v.SetFileExists("bar;" + file_path + ";foo");
+    ASSERT_FALSE( v.Validate(c) );
+ 
+    // If multiple files are specified, all files must not exists on the system for the validation to be successful.
+    v.SetFileExists("foo;bar;baz");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetFileExists("foo;bar;C:\\Windows\\System32\\kernel32.dll;baz");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
