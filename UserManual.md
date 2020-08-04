@@ -309,7 +309,7 @@ See [properties](#properties) section for how to define custom properties.
 
 The `inverse` attribute inverts the logic of one or multiple attributes. For example, to inverse the meaning of the `maxfiles` attribute, set `inverse` attribute to the value `maxfiles`. 
 
-To specify multiple inverted attributes, one must separate each attribute names with the `;` character.
+To specify multiple inverted attributes, one must separate each attribute names with the `;` character. To invert all possible attributes, use the value 'all'.
 
 If `inverse` attribute is not specified, then the validation is successful.
 

@@ -150,8 +150,17 @@ namespace shellanything
       return false;
     if (name[0] == '\0')
       return false;
+    
+    std::string tmp_name = name;
 
-    size_t name_length = std::string(name).size();
+    // Validate with 'all' attribute
+    if (tmp_name != "all")
+    {
+      if ( IsInversed("all") )
+        return true;
+    }
+
+    size_t name_length = tmp_name.size();
     size_t search_index = 0;
     size_t pos = mInverse.find(name, search_index);
     while( pos != std::string::npos)

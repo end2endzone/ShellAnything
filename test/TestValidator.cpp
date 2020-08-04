@@ -516,6 +516,40 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testInversedAll)
+  {
+    Validator v;
+
+    v.SetInserve("all");
+    ASSERT_TRUE( v.IsInversed("maxfiles") );
+    ASSERT_TRUE( v.IsInversed("maxfolders") );
+    ASSERT_TRUE( v.IsInversed("fileextensions") );
+    ASSERT_TRUE( v.IsInversed("exists") );
+    ASSERT_TRUE( v.IsInversed("properties") );
+
+    v.SetInserve("foo;all");
+    ASSERT_TRUE( v.IsInversed("maxfiles") );
+    ASSERT_TRUE( v.IsInversed("maxfolders") );
+    ASSERT_TRUE( v.IsInversed("fileextensions") );
+    ASSERT_TRUE( v.IsInversed("exists") );
+    ASSERT_TRUE( v.IsInversed("properties") );
+
+    v.SetInserve("all;foo");
+    ASSERT_TRUE( v.IsInversed("maxfiles") );
+    ASSERT_TRUE( v.IsInversed("maxfolders") );
+    ASSERT_TRUE( v.IsInversed("fileextensions") );
+    ASSERT_TRUE( v.IsInversed("exists") );
+    ASSERT_TRUE( v.IsInversed("properties") );
+
+    v.SetInserve("foo;all;bar");
+    ASSERT_TRUE( v.IsInversed("maxfiles") );
+    ASSERT_TRUE( v.IsInversed("maxfolders") );
+    ASSERT_TRUE( v.IsInversed("fileextensions") );
+    ASSERT_TRUE( v.IsInversed("exists") );
+    ASSERT_TRUE( v.IsInversed("properties") );
+
+  }
+  //--------------------------------------------------------------------------------------------------
 
 } //namespace test
 } //namespace shellanything
