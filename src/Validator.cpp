@@ -79,6 +79,7 @@ namespace shellanything
       mProperties     = validator.mProperties     ;
       mFileExtensions = validator.mFileExtensions ;
       mFileExists     = validator.mFileExists     ;
+      mInverse        = validator.mInverse        ;
     }
     return (*this);
   }

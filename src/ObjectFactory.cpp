@@ -203,6 +203,16 @@ namespace shellanything
       }
     }
 
+    //parse inverse
+    std::string inverse;
+    if (ParseAttribute(element, "inverse", true, true, inverse, error))
+    {
+      if (!inverse.empty())
+      {
+        result.SetInserve(inverse);
+      }
+    }
+
     //success
     validator = result;
     return true;
