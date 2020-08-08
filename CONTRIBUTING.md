@@ -1,3 +1,4 @@
+
 # Contributing to ShellAnything
 
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
@@ -22,11 +23,11 @@ We use github to host code, to track issues and feature requests, as well as acc
 ## We use [Github Flow](https://guides.github.com/introduction/flow/index.html), so all code changes happen through pull requests
 Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
 
-1. Fork the repo and create your branch from `master`.
+1. Fork the repository and create your branch from `master`.
 2. If you've added code that should be tested, add tests.
 3. If you've changed APIs, update the documentation.
 4. Ensure the test suite passes.
-5. Make sure your code lints.
+5. Make sure your code lints and follow [coding styles](#use-a-consistent-coding-style).
 6. Issue that pull request!
 
 
@@ -37,13 +38,7 @@ In short, when you submit code changes, your submissions are understood to be un
 
 
 ## Report bugs using Github's [issues](https://github.com/end2endzone/ShellAnything/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/end2endzone/ShellAnything/issues/new/choose); it's that easy!
-
-
-
-## Write bug reports with detail, background, and sample code
-If you think you have found a problem with the application, fill out a "Bug Report".
-This project uses a [Bug Report template](https://github.com/end2endzone/ShellAnything/issues/new?assignees=&labels=bug&template=bug_report.md&title=) which help clarify your bug description and your expectations.
+We encourage you to write bug reports with detail, background, and sample code. We use GitHub issues to track public bugs. If you have found a problem, fill out a [Bug Report](https://github.com/end2endzone/ShellAnything/issues/new?template=bug_report.md&labels=bug) which help clarify your bug description and your expectations. If you are not sure about your problem, you can also [open a generic issue](https://github.com/end2endzone/ShellAnything/issues/new); it's that easy! 
 
 **Great Bug Reports** tend to have:
 
@@ -57,12 +52,11 @@ People *love* thorough bug reports.
 
 
 
-## Use a Consistent Coding Style
+## Use a consistent Coding Style
 This project uses [Google's C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Naming) for naming functions, classes, types and objects.
 Not all the code was ported to the new coding style but new code should follow this coding style.
 
-[cpplint](https://github.com/google/styleguide/tree/gh-pages/cpplint) can be used to validate code formatting. It is a python based coding style checker for C/C++.
-You can install with "pip install cpplint". Then you can just use "cpplint file.cpp" or "cpplint --recursive .".
+[cpplint](https://github.com/google/styleguide/tree/gh-pages/cpplint) can be used to validate code formatting. It is a python based coding style checker for C/C++. You can install with `pip install cpplint`. Then you can just use `cpplint file.cpp` or `cpplint --recursive .` (including the last `.` character)
 
 
 
