@@ -839,16 +839,20 @@ The application provides a list of dynamic properties. The values of these prope
 
 The following table defines the list of dynamic properties and their utility:
 
-| Property                     | Description                                                              |
-|------------------------------|--------------------------------------------------------------------------|
-| selection.path               | Matches the full path of the clicked element.                            |
-| selection.filename           | Matches the filename  of the clicked element.                            |
-| selection.filename.noext     | Matches the filename  of the clicked element without the file extension. |
-| selection.parent.path        | Matches the full path of the parent  element.                            |
-| selection.parent.filename    | Matches the filename  of the parent  element.                            |
-| selection.filename.extension | Matches the file extension of the clicked element.                       |
+| Property                     | Description                                                             |
+|------------------------------|-------------------------------------------------------------------------|
+| selection.path               | Matches the full path of the clicked element.                           |
+| selection.filename           | Matches the filename of the clicked element.                            |
+| selection.filename.noext     | Matches the filename of the clicked element without the file extension. |
+| selection.parent.path        | Matches the full path of the parent element.                            |
+| selection.parent.filename    | Matches the filename of the parent element.                             |
+| selection.filename.extension | Matches the file extension of the clicked element.                      |
+| selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.       |
+| selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.       |
 
 Selection-based properties are encoded in utf-8.
+
+Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
 
 
 
@@ -862,14 +866,18 @@ For example, assume the following files are selected:
 * C:\Program Files (x86)\Winamp\zlib.dll
 
 The system will generates the following property values (note the `\r\n` characters) :
-| Property                     | Value                                                              |
-|------------------------------|--------------------------------------------------------------------------|
-| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll                          |
-| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                            |
-| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib|
-| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                            |
-| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                            |
-| selection.filename.extension | dll`\r\n`exe`\r\n`dll                       |
+| Property                     | Value                                                                                                                               |
+|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll |
+| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                                                                                           |
+| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib                                                                                                       |
+| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                                 |
+| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                                                                                                      |
+| selection.filename.extension | dll`\r\n`exe`\r\n`dll                                                                                                               |
+| selection.drive.letter       | C`\r\n`C`\r\n`C                                                                                                                     |
+| selection.drive.path         | C:\\`\r\n`C:\\`\r\n`C:\\                                                                                                            |
+
+Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
 
 
 
