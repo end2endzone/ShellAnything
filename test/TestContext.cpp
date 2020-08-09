@@ -320,7 +320,77 @@ namespace shellanything { namespace test
     ASSERT_EQ( "kernel32.dll,cmd.exe,notepad.exe,services.msc", selection_filename);
     ASSERT_EQ( "kernel32,cmd,notepad,services", selection_filename_noext);
     ASSERT_EQ( "dll,exe,exe,msc", selection_filename_ext);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testSelectionDrive)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
+   
+    // Force 'selection.path' and other selection based properties to be separated by a ',' character.
+    // This is easier for testing
+    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
 
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("c:\\windows\\system32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    ASSERT_FALSE( pmgr.HasProperty("selection.drive.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.drive.letter") );
+ 
+    //act
+    context.RegisterProperties();
+ 
+    //assert
+    ASSERT_TRUE( pmgr.HasProperty("selection.drive.path") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.drive.letter") );
+
+    ASSERT_EQ( "c:\\,C:\\,C:\\", pmgr.GetProperty("selection.drive.path"  ) );
+    ASSERT_EQ( "c,C,C", pmgr.GetProperty("selection.drive.letter") );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testSelectionDriveNetwork)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
+   
+    // Force 'selection.path' and other selection based properties to be separated by a ',' character.
+    // This is easier for testing
+    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
+
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("\\\\localhost\\public\\foo.dat" );
+      elements.push_back("\\\\localhost\\public\\bar.dat" );
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    ASSERT_FALSE( pmgr.HasProperty("selection.drive.path") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.drive.letter") );
+ 
+    //act
+    context.RegisterProperties();
+ 
+    //assert
+    ASSERT_TRUE( pmgr.HasProperty("selection.drive.path") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.drive.letter") );
+
+    ASSERT_EQ( "", pmgr.GetProperty("selection.drive.path"  ) );
+    ASSERT_EQ( "", pmgr.GetProperty("selection.drive.letter") );
   }
   //--------------------------------------------------------------------------------------------------
 
