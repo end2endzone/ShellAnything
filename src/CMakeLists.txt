@@ -135,7 +135,6 @@ target_include_directories(shellanything
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
-    tinyxml2_static
     win32clipboard
     glog::glog
 )
@@ -146,8 +145,19 @@ target_include_directories(shellext
     rapidassist
     glog::glog
 )
-target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist tinyxml2_static win32clipboard glog::glog)
+target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist win32clipboard glog::glog)
 target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog)
+
+# Also add Tinyxml2 include and libraries.
+# The include/libraries are added at the end to allow supporting both static or shared libraries (the target names are different).
+# See issue #67 (https://github.com/end2endzone/ShellAnything/issues/67) for details.
+if (TARGET tinyxml2)
+  target_include_directories(shellanything PRIVATE tinyxml2)
+  target_link_libraries(shellanything PRIVATE tinyxml2)
+else()
+  target_include_directories(shellanything PRIVATE tinyxml2_static)
+  target_link_libraries(shellanything PRIVATE tinyxml2_static)
+endif()
 
 install(TARGETS shellanything
         EXPORT shellanything-targets
