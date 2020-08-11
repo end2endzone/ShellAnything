@@ -24,6 +24,7 @@
 
 #include "shellanything/Node.h"
 #include <algorithm>
+#include <stdexcept>
 
 namespace shellanything
 {
