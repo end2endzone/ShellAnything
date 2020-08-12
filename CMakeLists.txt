@@ -2,6 +2,12 @@
 cmake_minimum_required(VERSION 3.4.3 FATAL_ERROR)
 project(ShellAnything)
 
+#Find optional packages.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(WIX)
+find_package(NSIS)
+find_package(GRIP)
+
 ##############################################################################################################################################
 # Standard CMake variables
 ##############################################################################################################################################
@@ -184,32 +190,11 @@ endif()
 # Convert markdown files to html for publishing with installers.
 ##############################################################################################################################################
 
-# Setup the command for searching for a process.
-if(WIN32)
-  set(EXEC_SEARCH_COMMAND "where.exe")
-else()
-  set(EXEC_SEARCH_COMMAND "which")
-endif()
-
-# Search for grip executable.
-# This is an optional package.
-# See file ci\appveyor\install_grip.bat
-# See https://github.com/joeyespo/grip and https://pypi.org/project/grip/
-execute_process(COMMAND ${EXEC_SEARCH_COMMAND} grip RESULT_VARIABLE res_var)
-if("${res_var}" STREQUAL "0")
-  message("Found grip.")
-  set(GRIP_FOUND TRUE)
-else()
-  set(GRIP_FOUND FALSE)
-  message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
-endif()
-
 # Set the default filenames to be published with the install/package.
 set (README_FILENAME README.md)
 set (USERMANUAL_FILENAME UserManual.md)
 
 if (GRIP_FOUND)
-
   # Convert README.md
   execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
@@ -225,7 +210,8 @@ if (GRIP_FOUND)
   else()
     message(FATAL_ERROR "grip failed converting UserManual.md with res_var='${res_var}'")
   endif()
-
+else()
+  message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
 endif()
 
 
@@ -280,7 +266,13 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one 
 set(CPACK_PACKAGE_VENDOR "end2endzone")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_GENERATOR "ZIP;NSIS;WIX")
+set(CPACK_GENERATOR "ZIP")
+if (NSIS_FOUND)
+  list(APPEND CPACK_GENERATOR "NSIS")
+endif (NSIS_FOUND)
+if (WIX_FOUND)
+  list(APPEND CPACK_GENERATOR "WIX")
+endif (WIX_FOUND)
 
 #######################
 # NSIS specific stuff #
