@@ -117,13 +117,6 @@ add_custom_command( TARGET shellanything POST_BUILD
                     ${CMAKE_SOURCE_DIR}/resources/unregister.bat $<TARGET_FILE_DIR:shellanything>/unregister.bat
                     COMMENT "Copying unregister.bat script.")
 
-# Unit test projects requires to link with pthread if also linking with gtest
-if(SHELLANYTHING_BUILD_GTESTHELP)
-  if(NOT WIN32)
-    set(PTHREAD_LIBRARIES -pthread)
-  endif()
-endif()
-
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 set_target_properties(shellext        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})

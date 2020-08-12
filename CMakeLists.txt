@@ -126,15 +126,6 @@ include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header 
                     ${CMAKE_BINARY_DIR}/include                 # for ${SHELLANYTHING_VERSION_HEADER} and ${SHELLANYTHING_CONFIG_HEADER} generated files.
 )
 
-# unit tests
-if(SHELLANYTHING_BUILD_TEST)
-  if(NOT SHELLANYTHING_BUILD_GTESTHELP)
-    # force SHELLANYTHING_BUILD_GTESTHELP=ON
-    message(WARNING "Forcing SHELLANYTHING_BUILD_GTESTHELP to ON because SHELLANYTHING_BUILD_TEST is enabled.")
-    set(SHELLANYTHING_BUILD_GTESTHELP ON)
-  endif()
-endif()
-
 # Subprojects
 add_subdirectory(src)
 
