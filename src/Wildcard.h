@@ -82,13 +82,28 @@ namespace shellanything
   /// <param name="oIndexes">The offsets where wildcard characters was found.</param>
   void FindWildcardCharacters(const char * iString, int iOffset, IntList & oIndexes);
 
-  //Processes iWildcard and finds expanding parameters in order to convert iWildcard to iValue
+  /// <summary>
+  /// Processes iWildcard and finds expanding parameters in order to convert iWildcard to iValue.
+  /// </summary>
+  /// <param name="iWildcard">The pattern string.</param>
+  /// <param name="iValue">The value to test.</param>
+  /// <param name="oList">The list of WILDCARD findings.</param>
+  /// <returns>Returns true if iWildcard can be expanded to match iValue. Returns false otherwise.</returns>
   bool WildcardSolve(const char * iWildcard, const char * iValue, WildcardList & oList);
 
-  //Returns true if iWildcard can be expanded to match iValue.
+  /// <summary>
+  /// Returns true if iWildcard can be expanded to match iValue.
+  /// </summary>
+  /// <param name="iWildcard">The pattern string.</param>
+  /// <param name="iValue">The value to test.</param>
+  /// <returns>Returns true if iWildcard can be expanded to match iValue. Returns false otherwise.</returns>
   bool WildcardMatch(const char * iWildcard, const char * iValue);
 
-  //Returns all wildcard characters and index from iString groupped by wildcard character
+  /// <summary>
+  /// Returns all wildcard characters and index from iString groupped by wildcard character.
+  /// </summary>
+  /// <param name="iString">The pattern string.</param>
+  /// <returns>Returns all wildcard characters and index from iString groupped by wildcard character</returns>
   WildcardGroupList FindWildcardGroups(const char * iString);
 
 } //namespace shellanything
