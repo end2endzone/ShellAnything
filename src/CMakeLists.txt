@@ -75,6 +75,8 @@ add_library(shellanything STATIC
   ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
+  Wildcard.cpp
+  Wildcard.h
 )
 
 add_library(shellext SHARED
