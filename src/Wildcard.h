@@ -27,21 +27,32 @@
 
 namespace shellanything
 {
-  ///<summary>A wildcard result which allows one to rebuild the matching value from the wildcard pattern.</summary>
-  struct WildcardResult
+  /// <summary>
+  /// Defines a wildcard expansion solution to match a given string.
+  /// </summary>
+  struct WILDCARD
   {
-    ///<summary>A validity flag for this results.</summary>
-    bool valid;
+    ///<summary>The wildcard character found in the given string.</summary>
+    char character;
 
-    ///<summary>The offset in the pattern string where the wildcard character was found.</summary>
-    size_t pattern_offset;
+    ///<summary>The index at which the wildcard character was found.</summary>
+    int index;
 
-    ///<summary>The value in the testing string of the wildcard cahracter.</summary>
-    const char * value;
-
-    ///<summary>The length of the value.</summary>
-    size_t value_length;
+    ///<summary>The expanded value of the wildcard to match the given string.</summary>
+    std::string value;
   };
+
+  /// <summary>
+  /// Defines a list of WILDCARD
+  /// </summary>
+  typedef std::vector<WILDCARD> WildcardList;
+
+  //struct WILDCARD_GROUP
+  //{
+  //  char character;
+  //  IntList indexes;
+  //};
+  //typedef std::vector<WILDCARD_GROUP> WildcardGroupList;
 
   /// <summary>
   /// Evaluates if the given character is a wildcard character supported by the library.
@@ -74,25 +85,21 @@ namespace shellanything
   inline bool HasWildcardCharacters(const char * str) { return (FindWildcardCharacters(str, NULL, 0) > 0); }
 
   /// <summary>
-  /// Process a wildcard string by replacing all wildcard characters to match the given string.
+  /// Returns true if the given pattern with wildcard characters can be expanded to match the given value.
   /// </summary>
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
-  /// <param name="results_array">
-  /// An output WildcardResult array which contains the expanded values of all wildcard characters.
-  /// Valid elements of the array have their 'wildcard' element non NULL.
-  /// </param>
-  /// <param name="buffer_size">The size of the WildcardResult array buffer in bytes.</param>
-  /// <returns>Returns true the given pattern with the wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
-  bool WildcardSolve(const char * pattern, const char * value, WildcardResult * results_array, size_t results_size);
+  /// <param name="matches">The list of matches which allows the pattern to expand to the given value.</param>
+  /// <returns>Returns true if the given pattern with wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
+  bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches);
 
   /// <summary>
-  /// Returns true if the given pattern matches the given value.
+  /// RReturns true if the given pattern with wildcard characters can be expanded to match the given value.
   /// </summary>
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
-  /// <returns>Returns true if iWildcard can be expanded to match iValue. Returns false otherwise.</returns>
-  inline bool WildcardMatch(const char * pattern, const char * value) { return WildcardSolve(pattern, value, NULL, 0); }
+  /// <returns>Returns true if the given pattern with wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
+  inline bool WildcardMatch(const char * pattern, const char * value) { WildcardList tmp; return WildcardSolve(pattern, value, tmp); }
 
 } //namespace shellanything
 
