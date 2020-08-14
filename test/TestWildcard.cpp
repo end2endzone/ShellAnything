@@ -26,25 +26,28 @@
 #include "Wildcard.h"
 namespace shellanything { namespace test
 {
-  std::string testRebuild(const char * iWildcard, const WildcardList & iWildcardValues)
+  std::string WildcardRebuild(const char * pattern, WildcardResult * results, size_t max_results)
   {
     std::string output;
   
-    int len = (int)std::string(iWildcard).size();
-    for(int i=0; i<len; i++)
+    size_t length = strlen(pattern);
+    for(size_t i=0; i<length; i++)
     {
-      if ( IsWildcard(iWildcard[i]) )
+      if (IsWildcard(pattern[i]))
       {
-        //wildcard character found, find the replacement string
-        for(size_t j=0; j<iWildcardValues.size(); j++)
+        // Find the matching result
+        for(size_t j=0; j<max_results; j++)
         {
-          const WILDCARD & w = iWildcardValues[j];
-          if (w.index == i && w.character == iWildcard[i])
-            output += w.value; //replace wildcard character by string
+          const WildcardResult & result = results[j];
+          if (result.valid && result.pattern_offset == i)
+          {
+            output.append(result.value, result.value_length);
+            j = max_results+1; // stop searching a matching result
+          }
         }
       }
       else
-        output += iWildcard[i]; //replace wildcard character
+        output.append(1, pattern[i]);
     }
 
     return output;
@@ -58,161 +61,295 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWildcard, testFindWildcardCharacters)
+  {
+    // Test nothing is found
+    {
+      const char * str = "foo";
+      size_t elements[50];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(0, count);
+
+      // Assert first element is zerorized
+      ASSERT_EQ(0, elements[0]);
+    }
+
+    // Test sample found
+    {
+      const char * str = "f?o*o";
+      size_t elements[50];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(2, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(3, elements[1]);
+      ASSERT_EQ(0, elements[2]);
+    }
+
+    // Test sequence of '*' found
+    {
+      const char * str = "f****o";
+      size_t elements[50];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(1, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(0, elements[1]);
+    }
+
+    // Test 2 sequences of '*' found
+    {
+      const char * str = "f**?**o";
+      size_t elements[50];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(3, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(3, elements[1]);
+      ASSERT_EQ(4, elements[2]);
+      ASSERT_EQ(0, elements[3]);
+    }
+
+    // Test sequence of '?' found
+    {
+      const char * str = "f???o";
+      size_t elements[50];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(3, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(2, elements[1]);
+      ASSERT_EQ(3, elements[2]);
+      ASSERT_EQ(0, elements[3]);
+    }
+
+    // Test buffer too small
+    {
+      const char * str = "f????o";
+      size_t elements[2];
+      size_t count = FindWildcardCharacters(str, elements, sizeof(elements));
+      ASSERT_EQ(2, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(2, elements[1]);
+    }
+
+    // Test buffer overflow
+    {
+      const char * str = "f????o";
+      size_t elements[40] = {0};
+      size_t count = FindWildcardCharacters(str, elements, 2*sizeof(size_t));
+      ASSERT_EQ(2, count);
+      ASSERT_EQ(1, elements[0]);
+      ASSERT_EQ(2, elements[1]);
+      ASSERT_EQ(0, elements[2]);
+    }
+
+    // Test NULL buffer
+    {
+      const char * str = "f????o";
+      size_t count = FindWildcardCharacters(str, NULL, 45);
+      ASSERT_EQ(4, count);
+      count = FindWildcardCharacters(str, NULL, 0);
+      ASSERT_EQ(4, count);
+    }
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestWildcard, testValidByDefault)
   {
     //SIMPLE TEST CASES:
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "abcd";
       const char * value = "abcd";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "ab?d";
       const char * value = "abcd";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "?bcd";
       const char * value = "abcd";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "abc?";
       const char * value = "abcd";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "ab*e";
       const char * value = "abcde";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "*cde";
       const char * value = "abcde";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "abc*";
       const char * value = "abcde";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
 
     //COMPLEX TEST CASES:
     {
       //all wildcards must be matched
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "abc*f?h*z";
       const char * value = "abcz";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_FALSE( success );
     }
     {
       //wildcard * can be an empty string
       {
         //1
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "abc*d";
         const char * value = "abcd";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
       {
         //2
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "abcd*";
         const char * value = "abcd";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
       {
         //3
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "*abcd";
         const char * value = "abcd";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
       {
         //4
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "abc*?e";
         const char * value = "abcde";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
     }
     {
       //while checking for * wildcard, the solver must check all possibilities
       //wildcard * must be "defabc" and NOT de
-      WildcardList values;
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
       const char * wildcard = "abc*fg";
       const char * value = "abcdefabcfg";
-      bool success = WildcardSolve(wildcard, value, values);
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
       ASSERT_TRUE( success );
-      std::string rebuild = testRebuild(wildcard, values);
+      std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
       ASSERT_EQ( rebuild, value );
     }
     {
       //* followed by ?
       {
         //1
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "abc*??h";
         const char * value = "abcdefgh";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
       {
         //2
-        WildcardList values;
+        static const size_t MAX_RESULTS = 50;
+        WildcardResult results[MAX_RESULTS];
         const char * wildcard = "abc*??";
         const char * value = "abcdefg";
-        bool success = WildcardSolve(wildcard, value, values);
+        bool success = WildcardSolve(wildcard, value, results, sizeof(results));
         ASSERT_TRUE( success );
-        std::string rebuild = testRebuild(wildcard, values);
+        std::string rebuild = WildcardRebuild(wildcard, results, sizeof(results));
         ASSERT_EQ( rebuild, value );
       }
     }
   }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWildcard, testSpecialCases)
+  {
+    // Test empty string value can only match with '*' pattern
+    {
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
+      const char * wildcard = "*";
+      const char * value = "";
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
+      ASSERT_TRUE( success );
+    }
+    {
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
+      const char * wildcard = "******";
+      const char * value = "";
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
+      ASSERT_TRUE( success );
+    }
 
+    // Test empty string value can match an empty pattern.
+    {
+      static const size_t MAX_RESULTS = 50;
+      WildcardResult results[MAX_RESULTS];
+      const char * wildcard = "";
+      const char * value = "";
+      bool success = WildcardSolve(wildcard, value, results, sizeof(results));
+      ASSERT_TRUE( success );
+    }
+  }
   //--------------------------------------------------------------------------------------------------
 
 } //namespace test

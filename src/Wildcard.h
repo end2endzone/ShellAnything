@@ -25,40 +25,23 @@
 #ifndef SA_WILDCARD_H
 #define SA_WILDCARD_H
 
-#include <string>
-#include <vector>
-
 namespace shellanything
 {
-
-  /// <summary>
-  /// Defines a wildcard expansion solution to match a given string.
-  /// </summary>
-  struct WILDCARD
+  ///<summary>A wildcard result which allows one to rebuild the matching value from the wildcard pattern.</summary>
+  struct WildcardResult
   {
-    ///<summary>The wildcard character found in the given string.</summary>
-    char character;
+    ///<summary>A validity flag for this results.</summary>
+    bool valid;
 
-    ///<summary>The index at which the wildcard character was found.</summary>
-    int index;
+    ///<summary>The offset in the pattern string where the wildcard character was found.</summary>
+    size_t pattern_offset;
 
-    ///<summary>The expanded value of the wildcard to match the given string.</summary>
-    std::string value;
+    ///<summary>The value in the testing string of the wildcard cahracter.</summary>
+    const char * value;
+
+    ///<summary>The length of the value.</summary>
+    size_t value_length;
   };
-
-  /// <summary>
-  /// Defines a list of WILDCARD
-  /// </summary>
-  typedef std::vector<WILDCARD> WildcardList;
-
-  typedef std::vector<int> IntList;
-
-  struct WILDCARD_GROUP
-  {
-    char character;
-    IntList indexes;
-  };
-  typedef std::vector<WILDCARD_GROUP> WildcardGroupList;
 
   /// <summary>
   /// Evaluates if the given character is a wildcard character supported by the library.
@@ -68,43 +51,48 @@ namespace shellanything
   bool IsWildcard(char c);
 
   /// <summary>
+  /// Simplify a wildcard pattern. Remove sequences of '*' characters.
+  /// </summary>
+  /// <param name="pattern">The wildcard pattern to simplify.</param>
+  void WildcardSimplify(char * pattern);
+
+  /// <summary>
+  /// Finds the position of each wildcard character in the given string.
+  /// If the 'findings' array is too small, the functions stops looking for wildcard characters and returns immediately.
+  /// </summary>
+  /// <param name="str">The string to search.</param>
+  /// <param name="offsets">An array of size_t elements which, if provided, contains the offsets where a wildcard character is found. Can be NULL.</param>
+  /// <param name="offsets_size">The size of the 'offsets' array in bytes. Mostly sizeof(offsets). Can be 0 if 'offsets' is NULL.</param>
+  /// <returns>Returns the number of wildcard characters found in str.</returns>
+  size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size);
+
+  /// <summary>
   /// Evaluates if the given string contains at least one wildcard character.
   /// </summary>
-  /// <param name="c">The string to evaluate.</param>
+  /// <param name="str">The string to evaluate.</param>
   /// <returns>Returns true when the given string contains at least one wildcard character. Returns false otherwise.</returns>
-  bool HasWildcardCharacters(const char * iValue);
+  inline bool HasWildcardCharacters(const char * str) { return (FindWildcardCharacters(str, NULL, 0) > 0); }
 
   /// <summary>
-  /// Returns the position of each wildcard character into oIndexes from iString starting at iOffset.
+  /// Process a wildcard string by replacing all wildcard characters to match the given string.
   /// </summary>
-  /// <param name="iString">The string to search.</param>
-  /// <param name="iOffset">The index in the string where to start the search from.</param>
-  /// <param name="oIndexes">The offsets where wildcard characters was found.</param>
-  void FindWildcardCharacters(const char * iString, int iOffset, IntList & oIndexes);
+  /// <param name="pattern">The string with the wildcard pattern.</param>
+  /// <param name="value">The value to match.</param>
+  /// <param name="results_array">
+  /// An output WildcardResult array which contains the expanded values of all wildcard characters.
+  /// Valid elements of the array have their 'wildcard' element non NULL.
+  /// </param>
+  /// <param name="buffer_size">The size of the WildcardResult array buffer in bytes.</param>
+  /// <returns>Returns true the given pattern with the wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
+  bool WildcardSolve(const char * pattern, const char * value, WildcardResult * results_array, size_t results_size);
 
   /// <summary>
-  /// Processes iWildcard and finds expanding parameters in order to convert iWildcard to iValue.
+  /// Returns true if the given pattern matches the given value.
   /// </summary>
-  /// <param name="iWildcard">The pattern string.</param>
-  /// <param name="iValue">The value to test.</param>
-  /// <param name="oList">The list of WILDCARD findings.</param>
+  /// <param name="pattern">The string with the wildcard pattern.</param>
+  /// <param name="value">The value to match.</param>
   /// <returns>Returns true if iWildcard can be expanded to match iValue. Returns false otherwise.</returns>
-  bool WildcardSolve(const char * iWildcard, const char * iValue, WildcardList & oList);
-
-  /// <summary>
-  /// Returns true if iWildcard can be expanded to match iValue.
-  /// </summary>
-  /// <param name="iWildcard">The pattern string.</param>
-  /// <param name="iValue">The value to test.</param>
-  /// <returns>Returns true if iWildcard can be expanded to match iValue. Returns false otherwise.</returns>
-  bool WildcardMatch(const char * iWildcard, const char * iValue);
-
-  /// <summary>
-  /// Returns all wildcard characters and index from iString groupped by wildcard character.
-  /// </summary>
-  /// <param name="iString">The pattern string.</param>
-  /// <returns>Returns all wildcard characters and index from iString groupped by wildcard character</returns>
-  WildcardGroupList FindWildcardGroups(const char * iString);
+  inline bool WildcardMatch(const char * pattern, const char * value) { return WildcardSolve(pattern, value, NULL, 0); }
 
 } //namespace shellanything
 
