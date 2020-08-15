@@ -31,16 +31,16 @@ namespace shellanything
 {
   static const size_t INVALID_WILDCARD_POSITION = (size_t)-1;
 
-  size_t GetNextWildcardPosition(const size_t * wildcard_positions, size_t num_wildcards, size_t current)
+  size_t GetNextWildcardPosition(const size_t * positions, size_t num_wildcards, size_t current)
   {
     for(size_t i=0; i<num_wildcards; i++)
     {
-      const size_t & pos = wildcard_positions[i];
+      const size_t & pos = positions[i];
       if (pos == current)
       {
         if (i+1 < num_wildcards)
         {
-          return wildcard_positions[i+1];
+          return positions[i+1];
         }
         return INVALID_WILDCARD_POSITION; //requested wildcard is the last one
       }
@@ -81,7 +81,7 @@ namespace shellanything
         bool sequence = (c == '*' && i > 0 && str[i-1] == '*');
         if (!sequence)
         {
-          if (offsets)
+          if (offsets != NULL)
             offsets[num_wildcard] = i;
 
           num_wildcard++;
@@ -155,144 +155,143 @@ namespace shellanything
 
   bool WildcardSolve( const char * pattern,
                       const char * value,
-                      const size_t * wildcard_positions,
+                      const size_t * positions,
                       size_t num_wildcards,
-                      const int iIndexWild,
-                      const int iIndexValue,
+                      size_t pattern_offset,
+                      size_t value_offset,
                       WildcardList & matches)
   {
-    int indexWild = iIndexWild;
-    int indexValue = iIndexValue;
-    int wildLen   = (int)std::string(pattern).size();
-    int valueLen  = (int)std::string(value).size();
+    size_t pattern_length = strlen(pattern);
+    size_t value_length = strlen(value);
   
-    //while wildcard and value not fully solved
-    while (indexWild < wildLen || indexValue < valueLen)
+    // While pattern and value not fully solved
+    while (pattern_offset < pattern_length || value_offset < value_length)
     {
-      const char & cWild  = pattern[indexWild];
-      const char & cValue = value[indexValue];
-      if ( !IsWildcard(cWild) )
+      const char & pattern_char  = pattern[pattern_offset];
+      const char & value_char = value[value_offset];
+      if ( !IsWildcard(pattern_char) )
       {
-        if (cWild != cValue)
-          return false; //characters don't match!
+        if (pattern_char != value_char)
+          return false; // Characters don't match!
 
-        //next char
-        indexWild++;
-        indexValue++;
+        // Next characters
+        pattern_offset++;
+        value_offset++;
       }
       else
       {
-        //cWild is wildcard
-        if (cWild == '?')
+        // pattern_char is wildcard
+        if (pattern_char == '?')
         {
-          //save wildcard resolve information
+          // Save wildcard info
           WILDCARD w;
-          w.character = cWild;
-          w.index = indexWild;
-          w.value = cValue;
+          w.character = pattern_char;
+          w.index = pattern_offset;
+          w.value = value_char;
           matches.push_back(w);
 
-          //next char
-          indexWild++;
-          indexValue++;
+          // Next characters
+          pattern_offset++;
+          value_offset++;
         }
-        else if (cWild == '*')
+        else if (pattern_char == '*')
         {
-          //if wildcard character * is the last one
-          if (indexWild+1 >= wildLen)
+          // If wildcard character '*' is the last one
+          if (pattern_offset+1 >= pattern_length)
           {
-            //automatically match the end of the string
+            // Automatically match the end of the string
 
-            //save wildcard resolve information
+            // Save wildcard info
             WILDCARD w;
-            w.character = cWild;
-            w.index = indexWild;
-            w.value = &cValue;
+            w.character = pattern_char;
+            w.index = pattern_offset;
+            w.value = &value_char;
             matches.push_back(w);
 
             // If we reached a '*' sequence, move forward to the last '*' character of the sequence
-            while(pattern[indexWild] == '*' && (indexWild+1 < wildLen) && pattern[indexWild+1] == '*')
+            while(pattern[pattern_offset] == '*' && (pattern_offset+1 < pattern_length) && pattern[pattern_offset+1] == '*')
             {
-              indexWild++;
+              pattern_offset++;
             }
 
-            //next char
-            indexWild++;
-            indexValue += (int)w.value.size();
+            // Next characters
+            pattern_offset++;
+            value_offset += w.value.size();
           }
           else
           {
-            //wildcard character * is not the last one
+            // Wildcard character '*' is not the last one
 
-            //compute all possibilities that can fit in * and then use recursion to check if it can be resolved
-            //compute the possibilities in the from the longest to the shortest ("") for optimizing the replacement string
-            //since all wildcard caracters must be mapped, do not compute possibilities beyond the next wildcard character
+            // Compute all possibles candidates that can fit in '*' and then use recursion to check if it can be resolved.
+            // Compute the candidates from the longest to the shortest ("") for optimizing the replacement string.
+            // Since all wildcard characters must be mapped, do not compute possibilities/candidates beyond the next wildcard character.
 
-            //compute next character
-            const char & nextWild = (&cWild)[1];
+            // Compute next character
+            const char & pattern_char_next = (&pattern_char)[1];
 
-            int nextWildcardPosition = (int)GetNextWildcardPosition(wildcard_positions, num_wildcards, indexWild);
+            size_t next_wildcard_position = GetNextWildcardPosition(positions, num_wildcards, pattern_offset);
 
-            //compute fixed characters between this wildcard and the last one (of the end of the file)
-            //ie: fgh in abc*fgh?j or abc*fgh
-            std::string fixedCharacters = &nextWild;
-            if (nextWildcardPosition != -1)
+            // Extract non-wildcard (fixed) characters between this wildcard and the next one (or the end of the string)
+            // In order to match the current '*' character, these non-wildcard characters in the pattern will also have to match.
+            // ie: Extract "fgh" in "abc*fgh?j" or "abc*fgh"
+            std::string pattern_fixed_characters = &pattern_char_next;
+            if (next_wildcard_position != INVALID_WILDCARD_POSITION)
             {
-              //there is at least another wildcard character after this one
-              fixedCharacters = &nextWild;
-              size_t size = nextWildcardPosition - indexWild;
-              fixedCharacters.resize(size);
+              // There is at least another wildcard character after this one
+              pattern_fixed_characters = &pattern_char_next;
+              size_t size = next_wildcard_position - pattern_offset;
+              pattern_fixed_characters.resize(size);
             }
 
-            //compute maximum length of replacementString
-            int remainingCharactersInValue = valueLen-indexValue;
-            int replacementStringMaxLength = remainingCharactersInValue-(int)fixedCharacters.size();
+            // Compute maximum length of candidate
+            size_t remaining_characters_in_value = value_length-value_offset;
+            size_t candidate_max_length = remaining_characters_in_value-pattern_fixed_characters.size();
 
-            //compute all possibilities that can fit in * with a length in [0,replacementStringMaxLength]
-            for(int length=replacementStringMaxLength; length>=0; length--)
+            // Compute all possible candidates that can fit in '*' with a length in [0,candidate_max_length]
+            for(size_t length=candidate_max_length; length>=0 && length!=INVALID_WILDCARD_POSITION; length--)
             {
-              //assuming replacement string is the right one
+              // Assuming replacement string is the right one
 
-              std::string replacementString = &cValue;
-              replacementString.resize(length);
+              std::string candidate = &value_char;
+              candidate.resize(length);
 
-              WildcardList tmpList = matches;
+              WildcardList sub_matches = matches;
 
-              //save wildcard resolve information
+              // Save wildcard information
               WILDCARD w;
-              w.character = cWild;
-              w.index = indexWild;
-              w.value = replacementString;
-              tmpList.push_back(w);
+              w.character = pattern_char;
+              w.index = pattern_offset;
+              w.value = candidate;
+              sub_matches.push_back(w);
 
-              //next char
-              int tmpIndexWild = indexWild+1;
-              int tmpIndexValue = indexValue + (int)w.value.size();
+              // Next characters
+              size_t sub_pattern_offset = pattern_offset + 1;
+              size_t sub_value_offset = value_offset + w.value.size();
 
-              //execute recursive call
-              bool solved = WildcardSolve(pattern, value, wildcard_positions, num_wildcards, tmpIndexWild, tmpIndexValue, tmpList);
+              // Execute recursive call
+              bool solved = WildcardSolve(pattern, value, positions, num_wildcards, sub_pattern_offset, sub_value_offset, sub_matches);
               if (solved)
               {
-                //solved!
-                //refresh matches
-                matches = tmpList;
+                // Solved!
+                // Keep the sub matches that we found
+                matches = sub_matches;
                 return true;
               }
             }
 
-            //all possibilities were checked
-            //unable to solve * wildcard
+            // All possibilities were checked
+            // Unable to solve '*' wildcard
             return false;
           }
         }
       }
     }
 
-    if (indexWild == wildLen && indexValue == valueLen)
-      return true; //solved
-    if ((indexWild == wildLen && indexValue < valueLen) ||
-        (indexWild == wildLen && indexValue < valueLen)     )
-      return false; //reached the end of wildcard or the end of value
+    if (pattern_offset == pattern_length && value_offset == value_length)
+      return true; // Solved
+    if ((pattern_offset == pattern_length && value_offset < value_length) ||
+        (pattern_offset == pattern_length && value_offset < value_length)     )
+      return false; // Reached the end of pattern or the end of value
     return false; //???
   }
 
@@ -315,14 +314,14 @@ namespace shellanything
       return (std::string(pattern) == std::string(value));
 
     // Allocate memory for all wildcard positions
-    size_t * wildcard_positions = new size_t[num_wildcards];
-    FindWildcardCharacters(simplified_pattern.c_str(), wildcard_positions, num_wildcards);
+    size_t * positions = new size_t[num_wildcards];
+    FindWildcardCharacters(simplified_pattern.c_str(), positions, num_wildcards*sizeof(positions[0]));
 
     //solve wildcards
-    bool solved = WildcardSolve(simplified_pattern.c_str(), value, wildcard_positions, num_wildcards, 0, 0, matches);
+    bool solved = WildcardSolve(simplified_pattern.c_str(), value, positions, num_wildcards, 0, 0, matches);
 
-    delete[] wildcard_positions;
-    wildcard_positions = NULL;
+    delete[] positions;
+    positions = NULL;
 
     return solved;
   }

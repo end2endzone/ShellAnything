@@ -147,9 +147,9 @@ namespace shellanything { namespace test
     }
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestWildcard, testValidByDefault)
+  TEST_F(TestWildcard, testBasic)
   {
-    //SIMPLE TEST CASES:
+    // Test no wildcard characters
     {
       WildcardList matches;
       const char * wildcard = "abcd";
@@ -159,6 +159,8 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '?' character in the middle
     {
       WildcardList matches;
       const char * wildcard = "ab?d";
@@ -168,6 +170,8 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '?' character at the beginning
     {
       WildcardList matches;
       const char * wildcard = "?bcd";
@@ -177,6 +181,8 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '?' character at the end
     {
       WildcardList matches;
       const char * wildcard = "abc?";
@@ -186,6 +192,30 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '*' replaces 0 character in the middle
+    {
+      WildcardList matches;
+      const char * wildcard = "ab*cde";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 1 character in the middle
+    {
+      WildcardList matches;
+      const char * wildcard = "ab*de";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 2 characters in the middle
     {
       WildcardList matches;
       const char * wildcard = "ab*e";
@@ -195,6 +225,30 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '*' replaces 0 character at the beginning
+    {
+      WildcardList matches;
+      const char * wildcard = "*abcde";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 1 character at the beginning
+    {
+      WildcardList matches;
+      const char * wildcard = "*bcde";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 2 characters at the beginning
     {
       WildcardList matches;
       const char * wildcard = "*cde";
@@ -204,6 +258,30 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '*' replaces 0 character at the end
+    {
+      WildcardList matches;
+      const char * wildcard = "abcde*";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 1 character at the end
+    {
+      WildcardList matches;
+      const char * wildcard = "abcd*";
+      const char * value = "abcde";
+      bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+    }
+
+    // Test '*' replaces 2 characters at the end
     {
       WildcardList matches;
       const char * wildcard = "abc*";
@@ -213,18 +291,22 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
-
-    //COMPLEX TEST CASES:
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWildcard, testComplex)
+  {
+    // Test All wildcards must be matched. All wildcard characters must be solved.
+    // The first '*' cannot be assigned the value "f?h*".
     {
-      //all wildcards must be matched
       WildcardList matches;
       const char * wildcard = "abc*f?h*z";
       const char * value = "abcz";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_FALSE( success );
     }
+
+    // Test wildcard '*' can be an empty string
     {
-      //wildcard * can be an empty string
       {
         //1
         WildcardList matches;
@@ -266,9 +348,10 @@ namespace shellanything { namespace test
         ASSERT_EQ( rebuild, value );
       }
     }
+
+    // While checking for * wildcard, the solver must check all possibilities
+    // Wildcard * must be "defabc" and NOT de
     {
-      //while checking for * wildcard, the solver must check all possibilities
-      //wildcard * must be "defabc" and NOT de
       WildcardList matches;
       const char * wildcard = "abc*fg";
       const char * value = "abcdefabcfg";
@@ -277,8 +360,9 @@ namespace shellanything { namespace test
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
     }
+
+    // Test '*' followed by '?'
     {
-      //* followed by ?
       {
         //1
         WildcardList matches;

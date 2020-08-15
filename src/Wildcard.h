@@ -36,7 +36,7 @@ namespace shellanything
     char character;
 
     ///<summary>The index at which the wildcard character was found.</summary>
-    int index;
+    size_t index;
 
     ///<summary>The expanded value of the wildcard to match the given string.</summary>
     std::string value;
