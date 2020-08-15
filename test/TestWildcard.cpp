@@ -156,8 +156,14 @@ namespace shellanything { namespace test
       const char * value = "abcd";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '?' character in the middle
@@ -167,8 +173,14 @@ namespace shellanything { namespace test
       const char * value = "abcd";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '?' character at the beginning
@@ -178,8 +190,14 @@ namespace shellanything { namespace test
       const char * value = "abcd";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '?' character at the end
@@ -189,8 +207,14 @@ namespace shellanything { namespace test
       const char * value = "abcd";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 0 character in the middle
@@ -200,8 +224,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 1 character in the middle
@@ -211,8 +241,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 2 characters in the middle
@@ -222,8 +258,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 0 character at the beginning
@@ -233,8 +275,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 1 character at the beginning
@@ -244,8 +292,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 2 characters at the beginning
@@ -255,8 +309,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 0 character at the end
@@ -266,8 +326,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 1 character at the end
@@ -277,8 +343,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' replaces 2 characters at the end
@@ -288,8 +360,14 @@ namespace shellanything { namespace test
       const char * value = "abcde";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
   }
   //--------------------------------------------------------------------------------------------------
@@ -314,8 +392,14 @@ namespace shellanything { namespace test
         const char * value = "abcd";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
       {
         //2
@@ -324,8 +408,14 @@ namespace shellanything { namespace test
         const char * value = "abcd";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
       {
         //3
@@ -334,8 +424,14 @@ namespace shellanything { namespace test
         const char * value = "abcd";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
       {
         //4
@@ -344,8 +440,14 @@ namespace shellanything { namespace test
         const char * value = "abcde";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
     }
 
@@ -357,8 +459,14 @@ namespace shellanything { namespace test
       const char * value = "abcdefabcfg";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
       std::string rebuild = WildcardRebuild(wildcard, matches);
       ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
 
     // Test '*' followed by '?'
@@ -370,8 +478,14 @@ namespace shellanything { namespace test
         const char * value = "abcdefgh";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
       {
         //2
@@ -380,8 +494,14 @@ namespace shellanything { namespace test
         const char * value = "abcdefg";
         bool success = WildcardSolve(wildcard, value, matches);
         ASSERT_TRUE( success );
+
+        // Try rebuilding the value from the pattern and the matches
         std::string rebuild = WildcardRebuild(wildcard, matches);
         ASSERT_EQ( rebuild, value );
+
+        // Validate WildcardMatch() as well.
+        success = WildcardMatch(wildcard, value);
+        ASSERT_TRUE( success );
       }
     }
   }
@@ -395,12 +515,28 @@ namespace shellanything { namespace test
       const char * value = "";
       bool success = WildcardSolve(wildcard, value, matches);
       ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
+      ASSERT_TRUE( success );
     }
     {
       WildcardList matches;
       const char * wildcard = "******";
       const char * value = "";
       bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
       ASSERT_TRUE( success );
     }
 
@@ -410,6 +546,14 @@ namespace shellanything { namespace test
       const char * wildcard = "";
       const char * value = "";
       bool success = WildcardSolve(wildcard, value, matches);
+      ASSERT_TRUE( success );
+
+      // Try rebuilding the value from the pattern and the matches
+      std::string rebuild = WildcardRebuild(wildcard, matches);
+      ASSERT_EQ( rebuild, value );
+
+      // Validate WildcardMatch() as well.
+      success = WildcardMatch(wildcard, value);
       ASSERT_TRUE( success );
     }
   }

@@ -48,13 +48,6 @@ namespace shellanything
     return INVALID_WILDCARD_POSITION; //wildcard position not found
   }
 
-  bool IsWildcard(char c)
-  {
-    if (c == '*' || c == '?')
-      return true;
-    return false;
-  }
-
   size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size)
   {
     // Validate str
@@ -324,6 +317,82 @@ namespace shellanything
     positions = NULL;
 
     return solved;
+  }
+
+  bool WildcardMatch(const char * pattern, const char * value)
+  {
+    if (pattern == NULL || value == NULL)
+      return false;
+
+    // Move forward in the pattern and the value as long as we have matching characters.
+    bool matching_characters = true;
+    while(matching_characters)
+    {
+      // If the pattern is empty, the value must also be empty to match.
+      if (pattern[0] == '\0')
+      {
+        if (value[0] == '\0')
+          return true;
+        return false;
+      }
+
+      // If the value is empty, the pattern must be '*' (or a '*' sequence) to match
+      if (value[0] == '\0')
+      {
+        if (!IsStarSequence(&pattern[0]))
+          return false;
+
+        // We have a match.
+        return true;
+      }
+
+      // At this point, both the pattern and the value are not empty.
+      // Both can be moved forward if we have a match.
+
+      // Now check if we have a matching characters
+      matching_characters = false;
+
+      // If we reached a '*' sequence, move forward in the pattern to the last '*' character of the sequence
+      while(pattern[0] == '*' && pattern[1] == '*')
+      {
+        pattern++;
+
+        // Even if did not had 'matching characters', set the flag to true so that we run another loop.
+        // This will allows us to check for special cases like:
+        // 1) pattern="" and value=""
+        // 2) pattern="*" and value=""
+        matching_characters = true;
+      }
+
+      // If the pattern contains '?', if both pattern and value characters are equals, move forward
+      if (pattern[0] == '?' || pattern[0] == value[0])
+      {
+        pattern++;
+        value++;
+
+        matching_characters = true;
+      }
+    }
+  
+    // If we reached a '*' character in the pattern, there is two possibilities:
+    // 1) The '*' replaces the next value character.
+    // 2) The '*' does not replaces the next value character.
+    // Use recursion to resolve the two possibilities.
+    if (pattern[0] == '*')
+    {
+      // 1) The '*' replaces the next value character.
+      bool match = WildcardMatch(pattern, value+1);
+      if (match)
+        return true;
+
+      // 2) The '*' does not replaces the next value character.
+      match = WildcardMatch(pattern+1, value);
+      if (match)
+        return true;
+    }
+
+    // No match possible
+    return false;
   }
 
 } //namespace shellanything

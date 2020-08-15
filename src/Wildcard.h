@@ -47,19 +47,17 @@ namespace shellanything
   /// </summary>
   typedef std::vector<WILDCARD> WildcardList;
 
-  //struct WILDCARD_GROUP
-  //{
-  //  char character;
-  //  IntList indexes;
-  //};
-  //typedef std::vector<WILDCARD_GROUP> WildcardGroupList;
-
   /// <summary>
   /// Evaluates if the given character is a wildcard character supported by the library.
   /// </summary>
   /// <param name="c">The character to evaluate.</param>
   /// <returns>Returns true if the given character is a wildcard character. Returns false otherwise.</returns>
-  bool IsWildcard(char c);
+  inline bool IsWildcard(char c)
+  {
+    if (c == '*' || c == '?')
+      return true;
+    return false;
+  }
 
   /// <summary>
   /// Simplify a wildcard pattern. Remove sequences of '*' characters.
@@ -86,6 +84,8 @@ namespace shellanything
 
   /// <summary>
   /// Returns true if the given pattern with wildcard characters can be expanded to match the given value.
+  /// The function also returns the expanded value for each wildcard character match.
+  /// If you do not need to know the value of the wildcard characters, use the function <see cref="WildcardMatch()"/> which is faster.
   /// </summary>
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
@@ -94,12 +94,13 @@ namespace shellanything
   bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches);
 
   /// <summary>
-  /// RReturns true if the given pattern with wildcard characters can be expanded to match the given value.
+  /// Returns true if the given pattern with wildcard characters matches the given value.
+  /// If you need to know the value of the wildcard characters, use the function <see cref="WildcardSolve()"/>.
   /// </summary>
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
-  /// <returns>Returns true if the given pattern with wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
-  inline bool WildcardMatch(const char * pattern, const char * value) { WildcardList tmp; return WildcardSolve(pattern, value, tmp); }
+  /// <returns>Returns true if the given pattern with wildcard characters matches the given value. Returns false otherwise.</returns>
+  bool WildcardMatch(const char * pattern, const char * value);
 
 } //namespace shellanything
 
