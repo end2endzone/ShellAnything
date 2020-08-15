@@ -24,6 +24,8 @@
 
 #include "TestWildcard.h"
 #include "Wildcard.h"
+#include <sstream>
+
 namespace shellanything { namespace test
 {
   std::string WildcardRebuild(const char * pattern, const WildcardList & matches)
@@ -49,6 +51,15 @@ namespace shellanything { namespace test
 
     return output;
   }
+
+  std::string toString(size_t i)
+  {
+    std::stringstream out;
+    out << i;
+    const std::string & s = out.str();
+    return s;
+  }
+
   //--------------------------------------------------------------------------------------------------
   void TestWildcard::SetUp()
   {
@@ -149,6 +160,58 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestWildcard, testBasic)
   {
+    /*
+    struct TEST
+    {
+      const char * pattern;
+      const char * value;
+      bool expected_result;
+    };
+
+    static const TEST tests[] = {
+      {"","a",true},
+    };
+    static const size_t num_tests = sizeof(tests)/sizeof(tests[0]);
+
+    // For each tests
+    for(size_t i=0; i<num_tests; i++)
+    {
+      const TEST & test = tests[i];
+
+      //Build an custom error message
+      std::string msg;
+      msg += "Unexpected assertion: ";
+      msg += "i=" + toString(i) + ", ";
+      msg += "pattern \"" + std::string(test.pattern) + "\" and ";
+      msg += "value \"" + std::string(test.value) + "\" ";
+      if (test.expected_result)
+        msg += "should be matching.";
+      else
+        msg += "should NOT be matching.";
+
+      // Test WildcardSolve()
+      WildcardList matches;
+      bool success = WildcardSolve(test.pattern, test.value, matches);
+      if (test.expected_result)
+      {
+        ASSERT_TRUE( success ) << msg;
+
+        // Try rebuilding the value from the pattern and the matches
+        std::string rebuild = WildcardRebuild(test.pattern, matches);
+        ASSERT_EQ( rebuild, test.value ) << msg;
+      }
+      else
+        ASSERT_FALSE( success ) << msg;
+
+      // Test WildcardMatch() as well.
+      success = WildcardMatch(test.pattern, test.value);
+      if (test.expected_result)
+        ASSERT_TRUE( success ) << msg;
+      else
+        ASSERT_FALSE( success ) << msg;
+    }
+    */
+
     // Test no wildcard characters
     {
       WildcardList matches;
