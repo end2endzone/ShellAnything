@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/Context.h"
+#include "shellanything/Validator.h"
 #include "PropertyManager.h"
 
 #include "rapidassist/filesystem_utf8.h"
@@ -57,30 +58,6 @@ namespace shellanything
       mNumDirectories = c.mNumDirectories;
     }
     return (*this);
-  }
-
-  inline bool IsDriveLetter(char c)
-  {
-    if (  (c >= 'a' && c <= 'z') ||
-          (c >= 'A' && c <= 'Z')    )
-      return true;
-    return false;
-  }
-
-  inline std::string GetDriveLetter(const std::string & element)
-  {
-    std::string letter;
-    if (element.size() >= 2 && element[1] == ':' && IsDriveLetter(element[0]))
-      letter.append(1, element[0]);
-    return letter;
-  }
-
-  inline std::string GetDrivePath(const std::string & element)
-  {
-    std::string letter;
-    if (element.size() >= 3 && element[1] == ':' && IsDriveLetter(element[0]) && element[2] == '\\')
-      letter.append(element.c_str(), 3);
-    return letter;
   }
 
   void Context::RegisterProperties() const
@@ -123,8 +100,8 @@ namespace shellanything
       std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
       std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
-      std::string element_selection_drive_letter    = GetDriveLetter(element);
-      std::string element_selection_drive_path      = GetDrivePath(element);
+      std::string element_selection_drive_letter    = Validator::GetDriveLetter(element);
+      std::string element_selection_drive_path      = Validator::GetDrivePath(element);
  
       // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );

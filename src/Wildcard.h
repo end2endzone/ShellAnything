@@ -104,4 +104,4 @@ namespace shellanything
 
 } //namespace shellanything
 
-#endif //SA_ACTION_PROPERTY_H
+#endif //SA_WILDCARD_H

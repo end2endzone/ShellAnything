@@ -219,84 +219,149 @@ namespace shellanything
     //validate properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string properties = pmgr.Expand(mProperties);
-    bool properties_inversed = IsInversed("properties");
     if (!properties.empty())
     {
-      //split
-      ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
-
-      //each property specified must exists and be non-empty
-      for(size_t i=0; i<property_list.size(); i++)
-      {
-        const std::string & p = property_list[i];
-
-        if (!properties_inversed)
-        {
-          if (!pmgr.HasProperty(p))
-            return false; //missing property
-          const std::string & p_value = pmgr.GetProperty(p);
-          if (p_value.empty())
-            return false; //empty
-        }
-        else
-        {
-          // properties_inversed=true
-          if (pmgr.HasProperty(p))
-          {
-            const std::string & p_value = pmgr.GetProperty(p);
-            if (!p_value.empty())
-              return false; //not empty
-          }
-        }
-
-      }
+      bool inversed = IsInversed("properties");
+      bool valid = ValidateProperties(iContext, properties, inversed);
+      if (!valid)
+        return false;
     }
 
     //validate file extentions
     const std::string file_extensions = pmgr.Expand(mFileExtensions);
-    bool fileextensions_inversed = IsInversed("fileextensions");
     if (!file_extensions.empty())
     {
-      //split
-      ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
-      Uppercase(accepted_file_extensions);
-
-      //for each file selected
-      const Context::ElementList & elements = iContext.GetElements();
-      for(size_t i=0; i<elements.size(); i++) 
-      {
-        const std::string & element = elements[i];
-        std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
-
-        //each file extension must be part of accepted_file_extensions
-        bool found = HasValue(accepted_file_extensions, current_file_extension);
-        if (!fileextensions_inversed && !found)
-          return false; //current file extension is not accepted
-        if (fileextensions_inversed && found)
-          return false; //current file extension is not accepted
-      }
+      bool inversed = IsInversed("fileextensions");
+      bool valid = ValidateFileExtensions(iContext, file_extensions, inversed);
+      if (!valid)
+        return false;
     }
 
     //validate file/directory exists
     const std::string file_exists = pmgr.Expand(mFileExists);
-    bool exists_inversed = IsInversed("exists");
     if (!file_exists.empty())
     {
-      //split
-      ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
+      bool inversed = IsInversed("exists");
+      bool valid = ValidateExists(iContext, file_exists, inversed);
+      if (!valid)
+        return false;
+    }
 
-      //for each file
-      for(size_t i=0; i<mandatory_files.size(); i++)
+    return true;
+  }
+
+  inline bool IsDriveLetter(char c)
+  {
+    if (  (c >= 'a' && c <= 'z') ||
+          (c >= 'A' && c <= 'Z')    )
+      return true;
+    return false;
+  }
+
+  std::string Validator::GetDriveLetter(const std::string & element)
+  {
+    std::string letter;
+    if (element.size() >= 2 && element[1] == ':' && IsDriveLetter(element[0]))
+      letter.append(1, element[0]);
+    return letter;
+  }
+
+  std::string Validator::GetDrivePath(const std::string & element)
+  {
+    std::string letter;
+    if (element.size() >= 3 && element[1] == ':' && IsDriveLetter(element[0]) && element[2] == '\\')
+      letter.append(element.c_str(), 3);
+    return letter;
+  }
+
+  bool Validator::ValidateProperties(const Context & context, const std::string & properties, bool inversed) const
+  {
+    if (properties.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
+
+    //each property specified must exists and be non-empty
+    for(size_t i=0; i<property_list.size(); i++)
+    {
+      const std::string & p = property_list[i];
+
+      if (!inversed)
       {
-        const std::string & element = mandatory_files[i];
-        bool element_exists = false;
-        element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
-        element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
-        if (!exists_inversed && !element_exists)
-          return false; //mandatory file/directory not found
-        if (exists_inversed && element_exists)
-          return false; //mandatory file/directory not found
+        if (!pmgr.HasProperty(p))
+          return false; //missing property
+        const std::string & p_value = pmgr.GetProperty(p);
+        if (p_value.empty())
+          return false; //empty
       }
+      else
+      {
+        // inversed
+        if (pmgr.HasProperty(p))
+        {
+          const std::string & p_value = pmgr.GetProperty(p);
+          if (!p_value.empty())
+            return false; //not empty
+        }
+      }
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const
+  {
+    if (file_extensions.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
+    Uppercase(accepted_file_extensions);
+
+    //for each file selected
+    const Context::ElementList & elements = context.GetElements();
+    for(size_t i=0; i<elements.size(); i++) 
+    {
+      const std::string & element = elements[i];
+      std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
+
+      //each file extension must be part of accepted_file_extensions
+      bool found = HasValue(accepted_file_extensions, current_file_extension);
+      if (!inversed && !found)
+        return false; //current file extension is not accepted
+      if (inversed && found)
+        return false; //current file extension is not accepted
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const
+  {
+    if (file_exists.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
+
+    //for each file
+    for(size_t i=0; i<mandatory_files.size(); i++)
+    {
+      const std::string & element = mandatory_files[i];
+      bool element_exists = false;
+      element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
+      element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
+      if (!inversed && !element_exists)
+        return false; //mandatory file/directory not found
+      if (inversed && element_exists)
+        return false; //mandatory file/directory not found
     }
 
     return true;
