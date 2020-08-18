@@ -12,6 +12,12 @@ This manual includes a description of the system functionalities and capabilitie
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
   * [Visibility / Validity](#visibility--validity)
+    * [maxfiles and maxfolders attributes](#maxfiles-and-maxfolders-attributes)
+    * [fileextensions attribute](#fileextensions-attribute)
+    * [exists attribute](#exists-attribute)
+    * [properties attribute](#properties-attribute)
+    * [inverse attribute](#inverse-attribute)
+  * [Icons](#icons)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
     * [&lt;open&gt; action](#open-action)
@@ -311,9 +317,9 @@ For example, the following set a menu visible only when the user right-click on 
 
 ### exists attribute: ###
 
-The `exists` attribute validates a menu if the specified file exists.
+The `exists` attribute validates a menu if the specified file or directory exists.
 
-If `exists` attribute is set, the application will search for the file. If the file exists on the system, the validation is successful. To specify multiple files, one must separate each extensions with the `;` character. If multiple files are specified, **all files** must exists on the system for the validation to be successful.
+If `exists` attribute is set, the application will search for the file. If the file or directory exists on the system, the validation is successful. To specify multiple files/directories, one must separate each value with the `;` character. If multiple values are specified, **all values** must exists on the system for the validation to be successful.
 
 If `exists` attribute is not specified, then the validation is successful.
 
@@ -356,7 +362,7 @@ The meaning of each inversed attribute in explained in the following table:
 | maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.             |
 | maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.  |
 | fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match for the validation to be successful. |
-| exists         | Validates a menu if the specified file **does not** exists.<br>If multiple files are specified, **all files** must _not exists_ on the system for the validation to be successful.                                        |
+| exists         | Validates a menu if the specified file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.              |
 | properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.             |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
