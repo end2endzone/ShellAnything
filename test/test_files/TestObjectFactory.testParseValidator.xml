@@ -41,7 +41,7 @@
       </actions>
     </menu>
 
-    <menu name="menu05" inverse="maxfiles">
+    <menu name="menu05">
       <!-- inverse attribute set to maxfiles -->
       <visibility inverse="maxfiles" />
       <actions>
@@ -49,7 +49,7 @@
       </actions>
     </menu>
 
-    <menu name="menu06" inverse="maxfiles;maxfolders">
+    <menu name="menu06">
       <!-- inverse multiple value -->
       <visibility inverse="maxfiles;maxfolders" />
       <actions>
@@ -57,9 +57,17 @@
       </actions>
     </menu>
 
-    <menu name="menu07" inverse="foo">
+    <menu name="menu07">
       <!-- inverse unknown attribute -->
       <visibility inverse="foo" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu08">
+      <!-- class attribute is set -->
+      <visibility class="file" />
       <actions>
         <property name="baz" value="true" />
       </actions>

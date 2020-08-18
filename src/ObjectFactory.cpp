@@ -159,6 +159,16 @@ namespace shellanything
 
     Validator result;
 
+    //parse class
+    std::string class_;
+    if (ParseAttribute(element, "class", true, true, class_, error))
+    {
+      if (!class_.empty())
+      {
+        result.SetClass(class_);
+      }
+    }
+
     //parse maxfiles
     int maxfiles = -1;
     if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
