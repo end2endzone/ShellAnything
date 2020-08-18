@@ -26,6 +26,7 @@
 #include <limits>
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
+#include "DriveClass.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -79,6 +80,7 @@ namespace shellanything
       mProperties     = validator.mProperties     ;
       mFileExtensions = validator.mFileExtensions ;
       mFileExists     = validator.mFileExists     ;
+      mClass          = validator.mClass          ;
       mInverse        = validator.mInverse        ;
     }
     return (*this);
@@ -132,6 +134,16 @@ namespace shellanything
   void Validator::SetFileExists(const std::string & iFileExists)
   {
     mFileExists = iFileExists;
+  }
+
+  const std::string & Validator::GetClass() const
+  {
+    return mClass;
+  }
+
+  void Validator::SetClass(const std::string & iClass)
+  {
+    mClass = iClass;
   }
 
   const std::string & Validator::GetInserve() const
@@ -243,6 +255,16 @@ namespace shellanything
     {
       bool inversed = IsInversed("exists");
       bool valid = ValidateExists(iContext, file_exists, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate class
+    const std::string class_ = pmgr.Expand(mClass);
+    if (!class_.empty())
+    {
+      bool inversed = IsInversed("class");
+      bool valid = ValidateClass(iContext, class_, inversed);
       if (!valid)
         return false;
     }
@@ -362,6 +384,148 @@ namespace shellanything
         return false; //mandatory file/directory not found
       if (inversed && element_exists)
         return false; //mandatory file/directory not found
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const
+  {
+    if (class_.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    if (class_ == "file")
+    {
+      // Selected elements must be files
+      bool valid = false;
+      valid |= (!inversed && context.GetNumFiles() > 0 && context.GetNumDirectories() == 0);
+      valid |= (inversed && context.GetNumFiles() == 0 && context.GetNumDirectories() > 0);
+      if (!valid)
+        return false;
+    }
+    else if (class_ == "folder" || class_ == "directory")
+    {
+      // Selected elements must be folders
+      bool valid = false;
+      valid |= (!inversed && context.GetNumDirectories() > 0 && context.GetNumFiles() == 0);
+      valid |= (inversed && context.GetNumDirectories() == 0 && context.GetNumFiles() > 0);
+      if (!valid)
+        return false;
+    }
+    else if (class_ == "drive")
+    {
+      // Selected elements must be mapped to a drive
+      bool valid = true;
+      const Context::ElementList & elements = context.GetElements();
+      for(size_t i=0; i<elements.size() && valid == true; i++)
+      {
+        const std::string & element = elements[i];
+        std::string drive = GetDriveLetter(element);
+        if (!inversed && drive.empty())  // All elements must be mapped to a drive
+          valid = false;
+        if (inversed && !drive.empty())  // All elements must NOT be mapped to a drive.
+          valid = false;
+      }
+      if (!valid)
+        return false;
+    }
+    else if (GetDriveClassFromString(class_.c_str()) != DRIVE_CLASS_UNKNOWN)
+    {
+      DRIVE_CLASS required_class = GetDriveClassFromString(class_.c_str());
+
+      // Selected elements must be of the same drive class
+      bool valid = true;
+      const Context::ElementList & elements = context.GetElements();
+      for(size_t i=0; i<elements.size() && valid == true; i++)
+      {
+        const std::string & element = elements[i];
+        DRIVE_CLASS element_class = GetDriveClassFromPath(element);
+        if (!inversed && element_class != required_class)
+          valid = false;
+        if (inversed && element_class == required_class)
+          valid = false;
+      }
+      if (!valid)
+        return false;
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateClass(const Context & context, const std::string & class_, bool inversed) const
+  {
+    if (class_.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector classes = ra::strings::Split(class_, ";");
+
+    // Search for file extensions. All file extensions must be extracted from the list and evaluated all at once.
+    std::string file_extensions;
+    if (!classes.empty())
+    {
+      static const size_t INVALID_INDEX_POSITION = (size_t)-1;
+
+      // Remember each file extension's index to delete them after searching.
+      std::vector<size_t> delete_positions;
+
+      bool found_file_extensions = false;
+
+      for(size_t i=classes.size()-1; i>=0 && i!=INVALID_INDEX_POSITION; i--)
+      {
+        const std::string & element = classes[i];
+
+        // Is this a class file extension filter?
+        if (!element.empty() && element[0] == '.')
+        {
+          // Extract the file extension
+          std::string file_extension;
+          if (element.size() >= 2)
+            file_extension = element.substr(1);
+
+          // Add to the file extension list
+          if (!file_extensions.empty())
+            file_extensions.insert(0, 1, ';');
+          file_extensions.insert(0, file_extension.c_str());
+
+          found_file_extensions = true;
+
+          // Remember this index
+          delete_positions.push_back(i);
+        }
+      }
+
+      // Delete elements of classes which were identified as file extensions
+      for(size_t i=0; i<delete_positions.size(); i++)
+      {
+        const size_t & delete_position = delete_positions[i];
+        classes.erase(classes.begin() + delete_position);
+      }
+
+      // Validate file extensions
+      if (found_file_extensions)
+      {
+        bool valid = ValidateFileExtensions(context, file_extensions, inversed);
+        if (!valid)
+          return false;
+      }
+    }
+
+    // Continue validation for the remaining class elements
+    if (!classes.empty())
+    {
+      bool valid = false;
+      for(size_t i=0; i<classes.size(); i++)
+      {
+        const std::string & element = classes[i];
+        valid |= ValidateClassSingle(context, element, inversed);
+      }
+      if (!valid)
+        return false;
     }
 
     return true;

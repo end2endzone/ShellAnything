@@ -189,7 +189,7 @@ namespace shellanything { namespace test
     v.SetFileExtensions("dll");
     ASSERT_FALSE( v.Validate(c) );
 
-    //assert success when all properties are defined
+    //assert success when all file extensions are matching
     v.SetFileExtensions("dll;exe;msc");
     ASSERT_TRUE( v.Validate(c) );
     v.SetFileExtensions("exe;dll;msc"); //random order
@@ -235,6 +235,127 @@ namespace shellanything { namespace test
     //assert failure if the last element is not found
     v.SetFileExists(file_path + ";" + dir_path + ";foo");
     ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testClass)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when no file extension is matching
+    v.SetClass(".foo");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when a single file extension is matching
+    v.SetClass(".dll");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when all file extensions are matching
+    v.SetClass(".dll;.exe;.msc");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetClass(".exe;.dll;.msc"); //random order
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when more file extensions are allowed
+    v.SetClass(".ini;.txt;.bat;.doc;.msc;.dll;.exe;.xls;");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when using 'file'
+    v.SetClass("file");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when using 'folder'
+    v.SetClass("folder");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when using 'drive'
+    v.SetClass("drive");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when using 'drive:fixed'
+    v.SetClass("drive:fixed");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when using 'drive:network'
+    v.SetClass("drive:network");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert 'at least one' class must match
+    v.SetClass("folder;drive:network;drive:fixed"); // folder and drive:network fails but drive:fixed matches
+    ASSERT_TRUE( v.Validate(c) );
+
+    //Set only folders
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32");
+      elements.push_back("C:\\Windows\\Fonts"     );
+      elements.push_back("C:\\Windows\\SysWOW64" );
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    //assert failure when using 'file'
+    v.SetClass("file");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when using 'folder'
+    v.SetClass("folder");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when using 'drive'
+    v.SetClass("drive");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when using 'drive:network'
+    v.SetClass("drive:network");
+    ASSERT_FALSE( v.Validate(c) );
+
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("\\\\localhost\\public\\foo.dat" );
+      elements.push_back("\\\\localhost\\public\\bar.dat" );
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    //assert failure when using 'file'
+    v.SetClass("file");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when using 'drive'
+    v.SetClass("drive");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when using 'drive:fixed'
+    v.SetClass("drive:fixed");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when using 'drive:network'
+    v.SetClass("drive:network");
+    ASSERT_TRUE( v.Validate(c) );
+
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsInversed)

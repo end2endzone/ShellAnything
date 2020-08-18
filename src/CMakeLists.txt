@@ -71,6 +71,8 @@ add_library(shellanything STATIC
   Unicode.h
   Unicode.cpp
   Validator.cpp
+  DriveClass.h
+  DriveClass.cpp
   ErrorManager.h
   ErrorManager.cpp
   PropertyManager.h
