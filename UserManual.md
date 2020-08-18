@@ -296,7 +296,9 @@ For example, the following set a menu visible only when the user right-click on 
 
 The `fileextensions` attribute validates a menu based on the file's extension selected by the user.
 
-If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple extension, one must separate each extensions with the `;` character. If multiple file extensions are specified, **at least one** extension must match for the validation to be successful.
+If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple file extension, one must separate each extensions with the `;` character. If multiple file extensions are specified, **at least one** extension must match for the validation to be successful.
+
+If multiple files are selected, the file extension of each element must match **at least one** allowed file extension for the validation to be successful.
 
 If `fileextensions` attribute is not specified, then the validation is successful.
 
