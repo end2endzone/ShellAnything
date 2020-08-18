@@ -234,6 +234,40 @@ The &lt;visibility&gt; and &lt;validity&gt; elements have the following attribut
 
 
 
+### class attribute: ###
+
+The `class` attribute validates a menu based on type (class) of the selected files. The attribute can be used to quickly filter a menu based on the user selection. It covers most filtering use cases:
+* Filter for files only.
+* Filter for directories only.
+* Filter by file extensions.
+
+If `class` attribute is specified, the classes of the files selected by the user must match for the validation to be successful. To specify multiple classes, one must separate each class with the `;` character. If multiple classes are specified, **at least one** class must match for the validation to be successful.
+
+If multiple files are selected, the class of **each file** must match **at least one** allowed classes for the validation to be successful.
+
+If `class` attribute is not specified, then the validation is successful.
+
+The `class` attribute supports the following values which are explained in the following table:
+
+| Values          | Meaning                                                                                                                                                |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| .&lt;ext&gt;    | Validates a menu if the selected file extension matches the file extension *&lt;ext&gt;* . Replace *&lt;ext&gt;* by your desired file extension value. |
+| file            | Validates a menu if the user has **only** selected files.                                                                                              |
+| directory       | Validates a menu if the user has **only** selected folders or directories.                                                                             |
+| drive           | Validates a menu if the selected file is located on a drive.                                                                                           |
+| drive:removable | Validates a menu if the selected file is located on a removable drive.                                                                                 |
+| drive:fixed     | Validates a menu if the selected file is located on a fixed drive.                                                                                     |
+| drive:network   | Validates a menu if the selected file is located on a network drive or a network path.                                                                 |
+| drive:optical   | Validates a menu if the selected file is located on an optical drive.                                                                                  |
+| drive:ramdisk   | Validates a menu if the selected file is located on a ramdisk drive.                                                                                   |
+
+For example, the following set a menu visible only when the user right-click on files:
+```xml
+<visibility class="file" />
+```
+
+
+
 ### maxfiles and maxfolders attributes: ###
 
 The `maxfiles` and `maxfolders` attributes validates a menu based on the number of files and folders selected by the user.
