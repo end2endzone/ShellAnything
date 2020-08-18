@@ -198,6 +198,10 @@ namespace shellanything { namespace test
     //assert success when more file extensions are allowed
     v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
     ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when multiple files are selected and a single extension is missing
+    v.SetFileExtensions("dll;exe"); //missing msc file extension
+    ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExists)
