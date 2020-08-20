@@ -272,30 +272,6 @@ namespace shellanything
     return true;
   }
 
-  inline bool IsDriveLetter(char c)
-  {
-    if (  (c >= 'a' && c <= 'z') ||
-          (c >= 'A' && c <= 'Z')    )
-      return true;
-    return false;
-  }
-
-  std::string Validator::GetDriveLetter(const std::string & element)
-  {
-    std::string letter;
-    if (element.size() >= 2 && element[1] == ':' && IsDriveLetter(element[0]))
-      letter.append(1, element[0]);
-    return letter;
-  }
-
-  std::string Validator::GetDrivePath(const std::string & element)
-  {
-    std::string letter;
-    if (element.size() >= 3 && element[1] == ':' && IsDriveLetter(element[0]) && element[2] == '\\')
-      letter.append(element.c_str(), 3);
-    return letter;
-  }
-
   bool Validator::ValidateProperties(const Context & context, const std::string & properties, bool inversed) const
   {
     if (properties.empty())

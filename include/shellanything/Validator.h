@@ -135,24 +135,6 @@ namespace shellanything
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
     bool Validate(const Context & iContext) const;
 
-  public:
-
-    /// <summary>
-    /// Returns the drive letter of the given path.
-    /// Returns an empty string if the element is not mapped to a drive.
-    /// </summary>
-    /// <param name="element">The path to an element.</param>
-    /// <returns>Returns the drive letter of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
-    static std::string GetDriveLetter(const std::string & element);
-
-    /// <summary>
-    /// Returns the drive path of the given path. The drive path is returned as 3 characters path. For example "C:\".
-    /// Returns an empty string if the element is not mapped to a drive.
-    /// </summary>
-    /// <param name="element">The path to an element.</param>
-    /// <returns>Returns the drive path of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
-    static std::string GetDrivePath(const std::string & element);
-
   private:
     bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
     bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;

@@ -25,6 +25,7 @@
 #include "shellanything/Context.h"
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
+#include "DriveClass.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/environment_utf8.h"
@@ -100,8 +101,8 @@ namespace shellanything
       std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
       std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
-      std::string element_selection_drive_letter    = Validator::GetDriveLetter(element);
-      std::string element_selection_drive_path      = Validator::GetDrivePath(element);
+      std::string element_selection_drive_letter    = GetDriveLetter(element);
+      std::string element_selection_drive_path      = GetDrivePath(element);
  
       // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );

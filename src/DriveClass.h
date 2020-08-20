@@ -41,6 +41,22 @@ namespace shellanything
   };
 
   /// <summary>
+  /// Returns the drive letter of the given path.
+  /// Returns an empty string if the element is not mapped to a drive.
+  /// </summary>
+  /// <param name="element">The path to an element.</param>
+  /// <returns>Returns the drive letter of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
+  std::string GetDriveLetter(const std::string & element);
+
+  /// <summary>
+  /// Returns the drive path of the given path. The drive path is returned as 3 characters path. For example "C:\".
+  /// Returns an empty string if the element is not mapped to a drive.
+  /// </summary>
+  /// <param name="element">The path to an element.</param>
+  /// <returns>Returns the drive path of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
+  std::string GetDrivePath(const std::string & element);
+
+  /// <summary>
   /// Define if the given path is a network path.
   /// The given path do not need to exist to be identified as a network path.
   /// </summary>
