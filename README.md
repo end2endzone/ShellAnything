@@ -115,7 +115,8 @@ Please refer to file [INSTALL.md](INSTALL.md) for details on how installing/buil
 
 ShellAnything has been tested with the following platform:
 
-*   Windows x86/x64
+*   Windows 7 (32 and 64 bit)
+*   Windows 10 (32 and 64 bit)
 
 
 

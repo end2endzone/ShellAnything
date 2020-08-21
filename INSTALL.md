@@ -1,14 +1,28 @@
 # Install #
 
-The application does not provides pre-build binaries or provides an installation package. To install the binary files on the system, the source code must be compiled and copied to the appropriate directory.
+### Compiled binary packages: ###
+
+You can find the latest pre-compiled binaries  on the [github project release page](https://github.com/end2endzone/ShellAnything/releases/latest). 
+The binary installers of previous versions is also available [here](https://github.com/end2endzone/ShellAnything/releases).
+
+You can also checkout the [latest builds / nightly builds](https://ci.appveyor.com/project/end2endzone/shellanything) available on AppVeyor which offers CI/CD services for Windows. Successful builds are identified by a vertical green line. Select the *current build* or one [from the history](https://ci.appveyor.com/project/end2endzone/shellanything/history). Click on the `Platform: x64` , then look in the `Artifacts` tab.  In the *Actifacts* section, you will find two installers, one is a traditional "setup.exe" and the other is a more modern MSI. A portable version is also available.
+ 
+### From the source code: ###
+
+To install ShellAnything on the system from the source code, the source code must be compiled and copied to the appropriate directory.
 
 The following steps show how to install the application:
 
 1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`).
 
-2) Build the source code according to the [Build Steps](#build-steps) instructions specified in this document.
+2) Build the source code according to the [Build Steps](#build-steps) instructions specified in this document. It is suggested to define a custom installation directory. See the [CMake Quick Tips](#cmake-quick-tips) section for details. 
 
 3) Navigate to the `build` directory and execute `cmake --build . --config Release --target INSTALL`.
+
+The [build scripts](https://github.com/end2endzone/ShellAnything/tree/master/ci/appveyor), located in `ci/appveyor` directory, are also a good source of information for understanding how to build the executable even if they are meant to run on AppVeyor's CI server.
+
+
+
 
 # Build #
 
@@ -28,7 +42,7 @@ The following software must be installed on the system for compiling source code
 * [RapidAssist v0.8.1](https://github.com/end2endzone/RapidAssist/tree/0.8.1)
 * [win32Clipboard v0.3.0](https://github.com/end2endzone/win32Clipboard/tree/0.3.0)
 * [CMake](http://www.cmake.org/) v3.4.3 (or newer)
-* (optional) [Grip, GitHub Readme Instant Preview](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
+* (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 
 
 
@@ -36,7 +50,7 @@ The following software must be installed on the system for compiling source code
 
 * Microsoft Visual C++ 2010 or newer
 * (optional) [NSIS (Nullsoft Scriptable Install System)](https://nsis.sourceforge.io/)  v3.0a1 (or newer)
-* (optional) [WiX toolset](https://wixtoolset.org/)  v3.11.2 (or newer)
+* (optional) [WiX Toolset](https://wixtoolset.org/)  v3.11.2 (or newer)
 
 
 
@@ -145,7 +159,7 @@ Test are automatically build when building the solution.
 
 To run tests, navigate to the `build/bin` folder and run `shellanything_unittest` executable. For Windows users, the executable is located in `build\bin\Release`.
 
-Test results are saved in junit format in file `shellanything_unittest.x86.debug.xml` or `shellanything_unittest.x86.release.xml` depending on the selected configuration.
+Test results are saved in junit format in file `shellanything_unittest.x64.debug.xml` or `shellanything_unittest.x64.release.xml` depending on the selected configuration.
 
 The latest test results are available at the beginning of the [README.md](README.md) file.
 
