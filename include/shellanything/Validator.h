@@ -105,6 +105,16 @@ namespace shellanything
     void SetClass(const std::string & iClass);
 
     /// <summary>
+    /// Getter for the 'pattern' parameter.
+    /// </summary>
+    const std::string & GetPattern() const;
+
+    /// <summary>
+    /// Setter for the 'pattern' parameter.
+    /// </summary>
+    void SetPattern(const std::string & iPattern);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -141,6 +151,7 @@ namespace shellanything
     bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
     bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
     bool ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
 
   private:
     int mMaxFiles;
@@ -149,6 +160,7 @@ namespace shellanything
     std::string mFileExtensions;
     std::string mFileExists;
     std::string mClass;
+    std::string mPattern;
     std::string mInverse;
   };
 

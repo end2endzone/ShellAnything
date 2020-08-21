@@ -73,5 +73,13 @@
       </actions>
     </menu>
 
+    <menu name="menu09">
+      <!-- pattern attribute is set -->
+      <visibility pattern="*IMG_*" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

@@ -362,6 +362,50 @@ namespace shellanything { namespace test
 
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testPattern)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when no pattern is matching
+    v.SetPattern("foo");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when patterns is matching only a single file
+    v.SetPattern("*cmd.exe");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert success when patterns are matching all files
+    v.SetPattern("*.dll;*.exe;*.msc");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetPattern("*.exe;*.dll;*.msc"); //random order
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when more than required patterns are provided
+    v.SetPattern("*e*;*.dll;*.exe;*.msc;*a*;");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when multiple files are selected and a single pattern is missing
+    v.SetPattern("*.dll;*.exe"); //missing msc file extension
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsInversed)
   {
     Validator v;
@@ -578,7 +622,7 @@ namespace shellanything { namespace test
     v.SetFileExtensions("dll");
     ASSERT_FALSE( v.Validate(c) );
 
-    //assert failure when all properties are defined
+    //assert failure when all file extensions are defined
     v.SetFileExtensions("dll;exe;msc");
     ASSERT_FALSE( v.Validate(c) );
     v.SetFileExtensions("exe;dll;msc"); //random order
@@ -638,6 +682,53 @@ namespace shellanything { namespace test
     v.SetFileExists("foo;bar;baz");
     ASSERT_TRUE( v.Validate(c) );
     v.SetFileExists("foo;bar;C:\\Windows\\System32\\kernel32.dll;baz");
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testPatternInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Validator v;
+    v.SetInserve("pattern");
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert success when no pattern is matching
+    v.SetPattern("foo");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert failure when a pattern is matching a single file
+    v.SetPattern("*.dll");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when pattern is matching all files
+    v.SetPattern("*.dll;*.exe;*.msc");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetPattern("*.exe;*.dll;*.msc"); //random order
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert failure when more than required patterns are provided
+    v.SetPattern("*e*;*.dll;*.exe;*.msc;*a*;");
+    ASSERT_FALSE( v.Validate(c) );
+
+    // If multiple patterns are specified, no pattern must match for the validation to be successful.
+    v.SetPattern("*.foo;*.bar;*.baz;");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetPattern("*.foo;*.exe;*.bar;*.baz;");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------

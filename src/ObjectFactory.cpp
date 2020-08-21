@@ -169,6 +169,16 @@ namespace shellanything
       }
     }
 
+    //parse pattern
+    std::string pattern;
+    if (ParseAttribute(element, "pattern", true, true, pattern, error))
+    {
+      if (!pattern.empty())
+      {
+        result.SetPattern(pattern);
+      }
+    }
+
     //parse maxfiles
     int maxfiles = -1;
     if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))

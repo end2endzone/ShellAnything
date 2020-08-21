@@ -15,6 +15,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [class attribute](#class-attribute)
     * [maxfiles and maxfolders attributes](#maxfiles-and-maxfolders-attributes)
     * [fileextensions attribute](#fileextensions-attribute)
+    * [pattern attribute](#pattern-attribute)
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
     * [inverse attribute](#inverse-attribute)
@@ -316,6 +317,42 @@ For example, the following set a menu visible only when the user right-click on 
 
 
 
+### pattern attribute: ###
+
+The `pattern` attribute validates a menu based on a wildcard pattern matching algorithm. The wildcard pattern can include special characters such as `*` and `?` where
+* `*` Matches any string of zero or more characters.
+* `?` Matches any single character.
+
+If `pattern` attribute is specified, the files selected by the user must match the wildcard pattern for the validation to be successful. To specify multiple patterns, one must separate each pattern value with the `;` character. If multiple patterns are specified, **at least one** pattern must match for the validation to be successful.
+
+If multiple files are selected, the path of each file must match **at least one** pattern for the validation to be successful.
+
+If `pattern` attribute is not specified, then the validation is successful.
+
+For example, the following set a menu visible only when the user right-click on JPEG image files which filenames start by `IMG``:
+```xml
+<visibility pattern="*\IMG*.jpg" />
+```
+
+The following table show useful pattern examples:
+
+| Pattern                                                       | Meaning                                                                                       |
+|---------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| \\e\*.???                                                     | Matches filenames beginning with the letter `e`.                                              |
+| \*e.???                                                       | Matches filename ending with the letter `e`.                                                  |
+| \*vacations\*                                                 | Matches files that have the word `vacations` in their path.                                   |
+| \*2019\*                                                      | Matches files that have the year 2019 in the filename or directory path.                      |
+| \*\\DCIM\\\*                                                  | Matches the files located in a Digital Camera Images directory.                               |
+| C:\Program Files\\\*;<br>C:\Program Files (x86)\\\*           | Matches files that are located in `C:\Program Files` or `C:\Program Files (x86)` directories. |
+| ${env.USERPROFILE}\\Downloads;<br>${env.USERPROFILE}\\Desktop | Matches files that are located in the user's `Downloads` or `Desktop` directories.            |
+| D:\\\*                                                        | Matches files located on the D: drive.                                                        |
+| \*\\IMG_????.JPG;<br>\*\\DSC_????.JPG                         | Matches Canon or Nikon image files.                                                           |
+
+**Note:**
+The `pattern` attribute should not be used for matching files by file extension. The `fileextensions` attribute should be used instead.
+
+
+
 ### exists attribute: ###
 
 The `exists` attribute validates a menu if the specified file or directory exists.
@@ -364,6 +401,7 @@ The meaning of each inversed attribute in explained in the following table:
 | maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.                                |
 | maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.                     |
 | fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match the selected files for the validation to be successful. |
+| pattern        | Validates a menu if the selected file or directory **does not** match the wildcard pattern matching algorithm.<br>If multiple patterns are specified, **no pattern** must match the selected files for the validation to be successful.      |
 | exists         | Validates a menu if the selected file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.                                  |
 | properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.                                |
 

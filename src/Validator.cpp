@@ -27,6 +27,7 @@
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
 #include "DriveClass.h"
+#include "Wildcard.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -81,6 +82,7 @@ namespace shellanything
       mFileExtensions = validator.mFileExtensions ;
       mFileExists     = validator.mFileExists     ;
       mClass          = validator.mClass          ;
+      mPattern        = validator.mPattern        ;
       mInverse        = validator.mInverse        ;
     }
     return (*this);
@@ -144,6 +146,16 @@ namespace shellanything
   void Validator::SetClass(const std::string & iClass)
   {
     mClass = iClass;
+  }
+
+  const std::string & Validator::GetPattern() const
+  {
+    return mPattern;
+  }
+
+  void Validator::SetPattern(const std::string & iPattern)
+  {
+    mPattern = iPattern;
   }
 
   const std::string & Validator::GetInserve() const
@@ -265,6 +277,16 @@ namespace shellanything
     {
       bool inversed = IsInversed("class");
       bool valid = ValidateClass(iContext, class_, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate pattern
+    const std::string pattern = pmgr.Expand(mPattern);
+    if (!pattern.empty())
+    {
+      bool inversed = IsInversed("pattern");
+      bool valid = ValidatePattern(iContext, pattern, inversed);
       if (!valid)
         return false;
     }
@@ -502,6 +524,47 @@ namespace shellanything
       }
       if (!valid)
         return false;
+    }
+
+    return true;
+  }
+
+  bool WildcardMatch(const ra::strings::StringVector & patterns, const char * value)
+  {
+    for(size_t j=0; j<patterns.size(); j++)
+    {
+      const std::string & pattern = patterns[j];
+      bool match = WildcardMatch(pattern.c_str(), value);
+      if (match)
+        return true;
+    }
+    return false;
+  }
+
+  bool Validator::ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const
+  {
+    if (pattern.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector patterns = ra::strings::Split(pattern, ";");
+    Uppercase(patterns);
+
+    //for each file selected
+    const Context::ElementList & elements = context.GetElements();
+    for(size_t i=0; i<elements.size(); i++) 
+    {
+      const std::string & element = elements[i];
+      std::string element_uppercase = ra::strings::Uppercase(element);
+
+      //each element must match one of the patterns
+      bool match = WildcardMatch(patterns, element_uppercase.c_str());
+      if (!inversed && !match)
+        return false; //current file does not match any patterns
+      if (inversed && match)
+        return false; //current element is not accepted
     }
 
     return true;
