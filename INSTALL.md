@@ -40,7 +40,6 @@ The following software must be installed on the system for compiling source code
 * [Google Logging Library v0.4.0](https://github.com/google/glog/tree/v0.4.0)
 * [TinyXML 2 v6.2.0](https://github.com/leethomason/tinyxml2/tree/6.2.0)
 * [RapidAssist v0.8.1](https://github.com/end2endzone/RapidAssist/tree/0.8.1)
-* [win32Clipboard v0.3.0](https://github.com/end2endzone/win32Clipboard/tree/0.3.0)
 * [CMake](http://www.cmake.org/) v3.4.3 (or newer)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 

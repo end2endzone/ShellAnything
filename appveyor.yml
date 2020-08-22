@@ -64,7 +64,6 @@ before_build:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_googletest.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_tinyxml2.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_rapidassist.bat
-- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_win32Clipboard.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_glog.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_grip.bat
 

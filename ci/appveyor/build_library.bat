@@ -9,7 +9,6 @@ if "%APPVEYOR_BUILD_FOLDER%"=="" (
 set GTEST_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\googletest\install
 set rapidassist_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\RapidAssist\install
 set tinyxml2_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\tinyxml2\install
-set win32clipboard_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\win32Clipboard\install
 set glog_DIR=%APPVEYOR_BUILD_FOLDER%\third_parties\glog\install_dir
 set INSTALL_LOCATION=%APPVEYOR_BUILD_FOLDER%\install
 
@@ -47,7 +46,6 @@ echo.
 set GTEST_ROOT=
 set rapidassist_DIR=
 set tinyxml2_DIR=
-set win32clipboard_DIR=
 set glog_DIR=
 set INSTALL_LOCATION=
 

@@ -1,6 +1,5 @@
 find_package(rapidassist REQUIRED)
 find_package(tinyxml2 REQUIRED)
-find_package(win32clipboard REQUIRED)
 find_package(glog REQUIRED)
 
 #resource.rc
@@ -75,6 +74,8 @@ add_library(shellanything STATIC
   ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
+  Win32Clipboard.h
+  Win32Clipboard.cpp
 )
 
 add_library(shellext SHARED
@@ -128,7 +129,6 @@ target_include_directories(shellanything
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
-    win32clipboard
     glog::glog
 )
 target_include_directories(shellext
@@ -138,7 +138,7 @@ target_include_directories(shellext
     rapidassist
     glog::glog
 )
-target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist win32clipboard glog::glog)
+target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
 target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog)
 
 # Also add Tinyxml2 include and libraries.
