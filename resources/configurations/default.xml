@@ -115,7 +115,7 @@ Help:
       <icon path="C:\Windows\System32\shell32.dll" index="22" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
-        <prompt name="findpattern" title="Please enter the find wildcard pattern..." />
+        <prompt name="findpattern" title="Please enter a file wildcard pattern..." />
         <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K dir /a /s /b &quot;${findpattern}&quot;" />
         <property name="findpattern" value="" />
       </actions>
@@ -125,9 +125,9 @@ Help:
       <icon path="C:\Windows\System32\shell32.dll" index="55" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
-        <prompt name="filepattern" title="Please enter the file wildcard pattern..." />
-        <prompt name="textpattern" title="Please enter the searched text..." />
-        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K FINDSTR /S &quot;/C:${textpattern}&quot; ${filepattern}" />
+        <prompt name="filepattern" title="Question 1 of 2.${newline}Please enter the file wildcard pattern..." />
+        <prompt name="textpattern" title="Question 2 of 2.${newline}Please enter the searched text..." />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K FINDSTR /S /M &quot;/C:${textpattern}&quot; ${filepattern}" />
         <property name="filepattern" value="" />
         <property name="textpattern" value="" />
       </actions>
