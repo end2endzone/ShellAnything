@@ -6,14 +6,41 @@ You can find the latest pre-compiled binaries  on the [github project release pa
 The binary installers of previous versions is also available [here](https://github.com/end2endzone/ShellAnything/releases).
 
 You can also checkout the [latest builds / nightly builds](https://ci.appveyor.com/project/end2endzone/shellanything) available on AppVeyor which offers CI/CD services for Windows. Successful builds are identified by a vertical green line. Select the *current build* or one [from the history](https://ci.appveyor.com/project/end2endzone/shellanything/history). Click on the `Platform: x64` , then look in the `Artifacts` tab.  In the *Actifacts* section, you will find two installers, one is a traditional "setup.exe" and the other is a more modern MSI. A portable version is also available.
- 
+
+
+
+### Using the build scripts: ###
+
+To install ShellAnything on the system in "one click", one can use the build script which builds ShellAnything with default settings. This is the recommended way to build ShellAnything if you just want to use the application.
+
+The following steps show how to install the application:
+
+1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`). It is recommended to use a directory path without spaces.
+
+2) Execute the build script `build_with_defaults.bat` located in the `ci/local` directory.
+
+The `build_with_defaults.bat` script emulates [AppVeyor](https://ci.appveyor.com/project/end2endzone/shellanything) environment and executes, one by one, AppVeyor's build scripts which are located in the `ci/appveyor` directory.
+
+The following steps will be executed :
+ - All required library dependencies will be downloaded and build  in `third_parties` directory located at the root of the source code. Existing dependencies that are already available on the system are **ignored**. This is to make sure that each dependency is build with settings that are compatible with ShellAnything and installed in the directory expected by the build scripts.
+ - ShellAnything application will be build inside the `build` directory located at the root of the source code.
+ - Installation packages will be created in the `build` directory if the required package managers are available on the system (NSIS, Wix Toolset). The installation packages are named as follows :
+   - `ShellAnything-[version]-win64.exe`, if NSIS is installed on the system.
+   - `ShellAnything-[version]-win64.msi`, if Wix Toolset is installed on the system.
+   - `ShellAnything-[version]-win64.zip`, a portable version.
+- Application files will be installed in the `install` directory located at the root of the source code.
+
+To delete all generated binaries, delete the `build`, `install` and `third_parties` directories.
+
+
+
 ### From the source code: ###
 
 To install ShellAnything on the system from the source code, the source code must be compiled and copied to the appropriate directory.
 
 The following steps show how to install the application:
 
-1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`).
+1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`). It is recommended to use a directory path without spaces.
 
 2) Build the source code according to the [Build Steps](#build-steps) instructions specified in this document. It is suggested to define a custom installation directory. See the [CMake Quick Tips](#cmake-quick-tips) section for details. 
 
@@ -161,5 +188,3 @@ To run tests, navigate to the `build/bin` folder and run `shellanything_unittest
 Test results are saved in junit format in file `shellanything_unittest.x64.debug.xml` or `shellanything_unittest.x64.release.xml` depending on the selected configuration.
 
 The latest test results are available at the beginning of the [README.md](README.md) file.
-
-

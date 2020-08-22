@@ -1,5 +1,7 @@
 @echo off
 
+echo Emulating appveyor's environment.
+
 cd /d %~dp0
 cd ..\..
 set APPVEYOR=True
@@ -10,7 +12,6 @@ set PlatformToolset=v100
 REM set Platform=Win32
 set PlatformToolset=Windows7.1SDK
 
-echo Emulating appveyor's environment.
 echo APPVEYOR_BUILD_FOLDER set to '%APPVEYOR_BUILD_FOLDER%'
 echo.
 
