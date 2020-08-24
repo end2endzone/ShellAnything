@@ -1,1 +1,2 @@
+@LICENSE_CPLUSPLUS_HEADER@
 appicon  ICON  "@CMAKE_SOURCE_DIR@/resources/icons/0.2.0.ico"

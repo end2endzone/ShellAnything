@@ -72,8 +72,10 @@ set(SHELLANYTHING_VERSION_MINOR 5)
 set(SHELLANYTHING_VERSION_PATCH 0)
 set(SHELLANYTHING_VERSION ${SHELLANYTHING_VERSION_MAJOR}.${SHELLANYTHING_VERSION_MINOR}.${SHELLANYTHING_VERSION_PATCH})
 
-# read license file
-file(READ ${CMAKE_SOURCE_DIR}/LICENSE.h LICENSE)
+# Create a c++ file header from the project LICENSE file.
+# The c++ header will be added to all generated files.
+include(MakeCplusplusHeader)
+MakeCplusplusHeader(${CMAKE_SOURCE_DIR}/LICENSE LICENSE_CPLUSPLUS_HEADER)
 
 # version.h file
 set(SHELLANYTHING_VERSION_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/version.h)
@@ -312,7 +314,7 @@ set(CPACK_NSIS_MENU_LINKS
 
 # Set variables for WIX installer
 set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
-set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/LICENSE.rtf")
+set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/0.2.0.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
 
