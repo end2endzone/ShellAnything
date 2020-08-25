@@ -19,15 +19,19 @@
 if (WIN32)
   # Define possible search locations in the registry
   set(_WIX_ROOT_HINTS
-    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows Installer XML\\3.11;InstallFolder")
-
+    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows Installer XML;InstallFolder")
+  
   # Search for directories matching 'WiX Toolset*' in both Program Files directories.
   file(GLOB _WIX_DIRECTORIES_X64 "C:/Program Files/WiX Toolset*")
   file(GLOB _WIX_DIRECTORIES_X86 "C:/Program Files (x86)/WiX Toolset*")
-    
+  
+  # The environment variable WIX can end with a '\' character. This backslash character is escaping the next character which is the list separator ';'.
+  set(_WIX_ENV_PATH "$ENV{WIX}")
+  string(REPLACE "\\" "/" _WIX_ENV_PATH ${_WIX_ENV_PATH})
+  
   # Define know directory locations where it could be installed.
   set(_WIX_ROOT_PATHS
-    "$ENV{WIX}"
+    ${_WIX_ENV_PATH}
     ${_WIX_DIRECTORIES_X86}
     ${_WIX_DIRECTORIES_X64}
   )
@@ -44,11 +48,11 @@ if (WIN32)
   )
   mark_as_advanced(WIX_ROOT_PATH)
   #message("WIX_ROOT_PATH=" "${WIX_ROOT_PATH}")
-
+  
   if (WIX_ROOT_PATH)
     set(WIX_BIN_DIR ${WIX_ROOT_PATH}/bin)
   endif (WIX_ROOT_PATH)
-    
+  
   # Search for the main executables
   find_program(WIX_CANDLE
     NAMES
