@@ -12,8 +12,10 @@ This manual includes a description of the system functionalities and capabilitie
 * [Configuration Files](#configuration-files)
   * [Menus](#menus)
   * [Visibility / Validity](#visibility--validity)
+    * [class attribute](#class-attribute)
     * [maxfiles and maxfolders attributes](#maxfiles-and-maxfolders-attributes)
     * [fileextensions attribute](#fileextensions-attribute)
+    * [pattern attribute](#pattern-attribute)
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
     * [inverse attribute](#inverse-attribute)
@@ -240,6 +242,40 @@ The &lt;visibility&gt; and &lt;validity&gt; elements have the following attribut
 
 
 
+### class attribute: ###
+
+The `class` attribute validates a menu based on type (class) of the selected files. The attribute can be used to quickly filter a menu based on the user selection. It covers most filtering use cases:
+* Filter for files only.
+* Filter for directories only.
+* Filter by file extensions.
+
+If `class` attribute is specified, the classes of the files selected by the user must match for the validation to be successful. To specify multiple classes, one must separate each class with the `;` character. If multiple classes are specified, **at least one** class must match for the validation to be successful.
+
+If multiple files are selected, the class of **each file** must match **at least one** allowed classes for the validation to be successful.
+
+If `class` attribute is not specified, then the validation is successful.
+
+The `class` attribute supports the following values which are explained in the following table:
+
+| Values          | Meaning                                                                                                                                                |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| .&lt;ext&gt;    | Validates a menu if the selected file extension matches the file extension *&lt;ext&gt;* . Replace *&lt;ext&gt;* by your desired file extension value. |
+| file            | Validates a menu if the user has **only** selected files.                                                                                              |
+| directory       | Validates a menu if the user has **only** selected folders or directories.                                                                             |
+| drive           | Validates a menu if the selected file is located on a drive.                                                                                           |
+| drive:removable | Validates a menu if the selected file is located on a removable drive.                                                                                 |
+| drive:fixed     | Validates a menu if the selected file is located on a fixed drive.                                                                                     |
+| drive:network   | Validates a menu if the selected file is located on a network drive or a network path.                                                                 |
+| drive:optical   | Validates a menu if the selected file is located on an optical drive.                                                                                  |
+| drive:ramdisk   | Validates a menu if the selected file is located on a ramdisk drive.                                                                                   |
+
+For example, the following set a menu visible only when the user right-click on files:
+```xml
+<visibility class="file" />
+```
+
+
+
 ### maxfiles and maxfolders attributes: ###
 
 The `maxfiles` and `maxfolders` attributes validates a menu based on the number of files and folders selected by the user.
@@ -278,6 +314,42 @@ For example, the following set a menu visible only when the user right-click on 
 ```xml
 <visibility maxfiles="1" maxfolders="0" fileextensions="com;exe;bat;cmd" />
 ```
+
+
+
+### pattern attribute: ###
+
+The `pattern` attribute validates a menu based on a wildcard pattern matching algorithm. The wildcard pattern can include special characters such as `*` and `?` where
+* `*` Matches any string of zero or more characters.
+* `?` Matches any single character.
+
+If `pattern` attribute is specified, the files selected by the user must match the wildcard pattern for the validation to be successful. To specify multiple patterns, one must separate each pattern value with the `;` character. If multiple patterns are specified, **at least one** pattern must match for the validation to be successful.
+
+If multiple files are selected, the path of each file must match **at least one** pattern for the validation to be successful.
+
+If `pattern` attribute is not specified, then the validation is successful.
+
+For example, the following set a menu visible only when the user right-click on JPEG image files which filenames start by `IMG``:
+```xml
+<visibility pattern="*\IMG*.jpg" />
+```
+
+The following table show useful pattern examples:
+
+| Pattern                                                       | Meaning                                                                                       |
+|---------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| \\e\*.???                                                     | Matches filenames beginning with the letter `e`.                                              |
+| \*e.???                                                       | Matches filename ending with the letter `e`.                                                  |
+| \*vacations\*                                                 | Matches files that have the word `vacations` in their path.                                   |
+| \*2019\*                                                      | Matches files that have the year 2019 in the filename or directory path.                      |
+| \*\\DCIM\\\*                                                  | Matches the files located in a Digital Camera Images directory.                               |
+| C:\Program Files\\\*;<br>C:\Program Files (x86)\\\*           | Matches files that are located in `C:\Program Files` or `C:\Program Files (x86)` directories. |
+| ${env.USERPROFILE}\\Downloads;<br>${env.USERPROFILE}\\Desktop | Matches files that are located in the user's `Downloads` or `Desktop` directories.            |
+| D:\\\*                                                        | Matches files located on the D: drive.                                                        |
+| \*\\IMG_????.JPG;<br>\*\\DSC_????.JPG                         | Matches Canon or Nikon image files.                                                           |
+
+**Note:**
+The `pattern` attribute should not be used for matching files by file extension. The `fileextensions` attribute should be used instead.
 
 
 
@@ -323,13 +395,15 @@ If `inverse` attribute is not specified, then the validation is successful.
 
 The meaning of each inversed attribute in explained in the following table:
 
-| Attribute      | Meaning                                                                                                                                                                                                                   |
-|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.             |
-| maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.  |
-| fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match for the validation to be successful. |
-| exists         | Validates a menu if the specified file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.              |
-| properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.             |
+| Attributes     | Meaning                                                                                                                                                                                                                                      |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| class          | Validates a menu if the selected file or directory **does not** match the class of the selected files.<br>If multiple classes are specified, **no classes** must match the selected files for the validation to be successful.               |
+| maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.                                |
+| maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.                     |
+| fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match the selected files for the validation to be successful. |
+| pattern        | Validates a menu if the selected file or directory **does not** match the wildcard pattern matching algorithm.<br>If multiple patterns are specified, **no pattern** must match the selected files for the validation to be successful.      |
+| exists         | Validates a menu if the selected file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.                                  |
+| properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.                                |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
 
@@ -847,16 +921,20 @@ The application provides a list of dynamic properties. The values of these prope
 
 The following table defines the list of dynamic properties and their utility:
 
-| Property                     | Description                                                              |
-|------------------------------|--------------------------------------------------------------------------|
-| selection.path               | Matches the full path of the clicked element.                            |
-| selection.filename           | Matches the filename  of the clicked element.                            |
-| selection.filename.noext     | Matches the filename  of the clicked element without the file extension. |
-| selection.parent.path        | Matches the full path of the parent  element.                            |
-| selection.parent.filename    | Matches the filename  of the parent  element.                            |
-| selection.filename.extension | Matches the file extension of the clicked element.                       |
+| Property                     | Description                                                             |
+|------------------------------|-------------------------------------------------------------------------|
+| selection.path               | Matches the full path of the clicked element.                           |
+| selection.filename           | Matches the filename of the clicked element.                            |
+| selection.filename.noext     | Matches the filename of the clicked element without the file extension. |
+| selection.parent.path        | Matches the full path of the parent element.                            |
+| selection.parent.filename    | Matches the filename of the parent element.                             |
+| selection.filename.extension | Matches the file extension of the clicked element.                      |
+| selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.       |
+| selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.       |
 
 Selection-based properties are encoded in utf-8.
+
+Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
 
 
 
@@ -870,14 +948,18 @@ For example, assume the following files are selected:
 * C:\Program Files (x86)\Winamp\zlib.dll
 
 The system will generates the following property values (note the `\r\n` characters) :
-| Property                     | Value                                                              |
-|------------------------------|--------------------------------------------------------------------------|
-| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll                          |
-| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                            |
-| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib|
-| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                            |
-| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                            |
-| selection.filename.extension | dll`\r\n`exe`\r\n`dll                       |
+| Property                     | Value                                                                                                                               |
+|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll |
+| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                                                                                           |
+| selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib                                                                                                       |
+| selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                                 |
+| selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                                                                                                      |
+| selection.filename.extension | dll`\r\n`exe`\r\n`dll                                                                                                               |
+| selection.drive.letter       | C`\r\n`C`\r\n`C                                                                                                                     |
+| selection.drive.path         | C:\\`\r\n`C:\\`\r\n`C:\\                                                                                                            |
+
+Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
 
 
 

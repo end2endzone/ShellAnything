@@ -70,12 +70,16 @@ add_library(shellanything STATIC
   Unicode.h
   Unicode.cpp
   Validator.cpp
+  DriveClass.h
+  DriveClass.cpp
   ErrorManager.h
   ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
   Win32Clipboard.h
   Win32Clipboard.cpp
+  Wildcard.cpp
+  Wildcard.h
 )
 
 add_library(shellext SHARED

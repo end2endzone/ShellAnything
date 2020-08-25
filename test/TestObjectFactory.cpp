@@ -150,9 +150,9 @@ namespace shellanything { namespace test
     Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //ASSERT a 8 menus are available
+    //ASSERT all menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ( 8, menus.size() );
+    ASSERT_EQ( 10, menus.size() );
 
     //assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
@@ -162,16 +162,20 @@ namespace shellanything { namespace test
     static const std::string expected_inverse_maxfiles = "maxfiles";
     static const std::string expected_inverse_many = "maxfiles;maxfolders";
     static const std::string expected_inverse_unknown = "foo";
+    static const std::string expected_class = "file";
+    static const std::string expected_pattern = "*IMG_*";
 
-    ASSERT_EQ( expected_property,         menus[00]->GetVisibility().GetProperties() );
-    ASSERT_EQ( 5,                         menus[01]->GetVisibility().GetMaxFiles() );
-    ASSERT_EQ( 6,                         menus[01]->GetVisibility().GetMaxDirectories() );
-    ASSERT_EQ( expected_file_extension,   menus[02]->GetVisibility().GetFileExtensions() );
-    ASSERT_EQ( expected_file_exists,      menus[03]->GetVisibility().GetFileExists() );
-    ASSERT_EQ( expected_inverse_empty,    menus[04]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_maxfiles, menus[05]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_many,     menus[06]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_unknown,  menus[07]->GetVisibility().GetInserve() );
+    ASSERT_EQ( expected_property,         menus[0]->GetVisibility().GetProperties() );
+    ASSERT_EQ( 5,                         menus[1]->GetVisibility().GetMaxFiles() );
+    ASSERT_EQ( 6,                         menus[1]->GetVisibility().GetMaxDirectories() );
+    ASSERT_EQ( expected_file_extension,   menus[2]->GetVisibility().GetFileExtensions() );
+    ASSERT_EQ( expected_file_exists,      menus[3]->GetVisibility().GetFileExists() );
+    ASSERT_EQ( expected_inverse_empty,    menus[4]->GetVisibility().GetInserve() );
+    ASSERT_EQ( expected_inverse_maxfiles, menus[5]->GetVisibility().GetInserve() );
+    ASSERT_EQ( expected_inverse_many,     menus[6]->GetVisibility().GetInserve() );
+    ASSERT_EQ( expected_inverse_unknown,  menus[7]->GetVisibility().GetInserve() );
+    ASSERT_EQ( expected_class,            menus[8]->GetVisibility().GetClass() );
+    ASSERT_EQ( expected_pattern,          menus[9]->GetVisibility().GetPattern() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

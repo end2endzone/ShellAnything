@@ -95,6 +95,26 @@ namespace shellanything
     void SetFileExists(const std::string & iFileExists);
 
     /// <summary>
+    /// Getter for the 'class' parameter.
+    /// </summary>
+    const std::string & GetClass() const;
+
+    /// <summary>
+    /// Setter for the 'class' parameter.
+    /// </summary>
+    void SetClass(const std::string & iClass);
+
+    /// <summary>
+    /// Getter for the 'pattern' parameter.
+    /// </summary>
+    const std::string & GetPattern() const;
+
+    /// <summary>
+    /// Setter for the 'pattern' parameter.
+    /// </summary>
+    void SetPattern(const std::string & iPattern);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -126,11 +146,21 @@ namespace shellanything
     bool Validate(const Context & iContext) const;
 
   private:
+    bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
+    bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
+    bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
+    bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
+
+  private:
     int mMaxFiles;
     int mMaxDirectories;
     std::string mProperties;
     std::string mFileExtensions;
     std::string mFileExists;
+    std::string mClass;
+    std::string mPattern;
     std::string mInverse;
   };
 

@@ -26,6 +26,8 @@
 #include <limits>
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
+#include "DriveClass.h"
+#include "Wildcard.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -79,6 +81,8 @@ namespace shellanything
       mProperties     = validator.mProperties     ;
       mFileExtensions = validator.mFileExtensions ;
       mFileExists     = validator.mFileExists     ;
+      mClass          = validator.mClass          ;
+      mPattern        = validator.mPattern        ;
       mInverse        = validator.mInverse        ;
     }
     return (*this);
@@ -132,6 +136,26 @@ namespace shellanything
   void Validator::SetFileExists(const std::string & iFileExists)
   {
     mFileExists = iFileExists;
+  }
+
+  const std::string & Validator::GetClass() const
+  {
+    return mClass;
+  }
+
+  void Validator::SetClass(const std::string & iClass)
+  {
+    mClass = iClass;
+  }
+
+  const std::string & Validator::GetPattern() const
+  {
+    return mPattern;
+  }
+
+  void Validator::SetPattern(const std::string & iPattern)
+  {
+    mPattern = iPattern;
   }
 
   const std::string & Validator::GetInserve() const
@@ -219,84 +243,328 @@ namespace shellanything
     //validate properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string properties = pmgr.Expand(mProperties);
-    bool properties_inversed = IsInversed("properties");
     if (!properties.empty())
     {
-      //split
-      ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
-
-      //each property specified must exists and be non-empty
-      for(size_t i=0; i<property_list.size(); i++)
-      {
-        const std::string & p = property_list[i];
-
-        if (!properties_inversed)
-        {
-          if (!pmgr.HasProperty(p))
-            return false; //missing property
-          const std::string & p_value = pmgr.GetProperty(p);
-          if (p_value.empty())
-            return false; //empty
-        }
-        else
-        {
-          // properties_inversed=true
-          if (pmgr.HasProperty(p))
-          {
-            const std::string & p_value = pmgr.GetProperty(p);
-            if (!p_value.empty())
-              return false; //not empty
-          }
-        }
-
-      }
+      bool inversed = IsInversed("properties");
+      bool valid = ValidateProperties(iContext, properties, inversed);
+      if (!valid)
+        return false;
     }
 
     //validate file extentions
     const std::string file_extensions = pmgr.Expand(mFileExtensions);
-    bool fileextensions_inversed = IsInversed("fileextensions");
     if (!file_extensions.empty())
     {
-      //split
-      ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
-      Uppercase(accepted_file_extensions);
-
-      //for each file selected
-      const Context::ElementList & elements = iContext.GetElements();
-      for(size_t i=0; i<elements.size(); i++) 
-      {
-        const std::string & element = elements[i];
-        std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
-
-        //each file extension must be part of accepted_file_extensions
-        bool found = HasValue(accepted_file_extensions, current_file_extension);
-        if (!fileextensions_inversed && !found)
-          return false; //current file extension is not accepted
-        if (fileextensions_inversed && found)
-          return false; //current file extension is not accepted
-      }
+      bool inversed = IsInversed("fileextensions");
+      bool valid = ValidateFileExtensions(iContext, file_extensions, inversed);
+      if (!valid)
+        return false;
     }
 
     //validate file/directory exists
     const std::string file_exists = pmgr.Expand(mFileExists);
-    bool exists_inversed = IsInversed("exists");
     if (!file_exists.empty())
     {
-      //split
-      ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
+      bool inversed = IsInversed("exists");
+      bool valid = ValidateExists(iContext, file_exists, inversed);
+      if (!valid)
+        return false;
+    }
 
-      //for each file
-      for(size_t i=0; i<mandatory_files.size(); i++)
+    //validate class
+    const std::string class_ = pmgr.Expand(mClass);
+    if (!class_.empty())
+    {
+      bool inversed = IsInversed("class");
+      bool valid = ValidateClass(iContext, class_, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate pattern
+    const std::string pattern = pmgr.Expand(mPattern);
+    if (!pattern.empty())
+    {
+      bool inversed = IsInversed("pattern");
+      bool valid = ValidatePattern(iContext, pattern, inversed);
+      if (!valid)
+        return false;
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateProperties(const Context & context, const std::string & properties, bool inversed) const
+  {
+    if (properties.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
+
+    //each property specified must exists and be non-empty
+    for(size_t i=0; i<property_list.size(); i++)
+    {
+      const std::string & p = property_list[i];
+
+      if (!inversed)
       {
-        const std::string & element = mandatory_files[i];
-        bool element_exists = false;
-        element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
-        element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
-        if (!exists_inversed && !element_exists)
-          return false; //mandatory file/directory not found
-        if (exists_inversed && element_exists)
-          return false; //mandatory file/directory not found
+        if (!pmgr.HasProperty(p))
+          return false; //missing property
+        const std::string & p_value = pmgr.GetProperty(p);
+        if (p_value.empty())
+          return false; //empty
       }
+      else
+      {
+        // inversed
+        if (pmgr.HasProperty(p))
+        {
+          const std::string & p_value = pmgr.GetProperty(p);
+          if (!p_value.empty())
+            return false; //not empty
+        }
+      }
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const
+  {
+    if (file_extensions.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
+    Uppercase(accepted_file_extensions);
+
+    //for each file selected
+    const Context::ElementList & elements = context.GetElements();
+    for(size_t i=0; i<elements.size(); i++) 
+    {
+      const std::string & element = elements[i];
+      std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
+
+      //each file extension must be part of accepted_file_extensions
+      bool found = HasValue(accepted_file_extensions, current_file_extension);
+      if (!inversed && !found)
+        return false; //current file extension is not accepted
+      if (inversed && found)
+        return false; //current file extension is not accepted
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const
+  {
+    if (file_exists.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
+
+    //for each file
+    for(size_t i=0; i<mandatory_files.size(); i++)
+    {
+      const std::string & element = mandatory_files[i];
+      bool element_exists = false;
+      element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
+      element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
+      if (!inversed && !element_exists)
+        return false; //mandatory file/directory not found
+      if (inversed && element_exists)
+        return false; //mandatory file/directory not found
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const
+  {
+    if (class_.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    if (class_ == "file")
+    {
+      // Selected elements must be files
+      bool valid = false;
+      valid |= (!inversed && context.GetNumFiles() > 0 && context.GetNumDirectories() == 0);
+      valid |= (inversed && context.GetNumFiles() == 0 && context.GetNumDirectories() > 0);
+      if (!valid)
+        return false;
+    }
+    else if (class_ == "folder" || class_ == "directory")
+    {
+      // Selected elements must be folders
+      bool valid = false;
+      valid |= (!inversed && context.GetNumDirectories() > 0 && context.GetNumFiles() == 0);
+      valid |= (inversed && context.GetNumDirectories() == 0 && context.GetNumFiles() > 0);
+      if (!valid)
+        return false;
+    }
+    else if (class_ == "drive")
+    {
+      // Selected elements must be mapped to a drive
+      bool valid = true;
+      const Context::ElementList & elements = context.GetElements();
+      for(size_t i=0; i<elements.size() && valid == true; i++)
+      {
+        const std::string & element = elements[i];
+        std::string drive = GetDriveLetter(element);
+        if (!inversed && drive.empty())  // All elements must be mapped to a drive
+          valid = false;
+        if (inversed && !drive.empty())  // All elements must NOT be mapped to a drive.
+          valid = false;
+      }
+      if (!valid)
+        return false;
+    }
+    else if (GetDriveClassFromString(class_.c_str()) != DRIVE_CLASS_UNKNOWN)
+    {
+      DRIVE_CLASS required_class = GetDriveClassFromString(class_.c_str());
+
+      // Selected elements must be of the same drive class
+      bool valid = true;
+      const Context::ElementList & elements = context.GetElements();
+      for(size_t i=0; i<elements.size() && valid == true; i++)
+      {
+        const std::string & element = elements[i];
+        DRIVE_CLASS element_class = GetDriveClassFromPath(element);
+        if (!inversed && element_class != required_class)
+          valid = false;
+        if (inversed && element_class == required_class)
+          valid = false;
+      }
+      if (!valid)
+        return false;
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateClass(const Context & context, const std::string & class_, bool inversed) const
+  {
+    if (class_.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector classes = ra::strings::Split(class_, ";");
+
+    // Search for file extensions. All file extensions must be extracted from the list and evaluated all at once.
+    std::string file_extensions;
+    if (!classes.empty())
+    {
+      static const size_t INVALID_INDEX_POSITION = (size_t)-1;
+
+      // Remember each file extension's index to delete them after searching.
+      std::vector<size_t> delete_positions;
+
+      bool found_file_extensions = false;
+
+      for(size_t i=classes.size()-1; i>=0 && i!=INVALID_INDEX_POSITION; i--)
+      {
+        const std::string & element = classes[i];
+
+        // Is this a class file extension filter?
+        if (!element.empty() && element[0] == '.')
+        {
+          // Extract the file extension
+          std::string file_extension;
+          if (element.size() >= 2)
+            file_extension = element.substr(1);
+
+          // Add to the file extension list
+          if (!file_extensions.empty())
+            file_extensions.insert(0, 1, ';');
+          file_extensions.insert(0, file_extension.c_str());
+
+          found_file_extensions = true;
+
+          // Remember this index
+          delete_positions.push_back(i);
+        }
+      }
+
+      // Delete elements of classes which were identified as file extensions
+      for(size_t i=0; i<delete_positions.size(); i++)
+      {
+        const size_t & delete_position = delete_positions[i];
+        classes.erase(classes.begin() + delete_position);
+      }
+
+      // Validate file extensions
+      if (found_file_extensions)
+      {
+        bool valid = ValidateFileExtensions(context, file_extensions, inversed);
+        if (!valid)
+          return false;
+      }
+    }
+
+    // Continue validation for the remaining class elements
+    if (!classes.empty())
+    {
+      bool valid = false;
+      for(size_t i=0; i<classes.size(); i++)
+      {
+        const std::string & element = classes[i];
+        valid |= ValidateClassSingle(context, element, inversed);
+      }
+      if (!valid)
+        return false;
+    }
+
+    return true;
+  }
+
+  bool WildcardMatch(const ra::strings::StringVector & patterns, const char * value)
+  {
+    for(size_t j=0; j<patterns.size(); j++)
+    {
+      const std::string & pattern = patterns[j];
+      bool match = WildcardMatch(pattern.c_str(), value);
+      if (match)
+        return true;
+    }
+    return false;
+  }
+
+  bool Validator::ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const
+  {
+    if (pattern.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector patterns = ra::strings::Split(pattern, ";");
+    Uppercase(patterns);
+
+    //for each file selected
+    const Context::ElementList & elements = context.GetElements();
+    for(size_t i=0; i<elements.size(); i++) 
+    {
+      const std::string & element = elements[i];
+      std::string element_uppercase = ra::strings::Uppercase(element);
+
+      //each element must match one of the patterns
+      bool match = WildcardMatch(patterns, element_uppercase.c_str());
+      if (!inversed && !match)
+        return false; //current file does not match any patterns
+      if (inversed && match)
+        return false; //current element is not accepted
     }
 
     return true;

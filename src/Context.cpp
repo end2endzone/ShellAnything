@@ -23,7 +23,9 @@
  *********************************************************************************/
 
 #include "shellanything/Context.h"
+#include "shellanything/Validator.h"
 #include "PropertyManager.h"
+#include "DriveClass.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/environment_utf8.h"
@@ -74,6 +76,8 @@ namespace shellanything
     std::string selection_filename       ;
     std::string selection_filename_noext ;
     std::string selection_filename_ext   ;
+    std::string selection_drive_letter   ;
+    std::string selection_drive_path     ;
 
     // Get the separator string for multiple selection 
     const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
@@ -97,23 +101,28 @@ namespace shellanything
       std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
       std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
+      std::string element_selection_drive_letter    = GetDriveLetter(element);
+      std::string element_selection_drive_path      = GetDrivePath(element);
  
-      // Append this specific element properties to the global property string
- 
-      // Add a newline if the property value is not empty. This allows printing all file path on individual lines
+      // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );
       if (!selection_parent_path    .empty()) selection_parent_path     .append( selection_multi_separator );
       if (!selection_parent_filename.empty()) selection_parent_filename .append( selection_multi_separator );
       if (!selection_filename       .empty()) selection_filename        .append( selection_multi_separator );
       if (!selection_filename_noext .empty()) selection_filename_noext  .append( selection_multi_separator );
       if (!selection_filename_ext   .empty()) selection_filename_ext    .append( selection_multi_separator );
- 
+      if (!selection_drive_letter   .empty()) selection_drive_letter    .append( selection_multi_separator );
+      if (!selection_drive_path     .empty()) selection_drive_path      .append( selection_multi_separator );
+
+      // Append this specific element properties to the global property string
       selection_path           .append( element_selection_path            );
       selection_parent_path    .append( element_selection_parent_path     );
       selection_parent_filename.append( element_selection_parent_filename );
       selection_filename       .append( element_selection_filename        );
       selection_filename_noext .append( element_selection_filename_noext  );
       selection_filename_ext   .append( element_selection_filename_ext    );
+      selection_drive_letter   .append( element_selection_drive_letter    );
+      selection_drive_path     .append( element_selection_drive_path      );
     }
  
     pmgr.SetProperty("selection.path"               , selection_path           );
@@ -122,6 +131,8 @@ namespace shellanything
     pmgr.SetProperty("selection.filename"           , selection_filename       );
     pmgr.SetProperty("selection.filename.noext"     , selection_filename_noext );
     pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   );
+    pmgr.SetProperty("selection.drive.letter"       , selection_drive_letter   );
+    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
   }
  
   void Context::UnregisterProperties() const
@@ -133,6 +144,8 @@ namespace shellanything
     pmgr.ClearProperty("selection.filename"           );
     pmgr.ClearProperty("selection.filename.noext"     );
     pmgr.ClearProperty("selection.filename.extension" );
+    pmgr.ClearProperty("selection.drive.letter"       );
+    pmgr.ClearProperty("selection.drive.path"         );
   }
  
   const Context::ElementList & Context::GetElements() const
