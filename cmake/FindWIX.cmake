@@ -25,9 +25,14 @@ if (WIN32)
   file(GLOB _WIX_DIRECTORIES_X64 "C:/Program Files/WiX Toolset*")
   file(GLOB _WIX_DIRECTORIES_X86 "C:/Program Files (x86)/WiX Toolset*")
   
-  # The environment variable WIX can end with a '\' character. This backslash character is escaping the next character which is the list separator ';'.
-  set(_WIX_ENV_PATH "$ENV{WIX}")
-  string(REPLACE "\\" "/" _WIX_ENV_PATH ${_WIX_ENV_PATH})
+  # Read WIX environment variable if defined to an existing path
+  set(_WIX_ENV_PATH "") # Set to an empty value by default
+  if(EXISTS "$ENV{WIX}")
+    # The environment variable WIX can end with a '\' character.
+    # This backslash character is escaping the next character which is the list separator ';'.
+    set(_WIX_ENV_PATH "$ENV{WIX}")
+    string(REPLACE "\\" "/" _WIX_ENV_PATH ${_WIX_ENV_PATH})
+  endif(EXISTS "$ENV{WIX}")
   
   # Define know directory locations where it could be installed.
   set(_WIX_ROOT_PATHS
