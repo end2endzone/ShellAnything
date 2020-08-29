@@ -197,11 +197,11 @@ namespace shellanything { namespace test
       std::string file_path = ra::testing::GetTestQualifiedName();
       static const size_t BUFFER_SIZE = 1024;
       char post_filename[BUFFER_SIZE];
-      sprintf(post_filename, ".%03d.sample_file.%s", i, file_extension);
+      sprintf(post_filename, ".%03Iu.sample_file.%s", i, file_extension);
       file_path.append(post_filename);
       bool created = ra::testing::CreateFile(file_path.c_str());
       ASSERT_TRUE( created ) << "Failed creating file '" << file_path << "'.";
-
+      
       //get the icon matching this file's extension
       Win32Registry::REGISTRY_ICON icon = Win32Registry::GetFileTypeIcon(file_extension);
       if (icon.path.empty())
@@ -243,7 +243,7 @@ namespace shellanything { namespace test
 
         //save to a file
         file_path = ra::testing::GetTestQualifiedName();
-        sprintf(post_filename, ".%03d.icon_%s.bmp", i, file_extension);
+        sprintf(post_filename, ".%03Iu.icon_%s.bmp", i, file_extension);
         file_path.append(post_filename);
         Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
 

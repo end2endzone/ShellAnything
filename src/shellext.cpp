@@ -629,7 +629,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   //define how we should interpret lpcmi->lpVerb
   std::string verb;
   if (IS_INTRESOURCE(lpcmi->lpVerb))
-    verb = ra::strings::ToString((int)lpcmi->lpVerb);
+    verb = ra::strings::ToString(reinterpret_cast<int>(lpcmi->lpVerb));
   else
     verb = lpcmi->lpVerb;
 
