@@ -157,6 +157,12 @@ Help:
           <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
         </actions>
       </menu>
+      <menu name="7-Zip Checksums">
+        <visibility maxfiles="1" maxfolders="0" exists="C:\Program Files\7-Zip\7zG.exe" />
+        <actions>
+          <exec path="C:\Program Files\7-Zip\7zG.exe" arguments="h -scrcCRC32 -scrcCRC64 -scrcSHA1 -scrcSHA256 -scrcBLAKE2sp  &quot;${selection.path}&quot;" />
+        </actions>
+      </menu>
     </menu>
 
     <!-- symbolic links -->
