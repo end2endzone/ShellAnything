@@ -238,6 +238,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/licenses DESTINATION ${SHELLANYTHING_INSTA
 install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
               ${CMAKE_SOURCE_DIR}/docs/screenshot_folder.png
               ${CMAKE_SOURCE_DIR}/docs/ShellAnything-splashscreen.jpg
+              ${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico
               DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR})
 
 install(FILES ${CMAKE_SOURCE_DIR}/README.md
@@ -279,7 +280,7 @@ set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 # Icon in the add/remove control panel. Must be an .exe file.
 # Use the main dll as we do not have main exe.
 # The filename will be wrong in debug builds.
-set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\shellext.dll)
+set(CPACK_NSIS_INSTALLED_ICON_NAME docs\\\\shellanything.ico)
 
 # Define our "main" start menu shortcuts for our execuables.
 # NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
@@ -315,7 +316,7 @@ set(CPACK_NSIS_MENU_LINKS
 # Set variables for WIX installer
 set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
 set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/0.2.0.ico")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
 
 # Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
