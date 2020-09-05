@@ -41,6 +41,23 @@ namespace shellanything
 
   Menu::~Menu()
   {
+    // validities
+    for(size_t i=0; i<mValidities.size(); i++)
+    {
+      Validator * validator = mValidities[i];
+      delete validator;
+    }
+    mValidities.clear();
+
+    // visibilities
+    for(size_t i=0; i<mVisibilities.size(); i++)
+    {
+      Validator * validator = mVisibilities[i];
+      delete validator;
+    }
+    mVisibilities.clear();
+
+    // actions
     for(size_t i=0; i<mActions.size(); i++)
     {
       Action * action = mActions[i];
@@ -135,8 +152,34 @@ namespace shellanything
   void Menu::Update(const Context & c)
   {
     //update current menu
-    bool visible = mVisibility.Validate(c);
-    bool enabled = mValidity.Validate(c);
+    bool visible = true;
+    if (!mVisibilities.empty())
+    {
+      visible = false;
+      size_t count = GetVisibilityCount();
+      for(size_t i=0; i<count && visible == false; i++)
+      {
+        const Validator * validator = GetVisibility(i);
+        if (validator)
+        {
+          visible |= validator->Validate(c);
+        }
+      }
+    }
+    bool enabled = true;
+    if (!mValidities.empty())
+    {
+      enabled = false;
+      size_t count = GetValidityCount();
+      for(size_t i=0; i<count && enabled == false; i++)
+      {
+        const Validator * validator = GetValidity(i);
+        if (validator)
+        {
+          enabled |= validator->Validate(c);
+        }
+      }
+    }
     SetVisible(visible);
     SetEnabled(enabled);
 
@@ -242,24 +285,44 @@ namespace shellanything
     mEnabled = enabled;
   }
 
-  const Validator & Menu::GetValidity()
+  size_t Menu::GetValidityCount()
   {
-    return mValidity;
+    return mValidities.size();
   }
 
-  void Menu::SetValidity(const Validator & iValidity)
+  const Validator * Menu::GetValidity(size_t index)
   {
-    mValidity = iValidity;
+    const Validator * validator = NULL;
+    size_t count = mValidities.size();
+    if (index < count)
+      validator = mValidities[index];
+    return validator;
   }
 
-  const Validator & Menu::GetVisibility()
+  void Menu::AddValidity(Validator * validator)
   {
-    return mVisibility;
+    if (validator)
+      mValidities.push_back(validator);
   }
 
-  void Menu::SetVisibility(const Validator & iVisibility)
+  size_t Menu::GetVisibilityCount()
   {
-    mVisibility = iVisibility;
+    return mVisibilities.size();
+  }
+
+  const Validator * Menu::GetVisibility(size_t index)
+  {
+    const Validator * validator = NULL;
+    size_t count = mVisibilities.size();
+    if (index < count)
+      validator = mVisibilities[index];
+    return validator;
+  }
+
+  void Menu::AddVisibility(Validator * validator)
+  {
+    if (validator)
+      mVisibilities.push_back(validator);
   }
 
   Menu::MenuPtrList Menu::GetSubMenus()

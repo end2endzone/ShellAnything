@@ -60,12 +60,12 @@ namespace shellanything
     bool ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
 
     /// <summary>
-    /// Parses a Validator class from xml. Returns false if the parsing failed.
+    /// Parses a Validator class from xml. Returns NULL if the parsing failed.
     /// </summary>
-    /// <param name="element">The xml element that contains an Validator to parse.</param>
+    /// <param name="element">The xml element that contains a Validator to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
-    /// <returns>Returns true if the object was properly parsed. Returns false otherwise.</returns>
-    bool ParseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error);
+    /// <returns>Returns a valid Validator pointer if the object was properly parsed. Returns NULL otherwise.</returns>
+    Validator * ParseValidator(const tinyxml2::XMLElement * element, std::string & error);
 
     /// <summary>
     /// Parses a Action class from xml. Returns NULL if the parsing failed.

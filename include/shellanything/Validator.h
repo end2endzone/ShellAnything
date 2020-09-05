@@ -28,6 +28,7 @@
 #include "shellanything/Node.h"
 #include "shellanything/Context.h"
 #include <string>
+#include <vector>
 
 namespace shellanything
 {
@@ -35,14 +36,19 @@ namespace shellanything
   class Validator
   {
   public:
+    /// <summary>
+    /// A list of Validator class pointers.
+    /// </summary>
+    typedef std::vector<Validator*> ValidatorPtrList;
+
     Validator();
-    Validator(const Validator & validator);
     virtual ~Validator();
 
-    /// <summary>
-    /// Copy operator
-    /// </summary>
-    const Validator & operator =(const Validator & validator);
+  private:
+    // Disable copy constructor and copy operator
+    Validator(const Validator&);
+    Validator& operator=(const Validator&);
+  public:
 
     /// <summary>
     /// Getter for the 'maxfiles' parameter.

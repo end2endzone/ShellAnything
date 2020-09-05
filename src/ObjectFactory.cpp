@@ -143,7 +143,7 @@ namespace shellanything
     return true;
   }
 
-  bool ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, Validator & validator, std::string & error)
+  Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, std::string & error)
   {
     if (element == NULL)
     {
@@ -154,10 +154,10 @@ namespace shellanything
     if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name())
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
-      return false;
+      return NULL;
     }
 
-    Validator result;
+    Validator * validator = new Validator();
 
     //parse class
     std::string class_;
@@ -165,7 +165,7 @@ namespace shellanything
     {
       if (!class_.empty())
       {
-        result.SetClass(class_);
+        validator->SetClass(class_);
       }
     }
 
@@ -175,7 +175,7 @@ namespace shellanything
     {
       if (!pattern.empty())
       {
-        result.SetPattern(pattern);
+        validator->SetPattern(pattern);
       }
     }
 
@@ -183,14 +183,14 @@ namespace shellanything
     int maxfiles = -1;
     if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
     {
-      result.SetMaxFiles(maxfiles);
+      validator->SetMaxFiles(maxfiles);
     }
 
     //parse maxfolders
     int maxfolders = -1;
     if (ParseAttribute(element, "maxfolders", true, true, maxfolders, error))
     {
-      result.SetMaxDirectories(maxfolders);
+      validator->SetMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
@@ -199,7 +199,7 @@ namespace shellanything
     {
       if (!fileextensions.empty())
       {
-        result.SetFileExtensions(fileextensions);
+        validator->SetFileExtensions(fileextensions);
       }
     }
 
@@ -209,7 +209,7 @@ namespace shellanything
     {
       if (!exists.empty())
       {
-        result.SetFileExists(exists);
+        validator->SetFileExists(exists);
       }
     }
 
@@ -219,7 +219,7 @@ namespace shellanything
     {
       if (!properties.empty())
       {
-        result.SetProperties(properties);
+        validator->SetProperties(properties);
       }
     }
 
@@ -229,13 +229,12 @@ namespace shellanything
     {
       if (!inverse.empty())
       {
-        result.SetInserve(inverse);
+        validator->SetInserve(inverse);
       }
     }
 
     //success
-    validator = result;
-    return true;
+    return validator;
   }
 
   Action * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
@@ -534,26 +533,30 @@ namespace shellanything
     elements = GetChildNodes(element, NODE_VALIDITY);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Validator validity;
-      if (!ObjectFactory::GetInstance().ParseValidator(elements[i], validity, error))
+      Validator * validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+      if (validator == NULL)
       {
         delete menu;
         return NULL;
       }
-      menu->SetValidity(validity);
+
+      //add the new validator
+      menu->AddValidity(validator);
     }
 
     //find <visibility> node under <menu>
     elements = GetChildNodes(element, NODE_VISIBILITY);
     for(size_t i=0; i<elements.size(); i++)
     {
-      Validator visibility;
-      if (!ObjectFactory::GetInstance().ParseValidator(elements[i], visibility, error))
+      Validator * validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+      if (validator == NULL)
       {
         delete menu;
         return NULL;
       }
-      menu->SetVisibility(visibility);
+
+      //add the new validator
+      menu->AddVisibility(validator);
     }
 
     //find <actions> node under <menu>

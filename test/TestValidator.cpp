@@ -24,6 +24,7 @@
 
 #include "TestValidator.h"
 #include "shellanything/Validator.h"
+#include "shellanything/Menu.h"
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
@@ -764,6 +765,54 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.IsInversed("exists") );
     ASSERT_TRUE( v.IsInversed("properties") );
 
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testMultipleValidator)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    Menu menu;
+
+    //assert default
+    menu.Update(c);
+    ASSERT_TRUE( menu.IsVisible() );
+    ASSERT_TRUE( menu.IsEnabled() );
+
+    //
+    Validator * v1 = new Validator();
+    Validator * v2 = new Validator();
+    menu.AddVisibility(v1);
+    menu.AddVisibility(v2);
+
+    //assert 'or' operator between each Validator
+    v1->SetFileExtensions("dll;exe;msc");
+    v2->SetFileExtensions("");
+    menu.Update(c);
+    ASSERT_TRUE( menu.IsVisible() );
+
+    //assert 'or' operator when swapping validators
+    v1->SetFileExtensions("");
+    v2->SetFileExtensions("dll;exe;msc");
+    menu.Update(c);
+    ASSERT_TRUE( menu.IsVisible() );
+
+    //assert validators are not complementary
+    v1->SetFileExtensions("dll");
+    v2->SetFileExtensions("exe;msc");
+    menu.Update(c);
+    ASSERT_FALSE( menu.IsVisible() );
   }
   //--------------------------------------------------------------------------------------------------
 

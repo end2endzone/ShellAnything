@@ -152,7 +152,7 @@ namespace shellanything { namespace test
  
     //ASSERT all menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ( 10, menus.size() );
+    ASSERT_EQ( 11, menus.size() );
 
     //assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
@@ -165,17 +165,42 @@ namespace shellanything { namespace test
     static const std::string expected_class = "file";
     static const std::string expected_pattern = "*IMG_*";
 
-    ASSERT_EQ( expected_property,         menus[0]->GetVisibility().GetProperties() );
-    ASSERT_EQ( 5,                         menus[1]->GetVisibility().GetMaxFiles() );
-    ASSERT_EQ( 6,                         menus[1]->GetVisibility().GetMaxDirectories() );
-    ASSERT_EQ( expected_file_extension,   menus[2]->GetVisibility().GetFileExtensions() );
-    ASSERT_EQ( expected_file_exists,      menus[3]->GetVisibility().GetFileExists() );
-    ASSERT_EQ( expected_inverse_empty,    menus[4]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_maxfiles, menus[5]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_many,     menus[6]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_inverse_unknown,  menus[7]->GetVisibility().GetInserve() );
-    ASSERT_EQ( expected_class,            menus[8]->GetVisibility().GetClass() );
-    ASSERT_EQ( expected_pattern,          menus[9]->GetVisibility().GetPattern() );
+    //assert each menus have a visibility assigned
+    for(size_t i=0; i<menus.size(); i++)
+    {
+      size_t count = menus[i]->GetVisibilityCount();
+      ASSERT_GT(count, 0);
+    }
+
+    ASSERT_EQ( expected_property,         menus[0]->GetVisibility(0)->GetProperties() );
+    ASSERT_EQ( 5,                         menus[1]->GetVisibility(0)->GetMaxFiles() );
+    ASSERT_EQ( 6,                         menus[1]->GetVisibility(0)->GetMaxDirectories() );
+    ASSERT_EQ( expected_file_extension,   menus[2]->GetVisibility(0)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_exists,      menus[3]->GetVisibility(0)->GetFileExists() );
+    ASSERT_EQ( expected_inverse_empty,    menus[4]->GetVisibility(0)->GetInserve() );
+    ASSERT_EQ( expected_inverse_maxfiles, menus[5]->GetVisibility(0)->GetInserve() );
+    ASSERT_EQ( expected_inverse_many,     menus[6]->GetVisibility(0)->GetInserve() );
+    ASSERT_EQ( expected_inverse_unknown,  menus[7]->GetVisibility(0)->GetInserve() );
+    ASSERT_EQ( expected_class,            menus[8]->GetVisibility(0)->GetClass() );
+    ASSERT_EQ( expected_pattern,          menus[9]->GetVisibility(0)->GetPattern() );
+
+    //menu[10] should contains multiple Validators...
+    ASSERT_EQ(3, menus[10]->GetVisibilityCount());
+    ASSERT_EQ(2, menus[10]->GetValidityCount());
+
+    //assert first 3 visibility elements
+    static const std::string expected_file_extension1 = "txt";
+    static const std::string expected_file_extension2 = "doc";
+    static const std::string expected_file_extension3 = "ini";
+    ASSERT_EQ( expected_file_extension1, menus[10]->GetVisibility(0)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_extension2, menus[10]->GetVisibility(1)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_extension3, menus[10]->GetVisibility(2)->GetFileExtensions() );
+
+    //assert first 2 validity elements
+    static const std::string expected_properties1 = "bar";
+    ASSERT_EQ( expected_properties1, menus[10]->GetValidity(0)->GetProperties() );
+    ASSERT_EQ( 1, menus[10]->GetValidity(1)->GetMaxFiles() );
+    ASSERT_EQ( 0, menus[10]->GetValidity(1)->GetMaxDirectories() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

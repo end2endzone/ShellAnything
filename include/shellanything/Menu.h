@@ -190,26 +190,38 @@ namespace shellanything
     void SetEnabled(bool enabled);
 
     /// <summary>
-    /// Get the Validator for the 'validity' parameter. 
+    /// Get the number of Validator instances used for validity.
     /// </summary>
-    const Validator & GetValidity();
+    size_t GetValidityCount();
 
     /// <summary>
-    /// Set the Validator for the 'validity' parameter.
+    /// Get a Validator instance used for validity.
     /// </summary>
-    /// <param name="iValidity">Set the new Validator for the 'validity' parameter.</param>
-    void SetValidity(const Validator & iValidity);
+    /// <param name="index">The index of the requested instance.</param>
+    /// <returns>Returns a valid Validator instance. Returns NULL if index is invalid.</returns>
+    const Validator * GetValidity(size_t index);
 
     /// <summary>
-    /// Get the Validator for the 'visibility' parameter.
+    /// Add a new validity instance used for validity to menu. The menu instance takes ownership of the validator.
     /// </summary>
-    const Validator & GetVisibility();
+    void AddValidity(Validator * validator);
 
     /// <summary>
-    /// Set the Validator for the 'visibility' parameter.
+    /// Get the number of Validator instances used for visibility.
     /// </summary>
-    /// <param name="iVisibility">Set the new Validator for the 'visibility' parameter.</param>
-    void SetVisibility(const Validator & iVisibility);
+    size_t GetVisibilityCount();
+
+    /// <summary>
+    /// Get a Validator instance used for visibility.
+    /// </summary>
+    /// <param name="index">The index of the requested instance.</param>
+    /// <returns>Returns a valid Validator instance. Returns NULL if index is invalid.</returns>
+    const Validator * GetVisibility(size_t index);
+
+    /// <summary>
+    /// Add a new Validator instance used for visibility to menu. The menu instance takes ownership of the validator.
+    /// </summary>
+    void AddVisibility(Validator * validator);
 
     /// <summary>
     /// Add a new Action to the menu. The menu instance takes ownership of the action.
@@ -229,8 +241,8 @@ namespace shellanything
 
   private:
     Icon mIcon;
-    Validator mValidity;
-    Validator mVisibility;
+    Validator::ValidatorPtrList mValidities;
+    Validator::ValidatorPtrList mVisibilities;
     bool mVisible;
     bool mEnabled;
     bool mSeparator;
