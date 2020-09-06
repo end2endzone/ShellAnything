@@ -19,6 +19,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
     * [inverse attribute](#inverse-attribute)
+    * [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements)
   * [Icons](#icons)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
@@ -234,10 +235,16 @@ To insert a sub menu, define a &lt;menu&gt; element under another &lt;menu&gt; e
 
 ## Visibility / Validity ##
 
-The &lt;visibility&gt; and &lt;validity&gt; elements act as filters for menus. They affect a menu's status: visible/invisible and enabled/disabled respectively. The &lt;visibility&gt; and &lt;validity&gt; elements must be added under a &lt;menu&gt; element.
+The &lt;visibility&gt; and &lt;validity&gt; elements act as filters for menus. They affect a menu's visibility and validity status respectively allowing one to set a menu visible or invisible, enabled or disabled.
 
-Each element must be validated against multiple criteria defined by the attributes below. If the validation is successful, the menu will be set visible/enabled. If the validation fails then the associated menu is set invisible/disabled.
+The &lt;visibility&gt; and &lt;validity&gt; elements must be added under a &lt;menu&gt; element.
 
+Each &lt;visibility&gt; and &lt;validity&gt; element must be validated against multiple criteria defined by the attributes below. If the validation is successful, the menu will be set visible or enabled. If the validation fails then the associated menu is set invisible or disabled.
+
+If multiple attributes are specified for a single &lt;visibility&gt; or &lt;validity&gt; element, all attributes must be evaluated for the validation to be successful. The logical `and` operator is used with each attribute.
+
+Multiple &lt;visibility&gt; or &lt;validity&gt; elements can be added under a &lt;menu&gt; element. The logical `or` operator is used with each element of the same type. This allows combining elements to achieve more complex validation. See [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements) for details.
+ 
 The &lt;visibility&gt; and &lt;validity&gt; elements have the following attributes:
 
 
@@ -446,6 +453,31 @@ The validity element should look like this:
 * `<validity properties="process.started" inverse="properties" />`, valid when a process **_is not_** started  (assuming the property `process.started` is set when the process is started.
 * `<validity exists="${env.USERPROFILE}\config.ini" inverse="exists"  />`, valid only when the user's configuration file **_is not_** yet created.
 
+
+
+### Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements ###
+
+Multiple &lt;visibility&gt; or &lt;validity&gt; elements can be added under a &lt;menu&gt; element. The logical `or` operator is used with each element of the same type. In other words, &lt;visibility&gt; elements are evaluated together and so are &lt;validity&gt; elements. This feature allows combining elements to achieve more complex validation. 
+
+For example, the following set a menu visible of if only a single file is selected ***or*** if only a single directory is selected:
+```xml
+<visibility maxfiles="1" maxfolders="0" />
+<visibility maxfiles="0" maxfolders="1" />
+```
+
+The following set a menu visible if the property `notepad++.found` is set ***or*** if the file `C:\Windows\System32\notepad.exe` exists:
+```xml
+<visibility properties="notepad++.found" />
+<visibility exists="C:\Windows\System32\notepad.exe" />
+```
+
+The following set a menu visible if the selected filenames begin with `IMG`, `DSC`, `CSC` ***or*** `GP`:
+```xml
+<visibility pattern="*\IMG*.???" />
+<visibility pattern="*\DSC*.???" />
+<visibility pattern="*\CSC*.???" />
+<visibility pattern="*\GP*.???" />
+```
 
 
 
