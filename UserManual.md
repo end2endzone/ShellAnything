@@ -338,8 +338,8 @@ The following table show useful pattern examples:
 
 | Pattern                                                       | Meaning                                                                                       |
 |---------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| \\e\*.???                                                     | Matches filenames beginning with the letter `e`.                                              |
-| \*e.???                                                       | Matches filename ending with the letter `e`.                                                  |
+| *\\e\*.???                                                    | Matches filenames beginning with the letter `e`.                                              |
+| \*e.???                                                       | Matches filenames ending with the letter `e`.                                                 |
 | \*vacations\*                                                 | Matches files that have the word `vacations` in their path.                                   |
 | \*2019\*                                                      | Matches files that have the year 2019 in the filename or directory path.                      |
 | \*\\DCIM\\\*                                                  | Matches the files located in a Digital Camera Images directory.                               |
