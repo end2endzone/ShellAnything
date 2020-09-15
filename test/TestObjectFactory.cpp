@@ -152,7 +152,7 @@ namespace shellanything { namespace test
  
     //ASSERT all menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ( 10, menus.size() );
+    ASSERT_EQ( 11, menus.size() );
 
     //assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
@@ -164,6 +164,7 @@ namespace shellanything { namespace test
     static const std::string expected_inverse_unknown = "foo";
     static const std::string expected_class = "file";
     static const std::string expected_pattern = "*IMG_*";
+    static const std::string expected_exprtk = "2>1";
 
     ASSERT_EQ( expected_property,         menus[0]->GetVisibility().GetProperties() );
     ASSERT_EQ( 5,                         menus[1]->GetVisibility().GetMaxFiles() );
@@ -176,6 +177,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( expected_inverse_unknown,  menus[7]->GetVisibility().GetInserve() );
     ASSERT_EQ( expected_class,            menus[8]->GetVisibility().GetClass() );
     ASSERT_EQ( expected_pattern,          menus[9]->GetVisibility().GetPattern() );
+    ASSERT_EQ( expected_exprtk,          menus[10]->GetVisibility().GetExprtk() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

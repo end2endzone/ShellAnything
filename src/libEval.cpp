@@ -35,13 +35,7 @@ namespace shellanything
     typedef exprtk::expression<double> expression_t;
     typedef exprtk::parser<double>         parser_t;
 
-    //symbol_table_t symbol_table;
-    //symbol_table.add_variable("x",x);
-    //symbol_table.add_variable("y",y);
-    //symbol_table.add_variable("z",z);
-
     expression_t expression;
-
     parser_t parser;
 
     if (!parser.compile(expression_string,expression))

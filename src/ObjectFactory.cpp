@@ -179,6 +179,16 @@ namespace shellanything
       }
     }
 
+    //parse exprtk
+    std::string exprtk;
+    if (ParseAttribute(element, "exprtk", true, true, exprtk, error))
+    {
+      if (!exprtk.empty())
+      {
+        result.SetExprtk(exprtk);
+      }
+    }
+
     //parse maxfiles
     int maxfiles = -1;
     if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
