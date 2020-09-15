@@ -223,25 +223,25 @@ endif()
 set (README_FILENAME README.md)
 set (USERMANUAL_FILENAME UserManual.md)
 
-# if (GRIP_FOUND)
-#   # Convert README.md
-#   execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-#   if("${res_var}" STREQUAL "0")
-#     set (README_FILENAME README.html)
-#   else()
-#     message(FATAL_ERROR "grip failed converting README.md with res_var='${res_var}'")
-#   endif()
-# 
-#   # Convert UserManual.md
-#   execute_process(COMMAND grip UserManual.md --export UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-#   if("${res_var}" STREQUAL "0")
-#     set (USERMANUAL_FILENAME UserManual.html)
-#   else()
-#     message(FATAL_ERROR "grip failed converting UserManual.md with res_var='${res_var}'")
-#   endif()
-# else()
-#   message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
-# endif()
+if (GRIP_FOUND)
+  # Convert README.md
+  execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if("${res_var}" STREQUAL "0")
+    set (README_FILENAME README.html)
+  else()
+    message(FATAL_ERROR "grip failed converting README.md with res_var='${res_var}'")
+  endif()
+
+  # Convert UserManual.md
+  execute_process(COMMAND grip UserManual.md --export UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if("${res_var}" STREQUAL "0")
+    set (USERMANUAL_FILENAME UserManual.html)
+  else()
+    message(FATAL_ERROR "grip failed converting UserManual.md with res_var='${res_var}'")
+  endif()
+else()
+  message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
+endif()
 
 
 ##############################################################################################################################################
