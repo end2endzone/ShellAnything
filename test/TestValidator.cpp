@@ -406,6 +406,56 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testExprtk)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+    c.RegisterProperties();
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression that resolve as true
+    v.SetExprtk("5>1");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression that resolve as false
+    v.SetExprtk("5<1");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert expression with spaces
+    v.SetExprtk("5 > 1");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert a string expression
+    v.SetExprtk("'test'=='test'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'foo'=='bar'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert an expression with properties
+    pmgr.SetProperty("foo", "bar");
+    v.SetExprtk("'${foo}'=='bar'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'bar'=='${foo}'");
+    ASSERT_TRUE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsInversed)
   {
     Validator v;

@@ -28,6 +28,7 @@
 #include "PropertyManager.h"
 #include "DriveClass.h"
 #include "Wildcard.h"
+#include "libEval.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -83,6 +84,7 @@ namespace shellanything
       mFileExists     = validator.mFileExists     ;
       mClass          = validator.mClass          ;
       mPattern        = validator.mPattern        ;
+      mExprtk         = validator.mExprtk         ;
       mInverse        = validator.mInverse        ;
     }
     return (*this);
@@ -156,6 +158,16 @@ namespace shellanything
   void Validator::SetPattern(const std::string & iPattern)
   {
     mPattern = iPattern;
+  }
+
+  const std::string & Validator::GetExprtk() const
+  {
+    return mExprtk;
+  }
+
+  void Validator::SetExprtk(const std::string & iExprtk)
+  {
+    mExprtk = iExprtk;
   }
 
   const std::string & Validator::GetInserve() const
@@ -287,6 +299,16 @@ namespace shellanything
     {
       bool inversed = IsInversed("pattern");
       bool valid = ValidatePattern(iContext, pattern, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate exprtx
+    const std::string exprtk = pmgr.Expand(mExprtk);
+    if (!exprtk.empty())
+    {
+      bool inversed = IsInversed("exprtk");
+      bool valid = ValidateExprtk(iContext, exprtk, inversed);
       if (!valid)
         return false;
     }
@@ -568,6 +590,21 @@ namespace shellanything
     }
 
     return true;
+  }
+
+  bool Validator::ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const
+  {
+    if (exprtk.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    bool result = false;
+    bool evaluated = evaluate(exprtk.c_str(), &result);
+    if (!evaluated)
+      return false;
+
+    return result;
   }
 
 } //namespace shellanything
