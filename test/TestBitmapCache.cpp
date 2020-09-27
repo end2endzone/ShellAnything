@@ -40,9 +40,11 @@ namespace shellanything { namespace test
     SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
     HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
+  #if 0
     //Remove the invisible background and replace by red color
     COLORREF background_color = RGB(255,0,255); //pink
     Win32Utils::FillTransparentPixels(hBitmap, background_color);
+  #endif
 
     DestroyIcon(hIconLarge);
     DestroyIcon(hIconSmall);
@@ -61,9 +63,11 @@ namespace shellanything { namespace test
     SIZE icon_size = Win32Utils::GetIconSize(hIconLarge);
     HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIconLarge, icon_size.cx, icon_size.cy);
 
+  #if 0
     //Remove the invisible background and replace by red color
     COLORREF background_color = RGB(255,0,255); //pink
     Win32Utils::FillTransparentPixels(hBitmap, background_color);
+  #endif
 
     DestroyIcon(hIconLarge);
     DestroyIcon(hIconSmall);

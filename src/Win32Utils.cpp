@@ -157,6 +157,20 @@ namespace Win32Utils
   }
   #endif
 
+  HBITMAP CreateBitmap(int biWidth, int biHeight, UINT biPlanes, UINT biBitCount, HDC hDc)
+  {
+    BITMAPINFO bmi;
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = biWidth;
+    bmi.bmiHeader.biHeight = biHeight;
+    bmi.bmiHeader.biPlanes = biPlanes;
+    bmi.bmiHeader.biBitCount = biBitCount;
+    bmi.bmiHeader.biCompression = BI_RGB;
+    bmi.bmiHeader.biSizeImage = biWidth * biHeight * 4;
+    VOID* pvBits;
+    return CreateDIBSection(hDc, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);;
+  }
+
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
   {
     //According to https://devblogs.microsoft.com/oldnewthing/20101021-00/?p=12483, using DrawIconEx()
@@ -194,7 +208,7 @@ namespace Win32Utils
     HDC hDcMem = CreateCompatibleDC(hdcDesktop);
  
     // Create a 32bbp bitmap and select it.
-    HBITMAP hBitmap = CreateBitmap(bitmap_width, bitmap_height, 1, BITS_PER_PIXEL, NULL);
+    HBITMAP hBitmap = CreateBitmap(bitmap_width, bitmap_height, 1, BITS_PER_PIXEL, hDcMem);
     HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
  
   #if 0
@@ -270,7 +284,7 @@ namespace Win32Utils
  
     return hBitmap;
   }
- 
+
   HBITMAP CopyAsBitmap(HICON hIcon)
   {
     //Get properties related to Windows Menu
