@@ -157,14 +157,14 @@ namespace Win32Utils
   }
   #endif
 
-  HBITMAP CreateBitmap(int biWidth, int biHeight, UINT biPlanes, UINT biBitCount, HDC hDc)
+  HBITMAP CreateBitmapWithAlphaChannel(int biWidth, int biHeight, HDC hDc)
   {
     BITMAPINFO bmi;
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = biWidth;
     bmi.bmiHeader.biHeight = biHeight;
-    bmi.bmiHeader.biPlanes = biPlanes;
-    bmi.bmiHeader.biBitCount = biBitCount;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
     bmi.bmiHeader.biCompression = BI_RGB;
     bmi.bmiHeader.biSizeImage = biWidth * biHeight * 4;
     VOID* pvBits;
@@ -204,11 +204,11 @@ namespace Win32Utils
       return NULL;
  
     HWND hWndDesktop = GetDesktopWindow();
-    HDC hdcDesktop = GetDC(hWndDesktop);
-    HDC hDcMem = CreateCompatibleDC(hdcDesktop);
+    HDC hDcDesktop = GetDC(hWndDesktop);
+    HDC hDcMem = CreateCompatibleDC(hDcDesktop);
  
     // Create a 32bbp bitmap and select it.
-    HBITMAP hBitmap = CreateBitmap(bitmap_width, bitmap_height, 1, BITS_PER_PIXEL, hDcMem);
+    HBITMAP hBitmap = CreateBitmapWithAlphaChannel(bitmap_width, bitmap_height, hDcMem);
     HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
  
   #if 0
@@ -280,7 +280,7 @@ namespace Win32Utils
     // Clean up.
     SelectObject(hDcMem, hbmOld);
     DeleteDC(hDcMem);
-    ReleaseDC(hWndDesktop, hdcDesktop);
+    ReleaseDC(hWndDesktop, hDcDesktop);
  
     return hBitmap;
   }

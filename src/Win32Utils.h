@@ -35,7 +35,7 @@ namespace Win32Utils
   RGBQUAD ToRgbQuad(const DWORD & iColor);
   SIZE GetBitmapSize(HBITMAP hBitmap);
   BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
-  HBITMAP CreateBitmap(int biWidth, int biHeight, UINT biPlanes, UINT biBitCount, HDC hDc);
+  HBITMAP CreateBitmapWithAlphaChannel(int biWidth, int biHeight, HDC hDc);
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
   HBITMAP CopyAsBitmap(HICON hIcon);
   bool CreateBmpFile(const char * path, HBITMAP hBitmap);
