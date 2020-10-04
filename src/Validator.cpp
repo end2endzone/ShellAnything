@@ -604,6 +604,9 @@ namespace shellanything
     if (!evaluated)
       return false;
 
+    if (inversed)
+      result = !result;
+
     return result;
   }
 
