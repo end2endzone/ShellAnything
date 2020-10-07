@@ -28,6 +28,7 @@
 #include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
 
+#include <windows.h>
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
 #include <glog/logging.h>
@@ -45,7 +46,56 @@ namespace shellanything
   {
   }
 
-  bool ActionExecute::Execute(const Context & iContext) const
+  bool ActionExecute::Execute(const Context& iContext) const
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path      = pmgr.Expand(mPath);
+    std::string basedir   = pmgr.Expand(mBaseDir);
+    std::string arguments = pmgr.Expand(mArguments);
+    std::string verb      = pmgr.Expand(mVerb);
+
+    std::wstring pathW      = ra::unicode::Utf8ToUnicode(path);
+    std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
+    std::wstring basedirW   = ra::unicode::Utf8ToUnicode(basedir);
+    std::wstring verbW      = ra::unicode::Utf8ToUnicode(verb);
+
+    SHELLEXECUTEINFOW info = { 0 };
+
+    info.cbSize = sizeof(SHELLEXECUTEINFOW);
+
+    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
+    info.fMask |= SEE_MASK_NOASYNC;
+    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+    info.hwnd   = HWND_DESKTOP;
+    info.nShow  = SW_SHOWDEFAULT;
+    info.lpFile = pathW.c_str();
+
+    LOG(INFO) << "Exec: '" << path;
+
+    if (!verb.empty())
+    {
+      info.lpVerb = verbW.c_str(); // Verb
+      LOG(INFO) << "Verb: '" << verb;
+    }
+
+    if (!arguments.empty())
+    {
+      info.lpParameters = argumentsW.c_str(); // Arguments
+      LOG(INFO) << "Arguments: '" << arguments;
+    }
+
+    if (!basedir.empty())
+    {
+      info.lpDirectory = basedirW.c_str(); // Default directory
+      LOG(INFO) << "Basedir: '" << basedir;
+    }
+
+    BOOL success = ShellExecuteExW(&info);
+    return (success == TRUE);
+  }
+
+  bool ActionExecute::StartProcess(const Context & iContext) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
@@ -144,6 +194,16 @@ namespace shellanything
   void ActionExecute::SetArguments(const std::string & iArguments)
   {
     mArguments = iArguments;
+  }
+
+  const std::string& ActionExecute::GetVerb() const
+  {
+    return mArguments;
+  }
+
+  void ActionExecute::SetVerb(const std::string& iVerb)
+  {
+    mVerb = iVerb;
   }
 
 } //namespace shellanything
