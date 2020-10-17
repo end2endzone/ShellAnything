@@ -32,6 +32,11 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
 namespace shellanything
 {
   bool HasValue(const ra::strings::StringVector & values, const std::string & token)
@@ -470,6 +475,10 @@ namespace shellanything
       if (!valid)
         return false;
     }
+    else
+    {
+      LOG(WARNING) << "Unknown class '" << class_ << "'.";
+    }
 
     return true;
   }
@@ -602,7 +611,10 @@ namespace shellanything
     bool result = false;
     bool evaluated = evaluate(exprtk.c_str(), &result);
     if (!evaluated)
+    {
+      LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
       return false;
+    }
 
     if (inversed)
       result = !result;
