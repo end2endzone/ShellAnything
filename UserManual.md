@@ -1,4 +1,4 @@
-![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+﻿![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
 
 
 # Overview #
@@ -18,6 +18,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [pattern attribute](#pattern-attribute)
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
+    * [exprtk attribute](#exprtk-attribute)
     * [inverse attribute](#inverse-attribute)
   * [Icons](#icons)
   * [Actions](#actions)
@@ -382,6 +383,42 @@ For example, the following set a menu visible when `process.started` property is
 ```
 
 See [properties](#properties) section for how to define custom properties.
+
+
+
+### exprtk attribute: ###
+
+The `exprtk` attribute validates a menu based on a string expression algorithm. The expression must be specified as a mathematical expression and the result must evaluates to `true` or `false` such as `4 == 5` or `10 > 3`.
+
+If `exprtk` attribute is specified, the expression must evaluates to `true` for the validation to be successful. The `exprtk` attribute does not support multiple expressions but logical `and` and `or` operators can be use to group expressions.
+
+If `exprtk` attribute is not specified, then the validation is successful.
+
+The attribute supports the following operators: 
+* Basic operators: `+`, `-`, `*`, `/`, `%`, `^`
+* Equalities & Inequalities: `=`, `==`, `<>`, `!=`, `<`, `<=`, `>`, `>=`
+* Logic operators: `and`, `not`, `or`, `xor`, `true`, `false`
+* String operators: `in`, `like`, `ilike`, []
+
+Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"``~_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
+eg: `'Frankly my dear, \0x49 do n0t give a damn!'`
+
+The `exprtk` attribute allows advanced menu validation. The following table show useful expression examples:
+
+| Use cases                                                        | Expression                        | Meaning                                                                                                                    |
+|------------------------------------------------------------------|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Test a property for a numeric value                              | ${value} == 6                     | Evaluates to true when property `value` is set to numeric value `6`.                                                       |
+| Test a property for a string value.                              | '${name}' == 'John'               | Evaluates to true when property `name` is set to string value `John`.                                                      |
+| Set a menu visible based on how many file are selected           | ${selection.count} == 3           | Evaluates to true when user clicked on exactly 3 elements.                                                                 |
+| Set a menu visible based on a state machine                      | '${myapp.state}' == 'PAUSED'      | Evaluates to true when application's state is `PAUSED`.                                                                    |
+| Set a menu *invisible* when it was selected 3 times.             | ${myapp.runs} <= 2                | Evaluates to true when property `myapp.runs` is lower or equals to `2`.                                                    |
+| Set a menu visible by filename length.                           | '${selection.filename}'[] == 9    | Evaluates to true when user clicked on a file whose filename<br>(including file extension) is exactly 9 characters.        |
+| Combine expressions with `and` and `or` logic.                   | ${foo} == 2 or ${bar} >= 5        | Evaluates to true when property `foo` is set to `2` *or*<br>when property `bar` is set to a value greater or equal to `5`. |
+| Set a menu visible if user selection contains a specific string. | 'abc' in '${selection.path}'      | Evaluates to true when user clicked on a file that contains the string `abc`.                                              |
+| Set a menu visible if user selection matches a string pattern.   | '${selection.path}' ilike '*.exe' | Evaluates to true when user clicked on a file with `exe` extension.                                                        |
+
+**Note:**
+The `exprtk` attribute uses the *exprtk library* to parse the expression. For more details and supported expressions, see the exprtk documentation on the [official github page](https://github.com/ArashPartow/exprtk) or the [library website](http://www.partow.net/programming/exprtk/index.html).
 
 
 
@@ -931,6 +968,9 @@ The following table defines the list of dynamic properties and their utility:
 | selection.filename.extension | Matches the file extension of the clicked element.                      |
 | selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.       |
 | selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.       |
+| selection.count              | Matches the number of clicked elements (files and directories).         |
+| selection.files.count        | Matches the number of clicked files.                                    |
+| selection.directories.count  | Matches the number of clicked directories.                              |
 
 Selection-based properties are encoded in utf-8.
 
@@ -959,7 +999,9 @@ The system will generates the following property values (note the `\r\n` charact
 | selection.drive.letter       | C`\r\n`C`\r\n`C                                                                                                                     |
 | selection.drive.path         | C:\\`\r\n`C:\\`\r\n`C:\\                                                                                                            |
 
-Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
+Notes:
+* Properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
+* Properties `selection.count`, `selection.files.count` and `selection.directories.count` are not multi-selection-based properties. They are defined as a single value whether a single or multiple elements are selected.
 
 
 
