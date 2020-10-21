@@ -24,14 +24,19 @@
 
 #include "libEval.h"
 
+#include <algorithm>    // std::min
+
 #define _SCL_SECURE_NO_WARNINGS
 #include "exprtk.hpp"
 
 namespace shellanything
 {
 
-  bool evaluate(const char * expression_string, double * result)
+  bool evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size)
   {
+    if (error_buffer != NULL && error_size > 0)
+      error_buffer[0] = '\0';
+
     typedef exprtk::expression<double> expression_t;
     typedef exprtk::parser<double>         parser_t;
 
@@ -39,7 +44,26 @@ namespace shellanything
     parser_t parser;
 
     if (!parser.compile(expression_string,expression))
+    {
+      //Output error description in output
+      if (error_buffer != NULL && error_size > 0)
+      {
+        std::string error_description = parser.error();
+        if (error_description.size() <= error_size)
+        {
+          //Copy as is
+          strcpy(error_buffer, error_description.c_str());
+        }
+        else
+        {
+          //Truncate error_description until it fits
+          error_description.erase(error_description.begin()+(error_size-1), error_description.end());
+          strncpy(error_buffer, error_description.c_str(), error_size-1);
+          error_buffer[error_size-1] = '\0';
+        }
+      }
       return false;
+    }
 
     if (result)
       *result = expression.value();
@@ -47,10 +71,10 @@ namespace shellanything
     return true;
   }
 
-  bool evaluate(const char * expression_string, bool * result)
+  bool evaluate(const char * expression_string, bool * result, char * error, size_t error_size)
   {
     double tmp = 0.0;
-    bool success = evaluate(expression_string, &tmp);
+    bool success = evaluate(expression_string, &tmp, error, error_size);
     if (!success)
       return false;
 

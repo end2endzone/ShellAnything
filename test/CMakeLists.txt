@@ -65,6 +65,8 @@ add_executable(shellanything_unittest
   TestIcon.h
   TestInputBox.cpp
   TestInputBox.h
+  TestLibEval.cpp
+  TestLibEval.h
   TestMenu.cpp
   TestMenu.h
   TestNode.cpp
