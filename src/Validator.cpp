@@ -608,11 +608,16 @@ namespace shellanything
 
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
+    static const size_t ERROR_SIZE = 10480;
+    char error[ERROR_SIZE];
+    error[0] = '\0';
+
     bool result = false;
-    bool evaluated = evaluate(exprtk.c_str(), &result);
+    bool evaluated = evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
     if (!evaluated)
     {
       LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+      LOG(WARNING) << "Exprtk error: " << error << "'.";
       return false;
     }
 
