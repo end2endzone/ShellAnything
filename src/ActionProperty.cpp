@@ -24,6 +24,9 @@
 
 #include "shellanything/ActionProperty.h"
 #include "PropertyManager.h"
+#include "libEval.h"
+
+#include "rapidassist/strings.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -46,9 +49,31 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string name = pmgr.Expand(mName);
     std::string value = pmgr.Expand(mValue);
+    std::string exprtk = pmgr.Expand(mExprtk);
+
+    // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!exprtk.empty())
+    {
+      static const size_t ERROR_SIZE = 10480;
+      char error[ERROR_SIZE];
+      error[0] = '\0';
+
+      double result = 0.0;
+      bool evaluated = evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
+      if (!evaluated)
+      {
+        LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+        LOG(WARNING) << "Exprtk error: " << error << "'.";
+        return false;
+      }
+
+      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+      value = ra::strings::ToString(result);
+    }
 
     //debug
     LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+
     pmgr.SetProperty(name, value);
 
     // If a user has changed property 'selection.multi.separator', the context must rebuild selection-based properties.
@@ -80,6 +105,16 @@ namespace shellanything
   void ActionProperty::SetValue(const std::string & iValue)
   {
     mValue = iValue;
+  }
+
+  const std::string & ActionProperty::GetExprtk() const
+  {
+    return mExprtk;
+  }
+
+  void ActionProperty::SetExprtk(const std::string & iExprtk)
+  {
+    mExprtk = iExprtk;
   }
 
 } //namespace shellanything

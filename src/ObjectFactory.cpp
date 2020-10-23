@@ -406,9 +406,17 @@ namespace shellanything
       //parse value
       tmp_str = "";
       tmp_int = -1;
-      if (ParseAttribute(element, "value", false, true, tmp_str, error))
+      if (ParseAttribute(element, "value", true, true, tmp_str, error))
       {
         action->SetValue(tmp_str);
+      }
+
+      //parse exprtk
+      tmp_str = "";
+      tmp_int = -1;
+      if (ParseAttribute(element, "exprtk", true, true, tmp_str, error))
+      {
+        action->SetExprtk(tmp_str);
       }
 
       //done parsing
