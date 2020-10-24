@@ -25,9 +25,39 @@
 #include "libEval.h"
 
 #include <algorithm>    // std::min
+#include <stdio.h>      // snprintf
 
 #define _SCL_SECURE_NO_WARNINGS
 #include "exprtk.hpp"
+
+// https://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#define snprintf c99_snprintf
+#define vsnprintf c99_vsnprintf
+
+__inline int c99_vsnprintf(char *outBuf, size_t size, const char *format, va_list ap)
+{
+  int count = -1;
+  if (size != 0)
+    count = _vsnprintf_s(outBuf, size, _TRUNCATE, format, ap);
+  if (count == -1)
+    count = _vscprintf(format, ap);
+  return count;
+}
+
+__inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
+{
+  int count;
+  va_list ap;
+  va_start(ap, format);
+  count = c99_vsnprintf(outBuf, size, format, ap);
+  va_end(ap);
+  return count;
+}
+
+#endif
+
 
 namespace shellanything
 {
@@ -49,18 +79,9 @@ namespace shellanything
       if (error_buffer != NULL && error_size > 0)
       {
         std::string error_description = parser.error();
-        if (error_description.size() <= error_size)
-        {
-          //Copy as is
-          strcpy(error_buffer, error_description.c_str());
-        }
-        else
-        {
-          //Truncate error_description until it fits
-          error_description.erase(error_description.begin()+(error_size-1), error_description.end());
-          strncpy(error_buffer, error_description.c_str(), error_size-1);
-          error_buffer[error_size-1] = '\0';
-        }
+
+        size_t min_buffer_size = std::min(error_description.size()+1, error_size); // +1 to include the last non-NULL character
+        snprintf(error_buffer, min_buffer_size, "%s", error_description.c_str());
       }
       return false;
     }

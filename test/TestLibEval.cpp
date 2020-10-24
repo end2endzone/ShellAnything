@@ -55,16 +55,19 @@ namespace shellanything { namespace test
     bool success = evaluate("foobar;", &result, buffer, BUFFER_SIZE);
     ASSERT_FALSE(success);
     ASSERT_GT(strlen(buffer), 0);
+    printf("Found full error: '%s'\n", buffer);
 
     // Test for buffer overflow
     static const char RESET_CHARACTER = '\n';
+    static const size_t TRUNCATED_BUFFER_SIZE = 13;
     memset(buffer, RESET_CHARACTER, BUFFER_SIZE);
-    success = evaluate("foobar;", &result, buffer, 10);
+    success = evaluate("foobar;", &result, buffer, TRUNCATED_BUFFER_SIZE);
     ASSERT_FALSE(success);
-    ASSERT_EQ('0', buffer[9]); // assert last character of the buffer is the string end character
-    ASSERT_EQ(RESET_CHARACTER, buffer[10]); // assert next character outside of given buffer is untouched.
-    for(size_t i=10; i<BUFFER_SIZE; i++)
+    ASSERT_EQ('\0', buffer[TRUNCATED_BUFFER_SIZE-1]); // assert last character of the buffer is the string end character
+    ASSERT_EQ(RESET_CHARACTER, buffer[TRUNCATED_BUFFER_SIZE]); // assert next character outside of given buffer is untouched.
+    for(size_t i=TRUNCATED_BUFFER_SIZE; i<BUFFER_SIZE; i++)
       ASSERT_EQ(RESET_CHARACTER, buffer[i]); // assert following characters are untouched.
+    printf("Found truncated error: '%s'\n", buffer);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestLibEval, testStringPlusScalar) //Adding a string with a scalar is expected to fail evaluation
