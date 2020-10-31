@@ -784,12 +784,43 @@ For example, the following sets the property `myprogram.user.name` to an empty v
 
 #### value attribute: ####
 
-The `value` attribute defines the actual new value of the given property.
+The `value` attribute defines the new value of the given property.
 
 For example, the following set the property `myprogram.user.name` to value `Al Coholic` :
 ```xml
 <property name="myprogram.user.fullname" value="Al Coholic" />
 ```
+
+
+
+#### exprtk attribute: ####
+
+The `exprtk` attribute defines an expression that is evaluated to set a new value for the given property. The expression must be specified as a mathematical expression and the result must evaluates to an integer or a floating point value such as `4+9` or `${foo}+1`.
+
+The `exprtk` attribute can also be set to an expression that evaluates to `true` or `false` and logical `and` and `or` operators can be use to group expressions. eg: `${foo.count} > 1 and '${foo.state}'=='PAUSED'`.
+
+The attribute supports the following operators: 
+* Basic operators: `+`, `-`, `*`, `/`, `%`, `^`
+* Equalities & Inequalities: `=`, `==`, `<>`, `!=`, `<`, `<=`, `>`, `>=`
+* Logic operators: `and`, `not`, `or`, `xor`, `true`, `false`
+* String operators: `in`, `like`, `ilike`, []
+
+Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
+eg: `'Frankly my dear, \0x49 do n0t give a damn!'`
+
+The `exprtk` attribute allows advanced property evaluation. The following table show useful expression examples:
+
+| Use cases                                                                       | Expression                                                                                                                                                                                                                                                                                                                                                                                                 | Meaning                                                                                                                                                                                 |
+|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Update a property using a generic equation                                      | \${myvalue}^2 + 5*\${myvalue} + 100                                                                                                                                                                                                                                                                                                                                                                        | Evaluate the quadratic equation `x^2 + 5x + 100` where `x` is equal to the value of property `myvalue`.                                                                                 |
+| Create a counter using properties.<br>(with a default property value set)       | \<property name="mycounter" exprtk="${mycounter}+1"\>                                                                                                                                                                                                                                                                                                                                                      | The property update itself by increasing its own value by 1.<br>Note: this only work if the property is defined to a numeric value first.                                               |
+| Create a counter using properties.<br>(without initializing the property first) | if ('\${mycounter}' == '$'+'{mycounter}' or '\${mycounter}' == '0') 1;<br>else if ('\${mycounter}' == '1') 2;<br>else if ('\${mycounter}' == '2') 3;<br>else if ('\${mycounter}' == '3') 4;<br>else if ('\${mycounter}' == '4') 5;<br>else if ('\${mycounter}' == '5') 6;<br>else if ('\${mycounter}' == '6') 7;<br>else if ('\${mycounter}' == '7') 8;<br>else if ('\${mycounter}' == '8') 9;<br>else 10; | Increase the value of property `mycounter` by `1` going from `1` up to `10`.<br>On the first call, the first line of the expression detects if the property is unset and set it to `1`. |
+| Get the length of a property value.                                             | '\${command}'[]                                                                                                                                                                                                                                                                                                                                                                                            | Set the property to the length of the `command` property value.                                                                                                                         |
+| Set a property to logical `true` or `false`.                                    | ${foo} == 2 or ${bar} >= 5                                                                                                                                                                                                                                                                                                                                                                                 | The property will be set to value `1` if the expression evaluates to `true` <br>and set to `0` if the expression evaluates to `false`.                                                  |
+
+
+**Note:**
+The `exprtk` attribute uses the *exprtk library* to parse the expression. For more details and supported expressions, see the exprtk documentation on the [official github page](https://github.com/ArashPartow/exprtk) or the [library website](http://www.partow.net/programming/exprtk/index.html).
 
 
 
