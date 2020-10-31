@@ -74,7 +74,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( property_value, actual_value );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestActionProperty, testPropertyItself)
+  TEST_F(TestActionProperty, testPropertySelfReference)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
@@ -139,15 +139,15 @@ namespace shellanything { namespace test
         ActionProperty ap;
         ap.SetName(property_name);
         ap.SetExprtk(
-          "if ('${foo}' == '$'+'{foo}' or '${foo}' == '0') 1.0; "
-          "else if ('${foo}' == '1')  2.0; "
-          "else if ('${foo}' == '2')  3.0; "
-          "else if ('${foo}' == '3')  4.0; "
-          "else if ('${foo}' == '4')  5.0; "
-          "else if ('${foo}' == '5')  6.0; "
-          "else if ('${foo}' == '6')  7.0; "
-          "else if ('${foo}' == '7')  8.0; "
-          "else if ('${foo}' == '8')  9.0; "
+          "if ('${foo}' == '$'+'{foo}' or '${foo}' == '0') 1; "
+          "else if ('${foo}' == '1') 2; "
+          "else if ('${foo}' == '2') 3; "
+          "else if ('${foo}' == '3') 4; "
+          "else if ('${foo}' == '4') 5; "
+          "else if ('${foo}' == '5') 6; "
+          "else if ('${foo}' == '6') 7; "
+          "else if ('${foo}' == '7') 8; "
+          "else if ('${foo}' == '8') 9; "
           "else 10.0; "
         );
 
@@ -175,7 +175,7 @@ namespace shellanything { namespace test
         //Execute the action
         ActionProperty ap;
         ap.SetName(property_name);
-        ap.SetExprtk("if ('${foo}'==('$'+'{foo}')) { 1.0; } else { ${foo}+1.0;} ");
+        ap.SetExprtk("${foo}+1.0");
 
         bool executed = ap.Execute(c);
         ASSERT_TRUE( executed );
@@ -191,6 +191,37 @@ namespace shellanything { namespace test
     }
 
     int a = 0;
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestActionProperty, testPropertyGetLength)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    const std::string property_name = "foo";
+
+    //Create a valid context
+    Context c;
+    Context::ElementList elements;
+    elements.push_back("C:\\Windows");
+    c.SetElements(elements);
+
+    c.RegisterProperties();
+
+    // Set a base value for the property
+    pmgr.SetProperty(property_name, "barbaz");
+
+    //execute the action
+    ActionProperty ap;
+    ap.SetName(property_name);
+    ap.SetExprtk("'${foo}'[]");
+
+    bool executed = ap.Execute(c);
+    ASSERT_TRUE( executed );
+
+    //Assert property is set
+    ASSERT_TRUE( pmgr.HasProperty(property_name) );
+    std::string actual_value = pmgr.GetProperty(property_name);
+    ASSERT_EQ( std::string("6"), actual_value );
   }
   //--------------------------------------------------------------------------------------------------
 

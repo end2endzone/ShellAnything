@@ -400,7 +400,7 @@ The attribute supports the following operators:
 * Logic operators: `and`, `not`, `or`, `xor`, `true`, `false`
 * String operators: `in`, `like`, `ilike`, []
 
-Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"``~_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
+Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
 eg: `'Frankly my dear, \0x49 do n0t give a damn!'`
 
 The `exprtk` attribute allows advanced menu validation. The following table show useful expression examples:
