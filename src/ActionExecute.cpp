@@ -71,24 +71,24 @@ namespace shellanything
     info.nShow  = SW_SHOWDEFAULT;
     info.lpFile = pathW.c_str();
 
-    LOG(INFO) << "Exec: '" << path;
+    LOG(INFO) << "Exec: '" << path << "'.";
 
     if (!verb.empty())
     {
       info.lpVerb = verbW.c_str(); // Verb
-      LOG(INFO) << "Verb: '" << verb;
+      LOG(INFO) << "Verb: '" << verb << "'.";
     }
 
     if (!arguments.empty())
     {
       info.lpParameters = argumentsW.c_str(); // Arguments
-      LOG(INFO) << "Arguments: '" << arguments;
+      LOG(INFO) << "Arguments: '" << arguments << "'.";
     }
 
     if (!basedir.empty())
     {
       info.lpDirectory = basedirW.c_str(); // Default directory
-      LOG(INFO) << "Basedir: '" << basedir;
+      LOG(INFO) << "Basedir: '" << basedir << "'.";
     }
 
     BOOL success = ShellExecuteExW(&info);
@@ -198,7 +198,7 @@ namespace shellanything
 
   const std::string& ActionExecute::GetVerb() const
   {
-    return mArguments;
+    return mVerb;
   }
 
   void ActionExecute::SetVerb(const std::string& iVerb)
