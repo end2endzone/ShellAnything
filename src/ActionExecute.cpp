@@ -49,6 +49,18 @@ namespace shellanything
   bool ActionExecute::Execute(const Context& iContext) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string verb = pmgr.Expand(mVerb);
+
+    //If a verb was specified, delegate to VerbExecute(). Otherwise, use ProcessExecute().
+    if (verb.empty())
+      return ExecuteProcess(iContext);
+    else
+      return ExecuteVerb(iContext);
+  }
+
+  bool ActionExecute::ExecuteVerb(const Context& iContext) const
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path      = pmgr.Expand(mPath);
     std::string basedir   = pmgr.Expand(mBaseDir);
     std::string arguments = pmgr.Expand(mArguments);
@@ -71,35 +83,44 @@ namespace shellanything
     info.nShow  = SW_SHOWDEFAULT;
     info.lpFile = pathW.c_str();
 
+    //Print execute values in the logs
     LOG(INFO) << "Exec: '" << path << "'.";
-
     if (!verb.empty())
     {
       info.lpVerb = verbW.c_str(); // Verb
       LOG(INFO) << "Verb: '" << verb << "'.";
     }
-
     if (!arguments.empty())
     {
       info.lpParameters = argumentsW.c_str(); // Arguments
       LOG(INFO) << "Arguments: '" << arguments << "'.";
     }
-
     if (!basedir.empty())
     {
       info.lpDirectory = basedirW.c_str(); // Default directory
       LOG(INFO) << "Basedir: '" << basedir << "'.";
     }
 
-    BOOL success = ShellExecuteExW(&info);
-    return (success == TRUE);
+    //Execute and get the pid
+    bool success = (ShellExecuteExW(&info) == TRUE);
+    if (!success)
+      return false;
+    DWORD pId = GetProcessId(info.hProcess);
+
+    success = (pId != ra::process::INVALID_PROCESS_ID);
+    if (success)
+    {
+      LOG(INFO) << "Process created. PID=" << pId;
+    }
+
+    return success;
   }
 
-  bool ActionExecute::StartProcess(const Context & iContext) const
+  bool ActionExecute::ExecuteProcess(const Context & iContext) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.Expand(mPath);
-    std::string basedir = pmgr.Expand(mBaseDir);
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path      = pmgr.Expand(mPath);
+    std::string basedir   = pmgr.Expand(mBaseDir);
     std::string arguments = pmgr.Expand(mArguments);
 
     bool basedir_missing = basedir.empty();
@@ -144,20 +165,29 @@ namespace shellanything
       LOG(WARNING) << "attribute 'basedir' not specified.";
     }
 
-    //debug
+    //Print execute values in the logs
+    LOG(INFO) << "Exec: '" << path << "'.";
+    if (!arguments.empty())
+    {
+      LOG(INFO) << "Arguments: '" << arguments << "'.";
+    }    
+    if (!basedir.empty())
+    {
+      LOG(INFO) << "Basedir: '" << basedir << "'.";
+    }
+    
+    //Execute and get the pid
     uint32_t pId = ra::process::INVALID_PROCESS_ID;
     if (arguments_missing)
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir);
     }
     else
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir, arguments);
     }
 
-    bool success = pId != ra::process::INVALID_PROCESS_ID;
+    bool success = (pId != ra::process::INVALID_PROCESS_ID);
     if (success)
     {
       LOG(INFO) << "Process created. PID=" << pId;
