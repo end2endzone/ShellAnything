@@ -48,6 +48,8 @@ add_executable(shellanything_unittest
   ${CONFIGURATION_TEST_FILES}
   ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
+  ArgumentsHandler.cpp
+  ArgumentsHandler.h
   TestActionExecute.cpp
   TestActionExecute.h
   TestActionFile.cpp
