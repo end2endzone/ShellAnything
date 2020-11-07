@@ -32,7 +32,7 @@ namespace shellanything
   /// Print statistics about this program settings.
   /// </summary>
   /// <returns>Returns 0 when the function succeed. Returns a non zero values otherwise.</returns>
-  int PrintStatistics();
+  int PrintProcessSettings(int argc, char **argv);
 
 } //namespace shellanything
 

@@ -44,9 +44,9 @@ using namespace ra;
 int main(int argc, char **argv)
 {
   // Look for custom command line arguments
-  bool has_printstatistics = ra::cli::ParseArgument("printstatistics", std::string(), argc, argv);
-  if (has_printstatistics)
-    return shellanything::PrintStatistics();
+  bool has_PrintProcessSettings = ra::cli::ParseArgument("PrintProcessSettings", std::string(), argc, argv);
+  if (has_PrintProcessSettings)
+    return shellanything::PrintProcessSettings(argc, argv);
 
   // Prepare Google's logging library.
   fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr

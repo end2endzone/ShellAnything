@@ -105,7 +105,7 @@ namespace shellanything
     return bRet;
   }
 
-  int PrintStatistics()
+  int PrintProcessSettings(int argc, char **argv)
   {
     std::string process_path = ra::process::GetCurrentProcessPath();
     ra::process::processid_t process_id = ra::process::GetCurrentProcessId();
@@ -116,6 +116,10 @@ namespace shellanything
     std::string env_temp = ra::environment::GetEnvironmentVariable("TEMP");
     bool has_windows_write_access = CanAccessFolder("C:\\Windows", GENERIC_WRITE);
 
+    // print to the console
+    printf("process.arguments.argc=%d\n", argc);
+    for(int i=0; i<argc; i++)
+      printf("process.arguments.argv[%d]=%s\n", i, argv[i]);
     printf("process.path=%s\n", process_path.c_str());
     printf("process.pid=%d\n", process_id);
     printf("process.current_dir=%s\n", process_current_directory.c_str());
@@ -124,6 +128,25 @@ namespace shellanything
     printf("build.configuration=%s\n", build_configuration);
     printf("env.temp=%s\n", env_temp.c_str());
     printf("has_windows_write_access=%d\n", (int)has_windows_write_access);
+
+    // print to a file
+    FILE * f = fopen("shellanything_unittest.ProcessSettings.txt", "w");
+    if (!f)
+      return 1;
+
+    printf("process.arguments.argc=%d\n", argc);
+    for(int i=0; i<argc; i++)
+      fprintf(f, "process.arguments.argv[%d]=%s\n", i, argv[i]);
+    fprintf(f, "process.path=%s\n", process_path.c_str());
+    fprintf(f, "process.pid=%d\n", process_id);
+    fprintf(f, "process.current_dir=%s\n", process_current_directory.c_str());
+    fprintf(f, "process.architecture=x%d\n", process_architecture);
+    fprintf(f, "process.elevated=%d\n", process_elevated);
+    fprintf(f, "build.configuration=%s\n", build_configuration);
+    fprintf(f, "env.temp=%s\n", env_temp.c_str());
+    fprintf(f, "has_windows_write_access=%d\n", (int)has_windows_write_access);
+
+    fclose(f);
 
     return 0;
   }
