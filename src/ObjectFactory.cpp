@@ -293,6 +293,14 @@ namespace shellanything
         action->SetBaseDir(tmp_str);
       }
 
+      //parse verb
+      tmp_str = "";
+      tmp_int = -1;
+      if (ParseAttribute(element, "verb", true, true, tmp_str, error))
+      {
+        action->SetVerb(tmp_str);
+      }
+
       //done parsing
       return action;
     }

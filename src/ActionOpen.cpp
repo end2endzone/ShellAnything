@@ -69,8 +69,8 @@ namespace shellanything
     info.nShow = SW_SHOWDEFAULT;
     info.lpVerb = L"open";
     info.lpFile = pathW.c_str();
-    info.lpParameters = NULL; //arguments
-    info.lpDirectory = NULL; // default directory
+    info.lpParameters = NULL; // arguments
+    info.lpDirectory = NULL;  // Default directory
 
     BOOL success = ShellExecuteExW(&info);
     return (success == TRUE);

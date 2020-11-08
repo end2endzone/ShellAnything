@@ -1,4 +1,4 @@
-![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+﻿![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
 
 
 # Overview #
@@ -547,6 +547,28 @@ For example, the following launche `notepad.exe` and open the `License.txt` docu
 ```xml
 <exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
 ```
+
+
+
+#### verb attribute: ####
+
+The `verb` attribute defines special directives on how to execute a file or launching the application. For example, the verb  `open` or `edit` allows the user to open a document using the associated application. The attribute is optional.
+
+Verbs are specific to a file type but some are supported by multiple types. Commonly available verbs include:
+| Verb       | Description                                                                                                                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| edit       | Launches an editor and opens the document for editing.                                                                                                                                                                  |
+| find       | Initiates a search starting from the executed directory.                                                                                                                                                                |
+| open       | Launches an application. If this file is not an executable file, its associated application is launched.                                                                                                                |
+| print      | Prints the document file.                                                                                                                                                                                               |
+| properties | Displays the object's properties.                                                                                                                                                                                       |
+| runas      | Launches an application as Administrator. User Account Control (UAC) will prompt the user for consent to run the application elevated or enter the credentials of an administrator account used to run the application. |
+
+For example, the following launches `notepad.exe` and open the text file `C:\Windows\System32\drivers\etc\hosts` which can only be modified with elevated privileges (as an Administrator) :
+```xml
+<exec path="C:\Windows\notepad.exe" arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+```
+To get extended information about verbs, see the following Microsoft documentation article: [ShellExecute and ShellExecuteEx, Object Verbs](https://docs.microsoft.com/en-us/windows/win32/shell/launch#object-verbs).
 
 
 

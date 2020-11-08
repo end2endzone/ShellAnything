@@ -35,11 +35,19 @@
 
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
+#include "rapidassist/cli.h"
+
+#include "ArgumentsHandler.h"
 
 using namespace ra;
 
 int main(int argc, char **argv)
 {
+  // Look for custom command line arguments
+  bool has_PrintProcessSettings = ra::cli::ParseArgument("PrintProcessSettings", std::string(), argc, argv);
+  if (has_PrintProcessSettings)
+    return shellanything::PrintProcessSettings(argc, argv);
+
   // Prepare Google's logging library.
   fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
   fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'

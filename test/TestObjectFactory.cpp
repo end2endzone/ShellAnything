@@ -25,6 +25,7 @@
 #include "TestObjectFactory.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
+#include "shellanything/ActionExecute.h"
 #include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionMessage.h"
@@ -69,6 +70,23 @@ namespace shellanything { namespace test
       ActionMessage * action_message = dynamic_cast<ActionMessage *>(action);
       if (action_message)
         return action_message;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  ActionExecute * GetFirstActionExecute(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->GetActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionExecute * action_execute = dynamic_cast<ActionExecute *>(action);
+      if (action_execute)
+        return action_execute;
     }
  
     return NULL;
@@ -278,6 +296,74 @@ namespace shellanything { namespace test
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[02]->GetNameMaxLength() );  // maxlength attribute set to "a" which is not numeric (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[03]->GetNameMaxLength() );  // maxlength attribute set to "0" which is out of range (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[04]->GetNameMaxLength() );  // maxlength attribute set to "9999" which is out of range (invalid).
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionExecute)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::timing::Millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT all menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ( 4, menus.size() );
+
+    //assert all menus have a file element as the first action
+    ActionExecute * exec00 = GetFirstActionExecute(menus[00]);
+    ActionExecute * exec01 = GetFirstActionExecute(menus[01]);
+    ActionExecute * exec02 = GetFirstActionExecute(menus[02]);
+    ActionExecute * exec03 = GetFirstActionExecute(menus[03]);
+
+    ASSERT_TRUE( exec00 != NULL );
+    ASSERT_TRUE( exec01 != NULL );
+    ASSERT_TRUE( exec02 != NULL );
+    ASSERT_TRUE( exec03 != NULL );
+
+    //assert menu00 attributes
+    ASSERT_EQ("C:\\Windows\\System32\\calc.exe", exec00->GetPath());
+
+    //assert menu01 attributes
+    //<exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
+    ASSERT_EQ("C:\\Windows\\notepad.exe", exec01->GetPath());
+    ASSERT_EQ("C:\\Program Files\\7-Zip", exec01->GetBaseDir());
+    ASSERT_EQ("License.txt", exec01->GetArguments());
+
+    //assert menu02 attributes
+    //<exec path="C:\Windows\notepad.exe" arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+    ASSERT_EQ("C:\\Windows\\notepad.exe", exec02->GetPath());
+    ASSERT_EQ("C:\\Windows\\System32\\drivers\\etc\\hosts", exec02->GetArguments());
+    ASSERT_EQ("runas", exec02->GetVerb());
+
+    //assert menu03 attributes
+    //<!-- missing path attribute --> <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+    ASSERT_EQ("", exec03->GetPath());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
