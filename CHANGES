@@ -1,3 +1,8 @@
+Changes for 0.6.0
+
+* Fixed issue #23: Implement menu validation based on a string expression
+
+
 Changes for 0.5.1
 
 * Fixed issue #75: Wix Installer: Incorrect shortcuts in Start Menu
