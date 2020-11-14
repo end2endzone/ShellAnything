@@ -19,7 +19,8 @@ if(NOT EXISTS ${PACKAGE_DOWNLOAD_DIR})
 endif()
 
 # exprtk
-# As the time of this writing, HEAD revision is commit d312ba91419c9cb12c8279fd3a19096d39dfcb5e 
+# The exprtk library do not provides version based releases.
+# At the time of this writing, HEAD revision is commit d312ba91419c9cb12c8279fd3a19096d39dfcb5e 
 # available at https://github.com/ArashPartow/exprtk/archive/d312ba91419c9cb12c8279fd3a19096d39dfcb5e.zip
 # Using latest revision to get all bug fixes.
 set(EXPRTK_PACKAGE_URL "https://github.com/ArashPartow/exprtk/archive/master.zip")
