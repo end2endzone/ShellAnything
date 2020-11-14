@@ -22,27 +22,18 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef WIN32_UTILS_H
-#define WIN32_UTILS_H
+#ifndef SA_ARGUMENT_HANDLER_H
+#define SA_ARGUMENT_HANDLER_H
 
-#include <Windows.h>
-#include <string>
-
-namespace Win32Utils
+namespace shellanything
 {
-  SIZE GetIconSize(HICON hIcon);
-  HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
-  RGBQUAD ToRgbQuad(const DWORD & iColor);
-  SIZE GetBitmapSize(HBITMAP hBitmap);
-  BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
-  HBITMAP CreateBitmapWithAlphaChannel(int biWidth, int biHeight, HDC hDc);
-  HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
-  HBITMAP CopyAsBitmap(HICON hIcon);
-  bool CreateBmpFile(const char * path, HBITMAP hBitmap);
-  BOOL IsFullyTransparent(HBITMAP hBitmap);
-  BOOL IsFullyTransparent(const std::string & buffer);
-  std::string GetMenuItemDetails(HMENU hMenu, UINT pos);
-  std::string GetMenuTree(HMENU hMenu, int indent);
-} //namespace Win32Utils
 
-#endif //WIN32_UTILS_H
+  /// <summary>
+  /// Print statistics about this program settings.
+  /// </summary>
+  /// <returns>Returns 0 when the function succeed. Returns a non zero values otherwise.</returns>
+  int PrintProcessSettings(int argc, char **argv);
+
+} //namespace shellanything
+
+#endif //SA_ARGUMENT_HANDLER_H

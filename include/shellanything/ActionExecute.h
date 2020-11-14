@@ -44,7 +44,7 @@ namespace shellanything
     /// </summary>
     /// <param name="iContext">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & iContext) const;
+    virtual bool Execute(const Context& iContext) const;
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -76,10 +76,38 @@ namespace shellanything
     /// </summary>
     void SetArguments(const std::string & iArguments);
 
+    /// <summary>
+    /// Getter for the 'verb' parameter.
+    /// </summary>
+    const std::string& GetVerb() const;
+
+    /// <summary>
+    /// Setter for the 'verb' parameter.
+    /// </summary>
+    void SetVerb(const std::string& iVerb);
+
+  private:
+    /// <summary>
+    /// Execute an application with ShellExecuteEx method.
+    /// This execute method supports verbs.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
+    virtual bool ExecuteVerb(const Context & iContext) const;
+
+    /// <summary>
+    /// Execute an application with RapidAssist method.
+    /// This execute method does not supports verbs.
+    /// </summary>
+    /// <param name="iContext">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
+    virtual bool ExecuteProcess(const Context & iContext) const;
+
   private:
     std::string mPath;
     std::string mBaseDir;
     std::string mArguments;
+    std::string mVerb;
   };
 
 } //namespace shellanything

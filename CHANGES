@@ -1,3 +1,8 @@
+Changes for 0.5.1
+
+* Fixed issue #75: Wix Installer: Incorrect shortcuts in Start Menu
+
+
 Changes for 0.5.0
 
 * Fixed issue #45: Registration and unregistration scripts are missing from installer and portable version.
@@ -7,7 +12,9 @@ Changes for 0.5.0
 * Fixed issue #49: Validity / Visibility should have an `inverse` attribute.
 * Fixed issue #51: Action "Open command prompt here" from default.xml configuration does not work.
 * Fixed issue #52: Define a specific property for use as separator for handling multiple file selection.
+* Fixed issue #54: Icon background and dark mode.
 * Fixed issue #55: Menu name maximum length limit and escape string.
+* Fixed issue #56: Not implemented administrator mode.
 * Fixed issue #58: More useful features: class and pattern attributes for validity / visibility.
 * Fixed issue #61: Support for WIX installer.
 * Fixed issue #66: Github don't identify the repository LICENSE as MIT.

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <exec path="C:\Windows\System32\calc.exe" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu01">
+      <actions>
+        <exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu02">
+      <actions>
+        <exec path="C:\Windows\notepad.exe" arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+      </actions>
+    </menu>
+
+    <menu name="menu03">
+      <actions>
+        <!-- missing path attribute -->
+        <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+      </actions>
+    </menu>
+ 
+  </shell>
+</root>

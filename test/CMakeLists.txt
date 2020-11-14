@@ -12,6 +12,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testParentWithoutChildren.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfiguration.testLoadProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionExecute.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionMessage.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionPrompt.xml
@@ -48,6 +49,10 @@ add_executable(shellanything_unittest
   ${CONFIGURATION_TEST_FILES}
   ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
+  ArgumentsHandler.cpp
+  ArgumentsHandler.h
+  TestActionExecute.cpp
+  TestActionExecute.h
   TestActionFile.cpp
   TestActionFile.h
   TestActionProperty.cpp

@@ -105,7 +105,7 @@ MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR:   " ${CMAKE_SYSTEM_PROCESSOR} )
 
 # Product version according to Semantic Versioning v2.0.0 https://semver.org/
 set(SHELLANYTHING_VERSION_MAJOR 0)
-set(SHELLANYTHING_VERSION_MINOR 5)
+set(SHELLANYTHING_VERSION_MINOR 6)
 set(SHELLANYTHING_VERSION_PATCH 0)
 set(SHELLANYTHING_VERSION ${SHELLANYTHING_VERSION_MAJOR}.${SHELLANYTHING_VERSION_MINOR}.${SHELLANYTHING_VERSION_PATCH})
 
@@ -217,16 +217,17 @@ if (SHELLANYTHING_BUILD_DOC)
 endif()
 
 ##############################################################################################################################################
-# Convert markdown files to html for publishing with installers.
+# Convert markdown/text files to html/txt for publishing with installers.
 ##############################################################################################################################################
 
 # Set the default filenames to be published with the install/package.
 set (README_FILENAME README.md)
 set (USERMANUAL_FILENAME UserManual.md)
+set (CONTRIBUTING_FILENAME CONTRIBUTING.md)
 
 if (GRIP_FOUND)
   # Convert README.md
-  execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip README.md --export ${CMAKE_BINARY_DIR}/README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (README_FILENAME README.html)
   else()
@@ -234,16 +235,41 @@ if (GRIP_FOUND)
   endif()
 
   # Convert UserManual.md
-  execute_process(COMMAND grip UserManual.md --export UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip UserManual.md --export ${CMAKE_BINARY_DIR}/UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (USERMANUAL_FILENAME UserManual.html)
   else()
     message(FATAL_ERROR "grip failed converting UserManual.md with res_var='${res_var}'")
   endif()
+
+  # Convert CONTRIBUTING.md
+  execute_process(COMMAND grip CONTRIBUTING.md --export ${CMAKE_BINARY_DIR}/CONTRIBUTING.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if("${res_var}" STREQUAL "0")
+    set (CONTRIBUTING_FILENAME CONTRIBUTING.html)
+  else()
+    message(FATAL_ERROR "grip failed converting CONTRIBUTING.md with res_var='${res_var}'")
+  endif()
 else()
   message(WARNING "grip is not found on the system. grip is required for publishing markdown files to html. Files will be published as *.md files.")
 endif()
 
+# AUTHORS.txt
+set(SHELLANYTHING_AUTHOR_TXT ${CMAKE_BINARY_DIR}/AUTHORS.txt)
+message("Exporting to ${SHELLANYTHING_AUTHOR_TXT}...")
+configure_file( ${CMAKE_SOURCE_DIR}/AUTHORS ${SHELLANYTHING_AUTHOR_TXT} )
+get_filename_component(AUTHOR_FILENAME ${SHELLANYTHING_AUTHOR_TXT} NAME)
+
+# CHANGES.txt
+set(SHELLANYTHING_CHANGES_TXT ${CMAKE_BINARY_DIR}/CHANGES.txt)
+message("Exporting to ${SHELLANYTHING_CHANGES_TXT}...")
+configure_file( ${CMAKE_SOURCE_DIR}/CHANGES ${SHELLANYTHING_CHANGES_TXT} )
+get_filename_component(CHANGES_FILENAME ${SHELLANYTHING_CHANGES_TXT} NAME)
+
+# LICENSE.txt
+set(SHELLANYTHING_LICENSE_TXT ${CMAKE_BINARY_DIR}/LICENSE.txt)
+message("Exporting to ${SHELLANYTHING_LICENSE_TXT}...")
+configure_file( ${CMAKE_SOURCE_DIR}/LICENSE ${SHELLANYTHING_LICENSE_TXT} )
+get_filename_component(LICENSE_FILENAME ${SHELLANYTHING_LICENSE_TXT} NAME)
 
 ##############################################################################################################################################
 # Install
@@ -280,8 +306,13 @@ install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
 
 install(FILES ${CMAKE_SOURCE_DIR}/README.md
               ${CMAKE_SOURCE_DIR}/UserManual.md
-              ${CMAKE_SOURCE_DIR}/${README_FILENAME}
-              ${CMAKE_SOURCE_DIR}/${USERMANUAL_FILENAME}
+              ${CMAKE_SOURCE_DIR}/CONTRIBUTING.md
+              ${CMAKE_BINARY_DIR}/${README_FILENAME}
+              ${CMAKE_BINARY_DIR}/${USERMANUAL_FILENAME}
+              ${CMAKE_BINARY_DIR}/${CONTRIBUTING_FILENAME}
+              ${CMAKE_BINARY_DIR}/${AUTHOR_FILENAME}
+              ${CMAKE_BINARY_DIR}/${CHANGES_FILENAME}
+              ${CMAKE_BINARY_DIR}/${LICENSE_FILENAME}
               DESTINATION ${SHELLANYTHING_INSTALL_ROOT_DIR})
 
 ##############################################################################################################################################
@@ -340,6 +371,10 @@ set(CPACK_PACKAGE_EXECUTABLES
 set(CPACK_NSIS_MENU_LINKS
   "${README_FILENAME}" "${README_FILENAME}"
   "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
+  "${CONTRIBUTING_FILENAME}" "${CONTRIBUTING_FILENAME}"
+  "${AUTHOR_FILENAME}"   "${AUTHOR_FILENAME}"
+  "${CHANGES_FILENAME}"  "${CHANGES_FILENAME}"
+  "${LICENSE_FILENAME}"  "${LICENSE_FILENAME}"
   "licenses" "Third party licenses"
   "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
   "bin/register.bat"   "Register shell extension"
@@ -355,6 +390,7 @@ set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
 set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
 
 # Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
 # Set CPACK_WIX_UPGRADE_GUID to something fixed while leaving CPACK_WIX_PRODUCT_GUID unset
@@ -365,9 +401,13 @@ set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
 # See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
 
 # Define start menu shortcuts for WIX
-set_property(INSTALL "bin/$<TARGET_FILE_NAME:shellext>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:shellanything_unittest>"   PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
+set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )
+set_property(INSTALL "${AUTHOR_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${AUTHOR_FILENAME}"        )
+set_property(INSTALL "${CHANGES_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${CHANGES_FILENAME}"       )
+set_property(INSTALL "${LICENSE_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${LICENSE_FILENAME}"       )
 set_property(INSTALL "./licenses"                                       PROPERTY CPACK_START_MENU_SHORTCUTS "Third party licenses"      ) # This one does not work!
 set_property(INSTALL "https://github.com/end2endzone/ShellAnything"     PROPERTY CPACK_START_MENU_SHORTCUTS "ShellAnything Web Site"    )
 set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register shell extension"  )

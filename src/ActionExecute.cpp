@@ -28,6 +28,7 @@
 #include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
 
+#include <windows.h>
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
 #include <glog/logging.h>
@@ -45,11 +46,81 @@ namespace shellanything
   {
   }
 
-  bool ActionExecute::Execute(const Context & iContext) const
+  bool ActionExecute::Execute(const Context& iContext) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.Expand(mPath);
-    std::string basedir = pmgr.Expand(mBaseDir);
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string verb = pmgr.Expand(mVerb);
+
+    //If a verb was specified, delegate to VerbExecute(). Otherwise, use ProcessExecute().
+    if (verb.empty())
+      return ExecuteProcess(iContext);
+    else
+      return ExecuteVerb(iContext);
+  }
+
+  bool ActionExecute::ExecuteVerb(const Context& iContext) const
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path      = pmgr.Expand(mPath);
+    std::string basedir   = pmgr.Expand(mBaseDir);
+    std::string arguments = pmgr.Expand(mArguments);
+    std::string verb      = pmgr.Expand(mVerb);
+
+    std::wstring pathW      = ra::unicode::Utf8ToUnicode(path);
+    std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
+    std::wstring basedirW   = ra::unicode::Utf8ToUnicode(basedir);
+    std::wstring verbW      = ra::unicode::Utf8ToUnicode(verb);
+
+    SHELLEXECUTEINFOW info = { 0 };
+
+    info.cbSize = sizeof(SHELLEXECUTEINFOW);
+
+    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
+    info.fMask |= SEE_MASK_NOASYNC;
+    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+    info.hwnd   = HWND_DESKTOP;
+    info.nShow  = SW_SHOWDEFAULT;
+    info.lpFile = pathW.c_str();
+
+    //Print execute values in the logs
+    LOG(INFO) << "Exec: '" << path << "'.";
+    if (!verb.empty())
+    {
+      info.lpVerb = verbW.c_str(); // Verb
+      LOG(INFO) << "Verb: '" << verb << "'.";
+    }
+    if (!arguments.empty())
+    {
+      info.lpParameters = argumentsW.c_str(); // Arguments
+      LOG(INFO) << "Arguments: '" << arguments << "'.";
+    }
+    if (!basedir.empty())
+    {
+      info.lpDirectory = basedirW.c_str(); // Default directory
+      LOG(INFO) << "Basedir: '" << basedir << "'.";
+    }
+
+    //Execute and get the pid
+    bool success = (ShellExecuteExW(&info) == TRUE);
+    if (!success)
+      return false;
+    DWORD pId = GetProcessId(info.hProcess);
+
+    success = (pId != ra::process::INVALID_PROCESS_ID);
+    if (success)
+    {
+      LOG(INFO) << "Process created. PID=" << pId;
+    }
+
+    return success;
+  }
+
+  bool ActionExecute::ExecuteProcess(const Context & iContext) const
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path      = pmgr.Expand(mPath);
+    std::string basedir   = pmgr.Expand(mBaseDir);
     std::string arguments = pmgr.Expand(mArguments);
 
     bool basedir_missing = basedir.empty();
@@ -94,20 +165,29 @@ namespace shellanything
       LOG(WARNING) << "attribute 'basedir' not specified.";
     }
 
-    //debug
+    //Print execute values in the logs
+    LOG(INFO) << "Exec: '" << path << "'.";
+    if (!arguments.empty())
+    {
+      LOG(INFO) << "Arguments: '" << arguments << "'.";
+    }    
+    if (!basedir.empty())
+    {
+      LOG(INFO) << "Basedir: '" << basedir << "'.";
+    }
+    
+    //Execute and get the pid
     uint32_t pId = ra::process::INVALID_PROCESS_ID;
     if (arguments_missing)
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir);
     }
     else
     {
-      LOG(INFO) << "Running '" << path << "' from directory '" << basedir << "' with arguments '" << arguments << "'.";
       pId = ra::process::StartProcessUtf8(path, basedir, arguments);
     }
 
-    bool success = pId != ra::process::INVALID_PROCESS_ID;
+    bool success = (pId != ra::process::INVALID_PROCESS_ID);
     if (success)
     {
       LOG(INFO) << "Process created. PID=" << pId;
@@ -144,6 +224,16 @@ namespace shellanything
   void ActionExecute::SetArguments(const std::string & iArguments)
   {
     mArguments = iArguments;
+  }
+
+  const std::string& ActionExecute::GetVerb() const
+  {
+    return mVerb;
+  }
+
+  void ActionExecute::SetVerb(const std::string& iVerb)
+  {
+    mVerb = iVerb;
   }
 
 } //namespace shellanything
