@@ -1,3 +1,8 @@
+Changes for 0.5.1
+
+* Fixed issue #75: Wix Installer: Incorrect shortcuts in Start Menu
+
+
 Changes for 0.5.0
 
 * Fixed issue #45: Registration and unregistration scripts are missing from installer and portable version.
