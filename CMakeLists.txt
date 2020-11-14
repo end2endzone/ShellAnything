@@ -180,7 +180,7 @@ if (SHELLANYTHING_BUILD_DOC)
 endif()
 
 ##############################################################################################################################################
-# Convert markdown files to html for publishing with installers.
+# Convert markdown/text files to html/txt for publishing with installers.
 ##############################################################################################################################################
 
 # Set the default filenames to be published with the install/package.
@@ -190,7 +190,7 @@ set (CONTRIBUTING_FILENAME CONTRIBUTING.md)
 
 if (GRIP_FOUND)
   # Convert README.md
-  execute_process(COMMAND grip README.md --export README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip README.md --export ${CMAKE_BINARY_DIR}/README.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (README_FILENAME README.html)
   else()
@@ -198,7 +198,7 @@ if (GRIP_FOUND)
   endif()
 
   # Convert UserManual.md
-  execute_process(COMMAND grip UserManual.md --export UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip UserManual.md --export ${CMAKE_BINARY_DIR}/UserManual.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (USERMANUAL_FILENAME UserManual.html)
   else()
@@ -206,7 +206,7 @@ if (GRIP_FOUND)
   endif()
 
   # Convert CONTRIBUTING.md
-  execute_process(COMMAND grip CONTRIBUTING.md --export CONTRIBUTING.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND grip CONTRIBUTING.md --export ${CMAKE_BINARY_DIR}/CONTRIBUTING.html --user-content --context=end2endzone/ShellAnything RESULT_VARIABLE res_var WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   if("${res_var}" STREQUAL "0")
     set (CONTRIBUTING_FILENAME CONTRIBUTING.html)
   else()
@@ -218,19 +218,19 @@ endif()
 
 # AUTHORS.txt
 set(SHELLANYTHING_AUTHOR_TXT ${CMAKE_BINARY_DIR}/AUTHORS.txt)
-message("Generating ${SHELLANYTHING_AUTHOR_TXT}...")
+message("Exporting to ${SHELLANYTHING_AUTHOR_TXT}...")
 configure_file( ${CMAKE_SOURCE_DIR}/AUTHORS ${SHELLANYTHING_AUTHOR_TXT} )
 get_filename_component(AUTHOR_FILENAME ${SHELLANYTHING_AUTHOR_TXT} NAME)
 
 # CHANGES.txt
 set(SHELLANYTHING_CHANGES_TXT ${CMAKE_BINARY_DIR}/CHANGES.txt)
-message("Generating ${SHELLANYTHING_CHANGES_TXT}...")
+message("Exporting to ${SHELLANYTHING_CHANGES_TXT}...")
 configure_file( ${CMAKE_SOURCE_DIR}/CHANGES ${SHELLANYTHING_CHANGES_TXT} )
 get_filename_component(CHANGES_FILENAME ${SHELLANYTHING_CHANGES_TXT} NAME)
 
 # LICENSE.txt
 set(SHELLANYTHING_LICENSE_TXT ${CMAKE_BINARY_DIR}/LICENSE.txt)
-message("Generating ${SHELLANYTHING_LICENSE_TXT}...")
+message("Exporting to ${SHELLANYTHING_LICENSE_TXT}...")
 configure_file( ${CMAKE_SOURCE_DIR}/LICENSE ${SHELLANYTHING_LICENSE_TXT} )
 get_filename_component(LICENSE_FILENAME ${SHELLANYTHING_LICENSE_TXT} NAME)
 
@@ -269,10 +269,10 @@ install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
 
 install(FILES ${CMAKE_SOURCE_DIR}/README.md
               ${CMAKE_SOURCE_DIR}/UserManual.md
-              ${CMAKE_SOURCE_DIR}/${README_FILENAME}
-              ${CMAKE_SOURCE_DIR}/${USERMANUAL_FILENAME}
               ${CMAKE_SOURCE_DIR}/CONTRIBUTING.md
-              ${CMAKE_SOURCE_DIR}/${CONTRIBUTING_FILENAME}
+              ${CMAKE_BINARY_DIR}/${README_FILENAME}
+              ${CMAKE_BINARY_DIR}/${USERMANUAL_FILENAME}
+              ${CMAKE_BINARY_DIR}/${CONTRIBUTING_FILENAME}
               ${CMAKE_BINARY_DIR}/${AUTHOR_FILENAME}
               ${CMAKE_BINARY_DIR}/${CHANGES_FILENAME}
               ${CMAKE_BINARY_DIR}/${LICENSE_FILENAME}
