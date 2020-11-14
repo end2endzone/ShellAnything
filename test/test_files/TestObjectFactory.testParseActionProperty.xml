@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <!--basic property usage-->
+        <property name="foo" value="bar" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu01">
+      <actions>
+        <!--basic exprtk usage-->
+        <property name="foo" exprtk="1+5" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu02">
+      <actions>
+        <!--missing value-->
+        <property name="foo" />
+      </actions>
+    </menu>
+ 
+  </shell>
+</root>

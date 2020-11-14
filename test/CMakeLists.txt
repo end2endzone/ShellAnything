@@ -16,6 +16,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionMessage.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionPrompt.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionProperty.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseValidator.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseDefaults.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
@@ -54,6 +55,8 @@ add_executable(shellanything_unittest
   TestActionExecute.h
   TestActionFile.cpp
   TestActionFile.h
+  TestActionProperty.cpp
+  TestActionProperty.h
   TestBitmapCache.cpp
   TestBitmapCache.h
   TestConfigManager.cpp
@@ -70,6 +73,8 @@ add_executable(shellanything_unittest
   TestIcon.h
   TestInputBox.cpp
   TestInputBox.h
+  TestLibEval.cpp
+  TestLibEval.h
   TestMenu.cpp
   TestMenu.h
   TestNode.cpp

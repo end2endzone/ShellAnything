@@ -81,5 +81,13 @@
       </actions>
     </menu>
 
+    <menu name="menu10">
+      <!-- exprtk attribute is set -->
+      <visibility exprtk="2>1" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

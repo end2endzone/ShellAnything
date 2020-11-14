@@ -18,6 +18,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [pattern attribute](#pattern-attribute)
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
+    * [exprtk attribute](#exprtk-attribute)
     * [inverse attribute](#inverse-attribute)
   * [Icons](#icons)
   * [Actions](#actions)
@@ -382,6 +383,42 @@ For example, the following set a menu visible when `process.started` property is
 ```
 
 See [properties](#properties) section for how to define custom properties.
+
+
+
+### exprtk attribute: ###
+
+The `exprtk` attribute validates a menu based on a string expression algorithm. The expression must be specified as a mathematical expression and the result must evaluates to `true` or `false` such as `4 == 5` or `10 > 3`.
+
+If `exprtk` attribute is specified, the expression must evaluates to `true` for the validation to be successful. The `exprtk` attribute does not support multiple expressions but logical `and` and `or` operators can be use to group expressions.
+
+If `exprtk` attribute is not specified, then the validation is successful.
+
+The attribute supports the following operators: 
+* Basic operators: `+`, `-`, `*`, `/`, `%`, `^`
+* Equalities & Inequalities: `=`, `==`, `<>`, `!=`, `<`, `<=`, `>`, `>=`
+* Logic operators: `and`, `not`, `or`, `xor`, `true`, `false`
+* String operators: `in`, `like`, `ilike`, []
+
+Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
+eg: `'Frankly my dear, \0x49 do n0t give a damn!'`
+
+The `exprtk` attribute allows advanced menu validation. The following table show useful expression examples:
+
+| Use cases                                                        | Expression                        | Meaning                                                                                                                    |
+|------------------------------------------------------------------|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Test a property for a numeric value                              | ${value} == 6                     | Evaluates to true when property `value` is set to numeric value `6`.                                                       |
+| Test a property for a string value.                              | '${name}' == 'John'               | Evaluates to true when property `name` is set to string value `John`.                                                      |
+| Set a menu visible based on how many file are selected           | ${selection.count} == 3           | Evaluates to true when user clicked on exactly 3 elements.                                                                 |
+| Set a menu visible based on a state machine                      | '${myapp.state}' == 'PAUSED'      | Evaluates to true when application's state is `PAUSED`.                                                                    |
+| Set a menu *invisible* when it was selected 3 times.             | ${myapp.runs} <= 2                | Evaluates to true when property `myapp.runs` is lower or equals to `2`.                                                    |
+| Set a menu visible by filename length.                           | '${selection.filename}'[] == 9    | Evaluates to true when user clicked on a file whose filename<br>(including file extension) is exactly 9 characters.        |
+| Combine expressions with `and` and `or` logic.                   | ${foo} == 2 or ${bar} >= 5        | Evaluates to true when property `foo` is set to `2` *or*<br>when property `bar` is set to a value greater or equal to `5`. |
+| Set a menu visible if user selection contains a specific string. | 'abc' in '${selection.path}'      | Evaluates to true when user clicked on a file that contains the string `abc`.                                              |
+| Set a menu visible if user selection matches a string pattern.   | '${selection.path}' ilike '*.exe' | Evaluates to true when user clicked on a file with `exe` extension.                                                        |
+
+**Note:**
+The `exprtk` attribute uses the *exprtk library* to parse the expression. For more details and supported expressions, see the exprtk documentation on the [official github page](https://github.com/ArashPartow/exprtk) or the [library website](http://www.partow.net/programming/exprtk/index.html).
 
 
 
@@ -769,12 +806,43 @@ For example, the following sets the property `myprogram.user.name` to an empty v
 
 #### value attribute: ####
 
-The `value` attribute defines the actual new value of the given property.
+The `value` attribute defines the new value of the given property.
 
 For example, the following set the property `myprogram.user.name` to value `Al Coholic` :
 ```xml
 <property name="myprogram.user.fullname" value="Al Coholic" />
 ```
+
+
+
+#### exprtk attribute: ####
+
+The `exprtk` attribute defines an expression that is evaluated to set a new value for the given property. The expression must be specified as a mathematical expression and the result must evaluates to an integer or a floating point value such as `4+9` or `${foo}+1`.
+
+The `exprtk` attribute can also be set to an expression that evaluates to `true` or `false` and logical `and` and `or` operators can be use to group expressions. eg: `${foo.count} > 1 and '${foo.state}'=='PAUSED'`.
+
+The attribute supports the following operators: 
+* Basic operators: `+`, `-`, `*`, `/`, `%`, `^`
+* Equalities & Inequalities: `=`, `==`, `<>`, `!=`, `<`, `<=`, `>`, `>=`
+* Logic operators: `and`, `not`, `or`, `xor`, `true`, `false`
+* String operators: `in`, `like`, `ilike`, []
+
+Strings may be comprised of any combination of letters, digits special characters including (~!@#$%^&*()[]|=+ ,./?<>;:"_) or hexadecimal escaped sequences (eg: \0x30) and must be enclosed with single-quotes.
+eg: `'Frankly my dear, \0x49 do n0t give a damn!'`
+
+The `exprtk` attribute allows advanced property evaluation. The following table show useful expression examples:
+
+| Use cases                                                                               | Expression                                                                                                                                                                                                                                                                                                                                                                                                 | Meaning                                                                                                                                                                                 |
+|-----------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Update a property using a generic equation                                              | \${myvalue}^2 + 5*\${myvalue} + 100                                                                                                                                                                                                                                                                                                                                                                        | Evaluate the quadratic equation `x^2 + 5x + 100` where `x` is equal to the value of property `myvalue`.                                                                                 |
+| Create a counter using properties.<br>(with a default property value set)               | \<property name="mycounter" exprtk="${mycounter}+1"\>                                                                                                                                                                                                                                                                                                                                                      | The property update itself by increasing its own value by 1.<br>Note: this only work if the property is defined to a numeric value first.                                               |
+| Create a counter using properties.<br>(without having to initialize the property first) | if ('\${mycounter}' == '$'+'{mycounter}' or '\${mycounter}' == '0') 1;<br>else if ('\${mycounter}' == '1') 2;<br>else if ('\${mycounter}' == '2') 3;<br>else if ('\${mycounter}' == '3') 4;<br>else if ('\${mycounter}' == '4') 5;<br>else if ('\${mycounter}' == '5') 6;<br>else if ('\${mycounter}' == '6') 7;<br>else if ('\${mycounter}' == '7') 8;<br>else if ('\${mycounter}' == '8') 9;<br>else 10; | Increase the value of property `mycounter` by `1` going from `1` up to `10`.<br>On the first call, the first line of the expression detects if the property is unset and set it to `1`. |
+| Get the length of a property value.                                                     | '\${command}'[]                                                                                                                                                                                                                                                                                                                                                                                            | Set the property to the length of the `command` property value.                                                                                                                         |
+| Set a property to logical `true` or `false`.                                            | ${foo} == 2 or ${bar} >= 5                                                                                                                                                                                                                                                                                                                                                                                 | The property will be set to value `1` if the expression evaluates to `true` <br>and set to `0` if the expression evaluates to `false`.                                                  |
+
+
+**Note:**
+The `exprtk` attribute uses the *exprtk library* to parse the expression. For more details and supported expressions, see the exprtk documentation on the [official github page](https://github.com/ArashPartow/exprtk) or the [library website](http://www.partow.net/programming/exprtk/index.html).
 
 
 
@@ -953,6 +1021,9 @@ The following table defines the list of dynamic properties and their utility:
 | selection.filename.extension | Matches the file extension of the clicked element.                      |
 | selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.       |
 | selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.       |
+| selection.count              | Matches the number of clicked elements (files and directories).         |
+| selection.files.count        | Matches the number of clicked files.                                    |
+| selection.directories.count  | Matches the number of clicked directories.                              |
 
 Selection-based properties are encoded in utf-8.
 
@@ -981,7 +1052,9 @@ The system will generates the following property values (note the `\r\n` charact
 | selection.drive.letter       | C`\r\n`C`\r\n`C                                                                                                                     |
 | selection.drive.path         | C:\\`\r\n`C:\\`\r\n`C:\\                                                                                                            |
 
-Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
+Notes:
+* Properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
+* Properties `selection.count`, `selection.files.count` and `selection.directories.count` are not multi-selection-based properties. They are defined as a single value whether a single or multiple elements are selected.
 
 
 

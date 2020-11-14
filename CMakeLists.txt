@@ -9,6 +9,43 @@ find_package(NSIS)
 find_package(GRIP)
 
 ##############################################################################################################################################
+# Dependencies
+##############################################################################################################################################
+
+# packages directory
+set(PACKAGE_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/external) 
+if(NOT EXISTS ${PACKAGE_DOWNLOAD_DIR})
+  file(MAKE_DIRECTORY ${PACKAGE_DOWNLOAD_DIR})
+endif()
+
+# exprtk
+# The exprtk library do not provides version based releases.
+# At the time of this writing, HEAD revision is commit d312ba91419c9cb12c8279fd3a19096d39dfcb5e 
+# available at https://github.com/ArashPartow/exprtk/archive/d312ba91419c9cb12c8279fd3a19096d39dfcb5e.zip
+# Using latest revision to get all bug fixes.
+set(EXPRTK_PACKAGE_URL "https://github.com/ArashPartow/exprtk/archive/master.zip")
+set(EXPRTK_PACKAGE_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk.zip)
+if(NOT EXISTS ${EXPRTK_PACKAGE_PATH})
+  message(STATUS "Downloading exprtk package from ${EXPRTK_PACKAGE_URL}")
+  file(DOWNLOAD ${EXPRTK_PACKAGE_URL} ${EXPRTK_PACKAGE_PATH}
+     TIMEOUT 60  # seconds
+     TLS_VERIFY ON
+  )
+  
+  message(STATUS "Extracting exprtk package to ${EXPRTK_PACKAGE_PATH}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf 
+    ${EXPRTK_PACKAGE_PATH}
+    WORKING_DIRECTORY ${PACKAGE_DOWNLOAD_DIR}
+  )
+endif()
+set(EXPRTK_HEADER_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk-master/exprtk.hpp)
+if(EXISTS ${EXPRTK_HEADER_PATH})
+  message(STATUS "Found exprtk header file: ${EXPRTK_HEADER_PATH}")
+else()
+  message(FATAL_ERROR "exprtk header file not found.")
+endif()
+
+##############################################################################################################################################
 # Standard CMake variables
 ##############################################################################################################################################
 
