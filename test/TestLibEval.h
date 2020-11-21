@@ -22,27 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef WIN32_UTILS_H
-#define WIN32_UTILS_H
+#ifndef TEST_SA_LIBEVAL_H
+#define TEST_SA_LIBEVAL_H
 
-#include <Windows.h>
-#include <string>
+#include <gtest/gtest.h>
 
-namespace Win32Utils
+namespace shellanything { namespace test
 {
-  SIZE GetIconSize(HICON hIcon);
-  HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
-  RGBQUAD ToRgbQuad(const DWORD & iColor);
-  SIZE GetBitmapSize(HBITMAP hBitmap);
-  BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
-  HBITMAP CreateBitmapWithAlphaChannel(int biWidth, int biHeight, HDC hDc);
-  HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
-  HBITMAP CopyAsBitmap(HICON hIcon);
-  bool CreateBmpFile(const char * path, HBITMAP hBitmap);
-  BOOL IsFullyTransparent(HBITMAP hBitmap);
-  BOOL IsFullyTransparent(const std::string & buffer);
-  std::string GetMenuItemDetails(HMENU hMenu, UINT pos);
-  std::string GetMenuTree(HMENU hMenu, int indent);
-} //namespace Win32Utils
+  class TestLibEval : public ::testing::Test
+  {
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
+  };
 
-#endif //WIN32_UTILS_H
+} //namespace test
+} //namespace shellanything
+
+#endif //TEST_SA_LIBEVAL_H

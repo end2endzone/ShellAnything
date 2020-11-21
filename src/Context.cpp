@@ -78,6 +78,9 @@ namespace shellanything
     std::string selection_filename_ext   ;
     std::string selection_drive_letter   ;
     std::string selection_drive_path     ;
+    std::string selection_count          ;
+    std::string selection_files_count    ;
+    std::string selection_directories_count;
 
     // Get the separator string for multiple selection 
     const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
@@ -133,6 +136,14 @@ namespace shellanything
     pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   );
     pmgr.SetProperty("selection.drive.letter"       , selection_drive_letter   );
     pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
+
+    selection_count             = ra::strings::ToString(elements.size());
+    selection_files_count       = ra::strings::ToString(this->GetNumFiles());
+    selection_directories_count = ra::strings::ToString(this->GetNumDirectories());
+
+    pmgr.SetProperty("selection.count"             , selection_count            );
+    pmgr.SetProperty("selection.files.count"       , selection_files_count      );
+    pmgr.SetProperty("selection.directories.count" , selection_directories_count);
   }
  
   void Context::UnregisterProperties() const

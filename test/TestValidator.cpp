@@ -407,6 +407,118 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testExprtk)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+    c.RegisterProperties();
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression that resolve as true
+    v.SetExprtk("5>1");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression that resolve as false
+    v.SetExprtk("5<1");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert expression with spaces
+    v.SetExprtk("5 > 1");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert a string expression with ==
+    v.SetExprtk("'test'=='test'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'foo'=='bar'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert a string expression with !=
+    v.SetExprtk("'test'!='test'");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("'foo'!='bar'");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression with properties
+    pmgr.SetProperty("foo", "bar");
+    v.SetExprtk("'${foo}'=='bar'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'bar'=='${foo}'");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an invalid expression (string with numeric value)
+    v.SetExprtk("'5'==5");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("'5'!=5");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert logical 'and' operator
+    v.SetExprtk("10 > 6 and 10 > 7");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("10 > 6 and 10 > 70");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("10 > 6 & 10 > 7");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("10 > 6 & 10 > 70");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert logical 'or' operator
+    v.SetExprtk("1 > 6 or 10 > 7");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("1 > 6 or 10 > 70");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("1 > 6 | 10 > 7");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("1 > 6 | 10 > 70");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert logical 'not' operator
+    v.SetExprtk("not(6==10)");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("not(6!=10)");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert string operator: 'in'
+    v.SetExprtk("'abc' in 'abcdefgh'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'zzz' in 'abcdefgh'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert string operator: 'ilike'
+    v.SetExprtk("'abcDeFgH' ilike 'a??d*h'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'accH' ilike 'a??d*h'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert string operator: string interval (substring)
+    v.SetExprtk("var x := 'abcdefgh'; x[2:4] == 'cde'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("var x := 'abcdefgh'; 'abcdefgh'[1:3] == 'zzz'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert string operator: size (length)
+    v.SetExprtk("'abc'[] == 3");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'abc'[] == 4");
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsInversed)
   {
     Validator v;
@@ -730,6 +842,63 @@ namespace shellanything { namespace test
     v.SetPattern("*.foo;*.bar;*.baz;");
     ASSERT_TRUE( v.Validate(c) );
     v.SetPattern("*.foo;*.exe;*.bar;*.baz;");
+    ASSERT_FALSE( v.Validate(c) );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testExprtkInversed)
+  {
+    Context c;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32\\kernel32.dll");
+      elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
+      elements.push_back("C:\\Windows\\System32\\notepad.exe" );
+      elements.push_back("C:\\Windows\\System32\\services.msc");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+    c.RegisterProperties();
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    Validator v;
+    v.SetInserve("exprtk");
+
+    //assert default
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert an expression that resolve as true
+    v.SetExprtk("5>1");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert an expression that resolve as false
+    v.SetExprtk("5<1");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert expression with spaces
+    v.SetExprtk("5 > 1");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert a string expression with ==
+    v.SetExprtk("'test'=='test'");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("'foo'=='bar'");
+    ASSERT_TRUE( v.Validate(c) );
+
+    //assert a string expression with !=
+    v.SetExprtk("'test'!='test'");
+    ASSERT_TRUE( v.Validate(c) );
+    v.SetExprtk("'foo'!='bar'");
+    ASSERT_FALSE( v.Validate(c) );
+
+    //assert an expression with properties
+    pmgr.SetProperty("foo", "bar");
+    v.SetExprtk("'${foo}'=='bar'");
+    ASSERT_FALSE( v.Validate(c) );
+    v.SetExprtk("'bar'=='${foo}'");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------

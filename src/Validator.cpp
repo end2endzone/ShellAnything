@@ -28,8 +28,14 @@
 #include "PropertyManager.h"
 #include "DriveClass.h"
 #include "Wildcard.h"
+#include "libEval.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
+
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
 
 namespace shellanything
 {
@@ -135,6 +141,16 @@ namespace shellanything
   void Validator::SetPattern(const std::string & iPattern)
   {
     mPattern = iPattern;
+  }
+
+  const std::string & Validator::GetExprtk() const
+  {
+    return mExprtk;
+  }
+
+  void Validator::SetExprtk(const std::string & iExprtk)
+  {
+    mExprtk = iExprtk;
   }
 
   const std::string & Validator::GetInserve() const
@@ -266,6 +282,16 @@ namespace shellanything
     {
       bool inversed = IsInversed("pattern");
       bool valid = ValidatePattern(iContext, pattern, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate exprtx
+    const std::string exprtk = pmgr.Expand(mExprtk);
+    if (!exprtk.empty())
+    {
+      bool inversed = IsInversed("exprtk");
+      bool valid = ValidateExprtk(iContext, exprtk, inversed);
       if (!valid)
         return false;
     }
@@ -427,6 +453,10 @@ namespace shellanything
       if (!valid)
         return false;
     }
+    else
+    {
+      LOG(WARNING) << "Unknown class '" << class_ << "'.";
+    }
 
     return true;
   }
@@ -547,6 +577,32 @@ namespace shellanything
     }
 
     return true;
+  }
+
+  bool Validator::ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const
+  {
+    if (exprtk.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    static const size_t ERROR_SIZE = 10480;
+    char error[ERROR_SIZE];
+    error[0] = '\0';
+
+    bool result = false;
+    bool evaluated = evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
+    if (!evaluated)
+    {
+      LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+      LOG(WARNING) << "Exprtk error: " << error << "'.";
+      return false;
+    }
+
+    if (inversed)
+      result = !result;
+
+    return result;
   }
 
 } //namespace shellanything

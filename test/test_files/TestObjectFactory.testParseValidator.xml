@@ -82,6 +82,14 @@
     </menu>
 
     <menu name="menu10">
+      <!-- exprtk attribute is set -->
+      <visibility exprtk="2>1" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu11">
       <!-- multiple visibility and validity elements -->
       <visibility fileextensions="txt" />
       <visibility fileextensions="doc" />

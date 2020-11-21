@@ -25,6 +25,7 @@
 #include "TestObjectFactory.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
+#include "shellanything/ActionExecute.h"
 #include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionMessage.h"
@@ -57,6 +58,23 @@ namespace shellanything { namespace test
     return NULL;
   }
   //--------------------------------------------------------------------------------------------------
+  ActionProperty * GetFirstActionProperty(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->GetActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionProperty * action_property = dynamic_cast<ActionProperty *>(action);
+      if (action_property)
+        return action_property;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
   ActionMessage * GetFirstActionMessage(Menu * m)
   {
     if (!m)
@@ -69,6 +87,23 @@ namespace shellanything { namespace test
       ActionMessage * action_message = dynamic_cast<ActionMessage *>(action);
       if (action_message)
         return action_message;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  ActionExecute * GetFirstActionExecute(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->GetActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionExecute * action_execute = dynamic_cast<ActionExecute *>(action);
+      if (action_execute)
+        return action_execute;
     }
  
     return NULL;
@@ -152,7 +187,7 @@ namespace shellanything { namespace test
  
     //ASSERT all menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ( 11, menus.size() );
+    ASSERT_EQ( 12, menus.size() );
 
     //assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
@@ -164,6 +199,7 @@ namespace shellanything { namespace test
     static const std::string expected_inverse_unknown = "foo";
     static const std::string expected_class = "file";
     static const std::string expected_pattern = "*IMG_*";
+    static const std::string expected_exprtk = "2>1";
 
     //assert each menus have a visibility assigned
     for(size_t i=0; i<menus.size(); i++)
@@ -183,24 +219,25 @@ namespace shellanything { namespace test
     ASSERT_EQ( expected_inverse_unknown,  menus[7]->GetVisibility(0)->GetInserve() );
     ASSERT_EQ( expected_class,            menus[8]->GetVisibility(0)->GetClass() );
     ASSERT_EQ( expected_pattern,          menus[9]->GetVisibility(0)->GetPattern() );
+    ASSERT_EQ( expected_exprtk,          menus[10]->GetVisibility(0)->GetExprtk() );
 
-    //menu[10] should contains multiple Validators...
-    ASSERT_EQ(3, menus[10]->GetVisibilityCount());
-    ASSERT_EQ(2, menus[10]->GetValidityCount());
+    //menu[11] should contains multiple Validators...
+    ASSERT_EQ(3, menus[11]->GetVisibilityCount());
+    ASSERT_EQ(2, menus[11]->GetValidityCount());
 
     //assert first 3 visibility elements
     static const std::string expected_file_extension1 = "txt";
     static const std::string expected_file_extension2 = "doc";
     static const std::string expected_file_extension3 = "ini";
-    ASSERT_EQ( expected_file_extension1, menus[10]->GetVisibility(0)->GetFileExtensions() );
-    ASSERT_EQ( expected_file_extension2, menus[10]->GetVisibility(1)->GetFileExtensions() );
-    ASSERT_EQ( expected_file_extension3, menus[10]->GetVisibility(2)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_extension1, menus[11]->GetVisibility(0)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_extension2, menus[11]->GetVisibility(1)->GetFileExtensions() );
+    ASSERT_EQ( expected_file_extension3, menus[11]->GetVisibility(2)->GetFileExtensions() );
 
     //assert first 2 validity elements
     static const std::string expected_properties1 = "bar";
-    ASSERT_EQ( expected_properties1, menus[10]->GetValidity(0)->GetProperties() );
-    ASSERT_EQ( 1, menus[10]->GetValidity(1)->GetMaxFiles() );
-    ASSERT_EQ( 0, menus[10]->GetValidity(1)->GetMaxDirectories() );
+    ASSERT_EQ( expected_properties1, menus[11]->GetValidity(0)->GetProperties() );
+    ASSERT_EQ( 1, menus[11]->GetValidity(1)->GetMaxFiles() );
+    ASSERT_EQ( 0, menus[11]->GetValidity(1)->GetMaxDirectories() );
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -303,6 +340,74 @@ namespace shellanything { namespace test
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[02]->GetNameMaxLength() );  // maxlength attribute set to "a" which is not numeric (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[03]->GetNameMaxLength() );  // maxlength attribute set to "0" which is out of range (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[04]->GetNameMaxLength() );  // maxlength attribute set to "9999" which is out of range (invalid).
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionExecute)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::timing::Millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT all menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ( 4, menus.size() );
+
+    //assert all menus have a file element as the first action
+    ActionExecute * exec00 = GetFirstActionExecute(menus[00]);
+    ActionExecute * exec01 = GetFirstActionExecute(menus[01]);
+    ActionExecute * exec02 = GetFirstActionExecute(menus[02]);
+    ActionExecute * exec03 = GetFirstActionExecute(menus[03]);
+
+    ASSERT_TRUE( exec00 != NULL );
+    ASSERT_TRUE( exec01 != NULL );
+    ASSERT_TRUE( exec02 != NULL );
+    ASSERT_TRUE( exec03 != NULL );
+
+    //assert menu00 attributes
+    ASSERT_EQ("C:\\Windows\\System32\\calc.exe", exec00->GetPath());
+
+    //assert menu01 attributes
+    //<exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
+    ASSERT_EQ("C:\\Windows\\notepad.exe", exec01->GetPath());
+    ASSERT_EQ("C:\\Program Files\\7-Zip", exec01->GetBaseDir());
+    ASSERT_EQ("License.txt", exec01->GetArguments());
+
+    //assert menu02 attributes
+    //<exec path="C:\Windows\notepad.exe" arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+    ASSERT_EQ("C:\\Windows\\notepad.exe", exec02->GetPath());
+    ASSERT_EQ("C:\\Windows\\System32\\drivers\\etc\\hosts", exec02->GetArguments());
+    ASSERT_EQ("runas", exec02->GetVerb());
+
+    //assert menu03 attributes
+    //<!-- missing path attribute --> <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
+    ASSERT_EQ("", exec03->GetPath());
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
@@ -445,6 +550,70 @@ namespace shellanything { namespace test
     ASSERT_FALSE( prompt02->IsOkQuestion() );
     ASSERT_FALSE( prompt03->IsOkQuestion() );
     ASSERT_TRUE ( prompt04->IsOkQuestion() );
+
+    //cleanup
+    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionProperty)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+
+    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+
+    //make sure the target directory exists
+    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
+    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
+
+    //copy the file
+    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+
+    //wait to make sure that the next files not dated the same date as this copy
+    ra::timing::Millisleep(1500);
+
+    //setup ConfigManager to read files from template_target_dir
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(template_target_dir);
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT a multiple menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ( 3, menus.size() );
+
+    //assert all menus have a property element as the first action
+    ActionProperty * property00 = GetFirstActionProperty(menus[00]);
+    ActionProperty * property01 = GetFirstActionProperty(menus[01]);
+    ActionProperty * property02 = GetFirstActionProperty(menus[02]);
+
+    ASSERT_TRUE( property00 != NULL );
+    ASSERT_TRUE( property01 != NULL );
+    ASSERT_TRUE( property02 != NULL );
+
+    //assert menu #0 have a name and a value parsed
+    static const std::string EMPTY_STRING;
+    std::string property00_name  = property00->GetName();
+    std::string property00_value = property00->GetValue();
+    ASSERT_EQ( std::string("foo"), property00_name);
+    ASSERT_EQ( std::string("bar"), property00_value);
+
+    //assert menu #1 have a exprtk attribute parsed
+    std::string property01_exprtk = property01->GetExprtk();
+    ASSERT_EQ( std::string("1+5"), property01_exprtk);
+
+    //assert menu #2 have is missing both value and exprtk
+    std::string property02_value  = property02->GetValue();
+    std::string property02_exprtk = property02->GetExprtk();
+    ASSERT_EQ( std::string(""), property02_value);
+    ASSERT_EQ( std::string(""), property02_exprtk);
 
     //cleanup
     ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";

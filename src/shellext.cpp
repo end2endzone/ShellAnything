@@ -356,10 +356,6 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
         //Convert the icon to a bitmap (with invisible background)
         hBitmap = Win32Utils::CopyAsBitmap(hIcon);
 
-        //Remove the invisible background and replace by the default popup menu color
-        COLORREF menu_background_color = GetSysColor(COLOR_MENU);
-        Win32Utils::FillTransparentPixels(hBitmap, menu_background_color);
-
         DestroyIcon(hIconLarge);
         DestroyIcon(hIconSmall);
 

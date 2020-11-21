@@ -66,9 +66,20 @@ namespace shellanything
     /// </summary>
     void SetValue(const std::string & iValue);
 
+    /// <summary>
+    /// Getter for the 'exprtk' parameter.
+    /// </summary>
+    const std::string & GetExprtk() const;
+
+    /// <summary>
+    /// Setter for the 'exprtk' parameter.
+    /// </summary>
+    void SetExprtk(const std::string & iExprtk);
+
   private:
     std::string mName;
     std::string mValue;
+    std::string mExprtk;
   };
 
 

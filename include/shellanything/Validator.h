@@ -121,6 +121,16 @@ namespace shellanything
     void SetPattern(const std::string & iPattern);
 
     /// <summary>
+    /// Getter for the 'exprtk' parameter.
+    /// </summary>
+    const std::string & GetExprtk() const;
+
+    /// <summary>
+    /// Setter for the 'exprtk' parameter.
+    /// </summary>
+    void SetExprtk(const std::string & iExprtk);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -158,6 +168,7 @@ namespace shellanything
     bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
     bool ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const;
     bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
+    bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
 
   private:
     int mMaxFiles;
@@ -167,6 +178,7 @@ namespace shellanything
     std::string mFileExists;
     std::string mClass;
     std::string mPattern;
+    std::string mExprtk;
     std::string mInverse;
   };
 
