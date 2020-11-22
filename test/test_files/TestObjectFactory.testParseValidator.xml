@@ -89,5 +89,17 @@
       </actions>
     </menu>
 
+    <menu name="menu11">
+      <!-- multiple visibility and validity elements -->
+      <visibility fileextensions="txt" />
+      <visibility fileextensions="doc" />
+      <visibility fileextensions="ini" />
+      <validity properties="bar" />
+      <validity maxfiles="1" maxfolders="0" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

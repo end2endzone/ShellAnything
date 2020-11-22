@@ -74,18 +74,17 @@ namespace shellanything { namespace test
     // </menu>
     Menu * menu = new Menu();
     menu->SetName("Command line from here...");
-    Validator validity;
-    validity.SetMaxFiles(0); //no files accepted
-    validity.SetMaxDirectories(1); //a single directory is accepted
-    Validator visibility; //no requirement, always visible
+    Validator * validity = new Validator();
+    validity->SetMaxFiles(0); //no files accepted
+    validity->SetMaxDirectories(1); //a single directory is accepted
+    
     ActionExecute * action = new ActionExecute();
     action->SetPath("C:\\windows\\system32\\cmd.exe");
     action->SetBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
     config->AddChild(menu);
-    menu->SetValidity(validity);
-    menu->SetVisibility(visibility);
+    menu->AddValidity(validity);
     menu->AddAction(action);
   }
   //--------------------------------------------------------------------------------------------------

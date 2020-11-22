@@ -69,30 +69,8 @@ namespace shellanything
   {
   }
 
-  Validator::Validator(const Validator & validator)
-  {
-    (*this) = validator;
-  }
-
   Validator::~Validator()
   {
-  }
-
-  const Validator & Validator::operator =(const Validator & validator)
-  {
-    if (this != &validator)
-    {
-      mMaxFiles       = validator.mMaxFiles       ;
-      mMaxDirectories = validator.mMaxDirectories ;
-      mProperties     = validator.mProperties     ;
-      mFileExtensions = validator.mFileExtensions ;
-      mFileExists     = validator.mFileExists     ;
-      mClass          = validator.mClass          ;
-      mPattern        = validator.mPattern        ;
-      mExprtk         = validator.mExprtk         ;
-      mInverse        = validator.mInverse        ;
-    }
-    return (*this);
   }
 
   const int & Validator::GetMaxFiles() const

@@ -76,6 +76,22 @@ namespace shellanything { namespace test
     bool * executed_flag;
   };
 
+  class MyValidator : public Validator
+  {
+  public:
+    MyValidator(bool * deleted_flag)
+    {
+      this->deleted_flag  = deleted_flag;
+      (*deleted_flag)  = false;
+    }
+    virtual ~MyValidator()
+    {
+      (*deleted_flag) = true;
+    }
+  private:
+    bool * deleted_flag;
+  };
+
   class MyIcon : public Icon
   {
   public:
@@ -157,6 +173,31 @@ namespace shellanything { namespace test
 
     //assert that MyAction destructor was run
     ASSERT_TRUE(deleted);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestMenu, testVisibilityValidityOwnership)
+  {
+    Menu * root =   NewMenu("root");
+
+    //no children yet
+    bool visibility_deleted   = false;
+    bool validity_deleted     = false;
+    MyValidator * my_visibility = new MyValidator(&visibility_deleted);
+    MyValidator * my_validity = new MyValidator(&validity_deleted);
+    ASSERT_FALSE( visibility_deleted  );
+    ASSERT_FALSE( validity_deleted    );
+
+    //build tree
+    root->AddVisibility(my_visibility); //root takes ownership of my_visibility
+    root->AddValidity(my_validity);     //root takes ownership of my_validity
+
+    //destroy the menu
+    delete root;
+    root = NULL;
+
+    //assert that my_visibility and my_validity destructor was run
+    ASSERT_TRUE( visibility_deleted  );
+    ASSERT_TRUE( validity_deleted    );
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestMenu, testSubMenus)
