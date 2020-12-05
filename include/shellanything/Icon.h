@@ -80,7 +80,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & iPath);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'index' parameter.

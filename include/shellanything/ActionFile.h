@@ -54,7 +54,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & iPath);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'content' parameter.
@@ -64,7 +64,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'content' parameter.
     /// </summary>
-    void SetText(const std::string & iText);
+    void SetText(const std::string & text);
 
     /// <summary>
     /// Getter for the 'encoding' parameter.
@@ -74,7 +74,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'encoding' parameter.
     /// </summary>
-    void SetEncoding(const std::string & iEncoding);
+    void SetEncoding(const std::string & encoding);
 
   private:
     std::string mPath;

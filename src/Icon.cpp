@@ -113,9 +113,9 @@ namespace shellanything
     return mPath;
   }
 
-  void Icon::SetPath(const std::string & iPath)
+  void Icon::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
   const int & Icon::GetIndex() const

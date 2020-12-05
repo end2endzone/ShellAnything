@@ -201,9 +201,9 @@ namespace shellanything
     return mPath;
   }
 
-  void ActionExecute::SetPath(const std::string & iPath)
+  void ActionExecute::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
   const std::string & ActionExecute::GetBaseDir() const
@@ -211,9 +211,9 @@ namespace shellanything
     return mBaseDir;
   }
 
-  void ActionExecute::SetBaseDir(const std::string & iBaseDir)
+  void ActionExecute::SetBaseDir(const std::string & base_dir)
   {
-    mBaseDir = iBaseDir;
+    mBaseDir = base_dir;
   }
 
   const std::string & ActionExecute::GetArguments() const
@@ -221,9 +221,9 @@ namespace shellanything
     return mArguments;
   }
 
-  void ActionExecute::SetArguments(const std::string & iArguments)
+  void ActionExecute::SetArguments(const std::string & arguments)
   {
-    mArguments = iArguments;
+    mArguments = arguments;
   }
 
   const std::string& ActionExecute::GetVerb() const
@@ -231,9 +231,9 @@ namespace shellanything
     return mVerb;
   }
 
-  void ActionExecute::SetVerb(const std::string& iVerb)
+  void ActionExecute::SetVerb(const std::string& verb)
   {
-    mVerb = iVerb;
+    mVerb = verb;
   }
 
 } //namespace shellanything

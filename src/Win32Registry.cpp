@@ -112,15 +112,15 @@ namespace Win32Registry
     {HKEY_USERS, "HKEY_USERS"},
     {HKEY_CURRENT_CONFIG, "HKEY_CURRENT_CONFIG"},
   };
-  static HKEY_T* FindKeyInPath(const char* iPath)
+  static HKEY_T* FindKeyInPath(const char* path)
   {
-    //detecting the key within iPath
+    //detecting the key within the given path
     int numSupportedKeys = sizeof(supportedKeys)/sizeof(HKEY_T);
     HKEY_T* rootKey = NULL;
     for(int i=0; i<numSupportedKeys && rootKey == NULL; i++)
     {
       HKEY_T* current = &supportedKeys[i];
-      if (_strnicmp(iPath, current->name, strlen(current->name)) == 0)
+      if (_strnicmp(path, current->name, strlen(current->name)) == 0)
       {
         rootKey = current;
       }

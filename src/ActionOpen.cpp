@@ -54,8 +54,9 @@ namespace shellanything
   {
   }
 
-  bool OpenPathGeneric(const std::string & iPath) {
-    std::wstring pathW = ra::unicode::Utf8ToUnicode(iPath);
+  bool OpenPathGeneric(const std::string & path)
+  {
+    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
 
     SHELLEXECUTEINFOW info = { 0 };
 
@@ -115,9 +116,9 @@ namespace shellanything
     return mPath;
   }
 
-  void ActionOpen::SetPath(const std::string & iPath)
+  void ActionOpen::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
 } //namespace shellanything

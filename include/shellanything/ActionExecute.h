@@ -54,7 +54,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & iPath);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'basedir' parameter.
@@ -64,7 +64,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'basedir' parameter.
     /// </summary>
-    void SetBaseDir(const std::string & iBaseDir);
+    void SetBaseDir(const std::string & base_dir);
 
     /// <summary>
     /// Getter for the 'arguments' parameter.
@@ -74,7 +74,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'arguments' parameter.
     /// </summary>
-    void SetArguments(const std::string & iArguments);
+    void SetArguments(const std::string & arguments);
 
     /// <summary>
     /// Getter for the 'verb' parameter.
@@ -84,7 +84,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'verb' parameter.
     /// </summary>
-    void SetVerb(const std::string& iVerb);
+    void SetVerb(const std::string& verb);
 
   private:
     /// <summary>
