@@ -69,9 +69,9 @@ namespace shellanything
     return mValue;
   }
 
-  void ActionClipboard::SetValue(const std::string & iValue)
+  void ActionClipboard::SetValue(const std::string & value)
   {
-    mValue = iValue;
+    mValue = value;
   }
 
 } //namespace shellanything

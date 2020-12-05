@@ -106,7 +106,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'valueyes' parameter.
     /// </summary>
-    void SetValueYes(const std::string & iValueYes);
+    void SetValueYes(const std::string & value_yes);
 
     /// <summary>
     /// Getter for the 'valueno' parameter.
@@ -116,7 +116,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'valueno' parameter.
     /// </summary>
-    void SetValueNo(const std::string & iValueNo);
+    void SetValueNo(const std::string & value_no);
 
   private:
     std::string mType;

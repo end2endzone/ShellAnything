@@ -66,7 +66,7 @@ namespace Win32Registry
   bool DeleteRegistry(const RGS_ENTRY_LIST & entries);
 
   bool GetValue( const char * iKeyPath,
-                 const char * iValueName,
+                 const char * value_name,
                  REGISTRY_TYPE & oType,
                  MemoryBuffer & oValue);
   bool GetDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue);
@@ -75,10 +75,10 @@ namespace Win32Registry
   bool CreateKey(const char* iKeyPath);
   bool CreateKey(const char* iKeyPath, const char* iDefaultValue);
   bool DeleteKey(const char* iKeyPath);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const char *iValue);
-  bool DeleteValue(const char* iKeyPath, const char* iValueName);
+  bool SetValue(const char* iKeyPath, const char* value_name, const uint8_t* iBuffer, const uint32_t & iBufferSize);
+  bool SetValue(const char* iKeyPath, const char* value_name, const uint32_t & value);
+  bool SetValue(const char* iKeyPath, const char* value_name, const char* value);
+  bool DeleteValue(const char* iKeyPath, const char* value_name);
 
   bool GetAssociatedProgram(const char* iFileExtention, std::string & oCmdLine);
   bool SetAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine);

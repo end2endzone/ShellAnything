@@ -50,11 +50,11 @@ namespace Win32Registry
     return false;
   }
 
-  DWORD ConvertType(const REGISTRY_TYPE & iValue)
+  DWORD ConvertType(const REGISTRY_TYPE & value)
   {
     DWORD type = REG_SZ;
 
-    switch(iValue)
+    switch(value)
     {
     case REGISTRY_TYPE_STRING:
       type = REG_SZ;
@@ -75,10 +75,10 @@ namespace Win32Registry
     return type;
   }
 
-  REGISTRY_TYPE ConvertType(DWORD iValue)
+  REGISTRY_TYPE ConvertType(DWORD value)
   {
     REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
-    switch(iValue)
+    switch(value)
     {
     case REG_SZ:
     case REG_EXPAND_SZ:
@@ -138,7 +138,7 @@ namespace Win32Registry
     }
     return NULL;
   }
-  static bool SetRegistryValue(const char* iKeyPath, const char* iValueName, int iType, const void *iValue, const uint32_t & iSize)
+  static bool SetRegistryValue(const char* iKeyPath, const char* value_name, int iType, const void * value, const uint32_t & iSize)
   {
     bool result = false;
 
@@ -150,7 +150,7 @@ namespace Win32Registry
       HKEY keyHandle;
       if ( !RegCreateKey(rootKey->key, keyShortPath, &keyHandle))
       {
-        if ( !RegSetValueEx(keyHandle, iValueName, 0, iType, (LPBYTE)iValue, iSize))
+        if ( !RegSetValueEx(keyHandle, value_name, 0, iType, (LPBYTE)value, iSize))
         {
           result = true;
         }
@@ -162,7 +162,7 @@ namespace Win32Registry
 
 
   bool GetValue(const char * iKeyPath,
-                const char * iValueName,
+                const char * value_name,
                 REGISTRY_TYPE & oType,
                 MemoryBuffer & oValue)
   {
@@ -179,7 +179,7 @@ namespace Win32Registry
         //Read value's size and type
         DWORD valueType = 0;
         DWORD valueSize = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
-        RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, NULL, &valueSize);
+        RegQueryValueEx( keyHandle, value_name, NULL, &valueType, NULL, &valueSize);
 
         DWORD length = valueSize - 1;
 
@@ -188,7 +188,7 @@ namespace Win32Registry
         {
           //Read the actual data of the value
           valueType = 0;
-          RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, (LPBYTE)oValue.c_str(), &valueSize);
+          RegQueryValueEx( keyHandle, value_name, NULL, &valueType, (LPBYTE)oValue.c_str(), &valueSize);
           
           oType = ConvertType(valueType);
           success = (length == oValue.size());
@@ -285,23 +285,24 @@ namespace Win32Registry
     return result;
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize)
+  bool SetValue(const char* iKeyPath, const char* value_name, const uint8_t* iBuffer, const uint32_t & iBufferSize)
   {
-    return SetRegistryValue(iKeyPath, iValueName, REG_BINARY, iBuffer, iBufferSize);
+    return SetRegistryValue(iKeyPath, value_name, REG_BINARY, iBuffer, iBufferSize);
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue)
+  bool SetValue(const char* iKeyPath, const char* value_name, const uint32_t & value)
   {
-    return SetRegistryValue(iKeyPath, iValueName, REG_DWORD, &iValue, sizeof(iValue));
+    return SetRegistryValue(iKeyPath, value_name, REG_DWORD, &value, sizeof(value));
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const char *iValue)
+  bool SetValue(const char* iKeyPath, const char* value_name, const char* value)
   {
-    uint32_t size = (uint32_t)strlen(iValue) + 1;
-    return SetRegistryValue(iKeyPath, iValueName, REG_SZ, iValue, size);
+    if (value == NULL) return false;
+    uint32_t size = (uint32_t)strlen(value) + 1;
+    return SetRegistryValue(iKeyPath, value_name, REG_SZ, value, size);
   }
 
-  bool DeleteValue(const char* iKeyPath, const char* iValueName)
+  bool DeleteValue(const char* iKeyPath, const char* value_name)
   {
     if (!HasKey(iKeyPath))
       return true; //return a success if the key cannot be found
@@ -316,7 +317,7 @@ namespace Win32Registry
       HKEY keyHandle = NULL;
       if ( !RegOpenKeyEx(rootKey->key, keyShortPath, 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &keyHandle))
       {
-        LSTATUS status = RegDeleteValueA(keyHandle, iValueName);
+        LSTATUS status = RegDeleteValueA(keyHandle, value_name);
         if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND)
         {
           result = true;

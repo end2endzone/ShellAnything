@@ -172,9 +172,9 @@ namespace shellanything
     return mValueYes;
   }
 
-  void ActionPrompt::SetValueYes(const std::string & iValueYes)
+  void ActionPrompt::SetValueYes(const std::string & value_yes)
   {
-    mValueYes = iValueYes;
+    mValueYes = value_yes;
   }
 
   const std::string & ActionPrompt::GetValueNo() const
@@ -182,9 +182,9 @@ namespace shellanything
     return mValueNo;
   }
 
-  void ActionPrompt::SetValueNo(const std::string & iValueNo)
+  void ActionPrompt::SetValueNo(const std::string & value_no)
   {
-    mValueNo = iValueNo;
+    mValueNo = value_no;
   }
 
 } //namespace shellanything

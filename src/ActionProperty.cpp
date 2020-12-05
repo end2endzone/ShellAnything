@@ -102,9 +102,9 @@ namespace shellanything
     return mValue;
   }
 
-  void ActionProperty::SetValue(const std::string & iValue)
+  void ActionProperty::SetValue(const std::string & value)
   {
-    mValue = iValue;
+    mValue = value;
   }
 
   const std::string & ActionProperty::GetExprtk() const

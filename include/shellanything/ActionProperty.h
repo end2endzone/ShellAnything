@@ -64,7 +64,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'value' parameter.
     /// </summary>
-    void SetValue(const std::string & iValue);
+    void SetValue(const std::string & value);
 
     /// <summary>
     /// Getter for the 'exprtk' parameter.
