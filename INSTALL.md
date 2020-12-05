@@ -3,7 +3,7 @@
 ### Compiled binary packages: ###
 
 You can find the latest pre-compiled binaries  on the [github project release page](https://github.com/end2endzone/ShellAnything/releases/latest). 
-The binary installers of previous versions is also available [here](https://github.com/end2endzone/ShellAnything/releases).
+The binary installer of previous versions are also available [here](https://github.com/end2endzone/ShellAnything/releases).
 
 You can also checkout the [latest builds / nightly builds](https://ci.appveyor.com/project/end2endzone/shellanything) available on AppVeyor which offers CI/CD services for Windows. Successful builds are identified by a vertical green line. Select the *current build* or one [from the history](https://ci.appveyor.com/project/end2endzone/shellanything/history). Click on the `Platform: x64` , then look in the `Artifacts` tab.  In the *Actifacts* section, you will find two installers, one is a traditional "setup.exe" and the other is a more modern MSI. A portable version is also available.
 
