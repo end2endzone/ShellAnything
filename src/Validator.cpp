@@ -591,7 +591,7 @@ namespace shellanything
     error[0] = '\0';
 
     bool result = false;
-    bool evaluated = evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
+    bool evaluated = Evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
     if (!evaluated)
     {
       LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";

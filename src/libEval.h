@@ -38,7 +38,7 @@ namespace shellanything
   /// <param name="error_buffer">The output error description, if compilation of expression fails.</param>
   /// <param name="error_size">The size in bytes of the error buffer.</param>
   /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-  bool evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size);
+  bool Evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size);
 
   /// <summary>
   /// Evaluates a boolean text expression as a true or false value.
@@ -48,7 +48,7 @@ namespace shellanything
   /// <param name="error_buffer">The output error description, if compilation of expression fails.</param>
   /// <param name="error_size">The size in bytes of the error buffer.</param>
   /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-  bool evaluate(const char * expression_string, bool * result, char * error_buffer, size_t error_size);
+  bool Evaluate(const char * expression_string, bool * result, char * error_buffer, size_t error_size);
 
   /// <summary>
   /// Evaluates a text expression and calculates the result.
@@ -56,7 +56,7 @@ namespace shellanything
   /// <param name="expression_string">The text expression to evaluate.</param>
   /// <param name="output">The output double value of the result expression.</param>
   /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-  inline bool evaluate(const char * expression_string, double * result) { return evaluate(expression_string, result, NULL, 0); }
+  inline bool Evaluate(const char * expression_string, double * result) { return Evaluate(expression_string, result, NULL, 0); }
 
   /// <summary>
   /// Evaluates a boolean text expression as a true or false value.
@@ -64,7 +64,7 @@ namespace shellanything
   /// <param name="expression_string">The text expression to evaluate.</param>
   /// <param name="output">The output bool value of the result expression.</param>
   /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-  inline bool evaluate(const char * expression_string, bool * result) { return evaluate(expression_string, result, NULL, 0); }
+  inline bool Evaluate(const char * expression_string, bool * result) { return Evaluate(expression_string, result, NULL, 0); }
 
 } //namespace shellanything
 
