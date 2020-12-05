@@ -44,7 +44,7 @@ namespace shellanything
   {
   }
 
-  bool ActionProperty::Execute(const Context & iContext) const
+  bool ActionProperty::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string name = pmgr.Expand(mName);
@@ -81,7 +81,7 @@ namespace shellanything
     if (name == Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
     {
       // Force the context to rebuild selection.* properties.
-      iContext.RegisterProperties();
+      context.RegisterProperties();
     }
 
     return true;

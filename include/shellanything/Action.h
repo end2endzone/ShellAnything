@@ -55,9 +55,9 @@ namespace shellanything
     /// <summary>
     /// Execute the action on the system.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & iContext) const = 0;
+    virtual bool Execute(const Context & context) const = 0;
   };
 
 

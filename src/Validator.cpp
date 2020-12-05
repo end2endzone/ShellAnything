@@ -221,18 +221,18 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::Validate(const Context & iContext) const
+  bool Validator::Validate(const Context & context) const
   {
     bool maxfiles_inversed = IsInversed("maxfiles");
-    if (!maxfiles_inversed && iContext.GetNumFiles() > mMaxFiles)
+    if (!maxfiles_inversed && context.GetNumFiles() > mMaxFiles)
         return false; //too many files selected
-    if (maxfiles_inversed && iContext.GetNumFiles() <= mMaxFiles)
+    if (maxfiles_inversed && context.GetNumFiles() <= mMaxFiles)
         return false; //too many files selected
 
     bool maxfolders_inversed = IsInversed("maxfolders");
-    if (!maxfolders_inversed && iContext.GetNumDirectories() > mMaxDirectories)
+    if (!maxfolders_inversed && context.GetNumDirectories() > mMaxDirectories)
       return false; //too many directories selected
-    if (maxfolders_inversed && iContext.GetNumDirectories() <= mMaxDirectories)
+    if (maxfolders_inversed && context.GetNumDirectories() <= mMaxDirectories)
       return false; //too many directories selected
 
     //validate properties
@@ -241,7 +241,7 @@ namespace shellanything
     if (!properties.empty())
     {
       bool inversed = IsInversed("properties");
-      bool valid = ValidateProperties(iContext, properties, inversed);
+      bool valid = ValidateProperties(context, properties, inversed);
       if (!valid)
         return false;
     }
@@ -251,7 +251,7 @@ namespace shellanything
     if (!file_extensions.empty())
     {
       bool inversed = IsInversed("fileextensions");
-      bool valid = ValidateFileExtensions(iContext, file_extensions, inversed);
+      bool valid = ValidateFileExtensions(context, file_extensions, inversed);
       if (!valid)
         return false;
     }
@@ -261,7 +261,7 @@ namespace shellanything
     if (!file_exists.empty())
     {
       bool inversed = IsInversed("exists");
-      bool valid = ValidateExists(iContext, file_exists, inversed);
+      bool valid = ValidateExists(context, file_exists, inversed);
       if (!valid)
         return false;
     }
@@ -271,7 +271,7 @@ namespace shellanything
     if (!class_.empty())
     {
       bool inversed = IsInversed("class");
-      bool valid = ValidateClass(iContext, class_, inversed);
+      bool valid = ValidateClass(context, class_, inversed);
       if (!valid)
         return false;
     }
@@ -281,7 +281,7 @@ namespace shellanything
     if (!pattern.empty())
     {
       bool inversed = IsInversed("pattern");
-      bool valid = ValidatePattern(iContext, pattern, inversed);
+      bool valid = ValidatePattern(context, pattern, inversed);
       if (!valid)
         return false;
     }
@@ -291,7 +291,7 @@ namespace shellanything
     if (!exprtk.empty())
     {
       bool inversed = IsInversed("exprtk");
-      bool valid = ValidateExprtk(iContext, exprtk, inversed);
+      bool valid = ValidateExprtk(context, exprtk, inversed);
       if (!valid)
         return false;
     }

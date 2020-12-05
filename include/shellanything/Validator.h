@@ -157,9 +157,9 @@ namespace shellanything
     /// ...
     /// Note: this function is used to enable or disable a menu.
     /// </summary>
-    /// <param name="iContext">The context used for validating.</param>
+    /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const Context & iContext) const;
+    bool Validate(const Context & context) const;
 
   private:
     bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;

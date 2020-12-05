@@ -42,9 +42,9 @@ namespace shellanything
     /// <summary>
     /// Execute an application.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context& iContext) const;
+    virtual bool Execute(const Context& context) const;
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -91,17 +91,17 @@ namespace shellanything
     /// Execute an application with ShellExecuteEx method.
     /// This execute method supports verbs.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const Context & iContext) const;
+    virtual bool ExecuteVerb(const Context & context) const;
 
     /// <summary>
     /// Execute an application with RapidAssist method.
     /// This execute method does not supports verbs.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const Context & iContext) const;
+    virtual bool ExecuteProcess(const Context & context) const;
 
   private:
     std::string mPath;

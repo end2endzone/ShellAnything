@@ -54,9 +54,9 @@ namespace shellanything
     /// <summary>
     /// Prompts the user for a value.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & iContext) const;
+    virtual bool Execute(const Context & context) const;
 
     /// <summary>
     /// Getter for the 'name' parameter.
