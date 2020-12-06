@@ -78,9 +78,9 @@ namespace shellanything
     return mMaxFiles;
   }
 
-  void Validator::SetMaxFiles(const int & iMaxFiles)
+  void Validator::SetMaxFiles(const int & max_files)
   {
-    mMaxFiles = iMaxFiles;
+    mMaxFiles = max_files;
   }
 
   const int & Validator::GetMaxDirectories() const
@@ -88,9 +88,9 @@ namespace shellanything
     return mMaxDirectories;
   }
 
-  void Validator::SetMaxDirectories(const int & iMaxDirectories)
+  void Validator::SetMaxDirectories(const int & max_directories)
   {
-    mMaxDirectories = iMaxDirectories;
+    mMaxDirectories = max_directories;
   }
 
   const std::string & Validator::GetProperties() const
@@ -98,9 +98,9 @@ namespace shellanything
     return mProperties;
   }
 
-  void Validator::SetProperties(const std::string & iProperties)
+  void Validator::SetProperties(const std::string & properties)
   {
-    mProperties = iProperties;
+    mProperties = properties;
   }
 
   const std::string & Validator::GetFileExtensions() const
@@ -108,9 +108,9 @@ namespace shellanything
     return mFileExtensions;
   }
 
-  void Validator::SetFileExtensions(const std::string & iFileExtensions)
+  void Validator::SetFileExtensions(const std::string & file_extensions)
   {
-    mFileExtensions = iFileExtensions;
+    mFileExtensions = file_extensions;
   }
 
   const std::string & Validator::GetFileExists() const
@@ -118,9 +118,9 @@ namespace shellanything
     return mFileExists;
   }
 
-  void Validator::SetFileExists(const std::string & iFileExists)
+  void Validator::SetFileExists(const std::string & file_exists)
   {
-    mFileExists = iFileExists;
+    mFileExists = file_exists;
   }
 
   const std::string & Validator::GetClass() const
@@ -128,9 +128,9 @@ namespace shellanything
     return mClass;
   }
 
-  void Validator::SetClass(const std::string & iClass)
+  void Validator::SetClass(const std::string & classes)
   {
-    mClass = iClass;
+    mClass = classes;
   }
 
   const std::string & Validator::GetPattern() const
@@ -138,9 +138,9 @@ namespace shellanything
     return mPattern;
   }
 
-  void Validator::SetPattern(const std::string & iPattern)
+  void Validator::SetPattern(const std::string & pattern)
   {
-    mPattern = iPattern;
+    mPattern = pattern;
   }
 
   const std::string & Validator::GetExprtk() const
@@ -148,9 +148,9 @@ namespace shellanything
     return mExprtk;
   }
 
-  void Validator::SetExprtk(const std::string & iExprtk)
+  void Validator::SetExprtk(const std::string & exprtk)
   {
-    mExprtk = iExprtk;
+    mExprtk = exprtk;
   }
 
   const std::string & Validator::GetInserve() const
@@ -158,9 +158,9 @@ namespace shellanything
     return mInverse;
   }
 
-  void Validator::SetInserve(const std::string & iInserve)
+  void Validator::SetInserve(const std::string & inserve)
   {
-    mInverse = iInserve;
+    mInverse = inserve;
   }
 
   bool Validator::IsInversed(const char * name) const
