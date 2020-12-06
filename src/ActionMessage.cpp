@@ -91,9 +91,9 @@ namespace shellanything
     return mTitle;
   }
 
-  void ActionMessage::SetTitle(const std::string & iTitle)
+  void ActionMessage::SetTitle(const std::string & title)
   {
-    mTitle = iTitle;
+    mTitle = title;
   }
 
   const std::string & ActionMessage::GetCaption() const
@@ -101,9 +101,9 @@ namespace shellanything
     return mCaption;
   }
 
-  void ActionMessage::SetCaption(const std::string & iCaption)
+  void ActionMessage::SetCaption(const std::string & caption)
   {
-    mCaption = iCaption;
+    mCaption = caption;
   }
 
   const std::string & ActionMessage::GetIcon() const
@@ -111,9 +111,9 @@ namespace shellanything
     return mIcon;
   }
 
-  void ActionMessage::SetIcon(const std::string & iIcon)
+  void ActionMessage::SetIcon(const std::string & icon)
   {
-    mIcon = iIcon;
+    mIcon = icon;
   }
 
 } //namespace shellanything

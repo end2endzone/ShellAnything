@@ -54,7 +54,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & iName);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'value' parameter.
@@ -74,7 +74,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'exprtk' parameter.
     /// </summary>
-    void SetExprtk(const std::string & iExprtk);
+    void SetExprtk(const std::string & exprtk);
 
   private:
     std::string mName;

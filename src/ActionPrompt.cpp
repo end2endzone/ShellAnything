@@ -132,9 +132,9 @@ namespace shellanything
     return mType;
   }
 
-  void ActionPrompt::SetType(const std::string & iType)
+  void ActionPrompt::SetType(const std::string & type)
   {
-    mType = iType;
+    mType = type;
   }
 
   const std::string & ActionPrompt::GetName() const
@@ -142,9 +142,9 @@ namespace shellanything
     return mName;
   }
 
-  void ActionPrompt::SetName(const std::string & iName)
+  void ActionPrompt::SetName(const std::string & name)
   {
-    mName = iName;
+    mName = name;
   }
 
   const std::string & ActionPrompt::GetTitle() const
@@ -152,9 +152,9 @@ namespace shellanything
     return mTitle;
   }
 
-  void ActionPrompt::SetTitle(const std::string & iTitle)
+  void ActionPrompt::SetTitle(const std::string & title)
   {
-    mTitle = iTitle;
+    mTitle = title;
   }
 
   const std::string & ActionPrompt::GetDefault() const
@@ -162,9 +162,9 @@ namespace shellanything
     return mDefault;
   }
 
-  void ActionPrompt::SetDefault(const std::string & iDefault)
+  void ActionPrompt::SetDefault(const std::string & default_value)
   {
-    mDefault = iDefault;
+    mDefault = default_value;
   }
 
   const std::string & ActionPrompt::GetValueYes() const

@@ -66,7 +66,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & iName);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'type' parameter.
@@ -76,7 +76,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'type' parameter.
     /// </summary>
-    void SetType(const std::string & iType);
+    void SetType(const std::string & type);
 
     /// <summary>
     /// Getter for the 'title' parameter.
@@ -86,7 +86,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & iTitle);
+    void SetTitle(const std::string & title);
 
     /// <summary>
     /// Getter for the 'default' parameter.
@@ -96,7 +96,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'default' parameter.
     /// </summary>
-    void SetDefault(const std::string & iDefault);
+    void SetDefault(const std::string & default_value);
 
     /// <summary>
     /// Getter for the 'valueyes' parameter.

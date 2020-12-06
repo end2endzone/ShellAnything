@@ -83,21 +83,21 @@ namespace shellanything
     /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
-    void Update(const Context & c);
+    void Update(const Context & context);
 
     /// <summary>
-    /// Finds a loaded Menu pointer that is assigned the command id iCommandId.
+    /// Finds a loaded Menu pointer that is assigned the command id command_id.
     /// </summary>
-    /// <param name="iCommandId">The search command id value.</param>
+    /// <param name="command_id">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu * FindMenuByCommandId(const uint32_t & iCommandId);
+    Menu * FindMenuByCommandId(const uint32_t & command_id);
 
     /// <summary>
     /// Assign unique command id to all menus loaded by the configuration manager.
     /// </summary>
-    /// <param name="iFirstCommandId">The first command id available.</param>
-    /// <returns>Returns the next available command id. Returns iFirstCommandId if it failed assining command id.</returns>
-    uint32_t AssignCommandIds(const uint32_t & iFirstCommandId);
+    /// <param name="first_command_id">The first command id available.</param>
+    /// <returns>Returns the next available command id. Returns first_command_id if it failed assining command id.</returns>
+    uint32_t AssignCommandIds(const uint32_t & first_command_id);
 
     /// <summary>
     /// Clears all the registered search paths

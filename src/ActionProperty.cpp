@@ -92,9 +92,9 @@ namespace shellanything
     return mName;
   }
 
-  void ActionProperty::SetName(const std::string & iName)
+  void ActionProperty::SetName(const std::string & name)
   {
-    mName = iName;
+    mName = name;
   }
 
   const std::string & ActionProperty::GetValue() const
@@ -112,9 +112,9 @@ namespace shellanything
     return mExprtk;
   }
 
-  void ActionProperty::SetExprtk(const std::string & iExprtk)
+  void ActionProperty::SetExprtk(const std::string & exprtk)
   {
-    mExprtk = iExprtk;
+    mExprtk = exprtk;
   }
 
 } //namespace shellanything

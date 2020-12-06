@@ -70,7 +70,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'fileextension' parameter.
     /// </summary>
-    void SetFileExtension(const std::string & iFileExtension);
+    void SetFileExtension(const std::string & file_extension);
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -90,7 +90,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'index' parameter.
     /// </summary>
-    void SetIndex(const int & iIndex);
+    void SetIndex(const int & index);
 
   private:
     std::string mFileExtension;
