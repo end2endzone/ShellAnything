@@ -140,25 +140,25 @@ namespace shellanything
     }
   }
 
-  void ConfigManager::Update(const Context & c)
+  void ConfigManager::Update(const Context & context)
   {
     //for each child
     Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      config->Update(c);
+      config->Update(context);
     }
   }
 
-  Menu * ConfigManager::FindMenuByCommandId(const uint32_t & iCommandId)
+  Menu * ConfigManager::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
     Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
-      Menu * match = config->FindMenuByCommandId(iCommandId);
+      Menu * match = config->FindMenuByCommandId(command_id);
       if (match)
         return match;
     }
@@ -166,9 +166,9 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t ConfigManager::AssignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t ConfigManager::AssignCommandIds(const uint32_t & first_command_id)
   {
-    uint32_t nextCommandId = iFirstCommandId;
+    uint32_t nextCommandId = first_command_id;
 
     //for each child
     Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();

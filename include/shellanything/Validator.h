@@ -58,7 +58,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'maxfiles' parameter.
     /// </summary>
-    void SetMaxFiles(const int & iMaxFiles);
+    void SetMaxFiles(const int & max_files);
 
     /// <summary>
     /// Getter for the 'maxdirectories' parameter.
@@ -68,7 +68,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'maxdirectories' parameter.
     /// </summary>
-    void SetMaxDirectories(const int & iMaxDirectories);
+    void SetMaxDirectories(const int & max_directories);
 
     /// <summary>
     /// Getter for the 'properties' parameter.
@@ -78,7 +78,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'properties' parameter.
     /// </summary>
-    void SetProperties(const std::string & iProperties);
+    void SetProperties(const std::string & properties);
 
     /// <summary>
     /// Getter for the 'fileextensions' parameter.
@@ -88,7 +88,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'fileextensions' parameter.
     /// </summary>
-    void SetFileExtensions(const std::string & iFileExtensions);
+    void SetFileExtensions(const std::string & file_extensions);
 
     /// <summary>
     /// Getter for the 'fileexists' parameter.
@@ -98,7 +98,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'fileexists' parameter.
     /// </summary>
-    void SetFileExists(const std::string & iFileExists);
+    void SetFileExists(const std::string & file_exists);
 
     /// <summary>
     /// Getter for the 'class' parameter.
@@ -108,7 +108,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'class' parameter.
     /// </summary>
-    void SetClass(const std::string & iClass);
+    void SetClass(const std::string & classes);
 
     /// <summary>
     /// Getter for the 'pattern' parameter.
@@ -118,7 +118,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'pattern' parameter.
     /// </summary>
-    void SetPattern(const std::string & iPattern);
+    void SetPattern(const std::string & pattern);
 
     /// <summary>
     /// Getter for the 'exprtk' parameter.
@@ -128,7 +128,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'exprtk' parameter.
     /// </summary>
-    void SetExprtk(const std::string & iExprtk);
+    void SetExprtk(const std::string & exprtk);
 
     /// <summary>
     /// Getter for the 'inserve' parameter.
@@ -138,7 +138,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'inserve' parameter.
     /// </summary>
-    void SetInserve(const std::string & iInserve);
+    void SetInserve(const std::string & inserve);
 
     /// <summary>
     /// Returns true if the given attribute name is in the list of inversed attributes.
@@ -157,9 +157,9 @@ namespace shellanything
     /// ...
     /// Note: this function is used to enable or disable a menu.
     /// </summary>
-    /// <param name="iContext">The context used for validating.</param>
+    /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const Context & iContext) const;
+    bool Validate(const Context & context) const;
 
   private:
     bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;

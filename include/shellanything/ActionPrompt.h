@@ -54,9 +54,9 @@ namespace shellanything
     /// <summary>
     /// Prompts the user for a value.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & iContext) const;
+    virtual bool Execute(const Context & context) const;
 
     /// <summary>
     /// Getter for the 'name' parameter.
@@ -66,7 +66,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & iName);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'type' parameter.
@@ -76,7 +76,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'type' parameter.
     /// </summary>
-    void SetType(const std::string & iType);
+    void SetType(const std::string & type);
 
     /// <summary>
     /// Getter for the 'title' parameter.
@@ -86,7 +86,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & iTitle);
+    void SetTitle(const std::string & title);
 
     /// <summary>
     /// Getter for the 'default' parameter.
@@ -96,7 +96,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'default' parameter.
     /// </summary>
-    void SetDefault(const std::string & iDefault);
+    void SetDefault(const std::string & default_value);
 
     /// <summary>
     /// Getter for the 'valueyes' parameter.
@@ -106,7 +106,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'valueyes' parameter.
     /// </summary>
-    void SetValueYes(const std::string & iValueYes);
+    void SetValueYes(const std::string & value_yes);
 
     /// <summary>
     /// Getter for the 'valueno' parameter.
@@ -116,7 +116,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'valueno' parameter.
     /// </summary>
-    void SetValueNo(const std::string & iValueNo);
+    void SetValueNo(const std::string & value_no);
 
   private:
     std::string mType;

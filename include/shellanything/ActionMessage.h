@@ -42,9 +42,9 @@ namespace shellanything
     /// <summary>
     /// Prompts the user for a value.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & iContext) const;
+    virtual bool Execute(const Context & context) const;
 
     /// <summary>
     /// Getter for the 'title' parameter.
@@ -54,7 +54,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & iTitle);
+    void SetTitle(const std::string & title);
 
     /// <summary>
     /// Getter for the 'caption' parameter.
@@ -64,7 +64,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'caption' parameter.
     /// </summary>
-    void SetCaption(const std::string & iCaption);
+    void SetCaption(const std::string & caption);
 
     /// <summary>
     /// Getter for the 'icon' parameter.
@@ -74,7 +74,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'icon' parameter.
     /// </summary>
-    void SetIcon(const std::string & iIcon);
+    void SetIcon(const std::string & icon);
 
   private:
     std::string mTitle;

@@ -103,9 +103,9 @@ namespace shellanything
     return mFileExtension;
   }
 
-  void Icon::SetFileExtension(const std::string & iFileExtension)
+  void Icon::SetFileExtension(const std::string & file_extension)
   {
-    mFileExtension = iFileExtension;
+    mFileExtension = file_extension;
   }
 
   const std::string & Icon::GetPath() const
@@ -113,9 +113,9 @@ namespace shellanything
     return mPath;
   }
 
-  void Icon::SetPath(const std::string & iPath)
+  void Icon::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
   const int & Icon::GetIndex() const
@@ -123,9 +123,9 @@ namespace shellanything
     return mIndex;
   }
 
-  void Icon::SetIndex(const int & iIndex)
+  void Icon::SetIndex(const int & index)
   {
-    mIndex = iIndex;
+    mIndex = index;
   }
 
 } //namespace shellanything

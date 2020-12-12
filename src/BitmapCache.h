@@ -44,9 +44,9 @@ namespace shellanything
     void ClearAndDestroy();
     void ResetCounters();
     int DestroyOldHandles();
-    void AddHandle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap);
-    HBITMAP FindHandle(const std::string & iFilename, const int & iIndex);
-    int GetUsage(const std::string & iFilename, const int & iIndex);
+    void AddHandle(const std::string & filename, const int & index, HBITMAP hBitmap);
+    HBITMAP FindHandle(const std::string & filename, const int & index);
+    int GetUsage(const std::string & filename, const int & index);
    
   private:
     // Typedef

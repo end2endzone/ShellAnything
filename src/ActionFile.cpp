@@ -43,7 +43,7 @@ namespace shellanything
   {
   }
 
-  bool ActionFile::Execute(const Context & iContext) const
+  bool ActionFile::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string path = pmgr.Expand(mPath);
@@ -100,9 +100,9 @@ namespace shellanything
     return mPath;
   }
 
-  void ActionFile::SetPath(const std::string & iPath)
+  void ActionFile::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
   const std::string & ActionFile::GetText() const
@@ -110,9 +110,9 @@ namespace shellanything
     return mText;
   }
 
-  void ActionFile::SetText(const std::string & iText)
+  void ActionFile::SetText(const std::string & text)
   {
-    mText = iText;
+    mText = text;
   }
 
   const std::string & ActionFile::GetEncoding() const
@@ -120,9 +120,9 @@ namespace shellanything
     return mEncoding;
   }
 
-  void ActionFile::SetEncoding(const std::string & iEncoding)
+  void ActionFile::SetEncoding(const std::string & encoding)
   {
-    mEncoding = iEncoding;
+    mEncoding = encoding;
   }
 
 } //namespace shellanything

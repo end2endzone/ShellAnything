@@ -56,7 +56,7 @@ namespace shellanything
     return ok_question;
   }
 
-  bool ActionPrompt::Execute(const Context & iContext) const
+  bool ActionPrompt::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string name = pmgr.Expand(mName);
@@ -132,9 +132,9 @@ namespace shellanything
     return mType;
   }
 
-  void ActionPrompt::SetType(const std::string & iType)
+  void ActionPrompt::SetType(const std::string & type)
   {
-    mType = iType;
+    mType = type;
   }
 
   const std::string & ActionPrompt::GetName() const
@@ -142,9 +142,9 @@ namespace shellanything
     return mName;
   }
 
-  void ActionPrompt::SetName(const std::string & iName)
+  void ActionPrompt::SetName(const std::string & name)
   {
-    mName = iName;
+    mName = name;
   }
 
   const std::string & ActionPrompt::GetTitle() const
@@ -152,9 +152,9 @@ namespace shellanything
     return mTitle;
   }
 
-  void ActionPrompt::SetTitle(const std::string & iTitle)
+  void ActionPrompt::SetTitle(const std::string & title)
   {
-    mTitle = iTitle;
+    mTitle = title;
   }
 
   const std::string & ActionPrompt::GetDefault() const
@@ -162,9 +162,9 @@ namespace shellanything
     return mDefault;
   }
 
-  void ActionPrompt::SetDefault(const std::string & iDefault)
+  void ActionPrompt::SetDefault(const std::string & default_value)
   {
-    mDefault = iDefault;
+    mDefault = default_value;
   }
 
   const std::string & ActionPrompt::GetValueYes() const
@@ -172,9 +172,9 @@ namespace shellanything
     return mValueYes;
   }
 
-  void ActionPrompt::SetValueYes(const std::string & iValueYes)
+  void ActionPrompt::SetValueYes(const std::string & value_yes)
   {
-    mValueYes = iValueYes;
+    mValueYes = value_yes;
   }
 
   const std::string & ActionPrompt::GetValueNo() const
@@ -182,9 +182,9 @@ namespace shellanything
     return mValueNo;
   }
 
-  void ActionPrompt::SetValueNo(const std::string & iValueNo)
+  void ActionPrompt::SetValueNo(const std::string & value_no)
   {
-    mValueNo = iValueNo;
+    mValueNo = value_no;
   }
 
 } //namespace shellanything

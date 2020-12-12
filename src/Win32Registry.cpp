@@ -24,7 +24,9 @@
 
 #include "Win32Registry.h"
 
-//#define WIN32_LEAN_AND_MEAN 1
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #undef GetEnvironmentVariable
 #undef DeleteFile
@@ -50,11 +52,11 @@ namespace Win32Registry
     return false;
   }
 
-  DWORD ConvertType(const REGISTRY_TYPE & iValue)
+  DWORD ConvertToPrivateType(const REGISTRY_TYPE & value)
   {
     DWORD type = REG_SZ;
 
-    switch(iValue)
+    switch(value)
     {
     case REGISTRY_TYPE_STRING:
       type = REG_SZ;
@@ -75,10 +77,10 @@ namespace Win32Registry
     return type;
   }
 
-  REGISTRY_TYPE ConvertType(DWORD iValue)
+  REGISTRY_TYPE ConvertToPublicType(DWORD value)
   {
     REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
-    switch(iValue)
+    switch(value)
     {
     case REG_SZ:
     case REG_EXPAND_SZ:
@@ -105,96 +107,96 @@ namespace Win32Registry
     HKEY key;
     const char* name;
   };
-  static HKEY_T supportedKeys[] = {
+  static HKEY_T gSupportedKeys[] = {
     {HKEY_CLASSES_ROOT, "HKEY_CLASSES_ROOT"},
     {HKEY_CURRENT_USER, "HKEY_CURRENT_USER"},
     {HKEY_LOCAL_MACHINE, "HKEY_LOCAL_MACHINE"},
     {HKEY_USERS, "HKEY_USERS"},
     {HKEY_CURRENT_CONFIG, "HKEY_CURRENT_CONFIG"},
   };
-  static HKEY_T* FindKeyInPath(const char* iPath)
+  static HKEY_T* FindKeyInPath(const char* path)
   {
-    //detecting the key within iPath
-    int numSupportedKeys = sizeof(supportedKeys)/sizeof(HKEY_T);
-    HKEY_T* rootKey = NULL;
-    for(int i=0; i<numSupportedKeys && rootKey == NULL; i++)
+    //detecting the key within the given path
+    int num_supported_keys = sizeof(gSupportedKeys)/sizeof(HKEY_T);
+    HKEY_T* root_key = NULL;
+    for(int i=0; i<num_supported_keys && root_key == NULL; i++)
     {
-      HKEY_T* current = &supportedKeys[i];
-      if (_strnicmp(iPath, current->name, strlen(current->name)) == 0)
+      HKEY_T* current = &gSupportedKeys[i];
+      if (_strnicmp(path, current->name, strlen(current->name)) == 0)
       {
-        rootKey = current;
+        root_key = current;
       }
     }
 
-    return rootKey;
+    return root_key;
   }
-  static const char* GetShortKeyPath(const char* iKeyPath)
+  static const char* GetShortKeyPath(const char* key_path)
   {
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      size_t keyPathIndex = strlen(rootKey->name)+1;
-      return &iKeyPath[keyPathIndex];
+      size_t key_path_index = strlen(root_key->name)+1;
+      return &key_path[key_path_index];
     }
     return NULL;
   }
-  static bool SetRegistryValue(const char* iKeyPath, const char* iValueName, int iType, const void *iValue, const uint32_t & iSize)
+  static bool SetRegistryValue(const char* key_path, const char* value_name, int iType, const void * value, const uint32_t & iSize)
   {
     bool result = false;
 
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      HKEY keyHandle;
-      if ( !RegCreateKey(rootKey->key, keyShortPath, &keyHandle))
+      HKEY hKey;
+      if ( !RegCreateKey(root_key->key, key_short_path, &hKey))
       {
-        if ( !RegSetValueEx(keyHandle, iValueName, 0, iType, (LPBYTE)iValue, iSize))
+        if ( !RegSetValueEx(hKey, value_name, 0, iType, (LPBYTE)value, iSize))
         {
           result = true;
         }
-        RegCloseKey(keyHandle);
+        RegCloseKey(hKey);
       }
     }
     return result;
   }
 
 
-  bool GetValue(const char * iKeyPath,
-                const char * iValueName,
-                REGISTRY_TYPE & oType,
-                MemoryBuffer & oValue)
+  bool GetValue(const char * key_path,
+                const char * value_name,
+                REGISTRY_TYPE & type,
+                MemoryBuffer & value)
   {
     bool success = false;
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
+    HKEY_T* root_key = FindKeyInPath(key_path);
     
-    if (rootKey)
+    if (root_key)
     {
-      HKEY keyHandle = NULL;
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      HKEY hKey = NULL;
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      if (RegOpenKeyEx(rootKey->key, keyShortPath, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &keyHandle) == ERROR_SUCCESS)
+      if (RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
       {
         //Read value's size and type
-        DWORD valueType = 0;
-        DWORD valueSize = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
-        RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, NULL, &valueSize);
+        DWORD value_type = 0;
+        DWORD value_size = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
+        RegQueryValueEx( hKey, value_name, NULL, &value_type, NULL, &value_size);
 
-        DWORD length = valueSize - 1;
+        DWORD length = value_size - 1;
 
         //allocate space for value
-        if (valueSize > 0 && oValue.assign(length, 0).size())
+        if (value_size > 0 && value.assign(length, 0).size())
         {
           //Read the actual data of the value
-          valueType = 0;
-          RegQueryValueEx( keyHandle, iValueName, NULL, &valueType, (LPBYTE)oValue.c_str(), &valueSize);
+          value_type = 0;
+          RegQueryValueEx( hKey, value_name, NULL, &value_type, (LPBYTE)value.c_str(), &value_size);
           
-          oType = ConvertType(valueType);
-          success = (length == oValue.size());
+          type = ConvertToPublicType(value_type);
+          success = (length == value.size());
         }
 
-        RegCloseKey(keyHandle);
+        RegCloseKey(hKey);
         return success;
       }
     }
@@ -202,80 +204,80 @@ namespace Win32Registry
     return success;
   }
 
-  bool GetDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue)
+  bool GetDefaultKeyValue( const char * key_path, REGISTRY_TYPE & type, MemoryBuffer & value)
   {
-    return GetValue(iKeyPath, "", oType, oValue);
+    return GetValue(key_path, "", type, value);
   }
 
-  bool HasKey(const char* iKeyPath)
+  bool HasKey(const char* key_path)
   {
     bool result = false;
 
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      HKEY keyHandle;
-      if ( !RegOpenKey(rootKey->key, keyShortPath, &keyHandle))
+      HKEY hKey;
+      if ( !RegOpenKey(root_key->key, key_short_path, &hKey))
       {
         result = true;
-        RegCloseKey(keyHandle);
+        RegCloseKey(hKey);
       }
     }
     return result;
   }
 
-  bool CreateKey(const char* iKeyPath)
+  bool CreateKey(const char* key_path)
   {
     bool result = false;
 
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      HKEY keyHandle = NULL;
-      //printf("RegCreateKeyA(%s, %s, 0x%08x)\n", rootKey->name, keyShortPath, keyHandle);
-      if ( !RegCreateKey(rootKey->key, keyShortPath, &keyHandle))
+      HKEY hKey = NULL;
+      //printf("RegCreateKeyA(%s, %s, 0x%08x)\n", root_key->name, key_short_path, hKey);
+      if ( !RegCreateKey(root_key->key, key_short_path, &hKey))
       {
         result = true;
       }
-      RegCloseKey(keyHandle);
+      RegCloseKey(hKey);
     }
 
     return result;
   }
 
-  bool CreateKey(const char* iKeyPath, const char* iDefaultValue)
+  bool CreateKey(const char* key_path, const char* default_value)
   {
-    bool key_result = CreateKey(iKeyPath);
+    bool key_result = CreateKey(key_path);
     if (!key_result)
       return false;
 
     //set default value
-    if (iDefaultValue)
+    if (default_value)
     {
-      if (!Win32Registry::SetValue(iKeyPath, "", iDefaultValue))
+      if (!Win32Registry::SetValue(key_path, "", default_value))
         return false;
     }
 
     return true;
   }
 
-  bool DeleteKey(const char* iKeyPath)
+  bool DeleteKey(const char* key_path)
   {
-    if (!HasKey(iKeyPath))
+    if (!HasKey(key_path))
       return true; //return a success if the key cannot be found
 
     bool result = false;
 
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      LSTATUS status = RegDeleteTreeA(rootKey->key, keyShortPath);
+      LSTATUS status = RegDeleteTreeA(root_key->key, key_short_path);
       if (status == ERROR_SUCCESS || status == ERROR_PATH_NOT_FOUND)
       {
         result = true;
@@ -285,58 +287,59 @@ namespace Win32Registry
     return result;
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize)
+  bool SetValue(const char* key_path, const char* value_name, const uint8_t* buffer, const uint32_t & buffer_size)
   {
-    return SetRegistryValue(iKeyPath, iValueName, REG_BINARY, iBuffer, iBufferSize);
+    return SetRegistryValue(key_path, value_name, REG_BINARY, buffer, buffer_size);
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue)
+  bool SetValue(const char* key_path, const char* value_name, const uint32_t & value)
   {
-    return SetRegistryValue(iKeyPath, iValueName, REG_DWORD, &iValue, sizeof(iValue));
+    return SetRegistryValue(key_path, value_name, REG_DWORD, &value, sizeof(value));
   }
 
-  bool SetValue(const char* iKeyPath, const char* iValueName, const char *iValue)
+  bool SetValue(const char* key_path, const char* value_name, const char* value)
   {
-    uint32_t size = (uint32_t)strlen(iValue) + 1;
-    return SetRegistryValue(iKeyPath, iValueName, REG_SZ, iValue, size);
+    if (value == NULL) return false;
+    uint32_t size = (uint32_t)strlen(value) + 1;
+    return SetRegistryValue(key_path, value_name, REG_SZ, value, size);
   }
 
-  bool DeleteValue(const char* iKeyPath, const char* iValueName)
+  bool DeleteValue(const char* key_path, const char* value_name)
   {
-    if (!HasKey(iKeyPath))
+    if (!HasKey(key_path))
       return true; //return a success if the key cannot be found
 
     bool result = false;
 
-    HKEY_T* rootKey = FindKeyInPath(iKeyPath);
-    if (rootKey)
+    HKEY_T* root_key = FindKeyInPath(key_path);
+    if (root_key)
     {
-      const char* keyShortPath = GetShortKeyPath(iKeyPath);
+      const char* key_short_path = GetShortKeyPath(key_path);
 
-      HKEY keyHandle = NULL;
-      if ( !RegOpenKeyEx(rootKey->key, keyShortPath, 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &keyHandle))
+      HKEY hKey = NULL;
+      if ( !RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &hKey))
       {
-        LSTATUS status = RegDeleteValueA(keyHandle, iValueName);
+        LSTATUS status = RegDeleteValueA(hKey, value_name);
         if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND)
         {
           result = true;
         }
       }
-      RegCloseKey(keyHandle);
+      RegCloseKey(hKey);
     }
 
     return result;
   }
 
-  bool GetAssociatedProgram(const char* iFileExtention, std::string & oCmdLine)
+  bool GetAssociatedProgram(const char* file_extention, std::string & command_line)
   {
 	  const DWORD SIZE = 2048;
 
     HKEY hKey = NULL;
-    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, iFileExtention, 0, KEY_READ|KEY_WOW64_64KEY, &hKey) != ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, file_extention, 0, KEY_READ|KEY_WOW64_64KEY, &hKey) != ERROR_SUCCESS)
     {
       //Key does not exist
-      oCmdLine = "";
+      command_line = "";
       return false;
     }
 
@@ -365,16 +368,16 @@ namespace Win32Registry
 
       RegCloseKey(hProgKey);
     
-      oCmdLine = programName;
+      command_line = programName;
 
       return true;
     }
 
-    oCmdLine = "";
+    command_line = "";
     return false;
 	}
 
-  bool SetAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine)
+  bool SetAssociatedProgram(const char* file_extention, const char* file_type, const char* command_line)
   {
     //save current setting;
     //REGISTRY_HANDLER_ROOT current = m_CurrentRoot;
@@ -389,11 +392,11 @@ namespace Win32Registry
 
     bool success = true;
 
-    //Building the extention (removing the '.' character in iExtention in case)
-    std::string extention = iExtention;
-    if (iExtention[0] == '.')
+    //Building the extention (removing the '.' character in file_extention in case)
+    std::string extention = file_extention;
+    if (file_extention[0] == '.')
     {
-      extention = &iExtention[1];
+      extention = &file_extention[1];
     }
 
     //Build the extention file type (most of the time the format used is extentionfile. ie: txtfile)
@@ -435,7 +438,7 @@ namespace Win32Registry
     //printf("step #3\n");
 
     //Create the filetype key's default value (friendly name) 
-    SetValue(extentionFileType.c_str(), "", iFileType);
+    SetValue(extentionFileType.c_str(), "", file_type);
 
     //printf("step #4\n");
 
@@ -463,10 +466,10 @@ namespace Win32Registry
     //printf("step #5\n");
 
     //Define the default value for the command's key
-    success = SetValue(subKey.c_str(), "", iCmdLine);
+    success = SetValue(subKey.c_str(), "", command_line);
     if (!success)
     {
-      //printf("5 Unable to set value. key=%s, name=%s\n", subKey.c_str(), iCmdLine);
+      //printf("5 Unable to set value. key=%s, name=%s\n", subKey.c_str(), command_line);
       return false;
     }
 
@@ -491,46 +494,46 @@ namespace Win32Registry
     return true;
   }
 
-  bool RegisterCommandForFile(const char * iName, const char * iCommand)
+  bool RegisterCommandForFile(const char * name, const char * command)
   {
     bool success = false;
     
     std::string key;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s", name); 
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", name); 
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    success = SetValue(key.c_str(), "", iCommand);
+    success = SetValue(key.c_str(), "", command);
     if (!success)
       return false;
 
     return true;
   }
 
-  bool RegisterCommandForFolder(const char * iName, const char * iCommand)
+  bool RegisterCommandForFolder(const char * name, const char * command)
   {
     bool success = false;
     
     std::string key;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", name); 
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", iName); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", name); 
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    success = SetValue(key.c_str(), "", iCommand);
+    success = SetValue(key.c_str(), "", command);
     if (!success)
       return false;
 
@@ -650,12 +653,12 @@ namespace Win32Registry
     return true;
   }
 
-  REGISTRY_ICON GetFileTypeIcon(const char * iFileExtention)
+  REGISTRY_ICON GetFileTypeIcon(const char * file_extention)
   {
-    if (iFileExtention == NULL)
+    if (file_extention == NULL)
       return NULL_ICON;
 
-    std::string extention = iFileExtention;
+    std::string extention = file_extention;
     if (extention[0] != '.')
     {
       extention.insert(0, 1, '.');

@@ -44,7 +44,7 @@ namespace shellanything
   {
   }
 
-  bool ActionProperty::Execute(const Context & iContext) const
+  bool ActionProperty::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string name = pmgr.Expand(mName);
@@ -59,7 +59,7 @@ namespace shellanything
       error[0] = '\0';
 
       double result = 0.0;
-      bool evaluated = evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
+      bool evaluated = Evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
       if (!evaluated)
       {
         LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
@@ -81,7 +81,7 @@ namespace shellanything
     if (name == Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
     {
       // Force the context to rebuild selection.* properties.
-      iContext.RegisterProperties();
+      context.RegisterProperties();
     }
 
     return true;
@@ -92,9 +92,9 @@ namespace shellanything
     return mName;
   }
 
-  void ActionProperty::SetName(const std::string & iName)
+  void ActionProperty::SetName(const std::string & name)
   {
-    mName = iName;
+    mName = name;
   }
 
   const std::string & ActionProperty::GetValue() const
@@ -102,9 +102,9 @@ namespace shellanything
     return mValue;
   }
 
-  void ActionProperty::SetValue(const std::string & iValue)
+  void ActionProperty::SetValue(const std::string & value)
   {
-    mValue = iValue;
+    mValue = value;
   }
 
   const std::string & ActionProperty::GetExprtk() const
@@ -112,9 +112,9 @@ namespace shellanything
     return mExprtk;
   }
 
-  void ActionProperty::SetExprtk(const std::string & iExprtk)
+  void ActionProperty::SetExprtk(const std::string & exprtk)
   {
-    mExprtk = iExprtk;
+    mExprtk = exprtk;
   }
 
 } //namespace shellanything

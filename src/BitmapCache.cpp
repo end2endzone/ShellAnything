@@ -168,19 +168,19 @@ namespace shellanything
     return num_destroyed;
   }
    
-  void BitmapCache::AddHandle(const std::string & iFilename, const int & iIndex, HBITMAP hBitmap)
+  void BitmapCache::AddHandle(const std::string & filename, const int & index, HBITMAP hBitmap)
   {
     USAGE usage;
     usage.hBitmap = hBitmap;
     usage.count = 0;
    
-    mFiles[iFilename][iIndex] = usage;
+    mFiles[filename][index] = usage;
   }
    
-  HBITMAP BitmapCache::FindHandle(const std::string & iFilename, const int & iIndex)
+  HBITMAP BitmapCache::FindHandle(const std::string & filename, const int & index)
   {
     //search within 1st map level
-    FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);
+    FilenameMap::iterator wFilesIterator = mFiles.find(filename);
     bool hasFoundFile = (wFilesIterator != mFiles.end());
     if (!hasFoundFile)
       return INVALID_BITMAP_HANDLE;
@@ -188,7 +188,7 @@ namespace shellanything
     IndexMap & indice_map = wFilesIterator->second;
    
     //search within 2nd map level
-    IndexMap::iterator wIndiceIterator = indice_map.find(iIndex);
+    IndexMap::iterator wIndiceIterator = indice_map.find(index);
     bool hasFoundIndex = (wIndiceIterator != indice_map.end());
     if (!hasFoundIndex)
       return INVALID_BITMAP_HANDLE;
@@ -201,10 +201,10 @@ namespace shellanything
     return usage.hBitmap;
   }
 
-  int BitmapCache::GetUsage(const std::string & iFilename, const int & iIndex)
+  int BitmapCache::GetUsage(const std::string & filename, const int & index)
   {
     //search within 1st map level
-    FilenameMap::iterator wFilesIterator = mFiles.find(iFilename);
+    FilenameMap::iterator wFilesIterator = mFiles.find(filename);
     bool hasFoundFile = (wFilesIterator != mFiles.end());
     if (!hasFoundFile)
       return -1;
@@ -212,7 +212,7 @@ namespace shellanything
     IndexMap & indice_map = wFilesIterator->second;
    
     //search within 2nd map level
-    IndexMap::iterator wIndiceIterator = indice_map.find(iIndex);
+    IndexMap::iterator wIndiceIterator = indice_map.find(index);
     bool hasFoundIndex = (wIndiceIterator != indice_map.end());
     if (!hasFoundIndex)
       return -1;

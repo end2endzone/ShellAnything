@@ -510,10 +510,10 @@ CContextMenu::~CContextMenu()
   InterlockedDecrement(&g_cRefDll);
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags)
 {
   //build function descriptor
-  static const FlagDescriptor<UINT>::FLAGS flags[] = {
+  static const FlagDescriptor<UINT>::FLAGS descriptors[] = {
     {CMF_NORMAL           , "CMF_NORMAL"           },
     {CMF_DEFAULTONLY      , "CMF_DEFAULTONLY"      },
     {CMF_VERBSONLY        , "CMF_VERBSONLY"        },
@@ -530,24 +530,24 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
     {CMF_DONOTPICKDEFAULT , "CMF_DONOTPICKDEFAULT" },
     {NULL, NULL},
   };
-  std::string uFlagsStr = FlagDescriptor<UINT>::ToBitString(uFlags, flags);
-  std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
+  std::string flags_str = FlagDescriptor<UINT>::ToBitString(flags, descriptors);
+  std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", indexMenu=" << indexMenu << ", idCmdFirst=" << idCmdFirst << ", idCmdLast=" << idCmdLast << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
-  //Note on uFlags...
-  //Right-click on a file or directory with Windows Explorer on the right area:  uFlags=0x00020494=132244(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
-  //Right-click on the empty area      with Windows Explorer on the right area:  uFlags=0x00020424=132132(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
-  //Right-click on a directory         with Windows Explorer on the left area:   uFlags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
-  //Right-click on a drive             with Windows Explorer on the left area:   uFlags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
-  //Right-click on the empty area      on the Desktop:                           uFlags=0x00020420=132128(dec)=(CMF_NORMAL|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
-  //Right-click on a directory         on the Desktop:                           uFlags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
+  //Note on flags...
+  //Right-click on a file or directory with Windows Explorer on the right area:  flags=0x00020494=132244(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
+  //Right-click on the empty area      with Windows Explorer on the right area:  flags=0x00020424=132132(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
+  //Right-click on a directory         with Windows Explorer on the left area:   flags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
+  //Right-click on a drive             with Windows Explorer on the left area:   flags=0x00000414=001044(dec)=(CMF_NORMAL|CMF_EXPLORE|CMF_CANRENAME|CMF_ASYNCVERBSTATE)
+  //Right-click on the empty area      on the Desktop:                           flags=0x00020420=132128(dec)=(CMF_NORMAL|CMF_NODEFAULT|CMF_ASYNCVERBSTATE)
+  //Right-click on a directory         on the Desktop:                           flags=0x00020490=132240(dec)=(CMF_NORMAL|CMF_CANRENAME|CMF_ITEMMENU|CMF_ASYNCVERBSTATE)
 
   //Filter out queries that have nothing selected.
   //This can happend if user is copy & pasting files (using CTRL+C and CTRL+V)
@@ -581,33 +581,37 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT index
   int num_directories = m_Context.GetNumDirectories();
   LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
-  UINT nextCommandId = idCmdFirst;
-  m_FirstCommandId = idCmdFirst;
+  //Keep a reference the our first command id. We will need it when InvokeCommand is called.
+  m_FirstCommandId = first_command_id;
 
   //Refresh the list of loaded configuration files
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
   cmgr.Refresh();
 
   //Update all menus with the new context
-  //This will refresh the visibility flags which is required before clalling ConfigManager::AssignCommandIds()
+  //This will refresh the visibility flags which is required before calling ConfigManager::AssignCommandIds()
   cmgr.Update(m_Context);
 
   //Assign unique command id to visible menus. Issue #5
-  nextCommandId = cmgr.AssignCommandIds(m_FirstCommandId);
+  UINT next_command_id = cmgr.AssignCommandIds(first_command_id);
 
   //Build the menus
   BuildMenuTree(hMenu);
 
+  //Log information about menu statistics.
+  UINT menu_last_command_id = (UINT)-1; //confirmed last command id
+  if (next_command_id != first_command_id)
+    menu_last_command_id = next_command_id - 1;
+  UINT num_menu_items = next_command_id - first_command_id;
+  LOG(INFO) << "Menu: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
+
   //debug the constructed menu tree
-  UINT lastCommandId = nextCommandId - 1;
-  UINT numItems = nextCommandId - idCmdFirst;
-  LOG(INFO) << "Menu: m_FirstCommandId=" << m_FirstCommandId << " lastCommandId=" << lastCommandId << " nextCommandId=" << nextCommandId << " numItems=" << numItems << ".\n";
 #ifdef _DEBUG
   std::string menu_tree = Win32Utils::GetMenuTree(hMenu, 2);
   LOG(INFO) << "Menu tree:\n" << menu_tree.c_str();
 #endif
 
-  HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, numItems );
+  HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items );
   return hr;
 }
 
@@ -694,10 +698,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
+HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
 {
   //build function descriptor
-  static const FlagDescriptor<UINT>::FLAGS flags[] = {
+  static const FlagDescriptor<UINT>::FLAGS descriptors[] = {
     {GCS_VERBA    , "GCS_VERBA"    },
     {GCS_HELPTEXTA, "GCS_HELPTEXTA"},
     {GCS_VALIDATEA, "GCS_VALIDATEA"},
@@ -708,13 +712,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
     {GCS_UNICODE  , "GCS_UNICODE"  },
     {NULL, NULL},
   };
-  std::string uFlagsStr = FlagDescriptor<UINT>::ToValueString(uFlags, flags);
-  std::string uFlagsHex = ra::strings::Format("0x%08x", uFlags);
+  std::string flags_str = FlagDescriptor<UINT>::ToValueString(flags, descriptors);
+  std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  //LOG(INFO) << __FUNCTION__ << "(), idCmd=" << idCmd << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", uFlags=" << uFlagsHex << "=(" << uFlagsStr << ")";
+  //LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", flags=" << flags_hex << "=(" << flags_str << ")";
 
-  UINT target_command_offset = (UINT)idCmd; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
+  UINT target_command_offset = (UINT)command_id; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
 
   //From this point, it is safe to use class members without other threads interference
@@ -725,7 +729,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   shellanything::Menu * menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for idCmd=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for command_id=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
     return E_INVALIDARG;
   }
 
@@ -738,7 +742,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
   std::string  desc_ansi  = ra::unicode::Utf8ToAnsi(description);
 
   //Build up tooltip string
-  switch(uFlags)
+  switch(flags)
   {
   case GCS_HELPTEXTA:
     {
@@ -776,7 +780,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR idCmd, UINT uF
     break;
   }
 
-  LOG(ERROR) << __FUNCTION__ << "(), unknown flags for uFlags=" << uFlags;
+  LOG(ERROR) << __FUNCTION__ << "(), unknown flags: " << flags;
   return S_FALSE;
 }
 
@@ -1088,7 +1092,7 @@ STDAPI DllCanUnloadNow(void)
     LOG(INFO) << __FUNCTION__ << "() -> Yes";
     return S_OK;
   }
-  LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instance are still in use.";
+  LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
   return S_FALSE;
 }
 

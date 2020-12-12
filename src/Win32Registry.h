@@ -65,29 +65,29 @@ namespace Win32Registry
   bool CreateRegistry(const RGS_ENTRY_LIST & entries);
   bool DeleteRegistry(const RGS_ENTRY_LIST & entries);
 
-  bool GetValue( const char * iKeyPath,
-                 const char * iValueName,
-                 REGISTRY_TYPE & oType,
-                 MemoryBuffer & oValue);
-  bool GetDefaultKeyValue( const char * iKeyPath, REGISTRY_TYPE & oType, MemoryBuffer & oValue);
+  bool GetValue( const char * key_path,
+                 const char * value_name,
+                 REGISTRY_TYPE & type,
+                 MemoryBuffer & value);
+  bool GetDefaultKeyValue( const char * key_path, REGISTRY_TYPE & type, MemoryBuffer & value);
   
-  bool HasKey(const char* iKeyPath);
-  bool CreateKey(const char* iKeyPath);
-  bool CreateKey(const char* iKeyPath, const char* iDefaultValue);
-  bool DeleteKey(const char* iKeyPath);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint8_t* iBuffer, const uint32_t & iBufferSize);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const uint32_t & iValue);
-  bool SetValue(const char* iKeyPath, const char* iValueName, const char *iValue);
-  bool DeleteValue(const char* iKeyPath, const char* iValueName);
+  bool HasKey(const char* key_path);
+  bool CreateKey(const char* key_path);
+  bool CreateKey(const char* key_path, const char* default_value);
+  bool DeleteKey(const char* key_path);
+  bool SetValue(const char* key_path, const char* value_name, const uint8_t* buffer, const uint32_t & buffer_size);
+  bool SetValue(const char* key_path, const char* value_name, const uint32_t & value);
+  bool SetValue(const char* key_path, const char* value_name, const char* value);
+  bool DeleteValue(const char* key_path, const char* value_name);
 
-  bool GetAssociatedProgram(const char* iFileExtention, std::string & oCmdLine);
-  bool SetAssociatedProgram(const char* iExtention, const char* iFileType, const char* iCmdLine);
+  bool GetAssociatedProgram(const char* file_extention, std::string & command_line);
+  bool SetAssociatedProgram(const char* file_extention, const char* file_type, const char* command_line);
 
-  bool RegisterCommandForFile(const char * iName, const char * iCommand);
-  bool RegisterCommandForFolder(const char * iName, const char * iCommand);
+  bool RegisterCommandForFile(const char * name, const char * command);
+  bool RegisterCommandForFolder(const char * name, const char * command);
 
   bool IsValid(const REGISTRY_ICON & icon);
-  REGISTRY_ICON GetFileTypeIcon(const char * iFileExtention);
+  REGISTRY_ICON GetFileTypeIcon(const char * file_extention);
   REGISTRY_ICON GetUnknownFileTypeIcon();
 
 } //namespace Win32Registry

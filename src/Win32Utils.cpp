@@ -63,12 +63,12 @@ namespace Win32Utils
     return hIconLarge;
   }
 
-  RGBQUAD ToRgbQuad(const DWORD & iColor)
+  RGBQUAD ToRgbQuad(const DWORD & color)
   {
     RGBQUAD output = {0};
-    output.rgbRed   = (BYTE)((iColor&0x000000FF)    );
-    output.rgbGreen = (BYTE)((iColor&0x0000FF00)>> 8);
-    output.rgbBlue  = (BYTE)((iColor&0x00FF0000)>>16);
+    output.rgbRed   = (BYTE)((color&0x000000FF)    );
+    output.rgbGreen = (BYTE)((color&0x0000FF00)>> 8);
+    output.rgbBlue  = (BYTE)((color&0x00FF0000)>>16);
     output.rgbReserved = 255;
     return output;
   }
@@ -157,16 +157,16 @@ namespace Win32Utils
   }
   #endif
 
-  HBITMAP CreateBitmapWithAlphaChannel(int biWidth, int biHeight, HDC hDc)
+  HBITMAP CreateBitmapWithAlphaChannel(int width, int height, HDC hDc)
   {
     BITMAPINFO bmi;
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = biWidth;
-    bmi.bmiHeader.biHeight = biHeight;
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 32;
     bmi.bmiHeader.biCompression = BI_RGB;
-    bmi.bmiHeader.biSizeImage = biWidth * biHeight * 4;
+    bmi.bmiHeader.biSizeImage = width * height * 4;
     VOID* pvBits;
     return CreateDIBSection(hDc, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);;
   }

@@ -62,7 +62,7 @@ __inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
 namespace shellanything
 {
 
-  bool evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size)
+  bool Evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size)
   {
     if (error_buffer != NULL && error_size > 0)
       error_buffer[0] = '\0';
@@ -92,10 +92,10 @@ namespace shellanything
     return true;
   }
 
-  bool evaluate(const char * expression_string, bool * result, char * error, size_t error_size)
+  bool Evaluate(const char * expression_string, bool * result, char * error, size_t error_size)
   {
     double tmp = 0.0;
-    bool success = evaluate(expression_string, &tmp, error, error_size);
+    bool success = Evaluate(expression_string, &tmp, error, error_size);
     if (!success)
       return false;
 

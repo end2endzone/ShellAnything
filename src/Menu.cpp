@@ -71,9 +71,9 @@ namespace shellanything
     return mSeparator;
   }
 
-  void Menu::SetSeparator(bool iSeparator)
+  void Menu::SetSeparator(bool separator)
   {
-    mSeparator = iSeparator;
+    mSeparator = separator;
   }
 
   bool Menu::IsParentMenu() const
@@ -88,9 +88,9 @@ namespace shellanything
     return mName;
   }
 
-  void Menu::SetName(const std::string & iName)
+  void Menu::SetName(const std::string & name)
   {
-    mName = iName;
+    mName = name;
   }
 
   const int & Menu::GetNameMaxLength() const
@@ -98,9 +98,9 @@ namespace shellanything
     return mNameMaxLength;
   }
 
-  void Menu::SetNameMaxLength(const int & iNameMaxLength)
+  void Menu::SetNameMaxLength(const int & name_max_length)
   {
-    mNameMaxLength = iNameMaxLength;
+    mNameMaxLength = name_max_length;
 
     // Limit out of range values
     if (mNameMaxLength < 1)
@@ -134,9 +134,9 @@ namespace shellanything
     return mDescription;
   }
 
-  void Menu::SetDescription(const std::string & iDescription)
+  void Menu::SetDescription(const std::string & description)
   {
-    mDescription = iDescription;
+    mDescription = description;
   }
 
   const Icon & Menu::GetIcon() const
@@ -149,7 +149,7 @@ namespace shellanything
     mIcon = icon;
   }
 
-  void Menu::Update(const Context & c)
+  void Menu::Update(const Context & context)
   {
     //update current menu
     bool visible = true;
@@ -162,7 +162,7 @@ namespace shellanything
         const Validator * validator = GetVisibility(i);
         if (validator)
         {
-          visible |= validator->Validate(c);
+          visible |= validator->Validate(context);
         }
       }
     }
@@ -176,7 +176,7 @@ namespace shellanything
         const Validator * validator = GetValidity(i);
         if (validator)
         {
-          enabled |= validator->Validate(c);
+          enabled |= validator->Validate(context);
         }
       }
     }
@@ -191,7 +191,7 @@ namespace shellanything
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      child->Update(c);
+      child->Update(context);
 
       //refresh the flag
       all_invisible_children = all_invisible_children && !child->IsVisible();
@@ -206,9 +206,9 @@ namespace shellanything
     }
   }
 
-  Menu * Menu::FindMenuByCommandId(const uint32_t & iCommandId)
+  Menu * Menu::FindMenuByCommandId(const uint32_t & command_id)
   {
-    if (mCommandId == iCommandId)
+    if (mCommandId == command_id)
       return this;
  
     //for each child
@@ -216,7 +216,7 @@ namespace shellanything
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      Menu * match = child->FindMenuByCommandId(iCommandId);
+      Menu * match = child->FindMenuByCommandId(command_id);
       if (match)
         return match;
     }
@@ -224,20 +224,20 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t Menu::AssignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t Menu::AssignCommandIds(const uint32_t & first_command_id)
   {
-    uint32_t nextCommandId = iFirstCommandId;
+    uint32_t next_command_id = first_command_id;
 
     //Issue #5 - ConfigManager::AssignCommandIds() should skip invisible menus
-    if (!mVisible || iFirstCommandId == INVALID_COMMAND_ID)
+    if (!mVisible || first_command_id == INVALID_COMMAND_ID)
     {
       this->SetCommandId(INVALID_COMMAND_ID); //invalidate this menu's command id
     }
     else
     {
       //assign a command id to this menu
-      this->SetCommandId(nextCommandId);
-      nextCommandId++;
+      this->SetCommandId(next_command_id);
+      next_command_id++;
     }
 
     //for each child
@@ -249,10 +249,10 @@ namespace shellanything
       if (mCommandId == INVALID_COMMAND_ID)
         child->AssignCommandIds(INVALID_COMMAND_ID); //also assign invalid ids to sub menus
       else
-        nextCommandId = child->AssignCommandIds(nextCommandId); //assign the next command ids to sub menus
+        next_command_id = child->AssignCommandIds(next_command_id); //assign the next command ids to sub menus
     }
  
-    return nextCommandId;
+    return next_command_id;
   }
  
   const uint32_t & Menu::GetCommandId() const
@@ -260,9 +260,9 @@ namespace shellanything
     return mCommandId;
   }
  
-  void Menu::SetCommandId(const uint32_t & iCommandId)
+  void Menu::SetCommandId(const uint32_t & command_id)
   {
-    mCommandId = iCommandId;
+    mCommandId = command_id;
   }
  
   bool Menu::IsVisible() const

@@ -265,9 +265,9 @@ namespace shellanything
     return mFilePath;
   }
 
-  void Configuration::SetFilePath(const std::string & iFilePath)
+  void Configuration::SetFilePath(const std::string & file_path)
   {
-    mFilePath = iFilePath;
+    mFilePath = file_path;
   }
 
   const uint64_t & Configuration::GetFileModifiedDate() const
@@ -275,19 +275,19 @@ namespace shellanything
     return mFileModifiedDate;
   }
 
-  void Configuration::SetFileModifiedDate(const uint64_t & iFileModifiedDate)
+  void Configuration::SetFileModifiedDate(const uint64_t & file_modified_date)
   {
-    mFileModifiedDate = iFileModifiedDate;
+    mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const Context & c)
+  void Configuration::Update(const Context & context)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      child->Update(c);
+      child->Update(context);
     }
   }
 
@@ -328,14 +328,14 @@ namespace shellanything
     }
   }
 
-  Menu * Configuration::FindMenuByCommandId(const uint32_t & iCommandId)
+  Menu * Configuration::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
-      Menu * match = child->FindMenuByCommandId(iCommandId);
+      Menu * match = child->FindMenuByCommandId(command_id);
       if (match)
         return match;
     }
@@ -343,9 +343,9 @@ namespace shellanything
     return NULL;
   }
  
-  uint32_t Configuration::AssignCommandIds(const uint32_t & iFirstCommandId)
+  uint32_t Configuration::AssignCommandIds(const uint32_t & first_command_id)
   {
-    uint32_t nextCommandId = iFirstCommandId;
+    uint32_t nextCommandId = first_command_id;
 
     //for each child
     Menu::MenuPtrList children = GetMenus();

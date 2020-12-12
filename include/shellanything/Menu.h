@@ -76,8 +76,8 @@ namespace shellanything
     /// <summary>
     /// Sets the menu separator property.
     /// </summary>
-    /// <param name="iSeparator">True to define the menu as a separator. False otherwise.</param>
-    void SetSeparator(bool iSeparator);
+    /// <param name="separator">True to define the menu as a separator. False otherwise.</param>
+    void SetSeparator(bool separator);
 
     /// <summary>
     /// Returns true if the menu is a parent menu (if this menu have submenus).
@@ -93,7 +93,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & iName);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'max_length' parameter.
@@ -103,7 +103,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'max_length' parameter.
     /// </summary>
-    void SetNameMaxLength(const int & iNameMaxLength);
+    void SetNameMaxLength(const int & name_max_length);
 
     /// <summary>
     /// Truncate a string to the maximum length allowed by this menu.
@@ -126,7 +126,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'description' parameter.
     /// </summary>
-    void SetDescription(const std::string & iDescription);
+    void SetDescription(const std::string & description);
 
     /// <summary>
     /// Get this menu icon instance.
@@ -136,28 +136,27 @@ namespace shellanything
     /// <summary>
     /// Set this menu icon instance.
     /// </summary>
-    /// <param name="iIcon">An icon definition</param>
-    void SetIcon(const Icon & iIcon);
+    void SetIcon(const Icon & icon);
 
     /// <summary>
     /// Updates the menu and submenus 'visible' and 'enabled' properties based on the given Context.
     /// </summary>
-    /// <param name="c">The context used for updating the menu.</param>
-    void Update(const Context & c);
+    /// <param name="context">The context used for updating the menu.</param>
+    void Update(const Context & context);
 
     /// <summary>
-    /// Searches this menu and submenus for a menu whose command id is iCommandId.
+    /// Searches this menu and submenus for a menu whose command id is command_id.
     /// </summary>
-    /// <param name="iCommandId">The search command id value.</param>
+    /// <param name="command_id">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu * FindMenuByCommandId(const uint32_t & iCommandId);
+    Menu * FindMenuByCommandId(const uint32_t & command_id);
 
     /// <summary>
     /// Assign unique command id to this menus and submenus.
     /// </summary>
-    /// <param name="iFirstCommandId">The first command id available.</param>
-    /// <returns>Returns the next available command id. Returns iFirstCommandId if no command id was assigned.</returns>
-    uint32_t AssignCommandIds(const uint32_t & iFirstCommandId);
+    /// <param name="first_command_id">The first command id available.</param>
+    /// <returns>Returns the next available command id. Returns first_command_id if no command id was assigned.</returns>
+    uint32_t AssignCommandIds(const uint32_t & first_command_id);
 
     /// <summary>
     /// Getter for the 'command-id' parameter.
@@ -167,7 +166,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'command-id' parameter.
     /// </summary>
-    void SetCommandId(const uint32_t & iCommandId);
+    void SetCommandId(const uint32_t & command_id);
 
     /// <summary>
     /// Getter for the 'visible' parameter.
@@ -204,6 +203,7 @@ namespace shellanything
     /// <summary>
     /// Add a new validity instance used for validity to menu. The menu instance takes ownership of the validator.
     /// </summary>
+    /// <param name="validator">A valid validity validator instance.</param>
     void AddValidity(Validator * validator);
 
     /// <summary>
@@ -221,6 +221,7 @@ namespace shellanything
     /// <summary>
     /// Add a new Validator instance used for visibility to menu. The menu instance takes ownership of the validator.
     /// </summary>
+    /// <param name="validator">A valid visibility validator instance.</param>
     void AddVisibility(Validator * validator);
 
     /// <summary>

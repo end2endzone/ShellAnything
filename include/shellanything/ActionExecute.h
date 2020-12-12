@@ -42,9 +42,9 @@ namespace shellanything
     /// <summary>
     /// Execute an application.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context& iContext) const;
+    virtual bool Execute(const Context& context) const;
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -54,7 +54,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & iPath);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'basedir' parameter.
@@ -64,7 +64,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'basedir' parameter.
     /// </summary>
-    void SetBaseDir(const std::string & iBaseDir);
+    void SetBaseDir(const std::string & base_dir);
 
     /// <summary>
     /// Getter for the 'arguments' parameter.
@@ -74,7 +74,7 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'arguments' parameter.
     /// </summary>
-    void SetArguments(const std::string & iArguments);
+    void SetArguments(const std::string & arguments);
 
     /// <summary>
     /// Getter for the 'verb' parameter.
@@ -84,24 +84,24 @@ namespace shellanything
     /// <summary>
     /// Setter for the 'verb' parameter.
     /// </summary>
-    void SetVerb(const std::string& iVerb);
+    void SetVerb(const std::string& verb);
 
   private:
     /// <summary>
     /// Execute an application with ShellExecuteEx method.
     /// This execute method supports verbs.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const Context & iContext) const;
+    virtual bool ExecuteVerb(const Context & context) const;
 
     /// <summary>
     /// Execute an application with RapidAssist method.
     /// This execute method does not supports verbs.
     /// </summary>
-    /// <param name="iContext">The current context of execution.</param>
+    /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const Context & iContext) const;
+    virtual bool ExecuteProcess(const Context & context) const;
 
   private:
     std::string mPath;

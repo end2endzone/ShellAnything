@@ -46,19 +46,19 @@ namespace shellanything
   {
   }
 
-  bool ActionExecute::Execute(const Context& iContext) const
+  bool ActionExecute::Execute(const Context& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string verb = pmgr.Expand(mVerb);
 
     //If a verb was specified, delegate to VerbExecute(). Otherwise, use ProcessExecute().
     if (verb.empty())
-      return ExecuteProcess(iContext);
+      return ExecuteProcess(context);
     else
-      return ExecuteVerb(iContext);
+      return ExecuteVerb(context);
   }
 
-  bool ActionExecute::ExecuteVerb(const Context& iContext) const
+  bool ActionExecute::ExecuteVerb(const Context& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path      = pmgr.Expand(mPath);
@@ -116,7 +116,7 @@ namespace shellanything
     return success;
   }
 
-  bool ActionExecute::ExecuteProcess(const Context & iContext) const
+  bool ActionExecute::ExecuteProcess(const Context & context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path      = pmgr.Expand(mPath);
@@ -130,9 +130,9 @@ namespace shellanything
     //If not specified try to fill basedir with the best option available
     if (basedir.empty())
     {
-      const shellanything::Context::ElementList & elements = iContext.GetElements();
-      size_t num_dir    = iContext.GetNumDirectories();
-      size_t num_files  = iContext.GetNumFiles();
+      const shellanything::Context::ElementList & elements = context.GetElements();
+      size_t num_dir    = context.GetNumDirectories();
+      size_t num_files  = context.GetNumFiles();
       if (num_dir == 1 && elements.size() == 1)
       {
         //if a single directory was selected
@@ -201,9 +201,9 @@ namespace shellanything
     return mPath;
   }
 
-  void ActionExecute::SetPath(const std::string & iPath)
+  void ActionExecute::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
   const std::string & ActionExecute::GetBaseDir() const
@@ -211,9 +211,9 @@ namespace shellanything
     return mBaseDir;
   }
 
-  void ActionExecute::SetBaseDir(const std::string & iBaseDir)
+  void ActionExecute::SetBaseDir(const std::string & base_dir)
   {
-    mBaseDir = iBaseDir;
+    mBaseDir = base_dir;
   }
 
   const std::string & ActionExecute::GetArguments() const
@@ -221,9 +221,9 @@ namespace shellanything
     return mArguments;
   }
 
-  void ActionExecute::SetArguments(const std::string & iArguments)
+  void ActionExecute::SetArguments(const std::string & arguments)
   {
-    mArguments = iArguments;
+    mArguments = arguments;
   }
 
   const std::string& ActionExecute::GetVerb() const
@@ -231,9 +231,9 @@ namespace shellanything
     return mVerb;
   }
 
-  void ActionExecute::SetVerb(const std::string& iVerb)
+  void ActionExecute::SetVerb(const std::string& verb)
   {
-    mVerb = iVerb;
+    mVerb = verb;
   }
 
 } //namespace shellanything

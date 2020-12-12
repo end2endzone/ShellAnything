@@ -54,8 +54,9 @@ namespace shellanything
   {
   }
 
-  bool OpenPathGeneric(const std::string & iPath) {
-    std::wstring pathW = ra::unicode::Utf8ToUnicode(iPath);
+  bool OpenPathGeneric(const std::string & path)
+  {
+    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
 
     SHELLEXECUTEINFOW info = { 0 };
 
@@ -76,7 +77,7 @@ namespace shellanything
     return (success == TRUE);
   }
 
-  bool ActionOpen::Execute(const Context & iContext) const
+  bool ActionOpen::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
@@ -115,9 +116,9 @@ namespace shellanything
     return mPath;
   }
 
-  void ActionOpen::SetPath(const std::string & iPath)
+  void ActionOpen::SetPath(const std::string & path)
   {
-    mPath = iPath;
+    mPath = path;
   }
 
 } //namespace shellanything
