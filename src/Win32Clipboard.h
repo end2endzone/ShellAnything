@@ -66,65 +66,67 @@ namespace Win32Clipboard
     /// <summary>
     /// Query the clipboard to know if it Contains the given format.
     /// </summary>
-    /// <param name="iClipboardFormat">The format to query.</param>
+    /// <param name="clipboard_format">The format to query.</param>
     /// <returns>Returns true if the clipboard constains a specific format.</returns>
-    virtual bool Contains(Format iClipboardFormat);
+    virtual bool Contains(Format clipboard_format);
 
     /// <summary>
     /// Assign the given text value to the clipboard.
     /// </summary>
-    /// <param name="iText">The text value to set to the clipboard.</param>
+    /// <param name="text">The text value to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetText(const std::string & iText);
+    virtual bool SetText(const std::string & text);
 
     /// <summary>
     /// Provides the current text value of the clipboard.
     /// </summary>
-    /// <param name="oText">The output text value of the clipboard.</param>
+    /// <param name="text">The output text value of the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsText(std::string & oText);
+    virtual bool GetAsText(std::string & text);
 
     /// <summary>
     /// Assign the given unicode text value to the clipboard.
     /// </summary>
-    /// <param name="iText">The unicode text value to set to the clipboard.</param>
+    /// <param name="text">The unicode text value to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetTextUnicode(const std::wstring & iText);
+    virtual bool SetTextUnicode(const std::wstring & text);
 
     /// <summary>
     /// Provides the current unicode text value of the clipboard.
     /// </summary>
-    /// <param name="oText">The output unicode text value of the clipboard.</param>
+    /// <param name="text">The output unicode text value of the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsTextUnicode(std::wstring & oText);
+    virtual bool GetAsTextUnicode(std::wstring & text);
 
     /// <summary>
     /// Assign the given binary data to the clipboard.
     /// </summary>
-    /// <param name="iMemoryBuffer">The binary data to set to the clipboard.</param>
+    /// <param name="buffer">The binary data to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetBinary(const MemoryBuffer & iMemoryBuffer);
+    virtual bool SetBinary(const MemoryBuffer & buffer);
 
     /// <summary>
     /// Provides the current binary data of the clipboard.
     /// </summary>
-    /// <param name="oText">The output binary data of the clipboard.</param>
+    /// <param name="buffer">The output binary data of the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsBinary(MemoryBuffer & oMemoryBuffer);
+    virtual bool GetAsBinary(MemoryBuffer & buffer);
 
     /// <summary>
     /// Assign the given file operation and list of files to the clipboard.
     /// </summary>
-    /// <param name="iMemoryBuffer">The file operation and list of files to set to the clipboard.</param>
+    /// <param name="type">The file operation to set to the clipboard.</param>
+    /// <param name="files">The list of files to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetDragDropFiles(const DragDropType & iDragDropType, const StringVector & iFiles);
+    virtual bool SetDragDropFiles(const DragDropType & type, const StringVector & files);
 
     /// <summary>
     /// Provides the current file operation and list of files set to the clipboard.
     /// </summary>
-    /// <param name="oText">The output file operation and list of files of the clipboard.</param>
+    /// <param name="type">The file operation set to the clipboard.</param>
+    /// <param name="files">The list of files set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsDragDropFiles(DragDropType & oDragDropType, StringVector & oFiles);
+    virtual bool GetAsDragDropFiles(DragDropType & type, StringVector & files);
 
   };
 
