@@ -110,9 +110,9 @@ public:
   ULONG   STDMETHODCALLTYPE Release();
 
   //IContextMenu interface
-  HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
+  HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags);
   HRESULT STDMETHODCALLTYPE InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
-  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
+  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
 
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
