@@ -1,7 +1,8 @@
 Changes for 0.6.0
 
-* Fixed issue #23: Implement menu validation based on a string expression
-* Fixed issue #53: Multiple <visibility> or <validity> elements support
+* Fixed issue #23: Implement menu validation based on a string expression.
+* Fixed issue #53: Multiple <visibility> or <validity> elements support.
+* Fixed issue #71: Uniformalize function argument names.
 
 
 Changes for 0.5.1
