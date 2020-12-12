@@ -226,7 +226,7 @@ namespace shellanything
  
   uint32_t Menu::AssignCommandIds(const uint32_t & first_command_id)
   {
-    uint32_t nextCommandId = first_command_id;
+    uint32_t next_command_id = first_command_id;
 
     //Issue #5 - ConfigManager::AssignCommandIds() should skip invisible menus
     if (!mVisible || first_command_id == INVALID_COMMAND_ID)
@@ -236,8 +236,8 @@ namespace shellanything
     else
     {
       //assign a command id to this menu
-      this->SetCommandId(nextCommandId);
-      nextCommandId++;
+      this->SetCommandId(next_command_id);
+      next_command_id++;
     }
 
     //for each child
@@ -249,10 +249,10 @@ namespace shellanything
       if (mCommandId == INVALID_COMMAND_ID)
         child->AssignCommandIds(INVALID_COMMAND_ID); //also assign invalid ids to sub menus
       else
-        nextCommandId = child->AssignCommandIds(nextCommandId); //assign the next command ids to sub menus
+        next_command_id = child->AssignCommandIds(next_command_id); //assign the next command ids to sub menus
     }
  
-    return nextCommandId;
+    return next_command_id;
   }
  
   const uint32_t & Menu::GetCommandId() const
