@@ -32,7 +32,7 @@ namespace Win32Utils
 {
   SIZE GetIconSize(HICON hIcon);
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
-  RGBQUAD ToRgbQuad(const DWORD & iColor);
+  RGBQUAD ToRgbQuad(const DWORD & color);
   SIZE GetBitmapSize(HBITMAP hBitmap);
   BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
   HBITMAP CreateBitmapWithAlphaChannel(int width, int height, HDC hDc);

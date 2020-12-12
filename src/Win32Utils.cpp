@@ -63,12 +63,12 @@ namespace Win32Utils
     return hIconLarge;
   }
 
-  RGBQUAD ToRgbQuad(const DWORD & iColor)
+  RGBQUAD ToRgbQuad(const DWORD & color)
   {
     RGBQUAD output = {0};
-    output.rgbRed   = (BYTE)((iColor&0x000000FF)    );
-    output.rgbGreen = (BYTE)((iColor&0x0000FF00)>> 8);
-    output.rgbBlue  = (BYTE)((iColor&0x00FF0000)>>16);
+    output.rgbRed   = (BYTE)((color&0x000000FF)    );
+    output.rgbGreen = (BYTE)((color&0x0000FF00)>> 8);
+    output.rgbBlue  = (BYTE)((color&0x00FF0000)>>16);
     output.rgbReserved = 255;
     return output;
   }
