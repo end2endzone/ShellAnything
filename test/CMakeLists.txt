@@ -97,6 +97,10 @@ add_executable(shellanything_unittest
   TestWin32Registry.h
   TestWin32Utils.cpp
   TestWin32Utils.h
+  TestWorkspace.cpp
+  TestWorkspace.h
+  Workspace.cpp
+  Workspace.h
 )
 
 # Group external files as filter for Visual Studio
