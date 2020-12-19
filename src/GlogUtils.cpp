@@ -196,7 +196,7 @@ namespace shellanything
     std::string file_path = path + ra::filesystem::GetPathSeparatorStr() + filename;
     static const std::string data = __FUNCTION__;
     bool file_created = ra::filesystem::WriteFile(file_path, data);
-    if (file_created)
+    if (!file_created)
       return false; //Write is denied
 
     //Write is granted
@@ -204,6 +204,31 @@ namespace shellanything
     //Cleaning up
     bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
 
+    return true;
+  }
+
+  bool IsValidLogDirectory(const std::string & path)
+  {
+    //MessageBox(NULL, "IsValidLogDirectory", "IsValidLogDirectory", MB_OK);
+
+    //Issue #60 - Unit tests cannot execute from installation directory.
+
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExists(path.c_str()))
+    {
+      //Try to create the directory.
+      bool created = ra::filesystem::CreateDirectory(path.c_str());
+      if (!created)
+        return false;
+    }
+
+    //Validate that directory path is writable.
+    bool write_access = HasDirectoryWriteAccess(path);
+    if (!write_access)
+      return false; //Write to directory is denied.
+
+    //Write to directory is granted.
+    //MessageBox(NULL, path.c_str(), "IsValidLogDirectory", MB_OK);
     return true;
   }
 
@@ -218,27 +243,23 @@ namespace shellanything
       //Create 'logs' directory under the current executable.
       //When running tests from a developer environment, the 'logs' directory is expected to have write access.
       std::string log_dir = ra::process::GetCurrentProcessDir();
-      log_dir.append("\\logs");
-
-      //Check if the directory already exists
-      if (!ra::filesystem::DirectoryExists(log_dir.c_str()))
+      if (!log_dir.empty())
       {
-        //Try to create the directory.
-        //There is no need to check if the directory was created or not.
-        //The function HasDirectoryWriteAccess() will verify if the directory exists.
-        ra::filesystem::CreateDirectory(log_dir.c_str());
+        log_dir.append("\\test_logs");
+        if (IsValidLogDirectory(log_dir))
+          return log_dir;
       }
-
-      bool write_access = HasDirectoryWriteAccess(log_dir);
-      if (write_access)
-        return log_dir; //User is granted access.
 
       //Issue #60 - Unit tests cannot execute from installation directory.
       //If unit tests are executed from the installation directory,
       //the 'logs' directory under the current executable is denied write access.
-      log_dir = ra::environment::GetEnvironmentVariable("TEMP") + "\\ShellAnything\\Logs";
-
-      return log_dir;
+      log_dir = ra::environment::GetEnvironmentVariable("TEMP");
+      if (!log_dir.empty())
+      {
+        log_dir.append("\\test_logs");
+        if (IsValidLogDirectory(log_dir))
+          return log_dir;
+      }
     }
 
     //This DLL is executed by the shell (File Explorer).
@@ -252,8 +273,8 @@ namespace shellanything
       //We got the %USERPROFILE% directory.
       //Now add our custom path to it
       log_dir.append("\\ShellAnything\\Logs");
-      
-      return log_dir;
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
     }
 
     //Failed getting HOME directory.
