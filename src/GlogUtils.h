@@ -52,6 +52,7 @@ namespace shellanything
   GLOG_DATETIME GetFileDateTime(const std::string & path);
   std::string GetLogDestination(int level);
   std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id);
+  bool HasDirectoryWriteAccess(const std::string & path);
   std::string GetLogDirectory();
   bool IsLogFile(const std::string & path);
 

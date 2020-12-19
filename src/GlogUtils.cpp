@@ -209,8 +209,6 @@ namespace shellanything
 
   bool IsValidLogDirectory(const std::string & path)
   {
-    //MessageBox(NULL, "IsValidLogDirectory", "IsValidLogDirectory", MB_OK);
-
     //Issue #60 - Unit tests cannot execute from installation directory.
 
     //Check if the directory already exists
@@ -228,7 +226,6 @@ namespace shellanything
       return false; //Write to directory is denied.
 
     //Write to directory is granted.
-    //MessageBox(NULL, path.c_str(), "IsValidLogDirectory", MB_OK);
     return true;
   }
 
@@ -240,8 +237,8 @@ namespace shellanything
     {
       //This DLL is executed by the unit tests.
 
-      //Create 'logs' directory under the current executable.
-      //When running tests from a developer environment, the 'logs' directory is expected to have write access.
+      //Create 'test_logs' directory under the current executable.
+      //When running tests from a developer environment, the 'test_logs' directory is expected to have write access.
       std::string log_dir = ra::process::GetCurrentProcessDir();
       if (!log_dir.empty())
       {
@@ -252,7 +249,7 @@ namespace shellanything
 
       //Issue #60 - Unit tests cannot execute from installation directory.
       //If unit tests are executed from the installation directory,
-      //the 'logs' directory under the current executable is denied write access.
+      //the 'test_logs' directory under the current executable is denied write access.
       log_dir = ra::environment::GetEnvironmentVariable("TEMP");
       if (!log_dir.empty())
       {

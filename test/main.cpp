@@ -38,6 +38,7 @@
 #include "rapidassist/cli.h"
 
 #include "ArgumentsHandler.h"
+#include "GlogUtils.h"
 
 using namespace ra;
 
@@ -58,9 +59,13 @@ int main(int argc, char **argv)
 
   google::SetLogFilenameExtension(".log");
 
-  //define log directory to be the current directory
-  //which (in most cases) should be next to the unit test executable
-  fLS::FLAGS_log_dir = ".";
+  //Issue #60 - Unit tests cannot execute from installation directory.
+  //Create log directory under the current executable.
+  //When running tests from a developer environment, the log directory is expected to have write access.
+  //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
+  std::string log_dir = shellanything::GetLogDirectory();
+  fLS::FLAGS_log_dir = log_dir;
+  printf("Using log directory: '%s'.\n", log_dir.c_str());
 
   // Initialize Google's logging library.
   google::InitGoogleLogging(argv[0]);
@@ -68,12 +73,21 @@ int main(int argc, char **argv)
   LOG(INFO) << "Starting unit tests";
   LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
-  //define default values for xml output report
-  std::string outputXml = "xml:" "shellanything_unittest";
+  //define path for xml output report
+  std::string outputXml = "xml:";
+  if (!shellanything::HasDirectoryWriteAccess("."))
+  {
+    //Issue #60 - Unit tests cannot execute from installation directory.
+    //Output report in same directory as the log files
+    outputXml.append(log_dir);
+    outputXml.append("\\");
+  }
+  outputXml.append("shellanything_unittest");
   outputXml += (ra::environment::IsProcess32Bit() ? ".x86" : ".x64");
   outputXml += (ra::environment::IsConfigurationDebug() ? ".debug" : ".release");
   outputXml += ".xml";
   ::testing::GTEST_FLAG(output) = outputXml;
+  printf("Using xml report: '%s'.\n", outputXml.c_str());
 
   ::testing::GTEST_FLAG(filter) = "*";
   ::testing::InitGoogleTest(&argc, argv);
