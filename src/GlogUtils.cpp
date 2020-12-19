@@ -181,17 +181,67 @@ namespace shellanything
     return filename;
   }
 
+  //Test if a directory allow write access to the current user.
+  //Note: the only way to detect if write access is available is to actually write a file
+  bool HasDirectoryWriteAccess(const std::string & path)
+  {
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExists(path.c_str()))
+        return false; //Directory not found. Denied write access.
+
+    //Generate a random filename to use as a "temporary file".
+    std::string filename = ra::filesystem::GetTemporaryFileName();
+
+    //Try to create a file. This will validate that we have write access to the directory.
+    std::string file_path = path + ra::filesystem::GetPathSeparatorStr() + filename;
+    static const std::string data = __FUNCTION__;
+    bool file_created = ra::filesystem::WriteFile(file_path, data);
+    if (file_created)
+      return false; //Write is denied
+
+    //Write is granted
+
+    //Cleaning up
+    bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
+
+    return true;
+  }
+
   std::string GetLogDirectory()
   {
     //Issue #10 - Change the log directory if run from the unit tests executable
     std::string process_path = ra::process::GetCurrentProcessPath();
     if (process_path.find("_unittest") != std::string::npos)
     {
-      //This DLL is executed by the unit tests
+      //This DLL is executed by the unit tests.
+
+      //Create 'logs' directory under the current executable.
+      //When running tests from a developer environment, the 'logs' directory is expected to have write access.
       std::string log_dir = ra::process::GetCurrentProcessDir();
       log_dir.append("\\logs");
+
+      //Check if the directory already exists
+      if (!ra::filesystem::DirectoryExists(log_dir.c_str()))
+      {
+        //Try to create the directory.
+        //There is no need to check if the directory was created or not.
+        //The function HasDirectoryWriteAccess() will verify if the directory exists.
+        ra::filesystem::CreateDirectory(log_dir.c_str());
+      }
+
+      bool write_access = HasDirectoryWriteAccess(log_dir);
+      if (write_access)
+        return log_dir; //User is granted access.
+
+      //Issue #60 - Unit tests cannot execute from installation directory.
+      //If unit tests are executed from the installation directory,
+      //the 'logs' directory under the current executable is denied write access.
+      log_dir = ra::environment::GetEnvironmentVariable("TEMP") + "\\ShellAnything\\Logs";
+
       return log_dir;
     }
+
+    //This DLL is executed by the shell (File Explorer).
 
     //By default, GLOG will output log files in %TEMP% directory.
     //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
