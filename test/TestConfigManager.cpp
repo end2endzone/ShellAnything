@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestConfigManager.h"
+#include "Workspace.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
 
@@ -158,24 +159,21 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Define the path to the template configuration file
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp1.xml";
-    std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp2.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path1);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path1) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path1 << "'.";
-    
-    //setup ConfigManager to read files from template_target_dir
+
+    //Import the required files into the workspace
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -186,8 +184,8 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
-    //create another file in the target directory
-    std::string CONFIG_XML = ""
+    //Import another file into the workspace
+    static const std::string CONFIG_XML = ""
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
       "<root>\n"
       "  <shell>\n"
@@ -198,50 +196,39 @@ namespace shellanything { namespace test
       "    </menu>\n"
       "  </shell>\n"
       "</root>\n";
-    static const std::string LINE_SEPARATOR = ra::environment::GetLineSeparator();
-    if (LINE_SEPARATOR != "\n")
-    {
-      ra::strings::Replace(CONFIG_XML, "\n", LINE_SEPARATOR);
-    }
-    bool fileWrite = ra::filesystem::WriteFile(template_target_path2, CONFIG_XML);
-    ASSERT_TRUE(fileWrite);
+    bool file_write = ra::filesystem::WriteTextFile(workspace.GetFullPathUtf8("another.xml"), CONFIG_XML);
+    ASSERT_TRUE(file_write);
  
-    //refresh the ConfigurationManager to see if it picked up the new file
+    //Refresh the ConfigurationManager to see if it picked up the new file
     cmgr.Refresh();
  
     //ASSERT both file is loaded
     configs = cmgr.GetConfigurations();
     ASSERT_EQ( 2, configs.size() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testFileModifications)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
-    std::string test_name = ra::testing::GetTestQualifiedName();
-    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    std::string template_source_path = std::string("test_files") + path_separator + ra::testing::GetTestQualifiedName() + ".xml";
+    ASSERT_TRUE(workspace.ImportAndRenameFileUtf8(template_source_path.c_str(), "tmp.xml"));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
 
-    //setup ConfigManager to read files from template_target_dir
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -252,9 +239,9 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
-    //inject another menu in the loaded xml file
+    //Inject another menu in the loaded xml file
  
-    //prepare XML content to add
+    //Prepare XML content to add
     std::string MENU_XML = "<menu name=\"Start notepad.exe\">\n"
       "      <actions>\n"
       "        <exec path=\"C:\\windows\\system32\\notepad.exe\" />\n"
@@ -266,15 +253,16 @@ namespace shellanything { namespace test
       ra::strings::Replace(MENU_XML, "\n", LINE_SEPARATOR);
     }
  
-    //process with file search and replace
+    //Process with file search and replace
+    const std::string target_path = workspace.GetFullPathUtf8("tmp.xml");
     std::string content;
-    bool fileReaded = ra::filesystem::ReadFile(template_target_path, content);
-    ASSERT_TRUE(fileReaded);
+    bool file_readed = ra::filesystem::ReadFile(target_path, content);
+    ASSERT_TRUE(file_readed);
     ra::strings::Replace(content, "<!-- CODE INSERT LOCATION -->", MENU_XML);
-    bool fileWrite = ra::filesystem::WriteFile(template_target_path, content);
-    ASSERT_TRUE(fileWrite);
+    bool file_write = ra::filesystem::WriteFile(target_path, content);
+    ASSERT_TRUE(file_write);
  
-    //refresh the ConfigurationManager to see if it picked up the new file
+    //Refresh the ConfigurationManager to see if it picked up the new file
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -285,45 +273,46 @@ namespace shellanything { namespace test
     menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 2, menus.size() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testAssignCommandId)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
+
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path1 = std::string("test_files") + path_separator + test_name + ".1.xml";
     std::string template_source_path2 = std::string("test_files") + path_separator + test_name + ".2.xml";
-    std::string template_target_path1 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.1.xml";
-    std::string template_target_path2 = std::string("test_files") + path_separator + test_name + path_separator + "tmp.2.xml";
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path1);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-    //copy the files
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path1, template_target_path1) ) << "Failed copying file '" << template_source_path1 << "' to file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path2, template_target_path2) ) << "Failed copying file '" << template_source_path2 << "' to file '" << template_target_path2 << "'.";
-   
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportAndRenameFileUtf8(template_source_path1.c_str(), "tmp1.xml"));
+    ASSERT_TRUE(workspace.ImportAndRenameFileUtf8(template_source_path2.c_str(), "tmp2.xml"));
+
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
  
-    //setup ConfigManager to read files from template_target_dir
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
+
     //ASSERT the files are loaded
     Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 2, configs.size() );
-    //assign unique command ids
+
+    //Assign unique command ids
     uint32_t nextCommandId = cmgr.AssignCommandIds(101);
     ASSERT_EQ( 112, nextCommandId ); //assert 11 Menu(s) loaded by ConfigManager
  
-    //assert invalid command id
+    //Assert invalid command id
     ASSERT_EQ( (Menu*)NULL, cmgr.FindMenuByCommandId(99999999) );
  
-    //find known Menu by known command id
+    //Find known Menu by known command id
     Menu * wFooServiceMenu = cmgr.FindMenuByCommandId(101);
     Menu *    wRestartMenu = cmgr.FindMenuByCommandId(104);
     Menu *     wWinzipMenu = cmgr.FindMenuByCommandId(108);
@@ -334,9 +323,8 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string("Restart"),      wRestartMenu->GetName() );
     ASSERT_EQ( std::string("Winzip"),       wWinzipMenu->GetName() );
  
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path1.c_str()) ) << "Failed deleting file '" << template_target_path1 << "'.";
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path2.c_str()) ) << "Failed deleting file '" << template_target_path2 << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testDescription)
@@ -377,26 +365,22 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-    
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+     
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
 
-    //setup ConfigManager to read files from template_target_dir
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -410,61 +394,57 @@ namespace shellanything { namespace test
     configs = cmgr.GetConfigurations();
     ASSERT_EQ( 0, configs.size() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testParentWithoutChildren)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
  
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-    
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
 
-    //setup ConfigManager to read files from template_target_dir
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
     Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //query first menu
+    //Query first menu
     Menu::MenuPtrList menus = configs[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
     Menu * first = menus[0];
     ASSERT_TRUE( first != NULL );
 
-    //update the menus based on a context with a single file
+    //Update the menus based on a context with a single file
     Context context = GetContextSingleFile();
     cmgr.Update(context);
 
     //ASSERT top menu is visible (default option)
     ASSERT_TRUE( first->IsVisible() );
 
-    //update the menus based on a context with a single directory
+    //Update the menus based on a context with a single directory
     context = GetContextSingleDirectory();
     cmgr.Update(context);
 
     //ASSERT top menu is invisible (issue #4)
     ASSERT_FALSE( first->IsVisible() );
 
-    //get all submenus
+    //Get all submenus
     Menu * option1 = first;
     ASSERT_TRUE( option1 != NULL );
     Menu * option1_1 = QuerySubMenu(option1, 0);
@@ -473,46 +453,42 @@ namespace shellanything { namespace test
     ASSERT_TRUE( option1_1_1 != NULL );
     ASSERT_FALSE( option1_1_1->IsParentMenu() ); //menu is a leaf
 
-    //assert all sub menus are also invisible
+    //Assert all sub menus are also invisible
     ASSERT_FALSE( option1->IsVisible() );
     ASSERT_FALSE( option1_1->IsVisible() );
     ASSERT_FALSE( option1_1_1->IsVisible() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestConfigManager, testAssignCommandIdsInvalid)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
     Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
-    //query all menus
+    //Query all menus
     Menu * option1 = QuerySubMenu(configs[0], 0);
     ASSERT_TRUE( option1 != NULL );
     Menu * option1_1 = QuerySubMenu(option1, 0);
@@ -526,19 +502,19 @@ namespace shellanything { namespace test
     ASSERT_TRUE( option1_2_1    != NULL );
     ASSERT_TRUE( option1_2_1_1  != NULL );
 
-    //query all menus
+    //Query all menus
     Menu::MenuPtrList menus;
     QueryAllMenusRecursive(configs[0], menus);
 
-    //update the menus based on a context with a single file
+    //Update the menus based on a context with a single file
     Context context = GetContextSingleFile();
     cmgr.Update(context);
 
-    //assign unique command ids
+    //Assign unique command ids
     uint32_t nextCommandId = cmgr.AssignCommandIds(101);
     ASSERT_EQ( 103, nextCommandId ); //assert 2 Menu(s) visible by ConfigManager
 
-    //assert that all visible menu have an assigned command id (issue #5)
+    //Assert that all visible menu have an assigned command id (issue #5)
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * m = menus[i];
@@ -549,7 +525,7 @@ namespace shellanything { namespace test
         ASSERT_EQ(Menu::INVALID_COMMAND_ID, m->GetCommandId() ) << message; //invisible menus must have an invalid command id
     }
 
-    //expected assigned command ids
+    //Expected assigned command ids
     ASSERT_EQ( 101, option1->GetCommandId() );
     ASSERT_EQ( 102, option1_1->GetCommandId() );
     ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2->GetCommandId() );
@@ -557,8 +533,8 @@ namespace shellanything { namespace test
     ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1  ->GetCommandId() );
     ASSERT_EQ( Menu::INVALID_COMMAND_ID, option1_2_1_1->GetCommandId() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
  
