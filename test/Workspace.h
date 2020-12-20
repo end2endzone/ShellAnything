@@ -52,6 +52,12 @@ namespace shellanything
     virtual ~Workspace();
 
     /// <summary>
+    /// Delete the workspace directory including all files in the workspace.
+    /// </summary>
+    /// <returns>Returns true if the workspace is completely deleted. Returns false otherwise.</returns>
+    bool Cleanup();
+
+    /// <summary>
     /// Get the base directory of the current workspace.
     /// </summary>
     /// <returns>Returns the base directory of the current workspace. Returns an empty string if the workspace was not properly created.</returns>
@@ -61,17 +67,25 @@ namespace shellanything
     /// Import a directory into the workspace.
     /// </summary>
     /// <param name="source">The path to a directory to import into the workspace.</param>
-    /// <param name="target">A relative path in the workspace to copy the source directory to. Can be NULL to copy the source directory in the root of the workspace.</param>
+    /// <param name="target_dir">A relative directory path in the workspace to copy the source directory to. Can be NULL to copy the source directory in the root of the workspace.</param>
     /// <returns>Returns true when the directory was successfully imported. Returns false otherwise.</returns>
-    bool ImportDirectoryUtf8(const char * source, const char * target = NULL);
+    bool ImportDirectoryUtf8(const char * source, const char * target_dir = NULL);
 
     /// <summary>
     /// Import a file into the workspace.
     /// </summary>
     /// <param name="source">The path to a file to import into the workspace.</param>
-    /// <param name="target">A relative path in the workspace to copy the source file to. Can be NULL to copy the source file in the root of the workspace.</param>
+    /// <param name="target_dir">A relative directory path in the workspace to copy the source file to. Can be NULL to copy the source file in the root of the workspace.</param>
     /// <returns>Returns true when the file was successfully imported. Returns false otherwise.</returns>
-    bool ImportFileUtf8(const char * source, const char * target = NULL);
+    bool ImportFileUtf8(const char * source, const char * target_dir = NULL);
+
+    /// <summary>
+    /// Import and rename a file into the workspace.
+    /// </summary>
+    /// <param name="source">The path to a file to import into the workspace.</param>
+    /// <param name="target">A relative file path in the workspace to copy the source file to. Can be NULL to copy the source file in the root of the workspace.</param>
+    /// <returns>Returns true when the file was successfully imported. Returns false otherwise.</returns>
+    bool ImportAndRenameFileUtf8(const char * source, const char * target = NULL);
 
     /// <summary>
     /// Converts a relative path from the workspace into an absolute path.

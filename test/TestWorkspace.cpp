@@ -48,6 +48,20 @@ namespace shellanything { namespace test
     ASSERT_FALSE(base_dir.empty());
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWorkspace, testCleanup)
+  {
+    Workspace ws;
+
+    std::string base_dir = ws.GetBaseDirectory();
+    ASSERT_FALSE(base_dir.empty());
+
+    //Should be able to cleanup the directory
+    ASSERT_TRUE(ws.Cleanup());
+
+    //After cleanup, the base directory should be empty/invalid
+    ASSERT_TRUE(ws.GetBaseDirectory().empty());
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestWorkspace, testGetFullPathUtf8)
   {
     Workspace ws;
@@ -70,8 +84,29 @@ namespace shellanything { namespace test
 
     ASSERT_TRUE(ra::filesystem::FileExistsUtf8(source.c_str()));
 
+    const std::string target_dir = "foo";
+    bool imported = ws.ImportFileUtf8(source.c_str(), target_dir.c_str());
+    ASSERT_TRUE(imported);
+
+    //Search for the imported file
+    const std::string target_path = target_dir + "\\samples.xml";
+    const std::string absolute_path = ws.GetFullPathUtf8(target_path.c_str());
+    ASSERT_TRUE(ra::filesystem::FileExistsUtf8(absolute_path.c_str())) << "File '" << absolute_path << "' is not found!";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWorkspace, testImportAndRenameFileUtf8)
+  {
+    Workspace ws;
+    const std::string base_dir = ws.GetBaseDirectory();
+
+    //define the path of a local file
+    std::string install_dir = ra::process::GetCurrentProcessDir();
+    std::string source = install_dir + "\\test_files\\samples.xml";
+
+    ASSERT_TRUE(ra::filesystem::FileExistsUtf8(source.c_str()));
+
     const std::string relative_path = "foo\\bar.xml";
-    bool imported = ws.ImportFileUtf8(source.c_str(), relative_path.c_str());
+    bool imported = ws.ImportAndRenameFileUtf8(source.c_str(), relative_path.c_str());
     ASSERT_TRUE(imported);
 
     //Search for the imported file

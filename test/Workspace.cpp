@@ -47,17 +47,26 @@ namespace shellanything
 
   Workspace::~Workspace()
   {
+    Cleanup();
+  }
+
+  bool Workspace::Cleanup()
+  {
     if (mWorkspace.empty())
-      return;
+      return true;
     if (!ra::filesystem::DirectoryExistsUtf8(mWorkspace.c_str()))
-      return;
+      return true;
 
     //printf("Deleting workspace directory: %s\n", mWorkspace.c_str());
     bool deleted = ra::filesystem::DeleteDirectoryUtf8(mWorkspace.c_str());
     if (!deleted)
     {
       printf("*** Failed deleting directory '%s'\n", mWorkspace.c_str());
+      return false;
     }
+
+    mWorkspace = "";
+    return true;
   }
 
   void Workspace::Init(const char * workspace)
@@ -81,12 +90,12 @@ namespace shellanything
     return mWorkspace;
   }
 
-  bool Workspace::ImportDirectoryUtf8(const char * source, const char * target)
+  bool Workspace::ImportDirectoryUtf8(const char * source, const char * target_dir)
   {
     if (source == NULL)
       return false;
-    if (target == NULL)
-      target = "";
+    if (target_dir == NULL)
+      target_dir = "";
     size_t source_length = strlen(source);
     if (source_length == 0)
       return false;
@@ -117,13 +126,13 @@ namespace shellanything
       target_relative.replace(0, parent_dir.size(), ""); //make the source relative
       while (!target_relative.empty() && target_relative[0] == '\\')
         target_relative.erase(0, 1);
-      if (target[0] != '\0')
+      if (target_dir[0] != '\0')
       {
         target_relative.insert(0, 1, '\\');
-        target_relative.insert(0, target);
+        target_relative.insert(0, target_dir);
       }
 
-      bool imported = ImportFileUtf8(source_file.c_str(), target_relative.c_str());
+      bool imported = ImportAndRenameFileUtf8(source_file.c_str(), target_relative.c_str());
       if (!imported)
       {
         printf("*** Failed to import file '%s' in workspace.\n", source_file.c_str());
@@ -135,7 +144,45 @@ namespace shellanything
     return true;
   }
 
-  bool Workspace::ImportFileUtf8(const char * source, const char * target_relative)
+  bool Workspace::ImportFileUtf8(const char * source, const char * target_dir)
+  {
+    if (source == NULL || source[0] == '\0')
+      return false;
+    if (target_dir == NULL)
+      target_dir = "";
+    size_t source_length = strlen(source);
+    size_t target_length = strlen(target_dir);
+    if (!ra::filesystem::FileExistsUtf8(source))
+    {
+      printf("*** Source file not found: %s\n", source);
+      return false;
+    }
+
+    //Make the path absolute
+    std::string target_dir_abs = this->GetFullPathUtf8(target_dir);
+    std::string filename = ra::filesystem::GetFilename(source);
+    std::string target_file = target_dir_abs + "\\" + filename;
+
+    //Make sure destination directory exists.
+    bool created = ra::filesystem::CreateDirectoryUtf8(target_dir_abs.c_str());
+    if (!created)
+    {
+      printf("*** Failed to create destination directory: %s\n", target_dir_abs.c_str());
+      return false;
+    }
+
+    //Copy the file
+    bool copied = ra::filesystem::CopyFileUtf8(source, target_file);
+    if (!copied)
+    {
+      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file);
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Workspace::ImportAndRenameFileUtf8(const char * source, const char * target_relative)
   {
     if (source == NULL || source[0] == '\0')
       return false;
@@ -150,10 +197,10 @@ namespace shellanything
     }
 
     //Make the path absolute
-    std::string target = this->GetFullPathUtf8(target_relative);
+    std::string target_file = this->GetFullPathUtf8(target_relative);
 
     //Make sure destination directory exists.
-    std::string parent_directory = ra::filesystem::GetParentPath(target);
+    std::string parent_directory = ra::filesystem::GetParentPath(target_file);
     bool created = ra::filesystem::CreateDirectoryUtf8(parent_directory.c_str());
     if (!created)
     {
@@ -162,10 +209,10 @@ namespace shellanything
     }
 
     //Copy the file
-    bool copied = ra::filesystem::CopyFileUtf8(source, target);
+    bool copied = ra::filesystem::CopyFileUtf8(source, target_file);
     if (!copied)
     {
-      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target);
+      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file);
       return false;
     }
 
