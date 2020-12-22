@@ -336,6 +336,27 @@ if (WIX_FOUND)
   list(APPEND CPACK_GENERATOR "WIX")
 endif (WIX_FOUND)
 
+#########################
+# Common specific stuff #
+#########################
+
+# Define our "main" start menu shortcuts for our execuables.
+# NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
+# It only supports creating shortcuts to target executable. Nothing else.
+# To create custom shortcuts, including shortcuts with arguments, one must use another method.
+# For more flexibility, see the following: 
+# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
+set(CPACK_PACKAGE_EXECUTABLES
+  # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
+  # "$<TARGET_FILE_NAME:shellanything_unittest>" "Run Unit Tests"
+
+  # Issue #60 Unit tests cannot execute from installation directory:
+  # The shortcut created by NSIS does not "Start in" 'bin' directory which is a problem for unit tests.
+  # See issue #60 for details.
+  # The shortcut will be created manually. See CPACK_NSIS_CREATE_ICONS_EXTRA below.
+  # "shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
+)
+
 #######################
 # NSIS specific stuff #
 #######################
@@ -350,24 +371,13 @@ set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 # The filename will be wrong in debug builds.
 set(CPACK_NSIS_INSTALLED_ICON_NAME docs\\\\shellanything.ico)
 
-# Define our "main" start menu shortcuts for our execuables.
-# NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
-# It only supports creating shortcuts to target executable. Nothing else.
-# To create custom shortcuts, including shortcuts with arguments, one must use another method.
-# For more flexibility, see the following: 
-# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
-set(CPACK_PACKAGE_EXECUTABLES
-  # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
-  # "$<TARGET_FILE_NAME:shellanything_unittest>" "Run Unit Tests"
-
-  # Won't work in debug build but its the best we dan do.
-  "shellanything_unittest" "Run Unit Tests"
-)
-
 # Define our secondaries start menu shortcuts (for files that are not direct target executables).
 # See the following for details:
 # https://stackoverflow.com/questions/14831739/how-do-i-add-a-start-menu-entry-for-a-text-file-in-cpack-ans-nsis
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
+# Note: As found with issue #60, the shortcuts created here have the 'Start in' property set to the installation directory. 
+#       If a shortcut is pointing to a executable/document that is not stored in the installation root directory,
+#       the created shortcut will not work.
 set(CPACK_NSIS_MENU_LINKS
   "${README_FILENAME}" "${README_FILENAME}"
   "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
@@ -377,9 +387,29 @@ set(CPACK_NSIS_MENU_LINKS
   "${LICENSE_FILENAME}"  "${LICENSE_FILENAME}"
   "licenses" "Third party licenses"
   "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
-  "bin/register.bat"   "Register shell extension"
-  "bin/unregister.bat" "Unregister shell extension"
 )
+
+# Define more anchor points for NSIS installer.
+# SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS   "; CPACK_NSIS_EXTRA_INSTALL_COMMANDS INSERT LOCATION"    )
+# SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "; CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS INSERT LOCATION"  )
+
+# Issue #60 Unit tests cannot execute from installation directory:
+# Shortcuts that must start in 'bin' directory must be created manually...
+# NSIS CreateShortCut documentation: https://nsis.sourceforge.io/Reference/CreateShortCut
+# Note: CMake escaping mechanism is complicated. In short, to insert a backslash, use the literal string \\\\ and to insert a double-quote character, use the literal string \\\" .
+#       Also, generator expression variable such as `$<TARGET_FILE_NAME:shellanything_unittest>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
+SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
+  SetOutPath \\\"$INSTDIR\\\\bin\\\"
+  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe\\\"
+  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Register shell extension.lnk\\\"   \\\"$INSTDIR\\\\bin\\\\register.bat\\\"
+  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Unregister shell extension.lnk\\\" \\\"$INSTDIR\\\\bin\\\\unregister.bat\\\"
+  SetOutPath \\\"$INSTDIR\\\"
+  ")
+SET(CPACK_NSIS_DELETE_ICONS_EXTRA "
+  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Run Unit Tests.lnk\\\"
+  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Register shell extension.lnk\\\"
+  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Unregister shell extension.lnk\\\"
+  ")
 
 #######################
 # WIX specific stuff #
