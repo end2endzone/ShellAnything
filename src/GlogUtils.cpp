@@ -181,17 +181,85 @@ namespace shellanything
     return filename;
   }
 
+  //Test if a directory allow write access to the current user.
+  //Note: the only way to detect if write access is available is to actually write a file
+  bool HasDirectoryWriteAccess(const std::string & path)
+  {
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExists(path.c_str()))
+        return false; //Directory not found. Denied write access.
+
+    //Generate a random filename to use as a "temporary file".
+    std::string filename = ra::filesystem::GetTemporaryFileName();
+
+    //Try to create a file. This will validate that we have write access to the directory.
+    std::string file_path = path + ra::filesystem::GetPathSeparatorStr() + filename;
+    static const std::string data = __FUNCTION__;
+    bool file_created = ra::filesystem::WriteFile(file_path, data);
+    if (!file_created)
+      return false; //Write is denied
+
+    //Write is granted
+
+    //Cleaning up
+    bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
+
+    return true;
+  }
+
+  bool IsValidLogDirectory(const std::string & path)
+  {
+    //Issue #60 - Unit tests cannot execute from installation directory.
+
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExists(path.c_str()))
+    {
+      //Try to create the directory.
+      bool created = ra::filesystem::CreateDirectory(path.c_str());
+      if (!created)
+        return false;
+    }
+
+    //Validate that directory path is writable.
+    bool write_access = HasDirectoryWriteAccess(path);
+    if (!write_access)
+      return false; //Write to directory is denied.
+
+    //Write to directory is granted.
+    return true;
+  }
+
   std::string GetLogDirectory()
   {
     //Issue #10 - Change the log directory if run from the unit tests executable
     std::string process_path = ra::process::GetCurrentProcessPath();
     if (process_path.find("_unittest") != std::string::npos)
     {
-      //This DLL is executed by the unit tests
+      //This DLL is executed by the unit tests.
+
+      //Create 'test_logs' directory under the current executable.
+      //When running tests from a developer environment, the 'test_logs' directory is expected to have write access.
       std::string log_dir = ra::process::GetCurrentProcessDir();
-      log_dir.append("\\logs");
-      return log_dir;
+      if (!log_dir.empty())
+      {
+        log_dir.append("\\test_logs");
+        if (IsValidLogDirectory(log_dir))
+          return log_dir;
+      }
+
+      //Issue #60 - Unit tests cannot execute from installation directory.
+      //If unit tests are executed from the installation directory,
+      //the 'test_logs' directory under the current executable is denied write access.
+      log_dir = ra::environment::GetEnvironmentVariable("TEMP");
+      if (!log_dir.empty())
+      {
+        log_dir.append("\\test_logs");
+        if (IsValidLogDirectory(log_dir))
+          return log_dir;
+      }
     }
+
+    //This DLL is executed by the shell (File Explorer).
 
     //By default, GLOG will output log files in %TEMP% directory.
     //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
@@ -202,8 +270,8 @@ namespace shellanything
       //We got the %USERPROFILE% directory.
       //Now add our custom path to it
       log_dir.append("\\ShellAnything\\Logs");
-      
-      return log_dir;
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
     }
 
     //Failed getting HOME directory.

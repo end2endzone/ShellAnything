@@ -22,44 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_GLOG_UTILS_H
-#define SA_GLOG_UTILS_H
+#ifndef TEST_SA_WORKSPACE_H
+#define TEST_SA_WORKSPACE_H
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include <gtest/gtest.h>
 
-#include <string>
-#include <stdint.h>
-
-namespace shellanything
+namespace shellanything { namespace test
 {
-  struct GLOG_DATETIME
+  class TestWorkspace : public ::testing::Test
   {
-    int year;
-    int month;  // [1,12]
-    int day;    // [1,31]
-    int hour;   // [0,23]
-    int minute; // [0,59]
-    int second; // [0,59]
+  public:
+    virtual void SetUp();
+    virtual void TearDown();
   };
 
-  const GLOG_DATETIME & GetInvalidLogDateTime();
-  int DateTimeToSeconds(const GLOG_DATETIME & dt);
-  int GetDateTimeDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2);
-  int GetLogFileAge(const std::string & path);
-  GLOG_DATETIME GetFileDateTime(const std::string & path);
-  std::string GetLogDestination(int level);
-  std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id);
-  bool HasDirectoryWriteAccess(const std::string & path);
-  std::string GetLogDirectory();
-  bool IsLogFile(const std::string & path);
-
-  void DeletePreviousLogs(int max_age_seconds);
-  void DeletePreviousLogs();
-  void InitLogger();
-
+} //namespace test
 } //namespace shellanything
 
-#endif //SA_GLOG_UTILS_H
+#endif //TEST_SA_WORKSPACE_H

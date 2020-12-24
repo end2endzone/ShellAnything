@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestConfiguration.h"
+#include "Workspace.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Menu.h"
@@ -264,30 +265,26 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
 
     //cleanup properties
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -301,8 +298,8 @@ namespace shellanything { namespace test
     ASSERT_NE( EMPTY_STRING, services_command_start );
     ASSERT_NE( EMPTY_STRING, services_command_stop  );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
 

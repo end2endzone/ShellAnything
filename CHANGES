@@ -2,6 +2,7 @@ Changes for 0.6.0
 
 * Fixed issue #23: Implement menu validation based on a string expression.
 * Fixed issue #53: Multiple <visibility> or <validity> elements support.
+* Fixed issue #60: Unit tests cannot execute from installation directory.
 * Fixed issue #71: Uniformalize function argument names.
 
 

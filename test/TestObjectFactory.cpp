@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestObjectFactory.h"
+#include "Workspace.h"
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
 #include "shellanything/ActionExecute.h"
@@ -159,26 +160,22 @@ namespace shellanything { namespace test
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -189,7 +186,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 12, menus.size() );
 
-    //assert <visibility> tag properly parsed
+    //Assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
     static const std::string expected_file_extension = "com;exe;bat;cmd";
     static const std::string expected_file_exists = "C:\\Users\\Public;C:\\Program Files (x86)";
@@ -201,7 +198,7 @@ namespace shellanything { namespace test
     static const std::string expected_pattern = "*IMG_*";
     static const std::string expected_exprtk = "2>1";
 
-    //assert each menus have a visibility assigned
+    //Assert each menus have a visibility assigned
     for(size_t i=0; i<menus.size(); i++)
     {
       size_t count = menus[i]->GetVisibilityCount();
@@ -225,7 +222,7 @@ namespace shellanything { namespace test
     ASSERT_EQ(3, menus[11]->GetVisibilityCount());
     ASSERT_EQ(2, menus[11]->GetValidityCount());
 
-    //assert first 3 visibility elements
+    //Assert first 3 visibility elements
     static const std::string expected_file_extension1 = "txt";
     static const std::string expected_file_extension2 = "doc";
     static const std::string expected_file_extension3 = "ini";
@@ -233,40 +230,36 @@ namespace shellanything { namespace test
     ASSERT_EQ( expected_file_extension2, menus[11]->GetVisibility(1)->GetFileExtensions() );
     ASSERT_EQ( expected_file_extension3, menus[11]->GetVisibility(2)->GetFileExtensions() );
 
-    //assert first 2 validity elements
+    //Assert first 2 validity elements
     static const std::string expected_properties1 = "bar";
     ASSERT_EQ( expected_properties1, menus[11]->GetValidity(0)->GetProperties() );
     ASSERT_EQ( 1, menus[11]->GetValidity(1)->GetMaxFiles() );
     ASSERT_EQ( 0, menus[11]->GetValidity(1)->GetMaxDirectories() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseIcon)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -277,12 +270,12 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
-    //assert all icons are valid
+    //Assert all icons are valid
     ASSERT_TRUE( menus[00]->GetIcon().IsValid() );
     ASSERT_TRUE( menus[01]->GetIcon().IsValid() );
     ASSERT_TRUE( menus[02]->GetIcon().IsValid() );
 
-    //assert <icon> tag properly parsed
+    //Assert <icon> tag properly parsed
     //menu #00
     ASSERT_EQ( std::string("C:\\Windows\\System32\\shell32.dll"), menus[00]->GetIcon().GetPath() );
     ASSERT_EQ( 42,                                                menus[00]->GetIcon().GetIndex() );
@@ -296,34 +289,30 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string(""),           menus[02]->GetIcon().GetPath() );
     ASSERT_EQ( Icon::INVALID_ICON_INDEX,  menus[02]->GetIcon().GetIndex() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseMenuMaxLength)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -334,41 +323,37 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
-    //assert maxlength properly value for each menus
+    //Assert maxlength properly value for each menus
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[00]->GetNameMaxLength() );  // maxlength attribute not specified.
     ASSERT_EQ( 3,                             menus[01]->GetNameMaxLength() );  // maxlength attribute set to "3".
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[02]->GetNameMaxLength() );  // maxlength attribute set to "a" which is not numeric (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[03]->GetNameMaxLength() );  // maxlength attribute set to "0" which is out of range (invalid).
     ASSERT_EQ( Menu::DEFAULT_NAME_MAX_LENGTH, menus[04]->GetNameMaxLength() );  // maxlength attribute set to "9999" which is out of range (invalid).
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionExecute)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
 
-    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
-
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
 
     //ASSERT the file is loaded
@@ -379,7 +364,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
-    //assert all menus have a file element as the first action
+    //Assert all menus have a file element as the first action
     ActionExecute * exec00 = GetFirstActionExecute(menus[00]);
     ActionExecute * exec01 = GetFirstActionExecute(menus[01]);
     ActionExecute * exec02 = GetFirstActionExecute(menus[02]);
@@ -390,53 +375,49 @@ namespace shellanything { namespace test
     ASSERT_TRUE( exec02 != NULL );
     ASSERT_TRUE( exec03 != NULL );
 
-    //assert menu00 attributes
+    //Assert menu00 attributes
     ASSERT_EQ("C:\\Windows\\System32\\calc.exe", exec00->GetPath());
 
-    //assert menu01 attributes
+    //Assert menu01 attributes
     //<exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
     ASSERT_EQ("C:\\Windows\\notepad.exe", exec01->GetPath());
     ASSERT_EQ("C:\\Program Files\\7-Zip", exec01->GetBaseDir());
     ASSERT_EQ("License.txt", exec01->GetArguments());
 
-    //assert menu02 attributes
+    //Assert menu02 attributes
     //<exec path="C:\Windows\notepad.exe" arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
     ASSERT_EQ("C:\\Windows\\notepad.exe", exec02->GetPath());
     ASSERT_EQ("C:\\Windows\\System32\\drivers\\etc\\hosts", exec02->GetArguments());
     ASSERT_EQ("runas", exec02->GetVerb());
 
-    //assert menu03 attributes
+    //Assert menu03 attributes
     //<!-- missing path attribute --> <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
     ASSERT_EQ("", exec03->GetPath());
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionFile)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
 
-    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
-
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
 
     //ASSERT the file is loaded
@@ -447,7 +428,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
-    //assert all menus have a file element as the first action
+    //Assert all menus have a file element as the first action
     ActionFile * file00 = GetFirstActionFile(menus[00]);
     ActionFile * file01 = GetFirstActionFile(menus[01]);
     ActionFile * file02 = GetFirstActionFile(menus[02]);
@@ -458,47 +439,43 @@ namespace shellanything { namespace test
     ASSERT_TRUE( file02 != NULL );
     ASSERT_TRUE( file03 != NULL );
 
-    //assert menus have text assigned
+    //Assert menus have text assigned
     static const std::string EMPTY_STRING;
     ASSERT_NE(EMPTY_STRING, file00->GetText());
     ASSERT_NE(EMPTY_STRING, file01->GetText());
     ASSERT_EQ(EMPTY_STRING, file02->GetText());
     ASSERT_NE(EMPTY_STRING, file03->GetText());
 
-    //assert menus have encoding
+    //Assert menus have encoding
     ASSERT_EQ(EMPTY_STRING, file00->GetEncoding());
     ASSERT_EQ(EMPTY_STRING, file01->GetEncoding());
     ASSERT_EQ(EMPTY_STRING, file02->GetEncoding());
     ASSERT_NE(EMPTY_STRING, file03->GetEncoding());
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionPrompt)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
 
-    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
-
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
 
     //ASSERT the file is loaded
@@ -509,7 +486,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
-    //assert all menus have a prompt element as the first action
+    //Assert all menus have a prompt element as the first action
     ActionPrompt * prompt00 = GetFirstActionPrompt(menus[00]);
     ActionPrompt * prompt01 = GetFirstActionPrompt(menus[01]);
     ActionPrompt * prompt02 = GetFirstActionPrompt(menus[02]);
@@ -522,63 +499,59 @@ namespace shellanything { namespace test
     ASSERT_TRUE( prompt03 != NULL );
     ASSERT_TRUE( prompt04 != NULL );
 
-    //assert menu #0 have no default values
+    //Assert menu #0 have no default values
     static const std::string EMPTY_STRING;
     std::string prompt00_default = prompt00->GetDefault();
     ASSERT_EQ( EMPTY_STRING, prompt00_default);
 
-    //assert menu #1 have a default value
+    //Assert menu #1 have a default value
     std::string prompt01_default = prompt01->GetDefault();
     ASSERT_EQ( std::string("42"), prompt01_default);
 
-    //assert menu #3 is a yesno question
+    //Assert menu #3 is a yesno question
     ASSERT_FALSE( prompt00->IsYesNoQuestion() );
     ASSERT_FALSE( prompt01->IsYesNoQuestion() );
     ASSERT_FALSE( prompt02->IsYesNoQuestion() );
     ASSERT_TRUE ( prompt03->IsYesNoQuestion() );
     ASSERT_FALSE( prompt04->IsYesNoQuestion() );
  
-    //assert menu #3 have a "yes" and a "no" values defined
+    //Assert menu #3 have a "yes" and a "no" values defined
     ASSERT_TRUE ( prompt00->GetValueYes().empty() );
     ASSERT_TRUE ( prompt00->GetValueNo ().empty() );
     ASSERT_FALSE( prompt03->GetValueYes().empty() );
     ASSERT_FALSE( prompt03->GetValueNo ().empty() );
  
-    //assert menu #4 is a OK only question
+    //Assert menu #4 is a OK only question
     ASSERT_FALSE( prompt00->IsOkQuestion() );
     ASSERT_FALSE( prompt01->IsOkQuestion() );
     ASSERT_FALSE( prompt02->IsOkQuestion() );
     ASSERT_FALSE( prompt03->IsOkQuestion() );
     ASSERT_TRUE ( prompt04->IsOkQuestion() );
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionProperty)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
 
-    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
-
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
 
     //ASSERT the file is loaded
@@ -589,7 +562,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
-    //assert all menus have a property element as the first action
+    //Assert all menus have a property element as the first action
     ActionProperty * property00 = GetFirstActionProperty(menus[00]);
     ActionProperty * property01 = GetFirstActionProperty(menus[01]);
     ActionProperty * property02 = GetFirstActionProperty(menus[02]);
@@ -598,51 +571,47 @@ namespace shellanything { namespace test
     ASSERT_TRUE( property01 != NULL );
     ASSERT_TRUE( property02 != NULL );
 
-    //assert menu #0 have a name and a value parsed
+    //Assert menu #0 have a name and a value parsed
     static const std::string EMPTY_STRING;
     std::string property00_name  = property00->GetName();
     std::string property00_value = property00->GetValue();
     ASSERT_EQ( std::string("foo"), property00_name);
     ASSERT_EQ( std::string("bar"), property00_value);
 
-    //assert menu #1 have a exprtk attribute parsed
+    //Assert menu #1 have a exprtk attribute parsed
     std::string property01_exprtk = property01->GetExprtk();
     ASSERT_EQ( std::string("1+5"), property01_exprtk);
 
-    //assert menu #2 have is missing both value and exprtk
+    //Assert menu #2 have is missing both value and exprtk
     std::string property02_value  = property02->GetValue();
     std::string property02_exprtk = property02->GetExprtk();
     ASSERT_EQ( std::string(""), property02_value);
     ASSERT_EQ( std::string(""), property02_exprtk);
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseActionMessage)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
 
-    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
-
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
-
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
-
-    //wait to make sure that the next files not dated the same date as this copy
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
 
     //ASSERT the file is loaded
@@ -653,7 +622,7 @@ namespace shellanything { namespace test
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
-    //assert all menus have a message element as the first action
+    //Assert all menus have a message element as the first action
     ActionMessage * message00 = GetFirstActionMessage(menus[00]);
     ActionMessage * message01 = GetFirstActionMessage(menus[01]);
     ActionMessage * message02 = GetFirstActionMessage(menus[02]);
@@ -664,55 +633,51 @@ namespace shellanything { namespace test
     ASSERT_TRUE( message02 != NULL );
     ASSERT_TRUE( message03 != NULL );
 
-    //assert menu #0 caption and message
+    //Assert menu #0 caption and message
     static const std::string EMPTY_STRING;
     ASSERT_EQ( "my_caption",  message00->GetCaption());
     ASSERT_EQ( "my_title",    message00->GetTitle());
     ASSERT_EQ( EMPTY_STRING,  message00->GetIcon());
 
-    //assert menu #1 have a default value
+    //Assert menu #1 have a default value
     ASSERT_EQ( "hello",       message01->GetCaption());
     ASSERT_EQ( "world",       message01->GetTitle());
     ASSERT_EQ( EMPTY_STRING,  message01->GetIcon());
 
-    //assert menu #2 have a default value
+    //Assert menu #2 have a default value
     ASSERT_EQ( "foo",         message02->GetCaption());
     ASSERT_EQ( "bar",         message02->GetTitle());
     ASSERT_EQ( "exclamation", message02->GetIcon());
 
-    //assert menu #3 have a default value
+    //Assert menu #3 have a default value
     ASSERT_EQ( "foo",         message03->GetCaption());
     ASSERT_EQ( "bar",         message03->GetTitle());
     ASSERT_EQ( "warning",     message03->GetIcon());
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseDefaults)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
     static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
- 
-    //copy test template file to a temporary subdirectory to allow editing the file during the test
     std::string test_name = ra::testing::GetTestQualifiedName();
     std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
-    std::string template_target_path = std::string("test_files") + path_separator + test_name + path_separator + "tmp.xml";
- 
-    //make sure the target directory exists
-    std::string template_target_dir = ra::filesystem::GetParentPath(template_target_path);
-    ASSERT_TRUE( ra::filesystem::CreateDirectory(template_target_dir.c_str()) ) << "Failed creating directory '" << template_target_dir << "'.";
- 
-    //copy the file
-    ASSERT_TRUE( ra::filesystem::CopyFile(template_source_path, template_target_path) ) << "Failed copying file '" << template_source_path << "' to file '" << template_target_path << "'.";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
     
-    //wait to make sure that the next files not dated the same date as this copy
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
     ra::timing::Millisleep(1500);
-
-    //setup ConfigManager to read files from template_target_dir
+ 
+    //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
-    cmgr.AddSearchPath(template_target_dir);
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
     cmgr.Refresh();
  
     //ASSERT the file is loaded
@@ -723,7 +688,7 @@ namespace shellanything { namespace test
     const DefaultSettings * defaults = cmgr.GetConfigurations()[0]->GetDefaultSettings();
     ASSERT_TRUE( defaults != NULL );
 
-    //assert 2 properties parsed
+    //Assert 2 properties parsed
     ASSERT_EQ( 2, defaults->GetActions().size() );
 
     const ActionProperty * property1 = dynamic_cast<const ActionProperty *>(defaults->GetActions()[0]);
@@ -736,8 +701,8 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string("runservice /start"), property1->GetValue());
     ASSERT_EQ( std::string("runservice /stop" ), property2->GetValue());
 
-    //cleanup
-    ASSERT_TRUE( ra::filesystem::DeleteFile(template_target_path.c_str()) ) << "Failed deleting file '" << template_target_path << "'.";
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
  
