@@ -77,25 +77,160 @@ namespace shellanything { namespace test
     ASSERT_EQ("", pmgr.GetProperty("unknown") );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestPropertyManager, testExpand)
+  TEST_F(TestPropertyManager, testExpandDefault)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
+
     pmgr.SetProperty("job", "actor");
     pmgr.SetProperty("name", "Brad Pitt");
     pmgr.SetProperty("age", "53");
+
+    std::string expanded = pmgr.Expand("${name} is a ${age} years old ${job}.");
+
+    //Assert all properties was replaced
+    ASSERT_EQ("Brad Pitt is a 53 years old actor.", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandUnknownProperties)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
     pmgr.SetProperty("animal", "fox");
 
-    //default behavior
+    //Properties 'color' and 'characteristics' are unknown.
+    std::string expanded = pmgr.Expand("The quick ${color} ${animal} jumps over the ${characteristics} dog.");
+
+    //Assert unknown properties was not replaced. Left as is.
+    ASSERT_EQ("The quick ${color} fox jumps over the ${characteristics} dog.", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandMalformed)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //Property ${color is malformed
+    std::string expanded = pmgr.Expand("The quick ${color fox jumps over the lazy dog.");
+
+    //Assert the text was left unchanged
+    ASSERT_EQ("The quick ${color fox jumps over the lazy dog.", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandRecursive)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //Assert that expanding ${second} to ${third} will also expand ${third} into "Lambs"
     {
-      std::string expanded = pmgr.Expand("${name} is a ${age} years old ${job}.");
-      ASSERT_EQ("Brad Pitt is a 53 years old actor.", expanded);
+      pmgr.Clear();
+      pmgr.SetProperty("first", "Silence");     // A
+      pmgr.SetProperty("second", "${third}");   // B
+      pmgr.SetProperty("third", "Lambs");       // C
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
     }
 
-    //unknown properties
+    //Assert that property registration order have no impact.
+    //Test all permutations of ABC.
     {
-      std::string expanded = pmgr.Expand("The quick ${color} ${animal} jumps over the ${characteristics} dog.");
-      ASSERT_EQ("The quick ${color} fox jumps over the ${characteristics} dog.", expanded);
+      pmgr.Clear();
+      pmgr.SetProperty("first", "Silence");     // A
+      pmgr.SetProperty("third", "Lambs");       // C
+      pmgr.SetProperty("second", "${third}");   // B
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
     }
+    {
+      pmgr.Clear();
+      pmgr.SetProperty("second", "${third}");   // B
+      pmgr.SetProperty("first", "Silence");     // A
+      pmgr.SetProperty("third", "Lambs");       // C
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
+    }
+    {
+      pmgr.Clear();
+      pmgr.SetProperty("second", "${third}");   // B
+      pmgr.SetProperty("third", "Lambs");       // C
+      pmgr.SetProperty("first", "Silence");     // A
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
+    }
+    {
+      pmgr.Clear();
+      pmgr.SetProperty("third", "Lambs");       // C
+      pmgr.SetProperty("second", "${third}");   // B
+      pmgr.SetProperty("first", "Silence");     // A
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
+    }
+    {
+      pmgr.Clear();
+      pmgr.SetProperty("third", "Lambs");       // C
+      pmgr.SetProperty("first", "Silence");     // A
+      pmgr.SetProperty("second", "${third}");   // B
+
+      //The second property should be expanded by a property reference ${third}
+      std::string expanded = pmgr.Expand("${first} of the ${second}");
+
+      //Assert the property was expanded recursively
+      ASSERT_EQ("Silence of the Lambs", expanded);
+    }
+
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandRecursiveReverseAlphabeticalOrder)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //Note: 
+    //Using text1 for the embedded property replacement will not work as properties are replaced in alphabetical order.
+    //In other words, once text3 is replaced for the string "${text1}", the text1 property is already processed.
+    //Using text4 instead of text1 for the replacement would fix the issue.
+
+    pmgr.Clear();
+    pmgr.SetProperty("text1", "with you");
+    pmgr.SetProperty("text2", "the Force");
+    pmgr.SetProperty("text3", "${text1}");
+
+    //Try replacement in reverse alphabetical order.
+    std::string expanded = pmgr.Expand("May ${text2} be ${text3}");
+
+    //Assert not all place holder was replaced
+    ASSERT_EQ("May the Force be ${text1}", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandDouble)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("first", "James");
+    pmgr.SetProperty("last", "Bond");
+
+    //Property ${action} should be expanded twice
+    std::string expanded = pmgr.Expand("${last}. ${first} ${last}.");
+
+    //Assert the ${action} was left unchanged
+    ASSERT_EQ("Bond. James Bond.", expanded);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testEnvironmentVariableProperty)
