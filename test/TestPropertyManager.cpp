@@ -115,7 +115,7 @@ namespace shellanything { namespace test
     ASSERT_EQ("The quick ${color fox jumps over the lazy dog.", expanded);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestPropertyManager, testExpandRecursive)
+  TEST_F(TestPropertyManager, testExpandRecursivePermutations)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
@@ -135,67 +135,35 @@ namespace shellanything { namespace test
 
     //Assert that property registration order have no impact.
     //Test all permutations of ABC.
+    static const char * permutations[] = {"abc", "acb", "bac", "bca", "cba", "cab"};
+    static const size_t num_permutations = sizeof(permutations)/sizeof(permutations[0]);
+    for(size_t i=0; i<num_permutations; i++)
     {
       pmgr.Clear();
-      pmgr.SetProperty("first", "Silence");     // A
-      pmgr.SetProperty("third", "Lambs");       // C
-      pmgr.SetProperty("second", "${third}");   // B
+
+      const char * permutation = permutations[i];
+      size_t length = strlen(permutation);
+
+      //register permutations
+      for(size_t j=0; j<length; j++)
+      {
+        char c = permutation[j];
+        if (c == 'a')
+          pmgr.SetProperty("first", "Silence");     // A
+        else if (c == 'b')
+          pmgr.SetProperty("second", "${third}");   // B
+        else if (c == 'c')
+          pmgr.SetProperty("third", "Lambs");       // C
+        else
+          FAIL() << "Unkown permutation character: " << c << ".";
+      }
 
       //The second property should be expanded by a property reference ${third}
       std::string expanded = pmgr.Expand("${first} of the ${second}");
 
       //Assert the property was expanded recursively
-      ASSERT_EQ("Silence of the Lambs", expanded);
+      ASSERT_EQ("Silence of the Lambs", expanded) << "Failed testing permutation: " << permutation << ".";
     }
-    {
-      pmgr.Clear();
-      pmgr.SetProperty("second", "${third}");   // B
-      pmgr.SetProperty("first", "Silence");     // A
-      pmgr.SetProperty("third", "Lambs");       // C
-
-      //The second property should be expanded by a property reference ${third}
-      std::string expanded = pmgr.Expand("${first} of the ${second}");
-
-      //Assert the property was expanded recursively
-      ASSERT_EQ("Silence of the Lambs", expanded);
-    }
-    {
-      pmgr.Clear();
-      pmgr.SetProperty("second", "${third}");   // B
-      pmgr.SetProperty("third", "Lambs");       // C
-      pmgr.SetProperty("first", "Silence");     // A
-
-      //The second property should be expanded by a property reference ${third}
-      std::string expanded = pmgr.Expand("${first} of the ${second}");
-
-      //Assert the property was expanded recursively
-      ASSERT_EQ("Silence of the Lambs", expanded);
-    }
-    {
-      pmgr.Clear();
-      pmgr.SetProperty("third", "Lambs");       // C
-      pmgr.SetProperty("second", "${third}");   // B
-      pmgr.SetProperty("first", "Silence");     // A
-
-      //The second property should be expanded by a property reference ${third}
-      std::string expanded = pmgr.Expand("${first} of the ${second}");
-
-      //Assert the property was expanded recursively
-      ASSERT_EQ("Silence of the Lambs", expanded);
-    }
-    {
-      pmgr.Clear();
-      pmgr.SetProperty("third", "Lambs");       // C
-      pmgr.SetProperty("first", "Silence");     // A
-      pmgr.SetProperty("second", "${third}");   // B
-
-      //The second property should be expanded by a property reference ${third}
-      std::string expanded = pmgr.Expand("${first} of the ${second}");
-
-      //Assert the property was expanded recursively
-      ASSERT_EQ("Silence of the Lambs", expanded);
-    }
-
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testExpandRecursiveReverseAlphabeticalOrder)
