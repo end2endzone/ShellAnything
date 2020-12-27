@@ -170,21 +170,19 @@ namespace shellanything { namespace test
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
-    //Note: 
-    //Using text1 for the embedded property replacement will not work as properties are replaced in alphabetical order.
-    //In other words, once text3 is replaced for the string "${text1}", the text1 property is already processed.
-    //Using text4 instead of text1 for the replacement would fix the issue.
-
     pmgr.Clear();
     pmgr.SetProperty("text1", "with you");
     pmgr.SetProperty("text2", "the Force");
     pmgr.SetProperty("text3", "${text1}");
 
     //Try replacement in reverse alphabetical order.
+    //If the property replacement is implemented in alphabetical order (or creation order),
+    //at the time ${text3} is replaced, property 'text1' should already be processed leaving the text as "${text1}" instead of "with you".
+    //If the implementation is working as expected, "${text3}" should be replaced by "with you" skipping "${text1}".
     std::string expanded = pmgr.Expand("May ${text2} be ${text3}");
 
     //Assert not all place holder was replaced
-    ASSERT_EQ("May the Force be ${text1}", expanded);
+    ASSERT_EQ("May the Force be with you", expanded);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testExpandDouble)

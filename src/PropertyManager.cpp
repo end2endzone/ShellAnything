@@ -92,24 +92,70 @@ namespace shellanything
     return EMPTY_VALUE;
   }
 
+  bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
+  {
+    size_t value_length = value.size();
+    name.clear();
+    if (offset >= value_length)
+      return false;
+
+    //Validate a token_open prefix at value[offset]
+    for(size_t i=0; i<token_open.size(); i++)
+    {
+      if (value[offset+i] != token_open[i])
+        return false;
+    }
+
+    //Found a token_open position at value[offset]
+    //Search for the token_close position.
+    size_t name_start_pos = offset + token_open.size();
+    size_t token_close_pos = value.find(token_close, name_start_pos);
+    if (token_close_pos == std::string::npos)
+      return false; // token_close not found
+
+    //Found a token_close position.
+    //Extract the name of the property.
+    size_t length = (token_close_pos) - name_start_pos;
+    if (length == 0)
+      return false;
+    std::string temp_name(&value[name_start_pos], length);
+
+    //Validate if name
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    bool exists = pmgr.HasProperty(temp_name);
+    if (exists)
+      name = temp_name;
+    return exists;
+  }
+
   std::string PropertyManager::Expand(const std::string & value) const
   {
-    std::string output = value;
+    std::string output;
+    output.reserve(value.size()*2);
 
-    //for each properties
-    for (PropertyMap::const_iterator propertyIt = properties.begin(); propertyIt != properties.end(); propertyIt++)
+    static const std::string token_open = "${";
+    static const std::string token_close = "}";
+
+    for(size_t i=0; i<value.size(); i++)
     {
-      const std::string & name  = propertyIt->first;
-      const std::string & value = propertyIt->second;
+      std::string name;
+      if (strncmp(&value[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, value, i, name))
+      {
+        //Found a property reference at value[i]
+        const std::string & property_value = this->GetProperty(name);
 
-      //generate the search token
-      std::string token;
-      token.append("${");
-      token.append(name);
-      token.append("}");
+        //Also expands property_value
+        std::string expanded = this->Expand(property_value);
 
-      //process with search and replace
-      ra::strings::Replace(output, token, value);
+        //Proceed with the string replacement
+        output.append(expanded);
+
+        //Update i to skip this property reference
+        size_t length = token_open.size() + name.size() + token_close.size();
+        i += length-1; //-1 since the next for loop will increase i by 1.
+      }
+      else
+        output.append(1, value[i]);
     }
 
     return output;
