@@ -130,6 +130,18 @@ namespace shellanything
 
   std::string PropertyManager::Expand(const std::string & value) const
   {
+    std::string previous = value;
+    std::string output = ExpandOnce(value);
+    while(output != previous)
+    {
+      previous = output;
+      output = ExpandOnce(output);
+    }
+    return output;
+  }
+
+  std::string PropertyManager::ExpandOnce(const std::string & value) const
+  {
     //Process expansion in-place
     std::string output;
     output.reserve(value.size()*2);

@@ -115,7 +115,7 @@ namespace shellanything { namespace test
     ASSERT_EQ("The quick ${color fox jumps over the lazy dog.", expanded);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestPropertyManager, testExpandRecursivePermutations)
+  TEST_F(TestPropertyManager, testExpandPermutations)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
@@ -211,6 +211,50 @@ namespace shellanything { namespace test
 
     //Assert the string was properly expanded.
     ASSERT_EQ("E.T. phone home", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandRecursive1)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("text1", "${text2}");
+    pmgr.SetProperty("text2", "${text3}");
+    pmgr.SetProperty("text3", "You're gonna need a bigger boat.");
+
+    //Property ${text1} should expand up to the expected movie quote.
+    std::string expanded = pmgr.Expand("${text1}");
+
+    //Assert the string was properly expanded.
+    ASSERT_EQ("You're gonna need a bigger boat.", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandRecursive2)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("varname", "foo");
+    pmgr.SetProperty("foo", "${quote}");
+    pmgr.SetProperty("quote", "Say 'hello' to my little friend!");
+
+    //Property ${varname} should expand up to the expected movie quote.
+    std::string expanded = pmgr.Expand("${${varname}}");
+
+    //Assert the string was properly expanded.
+    ASSERT_EQ("Say 'hello' to my little friend!", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandOnceDefault)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("varname", "quote");
+    pmgr.SetProperty("quote", "Say 'hello' to my little friend!");
+
+    //Property ${varname} should NOT expand up to the expected movie quote.
+    std::string expanded = pmgr.ExpandOnce("${${varname}}");
+
+    //Assert the string was properly expanded.
+    ASSERT_EQ("${quote}", expanded);
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testEnvironmentVariableProperty)

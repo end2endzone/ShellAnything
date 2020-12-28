@@ -90,9 +90,23 @@ namespace shellanything
     /// Expands the given string by replacing property variable reference by the actual variable's value.
     /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
     /// </summary>
+    /// <remarks>
+    /// The string is expanded until there are no change in the given string.
+    /// </remarks>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
     std::string Expand(const std::string & value) const;
+
+    /// <summary>
+    /// Expands the given string by replacing property variable reference by the actual variable's value.
+    /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
+    /// </summary>
+    /// <remarks>
+    /// The string is expanded in a single pass. Some property reference may not be expanded after the first pass.
+    /// </remarks>
+    /// <param name="value">The given value to expand.</param>
+    /// <returns>Returns a copy of the given value with the property references expanded.</returns>
+    std::string ExpandOnce(const std::string & value) const;
 
   private:
 
