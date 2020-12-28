@@ -71,6 +71,7 @@ namespace shellanything
       return; // Nothing to register
  
     std::string selection_path           ;
+    std::string selection_dir            ;
     std::string selection_parent_path    ;
     std::string selection_parent_filename;
     std::string selection_filename       ;
@@ -90,7 +91,11 @@ namespace shellanything
     {
       const std::string & element = elements[i];
  
+      bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
+      bool isDir = ra::filesystem::DirectoryExistsUtf8(element.c_str());
+
       //${selection.path} is the full path of the clicked element
+      //${selection.dir} is the directory of the clicked element
       //${selection.parent.path} is the full path of the parent element
       //${selection.parent.filename} is the filename of the parent element
       //${selection.filename} is selection.filename (including file extension)
@@ -99,6 +104,7 @@ namespace shellanything
  
       //build properties for this specific element
       std::string element_selection_path            = element;
+      std::string element_selection_dir             = isFile ? ra::filesystem::GetParentPath(element_selection_path) : element;
       std::string element_selection_parent_path     = ra::filesystem::GetParentPath(element_selection_path);
       std::string element_selection_parent_filename = ra::filesystem::GetFilename(element_selection_parent_path.c_str());
       std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
@@ -109,6 +115,7 @@ namespace shellanything
  
       // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );
+      if (!selection_dir            .empty()) selection_dir             .append( selection_multi_separator );
       if (!selection_parent_path    .empty()) selection_parent_path     .append( selection_multi_separator );
       if (!selection_parent_filename.empty()) selection_parent_filename .append( selection_multi_separator );
       if (!selection_filename       .empty()) selection_filename        .append( selection_multi_separator );
@@ -119,6 +126,7 @@ namespace shellanything
 
       // Append this specific element properties to the global property string
       selection_path           .append( element_selection_path            );
+      selection_dir            .append( element_selection_dir             );
       selection_parent_path    .append( element_selection_parent_path     );
       selection_parent_filename.append( element_selection_parent_filename );
       selection_filename       .append( element_selection_filename        );
@@ -129,6 +137,7 @@ namespace shellanything
     }
  
     pmgr.SetProperty("selection.path"               , selection_path           );
+    pmgr.SetProperty("selection.dir"                , selection_dir            );
     pmgr.SetProperty("selection.parent.path"        , selection_parent_path    );
     pmgr.SetProperty("selection.parent.filename"    , selection_parent_filename);
     pmgr.SetProperty("selection.filename"           , selection_filename       );
@@ -150,6 +159,7 @@ namespace shellanything
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.ClearProperty("selection.path"               );
+    pmgr.ClearProperty("selection.dir"                );
     pmgr.ClearProperty("selection.parent.path"        );
     pmgr.ClearProperty("selection.parent.filename"    );
     pmgr.ClearProperty("selection.filename"           );
