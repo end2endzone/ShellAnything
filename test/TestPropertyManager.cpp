@@ -199,6 +199,20 @@ namespace shellanything { namespace test
     ASSERT_EQ("Bond. James Bond.", expanded);
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandHalf)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("first", "${sec");
+    pmgr.SetProperty("second", "E.T. phone");
+
+    //Property ${first} should be expanded to "${sec" which is followed by "ond}" which makes ${second} which should expand to "E.T. phone"
+    std::string expanded = pmgr.Expand("${first}ond} home");
+
+    //Assert the string was properly expanded.
+    ASSERT_EQ("E.T. phone home", expanded);
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testEnvironmentVariableProperty)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();

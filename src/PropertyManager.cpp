@@ -92,7 +92,7 @@ namespace shellanything
     return EMPTY_VALUE;
   }
 
-  bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
+  inline bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
   {
     size_t value_length = value.size();
     name.clear();
@@ -130,32 +130,32 @@ namespace shellanything
 
   std::string PropertyManager::Expand(const std::string & value) const
   {
+    //Process expansion in-place
     std::string output;
     output.reserve(value.size()*2);
+    output = value;
 
     static const std::string token_open = "${";
     static const std::string token_close = "}";
 
-    for(size_t i=0; i<value.size(); i++)
+    for(size_t i=0; i<output.size(); i++)
     {
       std::string name;
-      if (strncmp(&value[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, value, i, name))
+
+      //If we find a property reference token at this location...
+      if (strncmp(&output[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, output, i, name))
       {
-        //Found a property reference at value[i]
+        //Found a property reference at output[i]
         const std::string & property_value = this->GetProperty(name);
 
-        //Also expands property_value
-        std::string expanded = this->Expand(property_value);
+        //Replace the property reference by the property's value
+        size_t token_length = token_open.size() + name.size() + token_close.size();
+        output.replace(output.begin() + i, output.begin() + i + token_length, property_value);
 
-        //Proceed with the string replacement
-        output.append(expanded);
-
-        //Update i to skip this property reference
-        size_t length = token_open.size() + name.size() + token_close.size();
-        i += length-1; //-1 since the next for loop will increase i by 1.
+        //Keep i at the same value for the next loop to process the same character position.
+        //This is required if the property value also contains property references.
+        i--; //-1 since the next for loop will increase i by 1.
       }
-      else
-        output.append(1, value[i]);
     }
 
     return output;
