@@ -1046,6 +1046,7 @@ The following table defines the list of dynamic properties and their utility:
 | Property                     | Description                                                             |
 |------------------------------|-------------------------------------------------------------------------|
 | selection.path               | Matches the full path of the clicked element.                           |
+| selection.dir                | Matches the directory of the clicked element.                           |
 | selection.filename           | Matches the filename of the clicked element.                            |
 | selection.filename.noext     | Matches the filename of the clicked element without the file extension. |
 | selection.parent.path        | Matches the full path of the parent element.                            |
