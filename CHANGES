@@ -4,6 +4,7 @@ Changes for 0.6.0
 * Fixed issue #53: Multiple <visibility> or <validity> elements support.
 * Fixed issue #60: Unit tests cannot execute from installation directory.
 * Fixed issue #71: Uniformalize function argument names.
+* Fixed issue #72: The PropertyManager::Expand() method is not optimized.
 
 
 Changes for 0.5.1
