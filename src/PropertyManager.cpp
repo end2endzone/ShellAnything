@@ -31,6 +31,7 @@
 
 namespace shellanything
 {
+  static const int EXPANDING_MAX_ITERATIONS = 20;
 
   PropertyManager::PropertyManager()
   {
@@ -130,13 +131,18 @@ namespace shellanything
 
   std::string PropertyManager::Expand(const std::string & value) const
   {
+    int count = 1;
     std::string previous = value;
     std::string output = ExpandOnce(value);
-    while(output != previous)
+
+    //Prevent circular reference by expanding at most 20 times.
+    while(output != previous && count <= EXPANDING_MAX_ITERATIONS)
     {
       previous = output;
       output = ExpandOnce(output);
+      count++;
     }
+
     return output;
   }
 
@@ -150,11 +156,21 @@ namespace shellanything
     static const std::string token_open = "${";
     static const std::string token_close = "}";
 
+    //Prevent circular reference by dfining a counter which counts how many time a character position was expanded.
+    int count = 1;
+    size_t previous_pos = std::string::npos;
+
     for(size_t i=0; i<output.size(); i++)
     {
-      std::string name;
+      //Count how many time we tried to expand this position
+      if (i == previous_pos)
+        count++; //same character as previous loop
+      else
+        count = 0; //that is a new character
+      previous_pos = i;
 
       //If we find a property reference token at this location...
+      std::string name;
       if (strncmp(&output[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, output, i, name))
       {
         //Found a property reference at output[i]
@@ -164,9 +180,19 @@ namespace shellanything
         size_t token_length = token_open.size() + name.size() + token_close.size();
         output.replace(output.begin() + i, output.begin() + i + token_length, property_value);
 
-        //Keep i at the same value for the next loop to process the same character position.
-        //This is required if the property value also contains property references.
-        i--; //-1 since the next for loop will increase i by 1.
+        //Prevent circular reference by expanding 20 times maximum.
+        if (count < EXPANDING_MAX_ITERATIONS)
+        {
+          //Keep i at the same value for the next loop to process the same character position.
+          //This is required if the property value also contains property references.
+          i--; //-1 since the next for loop will increase i by 1.
+        }
+        else
+        {
+          //Reached the maximum of 20 loops.
+          //Stop looking for property reference at this position.
+          int a = 0;
+        }
       }
     }
 

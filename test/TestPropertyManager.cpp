@@ -257,6 +257,20 @@ namespace shellanything { namespace test
     ASSERT_EQ("${quote}", expanded);
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPropertyManager, testExpandCircularReference)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    pmgr.SetProperty("first", "${second}");
+    pmgr.SetProperty("second", "${first}");
+
+    //Property ${first} expands to "${second}" which expands back to "${first}" creating a circular reference.
+    std::string expanded = pmgr.Expand("${first}");
+
+    //Nothing to assert.
+    //We only care the Expand() method was not acting like an infinite loop.
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestPropertyManager, testEnvironmentVariableProperty)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
