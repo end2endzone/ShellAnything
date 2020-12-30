@@ -193,6 +193,7 @@ namespace shellanything { namespace test
  
     const char * test_string = ""
       "selection.path"                "=${selection.path}"                "\n"
+      "selection.dir"                 "=${selection.dir}"                 "\n"
       "selection.parent.path"         "=${selection.parent.path}"         "\n"
       "selection.parent.filename"     "=${selection.parent.filename}"     "\n"
       "selection.filename"            "=${selection.filename}"            "\n"
@@ -201,6 +202,7 @@ namespace shellanything { namespace test
  
     const char * expected_string = ""
       "selection.path"                "=C:\\Windows\\System32\\notepad.exe\n"
+      "selection.dir"                 "=C:\\Windows\\System32\n"
       "selection.parent.path"         "=C:\\Windows\\System32\n"
       "selection.parent.filename"     "=System32\n"
       "selection.filename"            "=notepad.exe\n"
@@ -243,6 +245,7 @@ namespace shellanything { namespace test
  
     //get all expanded properties
     std::string selection_path             = pmgr.Expand("${selection.path}");
+    std::string selection_dir              = pmgr.Expand("${selection.dir}");
     std::string selection_parent_path      = pmgr.Expand("${selection.parent.path}");
     std::string selection_parent_filename  = pmgr.Expand("${selection.parent.filename}");
     std::string selection_filename         = pmgr.Expand("${selection.filename}");
@@ -251,6 +254,7 @@ namespace shellanything { namespace test
  
     //assert 1 line per element (file or directory) in context
     ASSERT_EQ( context.GetElements().size(), CountLines(selection_path           ) );
+    ASSERT_EQ( context.GetElements().size(), CountLines(selection_dir));
     ASSERT_EQ( context.GetElements().size(), CountLines(selection_parent_path    ) );
     ASSERT_EQ( context.GetElements().size(), CountLines(selection_parent_filename) );
     ASSERT_EQ( context.GetElements().size(), CountLines(selection_filename       ) );
@@ -299,6 +303,7 @@ namespace shellanything { namespace test
  
     //get all expanded properties
     std::string selection_path             = pmgr.Expand("${selection.path}");
+    std::string selection_dir              = pmgr.Expand("${selection.dir}");
     std::string selection_parent_path      = pmgr.Expand("${selection.parent.path}");
     std::string selection_parent_filename  = pmgr.Expand("${selection.parent.filename}");
     std::string selection_filename         = pmgr.Expand("${selection.filename}");
@@ -307,6 +312,7 @@ namespace shellanything { namespace test
  
     //assert 1 line for each properties
     ASSERT_EQ( 1, CountLines(selection_path           ) );
+    ASSERT_EQ( 1, CountLines(selection_dir            ) );
     ASSERT_EQ( 1, CountLines(selection_parent_path    ) );
     ASSERT_EQ( 1, CountLines(selection_parent_filename) );
     ASSERT_EQ( 1, CountLines(selection_filename       ) );
@@ -315,6 +321,7 @@ namespace shellanything { namespace test
  
     //assert specific values of each property
     ASSERT_EQ( "C:\\Windows\\System32\\kernel32.dll,C:\\Windows\\System32\\cmd.exe,C:\\Windows\\System32\\notepad.exe,C:\\Windows\\System32\\services.msc", selection_path);
+    ASSERT_EQ("C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32", selection_dir);
     ASSERT_EQ( "C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32,C:\\Windows\\System32", selection_parent_path);
     ASSERT_EQ( "System32,System32,System32,System32", selection_parent_filename);
     ASSERT_EQ( "kernel32.dll,cmd.exe,notepad.exe,services.msc", selection_filename);
