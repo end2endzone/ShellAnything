@@ -1046,6 +1046,7 @@ The following table defines the list of dynamic properties and their utility:
 | Property                     | Description                                                             |
 |------------------------------|-------------------------------------------------------------------------|
 | selection.path               | Matches the full path of the clicked element.                           |
+| selection.dir                | Matches the directory of the clicked element.                           |
 | selection.filename           | Matches the filename of the clicked element.                            |
 | selection.filename.noext     | Matches the filename of the clicked element without the file extension. |
 | selection.parent.path        | Matches the full path of the parent element.                            |
@@ -1076,7 +1077,8 @@ The system will generates the following property values (note the `\r\n` charact
 | Property                     | Value                                                                                                                               |
 |------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | selection.path               | C:\Program Files (x86)\Winamp\libFLAC.dll`\r\n`C:\Program Files (x86)\Winamp\winamp.exe`\r\n`C:\Program Files (x86)\Winamp\zlib.dll |
-| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll                                                                                           |
+| selection.dir                | C:\Windows\System32`\r\n`C:\Windows\System32`\r\n`C:\Windows\System32`\r\n`|
+| selection.filename           | libFLAC.dll`\r\n`winamp.exe`\r\n`zlib.dll     
 | selection.filename.noext     | libFLAC`\r\n`winamp`\r\n`zlib                                                                                                       |
 | selection.parent.path        | C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp`\r\n`C:\Program Files (x86)\Winamp                                 |
 | selection.parent.filename    | Winamp`\r\n`Winamp`\r\n`Winamp                                                                                                      |
