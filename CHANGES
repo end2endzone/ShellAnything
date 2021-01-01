@@ -1,3 +1,8 @@
+Changes for 0.6.1
+
+* Fixed issue #79: Directory of selection: property selection.dir
+
+
 Changes for 0.6.0
 
 * Fixed issue #23: Implement menu validation based on a string expression.
