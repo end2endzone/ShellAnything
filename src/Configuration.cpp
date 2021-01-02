@@ -241,56 +241,7 @@ namespace shellanything
 
     if (file_extension == "XML")
     {
-      XMLDocument doc;
-      XMLError result = doc.LoadFile(path.c_str());
-      if (result == XML_ERROR_FILE_NOT_FOUND)
-      {
-        //We already validated that file exists. This is probably because the file path is utf-8 encoded.
-        //This is not supported by TinyXML.
-
-        //As a workaround, copy the file to a temp directory with a non utf-8 path
-        std::string temp_filename;
-        ra::random::GetRandomString(temp_filename, 10);
-        temp_filename.append(".xml");
-        std::string temp_path = ra::filesystem::GetTemporaryDirectory() + ra::filesystem::GetPathSeparatorStr() + temp_filename;
-        bool copied = ra::filesystem::CopyFileUtf8(path, temp_path);
-        if (!copied)
-        {
-          return false;
-        }
-
-        //and load the new temp file
-        result = doc.LoadFile(temp_path.c_str());
-
-        //cleanup
-        ra::filesystem::DeleteFile(temp_path.c_str());
-      }
-
-      if (result == XML_SUCCESS)
-      {
-        //get xml encoding
-        std::string error = "";
-        std::string encoding = GetXmlEncoding(doc, error);
-        if (encoding.empty())
-        {
-          return false;
-        }
-
-        //validate utf-8 encoding
-        std::string tmp_encoding = ra::strings::Uppercase(encoding);
-        ra::strings::Replace(tmp_encoding, "-", "");
-        if (tmp_encoding != "UTF8")
-        {
-          return false;
-        }
-
-        //validate xml path [ root > shell > menu ]
-        const XMLElement* xml_menu = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").FirstChildElement("menu").ToElement();
-        if (xml_menu)
-        {
-          return true;
-        }
-      }
+      return true;
     }
 
     return false;
