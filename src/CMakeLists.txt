@@ -127,6 +127,10 @@ add_custom_command( TARGET shellanything POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${CMAKE_SOURCE_DIR}/resources/unregister.bat $<TARGET_FILE_DIR:shellanything>/unregister.bat
                     COMMENT "Copying unregister.bat script.")
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_SOURCE_DIR}/resources/refresh.bat $<TARGET_FILE_DIR:shellanything>/refresh.bat
+                    COMMENT "Copying refresh.bat script.")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
