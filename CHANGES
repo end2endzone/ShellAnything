@@ -1,6 +1,9 @@
 Changes for 0.6.1
 
+* Fixed issue #78: Syntax error in default.xml
 * Fixed issue #79: Directory of selection: property selection.dir
+* Fixed issue #80: Comment inside XML
+* Fixed issue #85: Refresh script
 
 
 Changes for 0.6.0
