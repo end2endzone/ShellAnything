@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Help:
-  This is a quick reminder about how to use the property system. 
-  The following table defines the list of dynamic properties and their utility:
-
+  Help:
+    This is a quick reminder about how to use the property system. 
+    The following table defines the list of dynamic properties and their utility:
   Selection-based properties:
-  
-  | Property                     | Description                                                              |
-  |------------------------------|--------------------------------------------------------------------------|
-  | selection.path               | Matches the full path of the clicked element.                            |
-  | selection.filename           | Matches the filename  of the clicked element.                            |
-  | selection.filename.noext     | Matches the filename  of the clicked element without the file extension. |
-  | selection.parent.path        | Matches the full path of the parent  element.                            |
-  | selection.parent.filename    | Matches the filename  of the parent  element.                            |
-  | selection.filename.extension | Matches the file extension of the clicked element.                       |
-
+    ┌──────────────────────────────┬─────────────────────────────────────────────────────────────────────────┐
+    │           Property           │                               Description                               │
+    ├──────────────────────────────┼─────────────────────────────────────────────────────────────────────────┤
+    │ selection.path               │ Matches the full path of the clicked element.                           │
+    │ selection.dir                │ Matches the directory of the clicked element.                           │
+    │ selection.filename           │ Matches the filename of the clicked element.                            │
+    │ selection.filename.noext     │ Matches the filename of the clicked element without the file extension. │
+    │ selection.parent.path        │ Matches the full path of the parent element.                            │
+    │ selection.parent.filename    │ Matches the filename of the parent element.                             │
+    │ selection.filename.extension │ Matches the file extension of the clicked element.                      │
+    │ selection.drive.letter       │ Matches the drive letter of the clicked element. For example 'C'.       │
+    │ selection.drive.path         │ Matches the drive path of the clicked element. For example 'C:'.        │
+    ├──────────────────────────────┼─────────────────────────────────────────────────────────────────────────┤
+    │ selection.count              │ Matches the number of clicked elements (files and directories).         │
+    │ selection.files.count        │ Matches the number of clicked files.                                    │
+    │ selection.directories.count  │ Matches the number of clicked directories.                              │
+    └──────────────────────────────┴─────────────────────────────────────────────────────────────────────────┘
+  Fixed properties:
+    ┌───────────────────────┬─────────────────────────────────────────────────────┐
+    │       Property        │                     Description                     │
+    ├───────────────────────┼─────────────────────────────────────────────────────┤
+    │ application.path      │ Matches the full path of the shell extension DLL.   │
+    │ application.directory │ Matches the directory of the shell extension.       │
+    │ log.directory         │ Matches the directory where the logs are created.   │
+    │ config.directory      │ Matches the directory of the configuration files.   │
+    │ home.directory        │ Matches the home directory of the current user.     │
+    │ path.separator        │ Matches the \ character.                            │
+    │ line.separator        │ Matches the \r\n string.                            │
+    │ newline               │ Matches the \r\n string. Same as ${line.separator}. │
+    └───────────────────────┴─────────────────────────────────────────────────────┘
   Environment variables properties:  
     ${env.XYZ} refers to environment variable XYZ
-  
   Rules:
-  * Property names must not contain spaces
-  * Property lists must be separated by ';' character
-  * File extension lists must be separated by ';' character
+   * Property names must not contain spaces
+   * Property lists must be separated by ';' character
+   * File extension lists must be separated by ';' character
   
 -->
 <root>
