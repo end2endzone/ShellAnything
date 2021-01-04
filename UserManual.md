@@ -1246,7 +1246,7 @@ ShellAnything can quickly open a command prompt inside the current *Windows Expl
       <icon path="C:\Windows\System32\cmd.exe" index="0" />
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
-        <exec path="${env.ComSpec}" basedir="&quot;${selection.path}&quot;" />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" />
       </actions>
     </menu>
   </shell>
