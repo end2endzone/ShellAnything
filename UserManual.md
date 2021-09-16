@@ -565,6 +565,17 @@ For instance, the following icon definition uses the same icon as the clicked fi
 ```
 
 
+*_Hint_*: you can use Windows own icons to assign your &lt;icon&gt; with familiar Windows icons.
+The following links shows a visual representation and the index of each icons:
+* [Windows  7 icons in shell32.dll](https://help4windows.com/windows_7_shell32_dll.shtml)
+* [Windows  7 icons in imageres.dll](https://help4windows.com/windows_7_imageres_dll.shtml)
+* [Windows  8 icons in shell32.dll](https://help4windows.com/windows_8_shell32_dll.shtml)
+* [Windows  8 icons in imageres.dll](https://help4windows.com/windows_8_imageres_dll.shtml)
+* [Windows 10 icons in shell32.dll](https://help4windows.com/)
+* [Windows 10 icons in imageres.dll](https://help4windows.com/)
+
+
+
 
 ## Actions ##
 
