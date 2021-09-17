@@ -1,6 +1,7 @@
 find_package(rapidassist REQUIRED)
 find_package(tinyxml2 REQUIRED)
 find_package(glog REQUIRED)
+find_package(libmagic REQUIRED)
 
 #resource.rc
 set(SHELLANYTHING_RESOURCE_RC ${CMAKE_BINARY_DIR}/src/resource.rc)
@@ -60,6 +61,8 @@ add_library(shellanything STATIC
   ConfigManager.cpp
   Context.cpp
   DefaultSettings.cpp
+  FileMagic.h
+  FileMagic.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp
@@ -131,6 +134,10 @@ add_custom_command( TARGET shellanything POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${CMAKE_SOURCE_DIR}/resources/refresh.bat $<TARGET_FILE_DIR:shellanything>/refresh.bat
                     COMMENT "Copying refresh.bat script.")
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${LIBMAGIC_MGC_DIR}/magic.mgc $<TARGET_FILE_DIR:shellanything>/magic.mgc
+                    COMMENT "Copying magic.mgc.")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
@@ -149,6 +156,7 @@ target_include_directories(shellanything
     rapidassist
     glog::glog
     libeval
+    libmagic
 )
 target_include_directories(shellext
   PUBLIC
@@ -156,6 +164,7 @@ target_include_directories(shellext
   PRIVATE
     rapidassist
     glog::glog
+    libmagic
 )
 target_include_directories(libeval
   PUBLIC
@@ -163,8 +172,8 @@ target_include_directories(libeval
   PRIVATE
     ${PACKAGE_DOWNLOAD_DIR}/exprtk-master
 )
-target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libeval)
-target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog)
+target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libeval libmagic)
+target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog libmagic)
 
 # Also add Tinyxml2 include and libraries.
 # The include/libraries are added at the end to allow supporting both static or shared libraries (the target names are different).

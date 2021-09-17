@@ -1,6 +1,7 @@
 find_package(GTest REQUIRED)
 find_package(rapidassist REQUIRED)
 find_package(glog REQUIRED)
+find_package(libmagic REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
@@ -115,9 +116,9 @@ endif()
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog ${CMAKE_SOURCE_DIR}/src)
-add_dependencies(shellanything_unittest shellanything shellext)
-target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog)
+target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog libmagic ${CMAKE_SOURCE_DIR}/src)
+add_dependencies(shellanything_unittest shellanything shellext libmagic)
+target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libmagic)
 
 # Copy test configuration files database to target dir
 add_custom_command( TARGET shellanything_unittest POST_BUILD

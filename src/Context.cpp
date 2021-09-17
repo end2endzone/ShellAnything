@@ -37,7 +37,8 @@ namespace shellanything
 
   Context::Context() :
     mNumFiles(0),
-    mNumDirectories(0)
+    mNumDirectories(0),
+    fm()
   {
   }
 
@@ -82,6 +83,10 @@ namespace shellanything
     std::string selection_count          ;
     std::string selection_files_count    ;
     std::string selection_directories_count;
+    std::string selection_mimetype       ;
+    std::string selection_description    ;
+    // std::string selection_extension      ;
+    // std::string selection_charset        ;
 
     // Get the separator string for multiple selection 
     const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
@@ -112,6 +117,10 @@ namespace shellanything
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
       std::string element_selection_drive_letter    = GetDriveLetter(element);
       std::string element_selection_drive_path      = GetDrivePath(element);
+      std::string element_selection_mimetype        = fm.GetMIMEType(element_selection_path);
+      std::string element_selection_description     = fm.GetDescription(element_selection_path);
+      // std::string element_selection_extension       = fm.GetExtension(element_selection_path);
+      // std::string element_selection_charset         = fm.GetCharset(element_selection_path);
  
       // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );
@@ -123,6 +132,10 @@ namespace shellanything
       if (!selection_filename_ext   .empty()) selection_filename_ext    .append( selection_multi_separator );
       if (!selection_drive_letter   .empty()) selection_drive_letter    .append( selection_multi_separator );
       if (!selection_drive_path     .empty()) selection_drive_path      .append( selection_multi_separator );
+      if (!selection_mimetype       .empty()) selection_mimetype        .append( selection_multi_separator );
+      if (!selection_description    .empty()) selection_description     .append( selection_multi_separator );
+      // if (!selection_extension      .empty()) selection_extension       .append( selection_multi_separator );
+      // if (!selection_charset        .empty()) selection_charset         .append( selection_multi_separator );
 
       // Append this specific element properties to the global property string
       selection_path           .append( element_selection_path            );
@@ -134,6 +147,10 @@ namespace shellanything
       selection_filename_ext   .append( element_selection_filename_ext    );
       selection_drive_letter   .append( element_selection_drive_letter    );
       selection_drive_path     .append( element_selection_drive_path      );
+      selection_mimetype       .append( element_selection_mimetype        );
+      selection_description    .append( element_selection_description     );
+      // selection_extension      .append( element_selection_extension       );
+      // selection_charset        .append( element_selection_charset         );
     }
  
     pmgr.SetProperty("selection.path"               , selection_path           );
@@ -145,6 +162,11 @@ namespace shellanything
     pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   );
     pmgr.SetProperty("selection.drive.letter"       , selection_drive_letter   );
     pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
+    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
+    pmgr.SetProperty("selection.mimetype"           , selection_mimetype       );
+    pmgr.SetProperty("selection.description"        , selection_description    );
+    // pmgr.SetProperty("selection.extension"          , selection_extension      );
+    // pmgr.SetProperty("selection.charset"            , selection_charset        );
 
     selection_count             = ra::strings::ToString(elements.size());
     selection_files_count       = ra::strings::ToString(this->GetNumFiles());
@@ -167,6 +189,10 @@ namespace shellanything
     pmgr.ClearProperty("selection.filename.extension" );
     pmgr.ClearProperty("selection.drive.letter"       );
     pmgr.ClearProperty("selection.drive.path"         );
+    pmgr.ClearProperty("selection.mimetype"           );
+    pmgr.ClearProperty("selection.description"        );
+    // pmgr.ClearProperty("selection.extension"          );
+    // pmgr.ClearProperty("selection.charset"            );
   }
  
   const Context::ElementList & Context::GetElements() const
