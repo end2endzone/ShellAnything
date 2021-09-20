@@ -1,3 +1,9 @@
+Changes for 0.7.0
+
+* Using [File for Windows](https://github.com/Cirn09/file-windows) v5.38 with minimal changes.
+* Using [PCRE2](http://www.pcre.org/) version 10.30
+
+
 Changes for 0.6.1
 
 * Fixed issue #78: Syntax error in default.xml
