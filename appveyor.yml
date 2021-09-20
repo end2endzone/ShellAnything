@@ -18,7 +18,7 @@ branches:
   only:
     - master
     - Branch_0.6.x
-    - origin/Branch_0.3.x
+    - origin/Branch_0.6.x
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
