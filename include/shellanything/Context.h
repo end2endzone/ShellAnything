@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include "FileMagic.h"
 
 namespace shellanything
 {
@@ -92,6 +93,7 @@ namespace shellanything
     ElementList mElements;
     int mNumFiles;
     int mNumDirectories;
+    FileMagic fm;
 
   };
 

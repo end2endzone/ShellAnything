@@ -66,6 +66,7 @@ before_build:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_rapidassist.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_glog.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_grip.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_libmagic.bat
 
 build_script:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\build_library.bat

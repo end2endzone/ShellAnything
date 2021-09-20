@@ -138,6 +138,9 @@ set(SHELLANYTHING_INSTALL_INCLUDE_DIR  "include/shellanything-${SHELLANYTHING_VE
 set(SHELLANYTHING_INSTALL_CMAKE_DIR    ${SHELLANYTHING_INSTALL_LIB_DIR}) # CMake files (*.cmake) should have the same destination as the library files. Some also prefers to use "cmake".
 set(SHELLANYTHING_INSTALL_DOC_DIR      "docs")
 
+# magic.mgc file
+set(LIBMAGIC_MGC_DIR "${CMAKE_SOURCE_DIR}/third_parties/libmagic/install/binary")
+
 ##############################################################################################################################################
 # Project settings
 ##############################################################################################################################################
@@ -289,6 +292,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake DESTI
 
 install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
               ${CMAKE_SOURCE_DIR}/resources/unregister.bat
+              ${LIBMAGIC_MGC_DIR}/magic.mgc
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/shellanything DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR})
