@@ -6,6 +6,16 @@ if "%APPVEYOR_BUILD_FOLDER%"=="" (
   exit /B 1
 )
 
+:: libmagic is a C library with a C api.
+:: We do not have any plans on debugging the library,
+:: so compiling in Debug mode is not required for this project.
+:: Because the C api provides binary compatibility, this library
+:: can be safely compiled in Release mode while ShellAnything
+:: and other modules are compiled in Debug mode.
+::
+:: Forcing Configuration=Release for this builds.
+::
+
 set LIBMAGIC_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\libmagic
 set LIBMAGIC_DIR=%LIBMAGIC_ROOT%\install
 
@@ -39,14 +49,14 @@ echo ===========================================================================
 echo Compiling PCRE2...
 echo ============================================================================
 cd /d %PCRE2_ROOT%\build
-cmake --build . --config %Configuration%
+cmake --build . --config Release
 if %errorlevel% neq 0 exit /b %errorlevel%
 
  ============================================================================
 echo Installing PCRE2 into %PCRE2_INSTALL_DIR%
 echo ============================================================================
 cd /d %PCRE2_ROOT%\build
-cmake --install . --config %Configuration%
+cmake --install . --config Release
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
@@ -62,13 +72,13 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 echo ============================================================================
 echo Compiling libmagic...
 echo ============================================================================
-cmake --build . --config %Configuration%
+cmake --build . --config Release
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
 echo ============================================================================
 echo Installing libmagic into %libmagic_DIR%
 echo ============================================================================
-cmake --install . --config %Configuration%
+cmake --install . --config Release
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
