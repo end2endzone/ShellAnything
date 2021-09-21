@@ -19,7 +19,6 @@ mkdir %APPVEYOR_BUILD_FOLDER%\third_parties >NUL 2>NUL
 cd %APPVEYOR_BUILD_FOLDER%\third_parties
 @REM git clone --recurse-submodules "https://github.com/julian-r/file-windows" libmagic
 git clone --recurse-submodules "https://github.com/Cirn09/file-windows" libmagic
-
 cd libmagic
 echo.
 
@@ -28,36 +27,48 @@ echo.
 @REM echo.
 
 echo ============================================================================
-echo Preparing...
+echo Generating PCRE2...
 echo ============================================================================
 cd /d %PCRE2_ROOT%
 mkdir build >NUL 2>NUL
 cd build
 cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX="%PCRE2_INSTALL_DIR%" ..
 if %errorlevel% neq 0 exit /b %errorlevel%
+
+echo ============================================================================
+echo Compiling PCRE2...
+echo ============================================================================
+cd /d %PCRE2_ROOT%\build
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
-cmake --install . --config %CONFIGURATION%
+
+ ============================================================================
+echo Installing PCRE2 into %PCRE2_INSTALL_DIR%
+echo ============================================================================
+cd /d %PCRE2_ROOT%\build
+cmake --install . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
 echo ============================================================================
-echo Compiling...
+echo Generating libmagic...
 echo ============================================================================
-
 cd /d %LIBMAGIC_ROOT%
 mkdir build >NUL 2>NUL
 cd build
-cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_INSTALL_PREFIX="%libmagic_DIR%" ..
-@REM cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_INSTALL_PREFIX="%libmagic_DIR%" -DCMAKE_PREFIX_PATH="%PCRE2_INSTALL_DIR%" ..
 if %errorlevel% neq 0 exit /b %errorlevel%
+
+echo ============================================================================
+echo Compiling libmagic...
+echo ============================================================================
 cmake --build . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
 
 echo ============================================================================
-echo Installing into %libmagic_DIR%
+echo Installing libmagic into %libmagic_DIR%
 echo ============================================================================
-cmake --build . --config %Configuration% --target INSTALL
+cmake --install . --config %Configuration%
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo.
