@@ -13,7 +13,7 @@ if "%APPVEYOR_BUILD_FOLDER%"=="" (
 :: can be safely compiled in Release mode while ShellAnything
 :: and other modules are compiled in Debug mode.
 ::
-:: Forcing Configuration=Release for this builds.
+:: Forcing Configuration=Release for this build.
 ::
 
 set LIBMAGIC_ROOT=%APPVEYOR_BUILD_FOLDER%\third_parties\libmagic
@@ -42,7 +42,7 @@ echo ===========================================================================
 cd /d %PCRE2_ROOT%
 mkdir build >NUL 2>NUL
 cd build
-cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX="%PCRE2_INSTALL_DIR%" ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DCMAKE_INSTALL_PREFIX="%PCRE2_INSTALL_DIR%" -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%\third_parties\zlib\install" ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ============================================================================
@@ -66,7 +66,7 @@ echo ===========================================================================
 cd /d %LIBMAGIC_ROOT%
 mkdir build >NUL 2>NUL
 cd build
-cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_INSTALL_PREFIX="%libmagic_DIR%" -DCMAKE_PREFIX_PATH="%PCRE2_INSTALL_DIR%" ..
+cmake -Wno-dev -DCMAKE_GENERATOR_PLATFORM=%Platform% -T %PlatformToolset% -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_INSTALL_PREFIX="%libmagic_DIR%" -DCMAKE_PREFIX_PATH="%PCRE2_INSTALL_DIR%;%APPVEYOR_BUILD_FOLDER%\third_parties\zlib\install" ..
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ============================================================================

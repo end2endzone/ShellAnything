@@ -2,6 +2,7 @@ find_package(rapidassist REQUIRED)
 find_package(tinyxml2 REQUIRED)
 find_package(glog REQUIRED)
 find_package(libmagic REQUIRED)
+find_package(ZLIB REQUIRED)
 
 #resource.rc
 set(SHELLANYTHING_RESOURCE_RC ${CMAKE_BINARY_DIR}/src/resource.rc)
@@ -138,6 +139,10 @@ add_custom_command( TARGET shellanything POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${LIBMAGIC_MGC_DIR}/magic.mgc $<TARGET_FILE_DIR:shellanything>/magic.mgc
                     COMMENT "Copying magic.mgc.")
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll $<TARGET_FILE_DIR:shellanything>/zlib.dll
+                    COMMENT "Copying zlib.dll.")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
