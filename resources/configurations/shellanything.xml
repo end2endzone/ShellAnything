@@ -30,8 +30,65 @@
         </menu>
       </menu>
 
+      <menu name="Documentation">
+        <icon path="C:\Windows\system32\shell32.dll" index="154" />
+        <!-- <icon path="C:\Windows\system32\shell32.dll" index="253" /> -->
+        
+        <menu name="CONTRIBUTING">
+          <menu name="markdown">
+            <visibility exists="${application.directory}\..\CONTRIBUTING.md" />
+            <icon fileextension="md" />
+            <actions>
+              <open path="${application.directory}\..\CONTRIBUTING.md" />
+            </actions>
+          </menu>
+          <menu name="html">
+            <visibility exists="${application.directory}\..\CONTRIBUTING.html" />
+            <icon fileextension="html" />
+            <actions>
+              <open path="${application.directory}\..\CONTRIBUTING.html" />
+            </actions>
+          </menu>
+        </menu>
+        
+        <menu name="README">
+          <menu name="markdown">
+            <visibility exists="${application.directory}\..\README.md" />
+            <icon fileextension="md" />
+            <actions>
+              <open path="${application.directory}\..\README.md" />
+            </actions>
+          </menu>
+          <menu name="html">
+            <visibility exists="${application.directory}\..\README.html" />
+            <icon fileextension="html" />
+            <actions>
+              <open path="${application.directory}\..\README.html" />
+            </actions>
+          </menu>
+        </menu>
+        
+        <menu name="UserManual">
+          <menu name="markdown">
+            <visibility exists="${application.directory}\..\UserManual.md" />
+            <icon fileextension="md" />
+            <actions>
+              <open path="${application.directory}\..\UserManual.md" />
+            </actions>
+          </menu>
+          <menu name="html">
+            <visibility exists="${application.directory}\..\UserManual.html" />
+            <icon fileextension="html" />
+            <actions>
+              <open path="${application.directory}\..\UserManual.html" />
+            </actions>
+          </menu>
+        </menu>
+        
+      </menu>
+        
       <menu name="Github">
-        <icon path="C:\Windows\system32\shell32.dll" index="13" />
+        <icon fileextension="html" />
         
         <menu name="Source code">
           <!--<icon path="C:\Windows\system32\dsuiext.dll" index="8" />-->
