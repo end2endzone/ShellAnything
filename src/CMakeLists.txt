@@ -141,6 +141,10 @@ add_custom_command( TARGET shellanything POST_BUILD
                     COMMENT "Copying magic.mgc.")
 add_custom_command( TARGET shellanything POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${LIBMAGIC_MGC_DIR}/file.exe $<TARGET_FILE_DIR:shellanything>/file.exe
+                    COMMENT "Copying file.exe.")
+add_custom_command( TARGET shellanything POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll $<TARGET_FILE_DIR:shellanything>/zlib.dll
                     COMMENT "Copying zlib.dll.")
 
