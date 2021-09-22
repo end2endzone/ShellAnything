@@ -108,7 +108,7 @@
         <!-- Hide this menu until a choice was made in 'Select file' menu -->
         <visibility properties="compare.first.selection.filename" />
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K FC /L &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+          <exec path="${env.ComSpec}" arguments="/K FC /L &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;"  basedir="${selection.parent.path}" />
 
           <!--Reset the properties now that compare is complete-->
           <property name="compare.first.selection.path"     value="" />
@@ -119,7 +119,7 @@
         <icon path="C:\Windows\System32\compstui.dll" index="39" />
         <visibility properties="compare.first.selection.filename" />
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" />
+          <exec path="${env.ComSpec}" arguments="/K FC /B &quot;${compare.first.selection.path}&quot; &quot;${selection.path}&quot;" basedir="${selection.parent.path}" />
 
           <!--Reset the properties now that compare is complete-->
           <property name="compare.first.selection.path"     value="" />
@@ -134,7 +134,7 @@
       <visibility maxfiles="0" maxfolders="1" />
       <actions>
         <prompt name="findpattern" title="Please enter a file wildcard pattern..." />
-        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K dir /a /s /b &quot;${findpattern}&quot;" />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/C start &quot;Searching for ${findpattern}&quot; %ComSpec% /K dir /a /s /b &quot;${findpattern}&quot;" />
         <property name="findpattern" value="" />
       </actions>
     </menu>
@@ -145,7 +145,7 @@
       <actions>
         <prompt name="filepattern" title="Question 1 of 2.${newline}Please enter the file wildcard pattern..." />
         <prompt name="textpattern" title="Question 2 of 2.${newline}Please enter the searched text..." />
-        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K FINDSTR /S /M &quot;/C:${textpattern}&quot; ${filepattern}" />
+        <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/C start &quot;Searching in files&quot; %ComSpec% /K FINDSTR /S /M &quot;/C:${textpattern}&quot; ${filepattern}" />
         <property name="filepattern" value="" />
         <property name="textpattern" value="" />
       </actions>
@@ -157,22 +157,22 @@
       <visibility maxfiles="1" maxfolders="0" />
       <menu name="MD5">
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; MD5" />
+          <exec path="${env.ComSpec}" arguments="/C start &quot;Calculating checksum of ${selection.filename}&quot; %ComSpec% /K CertUtil -hashfile &quot;${selection.path}&quot; MD5" />
         </actions>
       </menu>
       <menu name="SHA1">
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA1" />
+          <exec path="${env.ComSpec}" arguments="/C start &quot;Calculating checksum of ${selection.filename}&quot; %ComSpec% /K CertUtil -hashfile &quot;${selection.path}&quot; SHA1" />
         </actions>
       </menu>
       <menu name="SHA256">
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA256" />
+          <exec path="${env.ComSpec}" arguments="/C start &quot;Calculating checksum of ${selection.filename}&quot; %ComSpec% /K CertUtil -hashfile &quot;${selection.path}&quot; SHA256" />
         </actions>
       </menu>
       <menu name="SHA512">
         <actions>
-          <exec path="${env.ComSpec}" arguments="/K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
+          <exec path="${env.ComSpec}" arguments="/C start &quot;Calculating checksum of ${selection.filename}&quot; %ComSpec% /K CertUtil -hashfile &quot;${selection.path}&quot; SHA512" />
         </actions>
       </menu>
       <menu name="7-Zip Checksums">
