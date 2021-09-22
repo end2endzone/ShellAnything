@@ -1054,24 +1054,71 @@ The application provides a list of dynamic properties. The values of these prope
 
 The following table defines the list of dynamic properties and their utility:
 
-| Property                     | Description                                                             |
-|------------------------------|-------------------------------------------------------------------------|
-| selection.path               | Matches the full path of the clicked element.                           |
-| selection.dir                | Matches the directory of the clicked element.                           |
-| selection.filename           | Matches the filename of the clicked element.                            |
-| selection.filename.noext     | Matches the filename of the clicked element without the file extension. |
-| selection.parent.path        | Matches the full path of the parent element.                            |
-| selection.parent.filename    | Matches the filename of the parent element.                             |
-| selection.filename.extension | Matches the file extension of the clicked element.                      |
-| selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.       |
-| selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.       |
-| selection.count              | Matches the number of clicked elements (files and directories).         |
-| selection.files.count        | Matches the number of clicked files.                                    |
-| selection.directories.count  | Matches the number of clicked directories.                              |
+| Property                     | Description                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| selection.path               | Matches the full path of the clicked element.                                                                     |
+| selection.dir                | Matches the directory of the clicked element.                                                                     |
+| selection.filename           | Matches the filename of the clicked element.                                                                      |
+| selection.filename.noext     | Matches the filename of the clicked element without the file extension.                                           |
+| selection.parent.path        | Matches the full path of the parent element.                                                                      |
+| selection.parent.filename    | Matches the filename of the parent element.                                                                       |
+| selection.filename.extension | Matches the file extension of the clicked element.                                                                |
+| selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.                                                 |
+| selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.                                                 |
+| selection.count              | Matches the number of clicked elements (files and directories).                                                   |
+| selection.files.count        | Matches the number of clicked files.                                                                              |
+| selection.directories.count  | Matches the number of clicked directories.                                                                        |
+| selection.mimetype           | Matches the [MIME type](https://en.wikipedia.org/wiki/Media_type) of the selected file. See below for examples.   |
+| selection.description        | Matches a general description of the file's content. See below for examples.                                      |
+| selection.charset            | Matches the [Character Set](https://www.w3schools.com/html/html_charset.asp) of the file. See below for examples. |
 
 Selection-based properties are encoded in utf-8.
 
-Note that properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
+### MIME types, general description and charset: ###
+
+A MIME type is a label used to identify a type of data. It is used so software can know how to handle the data. It serves the same purpose on the Internet that file extensions do on Microsoft Windows. A MIME type is calculated from the actual content in a file.
+
+A MIME type has two parts: a **type** and a **subtype**. They are separated by a slash character (`/`). For example, the MIME type for *Microsoft Word* files is *application* and the subtype is *msword*. Together, the complete MIME type is `application/msword`.
+
+The following table shows examples values for different type of content :
+
+| Type of content                                                                                                                                 | MIME type             | Character set | Description                                                                                                                              |
+|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| [This image](https://github.com/end2endzone/ShellAnything/blob/0.6.1/docs/screenshot_file.png) in png format.                                   | image/png             | binary        | PNG image data, 614 x 668, 8-bit/color RGBA, non-interlaced                                                                              |
+| [This image](https://github.com/end2endzone/ShellAnything/blob/0.6.1/docs/ShellAnything-splashscreen.jpg) in jpeg format.                       | image/jpeg            | binary        | JPEG image data, JFIF standard 1.01, resolution (DPI), density 72x72, segment length 16, progressive, precision 8, 853x480, components 3 |
+| [This text file](https://github.com/end2endzone/ShellAnything/blob/0.6.1/CMakeLists.txt)                                                        | text/plain            | us-ascii      | ASCII text, with CRLF line terminators                                                                                                   |
+| ShellAnything's [default.xml](https://github.com/end2endzone/ShellAnything/blob/0.6.1/resources/configurations/default.xml) Configuration file. | text/xml              | utf-8         | XML 1.0 document, UTF-8 Unicode text, with CRLF line terminators                                                                         |
+| ShellAnything's unit test executable.                                                                                                           | application/x-dosexec | binary        | PE32+ executable (console) x86-64, for MS Windows                                                                                        |
+| [Media Player Classic](https://github.com/mpc-hc/mpc-hc) executable.                                                                            | application/x-dosexec | binary        | PE32 executable (GUI) Intel 80386, for MS Windows                                                                                        |
+| An MP3 audio file                                                                                                                               | audio/mpeg            | binary        | MPEG ADTS, layer III, v1, 160 kbps, 44.1 kHz, Monaural                                                                                   |
+
+
+### How to get my files MIME types, general description and charset ? ###
+
+ShellAnything's is bundle with *file.exe* which is an application that is able to print a file's MIME type, charset or description. Execute the following commands to get the MIME type of a given file:
+1. Open a *Command Prompt*.
+2. Navigate to ShellAnything's installation folder: `cd /d C:\Program Files\ShellAnything [version]\bin`.
+3. To get the file's MIME type, enter the command `file --mime-type <path_of_file>`.
+4. To get the file's encoding (charset), enter the command `file --mime-encoding <path_of_file>`.
+5. To get a general description of the content of the file, enter the command `file <path_of_file>`.
+
+
+Another option is to create your own *Configuration* and add the following menu that shows these values. For example:
+```xml
+  <menu name="Show MIMEtype, description and charset">
+    <visibility maxfiles="1" maxfolders="0" />
+    <actions>
+       <message caption="MIMEType debugger" title="selection.mimetype=${selection.mimetype}${line.separator}selection.charset=${selection.charset}${line.separator}selection.description=${selection.description}" />
+    </actions>
+  </menu>
+``` 
+Press `CTRL+C` when the message is shown to copy the values to the clipboard.
+
+
+**Notes:**
+Properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
+
+The properties `selection.mimetype`, `selection.description` and `selection.mimetype` are based on the content of the selected file. The properties are provided by the *File* and *Libmagic* libraries to extract information about selected files. For more details, see the documentation at [github.com/Cirn09/file-windows](https://github.com/Cirn09/file-windows), [github.com/file/file](https://github.com/file/file) or the [official file documentation](http://www.darwinsys.com/file/).
 
 
 
