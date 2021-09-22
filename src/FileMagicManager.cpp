@@ -28,7 +28,7 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/errors.h"
 
-#include "FileMagic.h"
+#include "FileMagicManager.h"
 #include "ErrorManager.h"
 
 
@@ -71,7 +71,7 @@ std::string GetMGCPath()
 
 namespace shellanything
 {
-  FileMagic::FileMagic()
+  FileMagicManager::FileMagicManager()
   {
     magic_cookie = magic_open(MAGIC_NONE);
     std::string path = GetMGCPath();
@@ -87,13 +87,19 @@ namespace shellanything
     }
   }
 
-  FileMagic::~FileMagic()
+  FileMagicManager::~FileMagicManager()
   {
     magic_close(magic_cookie);
     magic_cookie = NULL;
   }
   
-  std::string FileMagic::GetMIMEType(const std::string & path) const
+  FileMagicManager & FileMagicManager::GetInstance()
+  {
+    static FileMagicManager _instance;
+    return _instance;
+  }
+
+  std::string FileMagicManager::GetMIMEType(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_TYPE);
     const char *result = magic_file(magic_cookie, path.c_str());
@@ -108,7 +114,7 @@ namespace shellanything
     }
   }
 
-  std::string FileMagic::GetDescription(const std::string & path) const
+  std::string FileMagicManager::GetDescription(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_NONE);
     const char *result = magic_file(magic_cookie, path.c_str());
@@ -123,7 +129,7 @@ namespace shellanything
     }
   }
 
-  std::string FileMagic::GetExtension(const std::string & path) const
+  std::string FileMagicManager::GetExtension(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_EXTENSION);
     const char *result = magic_file(magic_cookie, path.c_str());
@@ -138,7 +144,7 @@ namespace shellanything
     }
   }
 
-  std::string FileMagic::GetCharset(const std::string & path) const
+  std::string FileMagicManager::GetCharset(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_ENCODING);
     const char *result = magic_file(magic_cookie, path.c_str());

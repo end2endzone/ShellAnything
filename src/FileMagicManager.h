@@ -30,11 +30,19 @@
 
 namespace shellanything
 {
-  class FileMagic
+  class FileMagicManager
   {
+  private:
+    FileMagicManager();
+    ~FileMagicManager();
+
+  private:
+    // Disable copy constructor and copy operator
+    FileMagicManager(const FileMagicManager&);
+    FileMagicManager& operator=(const FileMagicManager&);
   public:
-    FileMagic();
-    ~FileMagic();
+
+    static FileMagicManager & GetInstance();
 
     std::string GetMIMEType(const std::string & path) const;
     std::string GetDescription(const std::string & path) const;

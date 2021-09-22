@@ -22,6 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#include "FileMagicManager.h"
 #include "shellanything/Context.h"
 #include "shellanything/Validator.h"
 #include "PropertyManager.h"
@@ -37,8 +38,7 @@ namespace shellanything
 
   Context::Context() :
     mNumFiles(0),
-    mNumDirectories(0),
-    fm()
+    mNumDirectories(0)
   {
   }
 
@@ -66,6 +66,8 @@ namespace shellanything
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
+    FileMagicManager & fm = FileMagicManager::GetInstance();
+
     const Context::ElementList & elements = GetElements();
  
     if (elements.empty())

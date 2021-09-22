@@ -62,8 +62,8 @@ add_library(shellanything STATIC
   ConfigManager.cpp
   Context.cpp
   DefaultSettings.cpp
-  FileMagic.h
-  FileMagic.cpp
+  FileMagicManager.h
+  FileMagicManager.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp
