@@ -25,6 +25,7 @@
 #include "TestContext.h"
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
+#include "rapidassist/process.h"
 
 namespace shellanything { namespace test
 {
@@ -398,6 +399,92 @@ namespace shellanything { namespace test
 
     ASSERT_EQ( "", pmgr.GetProperty("selection.drive.path"  ) );
     ASSERT_EQ( "", pmgr.GetProperty("selection.drive.letter") );
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testFileMagicPropertiesExe)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back(ra::process::GetCurrentProcessPath());
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"));
+    ASSERT_FALSE(pmgr.HasProperty("selection.description"));
+    ASSERT_FALSE(pmgr.HasProperty("selection.charset"));
+    //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+    //act
+    context.RegisterProperties();
+
+    const char * test_string = ""
+      "selection.mimetype"                "=${selection.mimetype}"      "\n"
+      "selection.description"             "=${selection.description}"   "\n"
+      "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.extension}"     "\n"
+
+    const char * expected_string = ""
+      "selection.mimetype"                "=application/x-dosexec"                                  "\n"
+      "selection.description"             "=PE32+ executable (console) x86-64, for MS Windows"      "\n"
+      "selection.charset"                 "=binary"                                                 "\n";
+      //"selection.libmagic_ext"          "=exe/com"                                                "\n"
+
+    //act
+    std::string actual_string = pmgr.Expand(test_string);
+
+    ASSERT_EQ(std::string(expected_string), actual_string);
+
+    context.UnregisterProperties();
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testFileMagicPropertiesXml)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back(ra::process::GetCurrentProcessDir() + "\\configurations\\default.xml");
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"    ));
+    ASSERT_FALSE(pmgr.HasProperty("selection.description" ));
+    ASSERT_FALSE(pmgr.HasProperty("selection.charset"     ));
+    //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+    //act
+    context.RegisterProperties();
+
+    const char * test_string = ""
+      "selection.mimetype"                "=${selection.mimetype}"      "\n"
+      "selection.description"             "=${selection.description}"   "\n"
+      "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.libmagic_ext}"  "\n"
+
+    const char * expected_string = ""
+      "selection.mimetype"                "=text/xml"                                                           "\n"
+      "selection.description"             "=XML 1.0 document, UTF-8 Unicode text, with CRLF line terminators"   "\n"
+      "selection.charset"                 "=utf-8"                                                              "\n";
+      //"selection.libmagic_ext"          "=???"                                                "\n"
+
+    //act
+    std::string actual_string = pmgr.Expand(test_string);
+
+    ASSERT_EQ(std::string(expected_string), actual_string);
+
+    context.UnregisterProperties();
   }
   //--------------------------------------------------------------------------------------------------
 
