@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="Mark Text">
+      <icon path="C:\Program Files\Mark Text\Mark Text.exe" index="0" />
+      <visibility maxfiles="1" maxfolders="0" fileextensions="md" exists="C:\Program Files\Mark Text\Mark Text.exe" />
+      <actions>
+        <exec path="C:\Program Files\Mark Text\Mark Text.exe" arguments="&quot;${selection.path}&quot;" />
+      </actions>
+    </menu>    
+  </shell>
+</root>

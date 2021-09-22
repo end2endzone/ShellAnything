@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+  
+    <menu name="More Git options">
+      <icon path="C:\Program Files\Git\git-bash.exe" index="0" />
+      
+      <menu name="Duplicate file with history">
+        <icon path="C:\Windows\system32\shell32.dll" index="68" />
+        
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <prompt name="git.duplicate.filename" title="Enter the filename of the new duplicate file..." default="${selection.filename}" />
+          
+          <!-- Proceed and rename the existing file -->
+          <exec path="git.exe" basedir="${selection.parent.path}" arguments="mv &quot;${selection.filename}&quot; &quot;${git.duplicate.filename}&quot;" />
+          
+          <!-- Checkout again the original filename -->
+          <exec path="git.exe" basedir="${selection.parent.path}" arguments="checkout HEAD &quot;${selection.filename}&quot;" />
+
+          <property name="git.duplicate.filename" value="" />
+        </actions>
+      </menu>
+      
+    </menu>
+    
+  </shell>
+</root>

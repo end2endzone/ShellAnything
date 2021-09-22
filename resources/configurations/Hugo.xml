@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <property name="hugo.dir" value="C:\Hugo" />
+      <property name="hugo.exe" value="${hugo.dir}\bin\hugo.exe" />
+    </default>
+  
+    <!-- 
+    Select icons from the following references:
+      https://help4windows.com/windows_7_imageres_dll.shtml
+      https://help4windows.com/windows_7_shell32_dll.shtml
+    -->
+    
+    <menu name="Hugo">
+      <icon path="${hugo.dir}\bin\hugo.ico" index="0" />
+      <visibility exists="${hugo.exe}" />
+      
+      <menu name="Launch server">
+        <icon path="C:\windows\system32\shell32.dll" index="112" />
+        <visibility maxfiles="0" maxfolders="1" exists="${selection.path}\config.toml" />
+        <actions>
+          <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/C &quot;${hugo.exe}&quot; server" />
+        </actions>
+      </menu>
+      
+      <menu name="Launch server (draft mode)">
+        <icon path="C:\windows\system32\shell32.dll" index="112" />
+        <visibility maxfiles="0" maxfolders="1" exists="${selection.path}\config.toml" />
+        <actions>
+          <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/C &quot;${hugo.exe}&quot; server -D" />
+        </actions>
+      </menu>
+      
+      <menu name="Build">
+        <icon path="C:\windows\system32\shell32.dll" index="80" />
+        <visibility maxfiles="0" maxfolders="1" exists="${selection.path}\config.toml" />
+        <actions>
+          <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/C &quot;${hugo.exe}&quot; &amp;&amp; pause" />
+        </actions>
+      </menu>
+      
+      <menu name="Browse">
+        <icon fileextension="html" />
+        <visibility maxfiles="0" maxfolders="1" exists="${selection.path}\config.toml" />
+        <actions>
+          <open path="http://localhost:1313/" />
+        </actions>
+      </menu>
+      
+      <menu name="New post">
+        <visibility maxfiles="0" maxfolders="1" exists="${selection.path}\config.toml" />
+        <icon path="C:\windows\system32\shell32.dll" index="260" />
+        <actions>
+          <prompt name="hugo.new.post.name" title="Name of the post?" default="my-new-post" />
+          <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K &quot;&quot;${hugo.exe}&quot; new &quot;posts/${hugo.new.post.name}.md&quot;&quot;" />
+        </actions>
+      </menu>
+      
+      <menu name="New site here">
+        <icon path="${hugo.dir}\bin\hugo.ico" index="0" />
+        <visibility exists="${selection.path}\config.toml" inverse="exists" />
+        <actions>
+          <exec path="${env.ComSpec}" basedir="${selection.parent.path}" arguments="/K &quot;${hugo.exe}&quot; new site ${selection.filename} --force" />
+        </actions>
+      </menu>
+
+      <menu name="Command prompt">
+        <icon path="${env.ComSpec}" index="0" />
+        <actions>
+          <exec path="${env.ComSpec}" basedir="${selection.path}" arguments="/K set PATH=${hugo.dir}\bin;%PATH%" />
+        </actions>
+      </menu>
+      
+    </menu>
+  </shell>
+</root>
