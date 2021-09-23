@@ -292,9 +292,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake DESTI
 
 install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
               ${CMAKE_SOURCE_DIR}/resources/unregister.bat
-              ${LIBMAGIC_MGC_DIR}/magic.mgc
-              ${LIBMAGIC_MGC_DIR}/file.exe
-              ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/shellanything DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR})
