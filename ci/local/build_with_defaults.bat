@@ -27,7 +27,10 @@ call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_glog.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_grip.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
+call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_zlib.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_libmagic.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\build_library.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
