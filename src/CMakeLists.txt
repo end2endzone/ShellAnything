@@ -204,6 +204,11 @@ install(TARGETS shellanything
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
         DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
+install(FILES ${LIBMAGIC_MGC_DIR}/magic.mgc
+              ${LIBMAGIC_MGC_DIR}/file.exe
+              ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll
+              DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
+)
 install(TARGETS shellext
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

@@ -175,7 +175,7 @@ namespace shellanything
     bool copied = ra::filesystem::CopyFileUtf8(source, target_file);
     if (!copied)
     {
-      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file);
+      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file.c_str());
       return false;
     }
 
@@ -212,7 +212,7 @@ namespace shellanything
     bool copied = ra::filesystem::CopyFileUtf8(source, target_file);
     if (!copied)
     {
-      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file);
+      printf("*** Failed to copy source file '%s' to destination '%s'.\n", source, target_file.c_str());
       return false;
     }
 
