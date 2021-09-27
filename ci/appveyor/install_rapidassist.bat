@@ -19,8 +19,8 @@ git clone "https://github.com/end2endzone/RapidAssist.git"
 cd RapidAssist
 echo.
 
-echo Checking out version v0.8.1...
-git -c advice.detachedHead=false checkout 0.8.1
+echo Checking out version v0.10.1...
+git -c advice.detachedHead=false checkout 0.10.1
 echo.
 
 echo ============================================================================
