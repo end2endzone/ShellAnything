@@ -68,6 +68,8 @@ The following software must be installed on the system for compiling source code
 * [TinyXML 2 v6.2.0](https://github.com/leethomason/tinyxml2/tree/6.2.0)
 * [RapidAssist v0.10.2](https://github.com/end2endzone/RapidAssist/tree/0.10.2)
 * [exprtk d312ba9](https://github.com/ArashPartow/exprtk) (downloaded automatically)
+* [File and libmagic for Windows v5.38 + modifications](https://github.com/Cirn09/file-windows/tree/39f1624b4c95a0ab657a1084d50069270ebb8947)
+* [zlib v1.2.11](https://github.com/madler/zlib/releases/tag/v1.2.11)
 * [CMake](http://www.cmake.org/) v3.4.3 (or newer)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 
