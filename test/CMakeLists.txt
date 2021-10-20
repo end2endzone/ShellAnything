@@ -94,6 +94,8 @@ add_executable(shellanything_unittest
   TestValidator.h
   TestWildcard.h
   TestWildcard.cpp
+  TestWin32Clipboard.cpp
+  TestWin32Clipboard.h
   TestWin32Registry.cpp
   TestWin32Registry.h
   TestWin32Utils.cpp
