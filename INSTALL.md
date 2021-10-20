@@ -66,7 +66,7 @@ The following software must be installed on the system for compiling source code
 * [Google C++ Testing Framework v1.8.0](https://github.com/google/googletest/tree/release-1.8.0)
 * [Google Logging Library v0.4.0](https://github.com/google/glog/tree/v0.4.0)
 * [TinyXML 2 v6.2.0](https://github.com/leethomason/tinyxml2/tree/6.2.0)
-* [RapidAssist v0.8.1](https://github.com/end2endzone/RapidAssist/tree/0.8.1)
+* [RapidAssist v0.10.2](https://github.com/end2endzone/RapidAssist/tree/0.10.2)
 * [exprtk d312ba9](https://github.com/ArashPartow/exprtk) (downloaded automatically)
 * [CMake](http://www.cmake.org/) v3.4.3 (or newer)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)

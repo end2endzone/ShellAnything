@@ -1,6 +1,6 @@
 Changes for 0.7.0
 
-* Using RapidAssist version 0.10.1.
+* Using RapidAssist version 0.10.2.
 * Using [File for Windows](https://github.com/Cirn09/file-windows) v5.38 with minimal changes.
 * Using [PCRE2](http://www.pcre.org/) version 10.30
 * Deprecated support for 32-bit Windows.
