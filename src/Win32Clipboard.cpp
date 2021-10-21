@@ -26,6 +26,8 @@
 #undef min
 #undef max
 
+#include <wchar.h>  //for swprintf()
+
 #include <shlobj.h>
 #include <shellApi.h>
 
@@ -35,12 +37,13 @@
 #include "rapidassist/environment.h"
 #include "rapidassist/timing.h"
 #include "rapidassist/unicode.h"
+#include "rapidassist/errors.h"
 
 namespace Win32Clipboard
 {
   //Format descriptors for different types of object sent to the clipboard
-  static const UINT gFormatDescriptorBinary     = RegisterClipboardFormat("Binary");
-  static const UINT gFormatDescriptorDropEffect = RegisterClipboardFormat("Preferred DropEffect");
+  static const UINT gFormatDescriptorBinary     = RegisterClipboardFormatA("Binary");
+  static const UINT gFormatDescriptorDropEffect = RegisterClipboardFormatA("Preferred DropEffect");
 
   static const std::string  CRLF = ra::environment::GetLineSeparator();
   static const std::string  EMPTY_STRING;
@@ -49,12 +52,12 @@ namespace Win32Clipboard
   #define DEFAULT_READ_CLIPBOARD_HANDLE   NULL
   #define DEFAULT_WRITE_CLIPBOARD_HANDLE  GetDesktopWindow()
 
-  std::string getLastErrorDescription()
+  std::string getLastErrorDescriptionAnsi()
   {
     DWORD last_error = ::GetLastError();
     char error_buffer[10240] = {0};
     DWORD error_buffer_size = sizeof(error_buffer);
-    ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
+    ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,
                     NULL,
                     last_error,
                     MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
@@ -64,6 +67,23 @@ namespace Win32Clipboard
     char desc_buffer[10240] = {0};
     sprintf(desc_buffer, "Error %d, %s", last_error, error_buffer);
     return std::string(desc_buffer);
+  }
+
+  std::wstring getLastErrorDescriptionUnicode()
+  {
+    DWORD last_error = ::GetLastError();
+    wchar_t error_buffer[10240] = { 0 };
+    DWORD error_buffer_size = sizeof(error_buffer);
+    ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,
+      NULL,
+      last_error,
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      error_buffer,
+      error_buffer_size - 1,
+      NULL);
+    wchar_t desc_buffer[10240] = { 0 };
+    _swprintf(desc_buffer, L"Error %d, %s", last_error, error_buffer);
+    return std::wstring(desc_buffer);
   }
 
   class ClipboardObject
@@ -82,7 +102,7 @@ namespace Win32Clipboard
         mOpenStatus = OpenClipboard(mHwnd);
         if (mOpenStatus == FALSE)
         {
-          std::string error = getLastErrorDescription();
+          std::wstring error = getLastErrorDescriptionUnicode();
 
           //Failed opening the clipboard object. Will try again little bit later
           ra::timing::Millisleep(50);
@@ -341,7 +361,7 @@ namespace Win32Clipboard
       df.pt.x = 0;
       df.pt.y = 0;
       df.fNC = FALSE;
-      df.fWide = TRUE; //we will use WIDE CHAR for storing the file paths
+      df.fWide = FALSE; //we don't use WIDE CHAR for storing the file paths
 
       //Build the buffer content
       MemoryBuffer buff;
@@ -352,25 +372,22 @@ namespace Win32Clipboard
       //append each files
       for(size_t i=0; i<files.size(); i++)
       {
-        const std::string & utf8_file_path = files[i];
-
-        //Convert utf8 to unicode
-        std::wstring unicode_file_path = ra::unicode::Utf8ToUnicode(utf8_file_path);
+        const std::string & file_path = files[i];
 
         //append
-        const char * data_buffer = (const char*)unicode_file_path.c_str();
-        const size_t data_size_bytes = (unicode_file_path.size() + 1) * sizeof(unicode_file_path[0]); // +1 for including the NULL terminating character
+        const char * data_buffer = (const char*)file_path.c_str();
+        const size_t data_size_bytes = (file_path.size() + 1) * sizeof(file_path[0]); // +1 for including the NULL terminating character
         buff.append(data_buffer, data_size_bytes);
       }
         
       //Append final empty filepath
       {
         //Convert utf8 to unicode
-        std::wstring unicode_file_path = ra::unicode::Utf8ToUnicode("");
+        static const std::string file_path = "";
 
         //append
-        const char * data_buffer = (const char*)unicode_file_path.c_str();
-        const size_t data_size_bytes = (unicode_file_path.size() + 1) * sizeof(unicode_file_path[0]); // +1 for including the NULL terminating character
+        const char * data_buffer = (const char*)file_path.c_str();
+        const size_t data_size_bytes = (file_path.size() + 1) * sizeof(file_path[0]); // +1 for including the NULL terminating character
         buff.append(data_buffer, data_size_bytes);
       }
 
@@ -421,7 +438,7 @@ namespace Win32Clipboard
     {
       //The clipboard controls the handle that the GetClipboardData function returns, not the application.
       //The application should copy the data immediately. The application must not free the handle nor leave it locked.
-      HANDLE hDropEffect = ::GetClipboardData (gFormatDescriptorDropEffect);
+      HANDLE hDropEffect = ::GetClipboardData(gFormatDescriptorDropEffect);
       if (hDropEffect)
       {
         void * buffer = GlobalLock(hDropEffect);
@@ -448,7 +465,7 @@ namespace Win32Clipboard
     }
 
     //Retreive files
-    HDROP hDrop = (HDROP) ::GetClipboardData (CF_HDROP);
+    HDROP hDrop = (HDROP) ::GetClipboardData(CF_HDROP);
     if (hDrop == NULL)
       return false;
 
@@ -459,7 +476,7 @@ namespace Win32Clipboard
     size_t buffer_size = GlobalSize(buffer);
 
     // Find out how many file names the HDROP Contains.
-    int count = ::DragQueryFile (hDrop, (UINT) -1, NULL, 0);
+    int count = ::DragQueryFileW(hDrop, (UINT) -1, NULL, 0);
     if (count == 0)
       return false;
 
@@ -475,8 +492,8 @@ namespace Win32Clipboard
 
       if (is_unicode)
       {
-        WCHAR temp_path[MAX_PATH];
-        UINT length = ::DragQueryFileW (hDrop, i, temp_path, sizeof (temp_path) / sizeof (WCHAR));
+        WCHAR temp_path[10240];
+        UINT length = ::DragQueryFileW(hDrop, i, temp_path, sizeof (temp_path) / sizeof (temp_path[0]));
                   
         std::wstring utf16_file_path = temp_path;
 
@@ -485,8 +502,8 @@ namespace Win32Clipboard
       }
       else
       {
-        char temp_path[MAX_PATH];
-        ::DragQueryFileA (hDrop, i, temp_path, sizeof (temp_path) / sizeof (char));
+        char temp_path[10240];
+        ::DragQueryFileA(hDrop, i, temp_path, sizeof (temp_path) / sizeof (temp_path[0]));
         file_path = temp_path;
       }
 
@@ -499,4 +516,190 @@ namespace Win32Clipboard
           
     return true;
   }
+
+  bool Clipboard::SetDragDropFilesUnicode(const Clipboard::DragDropType & type, const Clipboard::StringVectorUnicode & files)
+  {
+    //http://support.microsoft.com/kb/231721/en-us
+    //http://aclacl.brinkster.net/MFC/ch19b.htm
+    //http://read.pudn.com/downloads22/sourcecode/windows/multimedia/73340/ShitClass3/%E7%B1%BB%E5%8C%85/SManageFile.cpp__.htm
+
+    //Validate drag drop type
+    if (type != Clipboard::DragDropCopy && type != Clipboard::DragDropCut)
+      return false;
+
+    ClipboardObject obj( DEFAULT_WRITE_CLIPBOARD_HANDLE );
+    if (!obj.IsOpened())
+      return false;
+
+    //flush existing content
+    if (!EmptyClipboard())
+      return false;
+
+    //Register files
+    {
+      DROPFILES df = {0};
+      df.pFiles = sizeof(DROPFILES);
+      df.pt.x = 0;
+      df.pt.y = 0;
+      df.fNC = FALSE;
+      df.fWide = TRUE; //we use WIDE CHAR for storing the file paths
+
+      //Build the buffer content
+      MemoryBuffer buff;
+
+      //append the DROPFILES structure
+      buff.assign((const char *)&df, sizeof(df));
+
+      //append each files
+      for(size_t i=0; i<files.size(); i++)
+      {
+        //Convert utf8 to unicode
+        const std::wstring unicode_file_path = files[i];
+
+        //append
+        const char * data_buffer = (const char*)unicode_file_path.c_str();
+        const size_t data_size_bytes = (unicode_file_path.size() + 1) * sizeof(unicode_file_path[0]); // +1 for including the NULL terminating character
+        buff.append(data_buffer, data_size_bytes);
+      }
+        
+      //Append final empty filepath
+      {
+        //Convert utf8 to unicode
+        static const std::wstring unicode_file_path = ra::unicode::Utf8ToUnicode("");
+
+        //append
+        const char * data_buffer = (const char*)unicode_file_path.c_str();
+        const size_t data_size_bytes = (unicode_file_path.size() + 1) * sizeof(unicode_file_path[0]); // +1 for including the NULL terminating character
+        buff.append(data_buffer, data_size_bytes);
+      }
+
+      //copy data to global allocated memory
+      HGLOBAL hMem = GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE, buff.size());
+      if (hMem == NULL)
+        return false;
+      void * buffer = GlobalLock(hMem);
+      memcpy(buffer, buff.c_str(), buff.size());
+      GlobalUnlock(hMem);
+
+      //put it on the clipboard
+      HANDLE hData = SetClipboardData( CF_HDROP, hMem );
+      if (hData != hMem)
+        return false;
+    }
+
+    //Register type
+    {
+      HGLOBAL hDropEffect = GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE,sizeof(DWORD));
+      DWORD * drop_effect = (DWORD*)GlobalLock(hDropEffect);
+      if (type == Clipboard::DragDropCopy)
+        (*drop_effect) = DROPEFFECT_COPY /*| DROPEFFECT_LINK*/;
+      else
+        (*drop_effect) = DROPEFFECT_MOVE;
+      GlobalUnlock(hDropEffect);
+
+      //put it on the clipboard
+      HANDLE hData = SetClipboardData( gFormatDescriptorDropEffect, hDropEffect );
+      if (hData != hDropEffect)
+        return false;
+    }
+
+    return true;
+  }
+
+  bool Clipboard::GetAsDragDropFilesUnicode(DragDropType & type, Clipboard::StringVectorUnicode & files)
+  {
+    //Invalidate
+    type = Clipboard::DragDropType(-1);
+    files.clear();
+
+    ClipboardObject obj( DEFAULT_READ_CLIPBOARD_HANDLE );
+    if (!obj.IsOpened())
+      return false;
+
+    //Detect if CUT or COPY
+    {
+      //The clipboard controls the handle that the GetClipboardData function returns, not the application.
+      //The application should copy the data immediately. The application must not free the handle nor leave it locked.
+      HANDLE hDropEffect = ::GetClipboardData(gFormatDescriptorDropEffect);
+      if (hDropEffect)
+      {
+        void * buffer = GlobalLock(hDropEffect);
+        SIZE_T buffer_size = GlobalSize(buffer);
+        DWORD drop_effect = *((DWORD*)buffer);
+        //if (drop_effect == DROPEFFECT_NONE)
+        //  "NONE:"
+        if (drop_effect & DROPEFFECT_COPY)
+          type = DragDropCopy;
+        else if (drop_effect & DROPEFFECT_MOVE)
+          type = DragDropCut;
+        //if (drop_effect & DROPEFFECT_LINK)
+        //  "LINK:"
+        //if (drop_effect & DROPEFFECT_SCROLL)
+        //  "SCROLL:"
+        GlobalUnlock(hDropEffect);
+      }
+
+      if (type == -1)
+      {
+        //unknown drop effect
+        return false;
+      }
+    }
+
+    //Retreive files
+    HDROP hDrop = (HDROP) ::GetClipboardData(CF_HDROP);
+    if (hDrop == NULL)
+      return false;
+
+    void * buffer = GlobalLock(hDrop);
+    if (buffer == NULL)
+      return false;
+
+    size_t buffer_size = GlobalSize(buffer);
+
+    // Find out how many file names the HDROP Contains.
+    int count = ::DragQueryFileW(hDrop, (UINT) -1, NULL, 0);
+    if (count == 0)
+      return false;
+
+    //Find out if files are unicode or ansi
+    DROPFILES df = {0};
+    df = *( ((DROPFILES*)buffer) );
+    bool is_unicode = (df.fWide == 1);
+
+    // Enumerate the file names.
+    for (int i=0; i<count; i++)
+    {
+      std::wstring file_path;
+
+      if (is_unicode)
+      {
+        WCHAR temp_path[10240];
+        UINT length = ::DragQueryFileW(hDrop, i, temp_path, sizeof (temp_path) / sizeof (temp_path[0]));
+                  
+        std::wstring utf16_file_path = temp_path;
+
+        file_path = temp_path;
+      }
+      else
+      {
+        char temp_path[10240];
+        ::DragQueryFileA(hDrop, i, temp_path, sizeof (temp_path) / sizeof (temp_path[0]));
+
+        std::string file_path_ansi = temp_path;
+
+        //Convert from unicode to ansi
+        file_path = ra::unicode::AnsiToUnicode(file_path_ansi);
+      }
+
+      //Add to output files
+      //printf("Reading from clipboard %02d/%02d: %s\n", i+1, nCount, filePath.c_str());
+      files.push_back(file_path);
+    }
+
+    GlobalUnlock(hDrop);
+          
+    return true;
+  }
+
 } //namespace Win32Clipboard

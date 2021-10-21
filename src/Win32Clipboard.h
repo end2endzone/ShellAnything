@@ -46,6 +46,7 @@ namespace Win32Clipboard
 
     //typedefs
     typedef std::vector<std::string> StringVector;
+    typedef std::vector<std::wstring> StringVectorUnicode;
     typedef std::string MemoryBuffer;
 
     //constants
@@ -114,19 +115,39 @@ namespace Win32Clipboard
 
     /// <summary>
     /// Assign the given file operation and list of files to the clipboard.
+    /// Files are encoded in ANSI.
     /// </summary>
     /// <param name="type">The file operation to set to the clipboard.</param>
-    /// <param name="files">The list of files to set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in ansi, to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool SetDragDropFiles(const DragDropType & type, const StringVector & files);
 
     /// <summary>
     /// Provides the current file operation and list of files set to the clipboard.
+    /// Files are encoded in ANSI.
     /// </summary>
     /// <param name="type">The file operation set to the clipboard.</param>
-    /// <param name="files">The list of files set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in ansi, set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool GetAsDragDropFiles(DragDropType & type, StringVector & files);
+
+    /// <summary>
+    /// Assign the given file operation and list of files to the clipboard.
+    /// Files are encoded in UNICODE.
+    /// </summary>
+    /// <param name="type">The file operation to set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in unicode, to set to the clipboard.</param>
+    /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
+    virtual bool SetDragDropFilesUnicode(const DragDropType & type, const StringVectorUnicode & files);
+
+    /// <summary>
+    /// Provides the current file operation and list of files set to the clipboard.
+    /// Files are encoded in UNICODE.
+    /// </summary>
+    /// <param name="type">The file operation set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in unicode, set to the clipboard.</param>
+    /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
+    virtual bool GetAsDragDropFilesUnicode(DragDropType & type, StringVectorUnicode & files);
 
   };
 
