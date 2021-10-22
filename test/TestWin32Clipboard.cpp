@@ -45,7 +45,7 @@ namespace win32clipboard { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestWin32Clipboard, testSetGetText)
+  TEST_F(TestWin32Clipboard, testSetGetAnsi)
   {
     Clipboard & c = Clipboard::GetInstance();
 
@@ -74,14 +74,14 @@ namespace win32clipboard { namespace test
     }
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestWin32Clipboard, testSetGetUnicode)
+  TEST_F(TestWin32Clipboard, testSetGetUtf8)
   {
     Clipboard & c = Clipboard::GetInstance();
  
-    static const wchar_t * values[] = {
-      L"hello world",
-      L"foo",
-      L"bar",
+    static const char * values[] = {
+      "C:\\temp\\psi_\xCE\xA8_psi.txt",
+      "C:\\temp\\" "\xC3\xA9" "cole.txt", //school in french
+      "C:\\temp\\omega_\xCE\xA9_omega.txt",
     };
     static const size_t num_values = sizeof(values) / sizeof(values[0]);
  
@@ -89,17 +89,17 @@ namespace win32clipboard { namespace test
  
     for (size_t i = 0; i < num_values; i++)
     {
-      const wchar_t * value = values[i];
-      std::wstring str = value;
+      const char * value = values[i];
+      std::string str = value;
  
-      bool status = c.SetTextUnicode(str);
+      bool status = c.SetTextUtf8(str);
       ASSERT_TRUE(status);
  
-      std::wstring text;
-      status = c.GetAsTextUnicode(text);
+      std::string text;
+      status = c.GetAsTextUtf8(text);
       ASSERT_TRUE(status);
  
-      ASSERT_EQ(str, text) << "Failed setting clipboard to value '" << ra::unicode::UnicodeToAnsi(str) << "'. The returned value is '" << ra::unicode::UnicodeToAnsi(text) << "'.";
+      ASSERT_EQ(str, text) << "Failed setting clipboard to value '" << str << "'. The returned value is '" << text << "'.";
     }
   }
   //--------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ namespace win32clipboard { namespace test
     ASSERT_EQ( SAMPLE_TEXT, text ) << "Failed setting clipboard to value '" << SAMPLE_TEXT << "'. The returned value is '" << text << "'.";
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestWin32Clipboard, testDragDropFiles)
+  TEST_F(TestWin32Clipboard, testDragDropFilesAnsi)
   {
     Clipboard & c = Clipboard::GetInstance();
 
@@ -206,6 +206,47 @@ namespace win32clipboard { namespace test
     Clipboard::DragDropType output_type;
     Clipboard::StringVector output_files;
     status = c.GetAsDragDropFiles(output_type, output_files);
+    ASSERT_TRUE( status );
+
+    ASSERT_EQ( (int)input_type, (int)output_type );
+    
+    //validate the files
+    ASSERT_EQ( input_files.size(), output_files.size() );
+    for(size_t i=0; i<input_files.size(); i++)
+    {
+      const std::string &  input_file =  input_files[i];
+      const std::string & output_file = output_files[i];
+      ASSERT_EQ( input_file, output_file );
+    }
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestWin32Clipboard, testDragDropFilesUtf8)
+  {
+    Clipboard & c = Clipboard::GetInstance();
+
+    static const char * values[] = {
+      "C:\\temp\\psi_\xCE\xA8_psi.txt",
+      "C:\\temp\\" "\xC3\xA9" "cole.txt", //school in french
+      "C:\\temp\\omega_\xCE\xA9_omega.txt",
+    };
+    static const size_t num_values = sizeof(values) / sizeof(values[0]);
+
+    //define the list of files
+    Clipboard::StringVector input_files;
+    for(size_t i=0; i<num_values; i++)
+    {
+      const char * value = values[i];
+      input_files.push_back(value);
+    }
+
+    //
+    static const Clipboard::DragDropType input_type = Clipboard::DragDropCopy;
+    bool status = c.SetDragDropFilesUtf8(input_type, input_files);
+    ASSERT_TRUE( status );
+
+    Clipboard::DragDropType output_type;
+    Clipboard::StringVector output_files;
+    status = c.GetAsDragDropFilesUtf8(output_type, output_files);
     ASSERT_TRUE( status );
 
     ASSERT_EQ( (int)input_type, (int)output_type );

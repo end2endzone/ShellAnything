@@ -33,13 +33,9 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-//#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
-#undef GetEnvironmentVariable
-#undef DeleteFile
-#undef CreateDirectory
-#undef CopyFile
-#undef CreateFile
+//#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#include <Windows.h>
+#include "rapidassist/undef_windows_macros.h"
 
 #pragma comment(lib, "Urlmon.lib") //for IsValidURL()
 

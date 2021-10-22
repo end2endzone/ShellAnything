@@ -59,7 +59,7 @@ public:
   //void SetWindow(HWND hWindow);
   HWND GetWindow() const;
   //void SetModuleHandle(HINSTANCE hInstance);
-  HINSTANCE GetModuleHandle() const;
+  HINSTANCE GetInputBoxModuleHandle() const;
   enum CONTROLS
   {
     TEXTBOX_ANSWER,

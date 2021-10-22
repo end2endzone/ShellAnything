@@ -55,7 +55,7 @@ std::string GetCurrentModulePath()
   std::string path;
   char buffer[MAX_PATH] = {0};
   HMODULE hModule = NULL;
-  if (!GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+  if (!GetModuleHandleExA( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                           GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
                           (LPCSTR) __FUNCTION__,
                           &hModule))
