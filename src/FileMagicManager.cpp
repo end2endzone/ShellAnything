@@ -77,13 +77,13 @@ namespace shellanything
     std::string path = GetMGCPath();
 
     if (magic_cookie == NULL) {
-        ShowErrorMessage("ShellAnything(libmagic) Error", "ERROR opening MAGIC_MIME_TYPE: out of memory\n");
-        return;
+      ShowErrorMessage("ShellAnything(libmagic) Error", "ERROR opening MAGIC_MIME_TYPE: out of memory\n");
+      return;
     }
     if (magic_load(magic_cookie, path.c_str()) == -1) {
       magic_cookie = NULL;
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading with NULL file: ") + magic_error(magic_cookie));
-        return;
+      return;
     }
   }
 

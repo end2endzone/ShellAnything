@@ -49,9 +49,6 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string value = pmgr.Expand(mValue);
 
-    //convert to windows unicode...
-    std::wstring value_utf16 = ra::unicode::Utf8ToUnicode(value);
-
     //get clipboard handler
     Win32Clipboard::Clipboard & clipboard = Win32Clipboard::Clipboard::GetInstance();
 
@@ -59,7 +56,7 @@ namespace shellanything
     LOG(INFO) << "Setting clipboard to '" << value << "'.";
 
     //set clipboard value
-    bool result = clipboard.SetTextUnicode(value_utf16);
+    bool result = clipboard.SetTextUtf8(value);
 
     return result;
   }

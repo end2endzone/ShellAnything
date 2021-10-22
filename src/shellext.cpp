@@ -55,7 +55,7 @@ std::string GetCurrentModulePath()
   std::string path;
   char buffer[MAX_PATH] = {0};
   HMODULE hModule = NULL;
-  if (!GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+  if (!GetModuleHandleExA( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                           GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
                           (LPCSTR) __FUNCTION__,
                           &hModule))
@@ -629,7 +629,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   //define how we should interpret lpcmi->lpVerb
   std::string verb;
   if (IS_INTRESOURCE(lpcmi->lpVerb))
+    // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4311 : 'reinterpret_cast' : pointer truncation from 'LPCSTR' to 'int'
+    // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4302 : 'reinterpret_cast' : truncation from 'LPCSTR' to 'int'
+    #pragma warning( push )
+    #pragma warning( disable: 4302 )
+    #pragma warning( disable: 4311 )
     verb = ra::strings::ToString(reinterpret_cast<int>(lpcmi->lpVerb));
+    #pragma warning( pop )
   else
     verb = lpcmi->lpVerb;
 

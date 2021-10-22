@@ -41,11 +41,12 @@ namespace Win32Clipboard
     static Clipboard & GetInstance();
 
     //enums
-    enum Format { FormatText, FormatUnicode, FormatImage, FormatBinary };
+    enum Format { FormatText, FormatUtf8, FormatImage, FormatBinary };
     enum DragDropType {DragDropCopy, DragDropCut};
 
     //typedefs
     typedef std::vector<std::string> StringVector;
+    typedef std::vector<std::wstring> WideStringVector;
     typedef std::string MemoryBuffer;
 
     //constants
@@ -64,10 +65,10 @@ namespace Win32Clipboard
     virtual bool IsEmpty();
 
     /// <summary>
-    /// Query the clipboard to know if it Contains the given format.
+    /// Query the clipboard to know if it contains the given format.
     /// </summary>
     /// <param name="clipboard_format">The format to query.</param>
-    /// <returns>Returns true if the clipboard constains a specific format.</returns>
+    /// <returns>Returns true if the clipboard constains the given format.</returns>
     virtual bool Contains(Format clipboard_format);
 
     /// <summary>
@@ -78,25 +79,25 @@ namespace Win32Clipboard
     virtual bool SetText(const std::string & text);
 
     /// <summary>
-    /// Provides the current text value of the clipboard.
+    /// Provides the current text value in the clipboard.
     /// </summary>
-    /// <param name="text">The output text value of the clipboard.</param>
+    /// <param name="text">The output text value in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool GetAsText(std::string & text);
 
     /// <summary>
-    /// Assign the given unicode text value to the clipboard.
+    /// Assign the given utf8 text value to the clipboard.
     /// </summary>
-    /// <param name="text">The unicode text value to set to the clipboard.</param>
+    /// <param name="text">The utf8 text value to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetTextUnicode(const std::wstring & text);
+    virtual bool SetTextUtf8(const std::string & text);
 
     /// <summary>
-    /// Provides the current unicode text value of the clipboard.
+    /// Provides the current utf8 text value in the clipboard.
     /// </summary>
-    /// <param name="text">The output unicode text value of the clipboard.</param>
+    /// <param name="text">The output utf8 text value in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsTextUnicode(std::wstring & text);
+    virtual bool GetAsTextUtf8(std::string & text);
 
     /// <summary>
     /// Assign the given binary data to the clipboard.
@@ -106,27 +107,47 @@ namespace Win32Clipboard
     virtual bool SetBinary(const MemoryBuffer & buffer);
 
     /// <summary>
-    /// Provides the current binary data of the clipboard.
+    /// Provides the current binary data in the clipboard.
     /// </summary>
-    /// <param name="buffer">The output binary data of the clipboard.</param>
+    /// <param name="buffer">The output binary data in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool GetAsBinary(MemoryBuffer & buffer);
 
     /// <summary>
-    /// Assign the given file operation and list of files to the clipboard.
+    /// Assign the given file operation and files to the clipboard.
+    /// Files are encoded in ANSI.
     /// </summary>
     /// <param name="type">The file operation to set to the clipboard.</param>
-    /// <param name="files">The list of files to set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in ansi, to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool SetDragDropFiles(const DragDropType & type, const StringVector & files);
 
     /// <summary>
-    /// Provides the current file operation and list of files set to the clipboard.
+    /// Provides the current file operation and files in the clipboard.
+    /// Files are encoded in ANSI.
     /// </summary>
     /// <param name="type">The file operation set to the clipboard.</param>
-    /// <param name="files">The list of files set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in ansi, set in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
     virtual bool GetAsDragDropFiles(DragDropType & type, StringVector & files);
+
+    /// <summary>
+    /// Assign the given file operation and files to the clipboard.
+    /// Files are encoded in utf-8.
+    /// </summary>
+    /// <param name="type">The file operation to set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in utf8, to set to the clipboard.</param>
+    /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
+    virtual bool SetDragDropFilesUtf8(const DragDropType & type, const StringVector & files);
+
+    /// <summary>
+    /// Provides the current file operation and files in the clipboard.
+    /// Files are encoded in utf-8.
+    /// </summary>
+    /// <param name="type">The file operation set to the clipboard.</param>
+    /// <param name="files">The list of files, encoded in utf8, set in the clipboard.</param>
+    /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
+    virtual bool GetAsDragDropFilesUtf8(DragDropType & type, StringVector & files);
 
   };
 

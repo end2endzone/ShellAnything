@@ -31,11 +31,18 @@ namespace shellanything
 {
 
   /// <summary>
-  /// Show an error message to the user.
+  /// Show an error message encoded in ansi to the user.
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
   void ShowErrorMessage(const std::string & title, const std::string & message);
+
+  /// <summary>
+  /// Show an error message encoded in utf8 to the user.
+  /// </summary>
+  /// <param name="title">The caption title of the window.</param>
+  /// <param name="message">The message to display to the user.</param>
+  void ShowErrorMessageUtf8(const std::string & title, const std::string & message);
 
 } //namespace shellanything
 

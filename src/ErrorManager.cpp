@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <direct.h>
 
+#include "rapidassist/unicode.h"
+
 #ifdef WIN32
 //#   ifndef WIN32_LEAN_AND_MEAN
 //#   define WIN32_LEAN_AND_MEAN 1
@@ -43,7 +45,15 @@ namespace shellanything
   void ShowErrorMessage(const std::string & title, const std::string & message)
   {
     HWND hWnd = GetDesktopWindow();
-    MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+    MessageBoxA(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+  }
+
+  void ShowErrorMessageUtf8(const std::string & title, const std::string & message)
+  {
+    HWND hWnd = GetDesktopWindow();
+    std::wstring   title_unicode = ra::unicode::Utf8ToUnicode(title);
+    std::wstring message_unicode = ra::unicode::Utf8ToUnicode(message);
+    MessageBoxW(hWnd, message_unicode.c_str(), title_unicode.c_str(), MB_OK | MB_ICONERROR);
   }
 
 } //namespace shellanything

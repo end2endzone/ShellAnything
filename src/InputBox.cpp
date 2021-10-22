@@ -200,7 +200,7 @@ HWND CInputBox::GetWindow() const
   return m_hInputBox;
 }
 
-HINSTANCE CInputBox::GetModuleHandle() const
+HINSTANCE CInputBox::GetInputBoxModuleHandle() const
 {
   return m_hInstance;
 }
@@ -321,7 +321,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
       pInputBox->SetPromptFont(hPromptFont);
 
       //get the module instance
-      HINSTANCE hInstance = pInputBox->GetModuleHandle();
+      HINSTANCE hInstance = pInputBox->GetInputBoxModuleHandle();
 
       //get the window dimensions
       RECT window_rect = {0};
