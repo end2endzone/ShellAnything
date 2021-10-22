@@ -10,7 +10,7 @@ set Configuration=Debug
 set Platform=x64
 set PlatformToolset=""
 
-echo APPVEYOR_BUILD_FOLDER set to '%APPVEYOR_BUILD_FOLDER%'
+echo APPVEYOR_BUILD_FOLDER set to '%PRODUCT_SOURCE_DIR%'
 echo.
 
 :: Return back to original folder
