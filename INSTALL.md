@@ -1,4 +1,4 @@
-# Install #
+﻿# Install #
 
 ### Compiled binary packages: ###
 
@@ -11,26 +11,28 @@ You can also checkout the [latest builds / nightly builds](https://ci.appveyor.c
 
 ### Using the build scripts: ###
 
-To install ShellAnything on the system in "one click", one can use the build script which builds ShellAnything with default settings. This is the recommended way to build ShellAnything if you just want to use the application.
+To build ShellAnything on the system in "one click", one can use the build script which builds ShellAnything with default settings. This is the recommended way to build ShellAnything if you just want to use the application.
 
 The following steps show how to install the application:
 
 1) Download the source code from an existing [tags](http://github.com/end2endzone/ShellAnything/tags) and extract the content to a local directory (for example `c:\projects\ShellAnything`). It is recommended to use a directory path without spaces.
 
-2) Execute the build script `build_with_defaults.bat` located in the `ci/local` directory.
+2) Execute the build script `build_all_release.bat` located in the `ci/windows` directory.
 
-The `build_with_defaults.bat` script emulates [AppVeyor](https://ci.appveyor.com/project/end2endzone/shellanything) environment and executes, one by one, AppVeyor's build scripts which are located in the `ci/appveyor` directory.
+The `build_all_release.bat` script emulates [AppVeyor](https://ci.appveyor.com/project/end2endzone/shellanything) environment and executes, one by one, AppVeyor's build scripts which are located in the `ci/appveyor` directory.
 
 The following steps will be executed :
  - All required library dependencies will be downloaded and build  in `third_parties` directory located at the root of the source code. Existing dependencies that are already available on the system are **ignored**. This is to make sure that each dependency is build with settings that are compatible with ShellAnything and installed in the directory expected by the build scripts.
  - ShellAnything application will be build inside the `build` directory located at the root of the source code.
  - Installation packages will be created in the `build` directory if the required package managers are available on the system (NSIS, Wix Toolset). The installation packages are named as follows :
-   - `ShellAnything-[version]-win64.exe`, if NSIS is installed on the system.
-   - `ShellAnything-[version]-win64.msi`, if Wix Toolset is installed on the system.
+   - `ShellAnything-[version]-win64.exe`, if *NSIS* is installed on the system.
+   - `ShellAnything-[version]-win64.msi`, if *Wix Toolset* is installed on the system.
    - `ShellAnything-[version]-win64.zip`, a portable version.
 - Application files will be installed in the `install` directory located at the root of the source code.
 
-To delete all generated binaries, delete the `build`, `install` and `third_parties` directories.
+To delete all generated artifacts, delete the `build`, `install` and `third_parties` directories.
+
+If you are a developer and you plan on debugging ShellAnything, there is another build script called `build_all_debug.bat` located in the `ci/windows` directory. This script builds ShellAnything in *Debug* mode. It should be used instead of `build_all_release.bat`.
 
 
 
@@ -70,13 +72,13 @@ The following software must be installed on the system for compiling source code
 * [exprtk d312ba9](https://github.com/ArashPartow/exprtk) (downloaded automatically)
 * [File and libmagic for Windows v5.38 + modifications](https://github.com/Cirn09/file-windows/tree/39f1624b4c95a0ab657a1084d50069270ebb8947)
 * [zlib v1.2.11](https://github.com/madler/zlib/releases/tag/v1.2.11)
-* [CMake](http://www.cmake.org/) v3.4.3 (or newer)
+* [CMake v3.4.3](http://www.cmake.org/) (or newer)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 
 
 ### Windows Requirements ###
 
-* Microsoft Visual C++ 2010 or newer
+* Microsoft Visual C++ 2017 or newer
 * (optional) [NSIS (Nullsoft Scriptable Install System)](https://nsis.sourceforge.io/)  v3.0a1 (or newer)
 * (optional) [WiX Toolset](https://wixtoolset.org/)  v3.11.2 (or newer)
 
@@ -190,3 +192,4 @@ To run tests, navigate to the `build/bin` folder and run `shellanything_unittest
 Test results are saved in junit format in file `shellanything_unittest.x64.debug.xml` or `shellanything_unittest.x64.release.xml` depending on the selected configuration.
 
 The latest test results are available at the beginning of the [README.md](README.md) file.
+
