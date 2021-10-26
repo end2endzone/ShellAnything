@@ -259,11 +259,11 @@ The `class` attribute validates a menu based on type (class) of the selected fil
 
 If `class` attribute is specified, the classes of the files selected by the user must match for the validation to be successful. To specify multiple classes, one must separate each class with the `;` character. If multiple classes are specified, **at least one** class must match for the validation to be successful.
 
-If multiple files are selected, the class of **each file** must match **at least one** allowed classes for the validation to be successful.
+If multiple files are selected, **each file** must match **at least one** allowed class for the validation to be successful.
 
 If `class` attribute is not specified, then the validation is successful.
 
-The `class` attribute supports the following values which are explained in the following table:
+The `class` attribute supported values are explained in the following table:
 
 | Values          | Meaning                                                                                                                                                |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -312,9 +312,9 @@ For example, the following set a menu visible only when the user right-click on 
 
 The `fileextensions` attribute validates a menu based on the file's extension selected by the user.
 
-If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple file extension, one must separate each extensions with the `;` character. If multiple file extensions are specified, **at least one** extension must match for the validation to be successful.
+If `fileextensions` attribute is specified, the file's extension selected by the user must match for the validation to be successful. To specify multiple file extensions, one must separate each extension with the `;` character. If multiple file extensions are specified, **at least one** extension must match for the validation to be successful.
 
-If multiple files are selected, the file extension of each element must match **at least one** allowed file extension for the validation to be successful.
+If multiple files are selected, ***each file*** must match **at least one** allowed file extension for the validation to be successful.
 
 If `fileextensions` attribute is not specified, then the validation is successful.
 
@@ -333,7 +333,7 @@ The `pattern` attribute validates a menu based on a wildcard pattern matching al
 
 If `pattern` attribute is specified, the files selected by the user must match the wildcard pattern for the validation to be successful. To specify multiple patterns, one must separate each pattern value with the `;` character. If multiple patterns are specified, **at least one** pattern must match for the validation to be successful.
 
-If multiple files are selected, the path of each file must match **at least one** pattern for the validation to be successful.
+If multiple files are selected, ***each file*** must match **at least one** pattern for the validation to be successful.
 
 If `pattern` attribute is not specified, then the validation is successful.
 

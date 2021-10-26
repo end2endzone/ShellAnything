@@ -166,7 +166,8 @@ namespace shellanything
     bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
     bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
     bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
-    bool ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const;
+    bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
     bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
     bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
 

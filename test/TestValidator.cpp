@@ -302,6 +302,7 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert 'at least one' class must match
+    //If multiple classes are specified, at least one class must match for the validation to be successful.
     v.SetClass("folder;drive:network;drive:fixed"); // folder and drive:network fails but drive:fixed matches
     ASSERT_TRUE( v.Validate(c) );
 
@@ -360,6 +361,23 @@ namespace shellanything { namespace test
     //assert success when using 'drive:network'
     v.SetClass("drive:network");
     ASSERT_TRUE( v.Validate(c) );
+
+    //Set a mix of files and folders (issue #97, issue97)
+    //If multiple files are selected, the class of each file must match at least one allowed classes for the validation to be successful.
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\Windows\\System32");
+      elements.push_back("C:\\Windows\\notepad.exe");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    //assert success when using 'file' or 'folder'
+    v.SetClass("file;directory");
+    ASSERT_TRUE(v.Validate(c));
 
   }
   //--------------------------------------------------------------------------------------------------

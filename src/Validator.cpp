@@ -349,11 +349,11 @@ namespace shellanything
     Uppercase(accepted_file_extensions);
 
     //for each file selected
-    const Context::ElementList & elements = context.GetElements();
-    for(size_t i=0; i<elements.size(); i++) 
+    const Context::ElementList & context_elements = context.GetElements();
+    for(size_t i=0; i<context_elements.size(); i++) 
     {
-      const std::string & element = elements[i];
-      std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(element));
+      const std::string & path = context_elements[i];
+      std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(path));
 
       //each file extension must be part of accepted_file_extensions
       bool found = HasValue(accepted_file_extensions, current_file_extension);
@@ -392,46 +392,35 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateClassSingle(const Context & context, const std::string & class_, bool inversed) const
+  bool Validator::ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const
   {
-    if (class_.empty())
-      return true;
-
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     if (class_ == "file")
     {
-      // Selected elements must be files
-      bool valid = false;
-      valid |= (!inversed && context.GetNumFiles() > 0 && context.GetNumDirectories() == 0);
-      valid |= (inversed && context.GetNumFiles() == 0 && context.GetNumDirectories() > 0);
-      if (!valid)
+      // Selected element must be a file
+      bool is_file = ra::filesystem::FileExistsUtf8(path.c_str());
+      if (!inversed && !is_file)
+        return false;
+      if (inversed && is_file)
         return false;
     }
     else if (class_ == "folder" || class_ == "directory")
     {
-      // Selected elements must be folders
-      bool valid = false;
-      valid |= (!inversed && context.GetNumDirectories() > 0 && context.GetNumFiles() == 0);
-      valid |= (inversed && context.GetNumDirectories() == 0 && context.GetNumFiles() > 0);
-      if (!valid)
+      // Selected elements must be a directory
+      bool is_directory = ra::filesystem::DirectoryExistsUtf8(path.c_str());
+      if (!inversed && !is_directory)
+        return false;
+      if (inversed && is_directory)
         return false;
     }
     else if (class_ == "drive")
     {
       // Selected elements must be mapped to a drive
-      bool valid = true;
-      const Context::ElementList & elements = context.GetElements();
-      for(size_t i=0; i<elements.size() && valid == true; i++)
-      {
-        const std::string & element = elements[i];
-        std::string drive = GetDriveLetter(element);
-        if (!inversed && drive.empty())  // All elements must be mapped to a drive
-          valid = false;
-        if (inversed && !drive.empty())  // All elements must NOT be mapped to a drive.
-          valid = false;
-      }
-      if (!valid)
+      std::string drive = GetDriveLetter(path);
+      if (!inversed && drive.empty())  // All elements must be mapped to a drive
+        return false;
+      if (inversed && !drive.empty())  // All elements must NOT be mapped to a drive.
         return false;
     }
     else if (GetDriveClassFromString(class_.c_str()) != DRIVE_CLASS_UNKNOWN)
@@ -439,18 +428,10 @@ namespace shellanything
       DRIVE_CLASS required_class = GetDriveClassFromString(class_.c_str());
 
       // Selected elements must be of the same drive class
-      bool valid = true;
-      const Context::ElementList & elements = context.GetElements();
-      for(size_t i=0; i<elements.size() && valid == true; i++)
-      {
-        const std::string & element = elements[i];
-        DRIVE_CLASS element_class = GetDriveClassFromPath(element);
-        if (!inversed && element_class != required_class)
-          valid = false;
-        if (inversed && element_class == required_class)
-          valid = false;
-      }
-      if (!valid)
+      DRIVE_CLASS element_class = GetDriveClassFromPath(path);
+      if (!inversed && element_class != required_class)
+        return false;
+      if (inversed && element_class == required_class)
         return false;
     }
     else
@@ -459,6 +440,24 @@ namespace shellanything
     }
 
     return true;
+  }
+
+  bool Validator::ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const
+  {
+    if (class_.empty())
+      return true;
+
+    //split
+    ra::strings::StringVector classes = ra::strings::Split(class_, ";");
+
+    bool valid = false;
+    for (size_t i = 0; i < classes.size(); i++)
+    {
+      const std::string & class_ = classes[i];
+      valid |= ValidateSingleFileSingleClass(path, class_, inversed);
+    }
+
+    return valid;
   }
 
   bool Validator::ValidateClass(const Context & context, const std::string & class_, bool inversed) const
@@ -525,14 +524,22 @@ namespace shellanything
     // Continue validation for the remaining class elements
     if (!classes.empty())
     {
-      bool valid = false;
-      for(size_t i=0; i<classes.size(); i++)
+      //join remaining classes into a single string
+      std::string classes_str = ra::strings::Join(classes, ";");
+
+      //for each file selected
+      const Context::ElementList & context_elements = context.GetElements();
+      for (size_t i = 0; i < context_elements.size(); i++)
       {
-        const std::string & element = classes[i];
-        valid |= ValidateClassSingle(context, element, inversed);
+        const std::string & path = context_elements[i];
+
+        //each element must match one of the classes
+        bool valid = ValidateSingleFileMultipleClasses(path, classes_str, inversed);
+        if (!inversed && !valid)
+          return false; //current file extension is not accepted
+        if (inversed && valid)
+          return false; //current file extension is not accepted
       }
-      if (!valid)
-        return false;
     }
 
     return true;
@@ -562,14 +569,14 @@ namespace shellanything
     Uppercase(patterns);
 
     //for each file selected
-    const Context::ElementList & elements = context.GetElements();
-    for(size_t i=0; i<elements.size(); i++) 
+    const Context::ElementList & context_elements = context.GetElements();
+    for(size_t i=0; i<context_elements.size(); i++) 
     {
-      const std::string & element = elements[i];
-      std::string element_uppercase = ra::strings::Uppercase(element);
+      const std::string & path = context_elements[i];
+      std::string path_uppercase = ra::strings::Uppercase(path);
 
       //each element must match one of the patterns
-      bool match = WildcardMatch(patterns, element_uppercase.c_str());
+      bool match = WildcardMatch(patterns, path_uppercase.c_str());
       if (!inversed && !match)
         return false; //current file does not match any patterns
       if (inversed && match)

@@ -6,6 +6,7 @@ Changes for 0.7.0
 * Deprecated support for 32-bit Windows.
 * Fixed issue #91: String encoding in source code.
 * Fixed issue #96: Problems with Files > 2Gb
+* Fixed issue #97: Files and folders together do not start MENU.
 
 
 Changes for 0.6.1
