@@ -193,7 +193,7 @@ namespace shellanything
       if (pos + name_length < mInverse.size())
         next = mInverse[pos + name_length];
 
-      if (next == '\0' || next == ';')
+      if (next == '\0' || next == SA_INVERSE_ATTR_SEPARATOR_CHAR)
       {
         // Good. Keep looking
 
@@ -203,11 +203,11 @@ namespace shellanything
         if (pos == 0)
           return true; // We have a match!
 
-        char previous = ';';
+        char previous = SA_INVERSE_ATTR_SEPARATOR_CHAR;
         if (pos >= 1)
           previous = mInverse[pos - 1];
         
-        if (previous == ';')
+        if (previous == SA_INVERSE_ATTR_SEPARATOR_CHAR)
           return true; // We have a match!
       }
 
@@ -307,7 +307,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector property_list = ra::strings::Split(properties, ";");
+    ra::strings::StringVector property_list = ra::strings::Split(properties, SA_PROPERTIES_ATTR_SEPARATOR_STR);
 
     //each property specified must exists and be non-empty
     for(size_t i=0; i<property_list.size(); i++)
@@ -345,7 +345,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, ";");
+    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
     Uppercase(accepted_file_extensions);
 
     //for each file selected
@@ -374,7 +374,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, ";");
+    ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, SA_EXISTS_ATTR_SEPARATOR_STR);
 
     //for each file
     for(size_t i=0; i<mandatory_files.size(); i++)
@@ -448,7 +448,7 @@ namespace shellanything
       return true;
 
     //split
-    ra::strings::StringVector classes = ra::strings::Split(class_, ";");
+    ra::strings::StringVector classes = ra::strings::Split(class_, SA_CLASS_ATTR_SEPARATOR_STR);
 
     bool valid = false;
     for (size_t i = 0; i < classes.size(); i++)
@@ -468,7 +468,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector classes = ra::strings::Split(class_, ";");
+    ra::strings::StringVector classes = ra::strings::Split(class_, SA_CLASS_ATTR_SEPARATOR_STR);
 
     // Search for file extensions. All file extensions must be extracted from the list and evaluated all at once.
     std::string file_extensions;
@@ -495,7 +495,7 @@ namespace shellanything
 
           // Add to the file extension list
           if (!file_extensions.empty())
-            file_extensions.insert(0, 1, ';');
+            file_extensions.insert(0, 1, SA_CLASS_ATTR_SEPARATOR_CHAR);
           file_extensions.insert(0, file_extension.c_str());
 
           found_file_extensions = true;
@@ -525,7 +525,7 @@ namespace shellanything
     if (!classes.empty())
     {
       //join remaining classes into a single string
-      std::string classes_str = ra::strings::Join(classes, ";");
+      std::string classes_str = ra::strings::Join(classes, SA_CLASS_ATTR_SEPARATOR_STR);
 
       //for each file selected
       const Context::ElementList & context_elements = context.GetElements();
@@ -565,7 +565,7 @@ namespace shellanything
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector patterns = ra::strings::Split(pattern, ";");
+    ra::strings::StringVector patterns = ra::strings::Split(pattern, SA_PATTERN_ATTR_SEPARATOR_STR);
     Uppercase(patterns);
 
     //for each file selected

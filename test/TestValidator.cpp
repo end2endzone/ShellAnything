@@ -153,7 +153,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.Validate(c) );
 
     //assert failure when at least one property is not defined
-    v.SetProperties(property_name + ";foo");
+    v.SetProperties(property_name + SA_PROPERTIES_ATTR_SEPARATOR_STR "foo");
     ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all properties are defined
@@ -191,17 +191,19 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all file extensions are matching
-    v.SetFileExtensions("dll;exe;msc");
+    v.SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     ASSERT_TRUE( v.Validate(c) );
-    v.SetFileExtensions("exe;dll;msc"); //random order
+    v.SetFileExtensions("exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc"); //random order
     ASSERT_TRUE( v.Validate(c) );
 
     //assert success when more file extensions are allowed
-    v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
+    std::string extensions = "ini;txt;bat;doc;msc;dll;exe;xls;";
+    ra::strings::Replace(extensions, ";", SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
+    v.SetFileExtensions(extensions);
     ASSERT_TRUE( v.Validate(c) );
 
     //assert failure when multiple files are selected and a single extension is missing
-    v.SetFileExtensions("dll;exe"); //missing msc file extension
+    v.SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe"); //missing msc file extension
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -234,11 +236,11 @@ namespace shellanything { namespace test
     ASSERT_TRUE( v.Validate(c) );
  
     //assert success if all elements exists
-    v.SetFileExists(file_path + ";" + dir_path);
+    v.SetFileExists(file_path + SA_EXISTS_ATTR_SEPARATOR_STR + dir_path);
     ASSERT_TRUE( v.Validate(c) );
  
     //assert failure if the last element is not found
-    v.SetFileExists(file_path + ";" + dir_path + ";foo");
+    v.SetFileExists(file_path + SA_EXISTS_ATTR_SEPARATOR_STR + dir_path + SA_EXISTS_ATTR_SEPARATOR_STR + "foo");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -272,13 +274,15 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all file extensions are matching
-    v.SetClass(".dll;.exe;.msc");
+    v.SetClass(".dll" SA_CLASS_ATTR_SEPARATOR_STR ".exe" SA_CLASS_ATTR_SEPARATOR_STR ".msc");
     ASSERT_TRUE( v.Validate(c) );
-    v.SetClass(".exe;.dll;.msc"); //random order
+    v.SetClass(".exe" SA_CLASS_ATTR_SEPARATOR_STR ".dll" SA_CLASS_ATTR_SEPARATOR_STR ".msc"); //random order
     ASSERT_TRUE( v.Validate(c) );
 
     //assert success when more file extensions are allowed
-    v.SetClass(".ini;.txt;.bat;.doc;.msc;.dll;.exe;.xls;");
+    std::string extensions = ".ini;.txt;.bat;.doc;.msc;.dll;.exe;.xls;";
+    ra::strings::Replace(extensions, ";", SA_CLASS_ATTR_SEPARATOR_STR);
+    v.SetClass(extensions);
     ASSERT_TRUE( v.Validate(c) );
 
     //assert success when using 'file'
@@ -303,7 +307,7 @@ namespace shellanything { namespace test
 
     //assert 'at least one' class must match
     //If multiple classes are specified, at least one class must match for the validation to be successful.
-    v.SetClass("folder;drive:network;drive:fixed"); // folder and drive:network fails but drive:fixed matches
+    v.SetClass("folder" SA_CLASS_ATTR_SEPARATOR_STR "drive:network" SA_CLASS_ATTR_SEPARATOR_STR "drive:fixed"); // folder and drive:network fails but drive:fixed matches
     ASSERT_TRUE( v.Validate(c) );
 
     //Set only folders
@@ -376,7 +380,7 @@ namespace shellanything { namespace test
 #endif
 
     //assert success when using 'file' or 'folder'
-    v.SetClass("file;directory");
+    v.SetClass("file" SA_CLASS_ATTR_SEPARATOR_STR "directory");
     ASSERT_TRUE(v.Validate(c));
 
   }
@@ -411,17 +415,19 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert success when patterns are matching all files
-    v.SetPattern("*.dll;*.exe;*.msc");
+    v.SetPattern("*.dll" SA_PATTERN_ATTR_SEPARATOR_STR "*.exe" SA_PATTERN_ATTR_SEPARATOR_STR "*.msc");
     ASSERT_TRUE( v.Validate(c) );
-    v.SetPattern("*.exe;*.dll;*.msc"); //random order
+    v.SetPattern("*.exe" SA_PATTERN_ATTR_SEPARATOR_STR "*.dll" SA_PATTERN_ATTR_SEPARATOR_STR "*.msc"); //random order
     ASSERT_TRUE( v.Validate(c) );
 
     //assert success when more than required patterns are provided
-    v.SetPattern("*e*;*.dll;*.exe;*.msc;*a*;");
+    std::string pattern = "*e*;*.dll;*.exe;*.msc;*a*;";
+    ra::strings::Replace(pattern, ";", SA_PATTERN_ATTR_SEPARATOR_STR);
+    v.SetPattern(pattern);
     ASSERT_TRUE( v.Validate(c) );
 
     //assert failure when multiple files are selected and a single pattern is missing
-    v.SetPattern("*.dll;*.exe"); //missing msc file extension
+    v.SetPattern("*.dll" SA_PATTERN_ATTR_SEPARATOR_STR "*.exe"); //missing msc file extension
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -570,7 +576,7 @@ namespace shellanything { namespace test
 
 
 
-    v.SetInserve("foo;bar;baz");
+    v.SetInserve("foo" SA_INVERSE_ATTR_SEPARATOR_STR "bar" SA_INVERSE_ATTR_SEPARATOR_STR "baz");
 
     // Search first, middle, last attribute names
     ASSERT_TRUE( v.IsInversed("foo") );
@@ -586,7 +592,7 @@ namespace shellanything { namespace test
     // Assert the search go beyond its first match.
     // There is a substring match at bart and bars but they should then
     // be rejected. The last 'bar' should be where the match occurs.
-    v.SetInserve("bart;bars;bar");
+    v.SetInserve("bart" SA_INVERSE_ATTR_SEPARATOR_STR "bars" SA_INVERSE_ATTR_SEPARATOR_STR "bar");
     ASSERT_TRUE( v.IsInversed("bar") );
   }
   //--------------------------------------------------------------------------------------------------
@@ -698,28 +704,30 @@ namespace shellanything { namespace test
     //assert failure when at least one property is defined
     pmgr.Clear();
     pmgr.SetProperty(property_name, "defined"); // property_name is defined
-    v.SetProperties(property_name + ";foo"); // foo is not defined
+    v.SetProperties(property_name + SA_PROPERTIES_ATTR_SEPARATOR_STR "foo"); // foo is not defined
     ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when all properties are defined
     pmgr.Clear();
     pmgr.SetProperty(property_name, "defined");
     pmgr.SetProperty("foo", "bar");
-    v.SetProperties(property_name + ";foo"); // all defined
+    v.SetProperties(property_name + SA_PROPERTIES_ATTR_SEPARATOR_STR "foo"); // all defined
     ASSERT_FALSE( v.Validate(c) );
 
     //assert success when all properties are not defined
     pmgr.Clear();
-    v.SetProperties(property_name + ";foo"); // all not defined
+    v.SetProperties(property_name + SA_PROPERTIES_ATTR_SEPARATOR_STR "foo"); // all not defined
     ASSERT_TRUE( v.Validate(c) );
 
     // If multiple properties are specified, all properties must be empty or not defined for the validation to be successful.
     pmgr.Clear();
-    v.SetProperties("foo;bar;baz");
+    v.SetProperties("foo" SA_PROPERTIES_ATTR_SEPARATOR_STR "bar" SA_PROPERTIES_ATTR_SEPARATOR_STR "baz");
     ASSERT_TRUE( v.Validate(c) );
 
     pmgr.SetProperty(property_name, "defined");
-    v.SetProperties("foo;bar;baz;" + property_name);
+    v.SetProperties("foo" SA_PROPERTIES_ATTR_SEPARATOR_STR
+                    "bar" SA_PROPERTIES_ATTR_SEPARATOR_STR
+                    "baz" SA_PROPERTIES_ATTR_SEPARATOR_STR + property_name);
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -754,19 +762,26 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when all file extensions are defined
-    v.SetFileExtensions("dll;exe;msc");
+    v.SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     ASSERT_FALSE( v.Validate(c) );
-    v.SetFileExtensions("exe;dll;msc"); //random order
+    v.SetFileExtensions("exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc"); //random order
     ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when more file extensions are matching
-    v.SetFileExtensions("ini;txt;bat;doc;msc;dll;exe;xls;");
+    std::string extensions = "ini;txt;bat;doc;msc;dll;exe;xls;";
+    ra::strings::Replace(extensions, ";", SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
+    v.SetFileExtensions(extensions);
     ASSERT_FALSE( v.Validate(c) );
 
     // If multiple file extensions are specified, no extension must match for the validation to be successful.
-    v.SetFileExtensions("aaa;bbb;ccc;");
+    v.SetFileExtensions("aaa" SA_FILEEXTENSION_ATTR_SEPARATOR_STR
+                        "bbb" SA_FILEEXTENSION_ATTR_SEPARATOR_STR
+                        "ccc" SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
     ASSERT_TRUE( v.Validate(c) );
-    v.SetFileExtensions("aaa;bbb;exe;ccc;");
+    v.SetFileExtensions("aaa" SA_FILEEXTENSION_ATTR_SEPARATOR_STR
+                        "bbb" SA_FILEEXTENSION_ATTR_SEPARATOR_STR
+                        "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR
+                        "ccc" SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -800,19 +815,30 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
  
     //assert failure if all elements exists
-    v.SetFileExists(file_path + ";" + dir_path);
+    v.SetFileExists(file_path + SA_EXISTS_ATTR_SEPARATOR_STR + dir_path);
     ASSERT_FALSE( v.Validate(c) );
  
     //assert failure if at least one of all elements is found
-    v.SetFileExists("bar;" + dir_path + ";foo");
+    std::string exists;
+    exists += "bar" SA_EXISTS_ATTR_SEPARATOR_STR;
+    exists += dir_path + SA_EXISTS_ATTR_SEPARATOR_STR;
+    exists += "foo";
+    v.SetFileExists(exists);
     ASSERT_FALSE( v.Validate(c) );
-    v.SetFileExists("bar;" + file_path + ";foo");
+
+    exists += "bar" SA_EXISTS_ATTR_SEPARATOR_STR;
+    exists += file_path + SA_EXISTS_ATTR_SEPARATOR_STR;
+    exists += "foo";
+    v.SetFileExists(exists);
     ASSERT_FALSE( v.Validate(c) );
  
     // If multiple files are specified, all files must not exists on the system for the validation to be successful.
-    v.SetFileExists("foo;bar;baz");
+    v.SetFileExists("foo" SA_EXISTS_ATTR_SEPARATOR_STR "bar" SA_EXISTS_ATTR_SEPARATOR_STR "baz");
     ASSERT_TRUE( v.Validate(c) );
-    v.SetFileExists("foo;bar;C:\\Windows\\System32\\kernel32.dll;baz");
+    v.SetFileExists("foo" SA_EXISTS_ATTR_SEPARATOR_STR
+                    "bar" SA_EXISTS_ATTR_SEPARATOR_STR
+                    "C:\\Windows\\System32\\kernel32.dll" SA_EXISTS_ATTR_SEPARATOR_STR
+                    "baz");
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -847,19 +873,26 @@ namespace shellanything { namespace test
     ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when pattern is matching all files
-    v.SetPattern("*.dll;*.exe;*.msc");
+    v.SetPattern("*.dll" SA_PATTERN_ATTR_SEPARATOR_STR "*.exe" SA_PATTERN_ATTR_SEPARATOR_STR "*.msc");
     ASSERT_FALSE( v.Validate(c) );
-    v.SetPattern("*.exe;*.dll;*.msc"); //random order
+    v.SetPattern("*.exe" SA_PATTERN_ATTR_SEPARATOR_STR "*.dll" SA_PATTERN_ATTR_SEPARATOR_STR "*.msc"); //random order
     ASSERT_FALSE( v.Validate(c) );
 
     //assert failure when more than required patterns are provided
-    v.SetPattern("*e*;*.dll;*.exe;*.msc;*a*;");
+    std::string pattern = "*e*;*.dll;*.exe;*.msc;*a*;";
+    ra::strings::Replace(pattern, ";", SA_PATTERN_ATTR_SEPARATOR_STR);
+    v.SetPattern(pattern);
     ASSERT_FALSE( v.Validate(c) );
 
     // If multiple patterns are specified, no pattern must match for the validation to be successful.
-    v.SetPattern("*.foo;*.bar;*.baz;");
+    v.SetPattern( "*.foo" SA_PATTERN_ATTR_SEPARATOR_STR
+                  "*.bar" SA_PATTERN_ATTR_SEPARATOR_STR
+                  "*.baz" SA_PATTERN_ATTR_SEPARATOR_STR);
     ASSERT_TRUE( v.Validate(c) );
-    v.SetPattern("*.foo;*.exe;*.bar;*.baz;");
+    v.SetPattern( "*.foo" SA_PATTERN_ATTR_SEPARATOR_STR
+                  "*.exe" SA_PATTERN_ATTR_SEPARATOR_STR
+                  "*.bar" SA_PATTERN_ATTR_SEPARATOR_STR
+                  "*.baz" SA_PATTERN_ATTR_SEPARATOR_STR);
     ASSERT_FALSE( v.Validate(c) );
   }
   //--------------------------------------------------------------------------------------------------
@@ -984,20 +1017,20 @@ namespace shellanything { namespace test
     menu.AddVisibility(v2);
 
     //assert 'or' operator between each Validator
-    v1->SetFileExtensions("dll;exe;msc");
+    v1->SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     v2->SetFileExtensions("");
     menu.Update(c);
     ASSERT_TRUE( menu.IsVisible() );
 
     //assert 'or' operator when swapping validators
     v1->SetFileExtensions("");
-    v2->SetFileExtensions("dll;exe;msc");
+    v2->SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     menu.Update(c);
     ASSERT_TRUE( menu.IsVisible() );
 
     //assert validators are not complementary
     v1->SetFileExtensions("dll");
-    v2->SetFileExtensions("exe;msc");
+    v2->SetFileExtensions("exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     menu.Update(c);
     ASSERT_FALSE( menu.IsVisible() );
   }
