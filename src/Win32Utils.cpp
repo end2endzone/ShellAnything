@@ -478,7 +478,7 @@ namespace Win32Utils
  
     const UINT & id = info.wID; //GetMenuItemID(hMenu, pos);
  
-    bool IsSeparator  = ((info.fType & MFT_SEPARATOR) != 0);
+    bool isSeparator  = ((info.fType & MFT_SEPARATOR) != 0);
     bool isDisabled   = ((info.fState & MFS_DISABLED) != 0);
     bool isChecked    = ((info.fState & MFS_CHECKED) != 0);
  
@@ -487,7 +487,7 @@ namespace Win32Utils
     char title_utf8[BUFFER_SIZE] = {0};
     char tmp[BUFFER_SIZE] = {0};
     wchar_t tmpW[BUFFER_SIZE] = {0};
-    if (IsSeparator)
+    if (isSeparator)
     {
       strcpy(title_utf8, "------------------------");
     }
@@ -507,7 +507,7 @@ namespace Win32Utils
     description_utf8.append(tmp);
     if (isChecked)
       description_utf8.append(", checked");
-    if (isDisabled && !IsSeparator)
+    if (isDisabled && !isSeparator)
       description_utf8.append(", disabled");
     description_utf8.append(")");
  
