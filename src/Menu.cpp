@@ -33,6 +33,7 @@ namespace shellanything
   Menu::Menu() : Node("Menu"),
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
+    mColumnSeparator(false),
     mCommandId(INVALID_COMMAND_ID),
     mVisible(true),
     mEnabled(true)
@@ -74,6 +75,16 @@ namespace shellanything
   void Menu::SetSeparator(bool separator)
   {
     mSeparator = separator;
+  }
+
+  bool Menu::IsColumnSeparator() const
+  {
+    return mColumnSeparator;
+  }
+
+  void Menu::SetColumnSeparator(bool column_separator)
+  {
+    mColumnSeparator = column_separator;
   }
 
   bool Menu::IsParentMenu() const

@@ -705,6 +705,56 @@ namespace shellanything { namespace test
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseSeparator)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT a multiple menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(6, menus.size());
+
+    //Assert the following menus are separators
+    ASSERT_FALSE(menus[0]->IsSeparator());  // <menu name="menu00" />
+    ASSERT_TRUE (menus[1]->IsSeparator());  // <menu separator="true" />
+    ASSERT_TRUE (menus[2]->IsSeparator());  // <menu separator="horizontal" />
+    ASSERT_FALSE(menus[3]->IsSeparator());  // <menu separator="column" />
+    ASSERT_FALSE(menus[4]->IsSeparator());  // <menu separator="vertical" />
+    ASSERT_FALSE(menus[5]->IsSeparator());  // <menu name="menu05" />
+
+    //Assert the following menus are column separators
+    ASSERT_FALSE(menus[0]->IsColumnSeparator());  // <menu name="menu00" />
+    ASSERT_FALSE(menus[1]->IsColumnSeparator());  // <menu separator="true" />
+    ASSERT_FALSE(menus[2]->IsColumnSeparator());  // <menu separator="horizontal" />
+    ASSERT_TRUE (menus[3]->IsColumnSeparator());  // <menu separator="column" />
+    ASSERT_TRUE (menus[4]->IsColumnSeparator());  // <menu separator="vertical" />
+    ASSERT_FALSE(menus[5]->IsColumnSeparator());  // <menu name="menu05" />
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
  
 } //namespace test
 } //namespace shellanything

@@ -80,6 +80,18 @@ namespace shellanything
     void SetSeparator(bool separator);
 
     /// <summary>
+    /// Returns true of the menu is a column separator.
+    /// </summary>
+    /// <returns>Returns true of the menu is a column separator. Returns false otherwise.</returns>
+    bool IsColumnSeparator() const;
+
+    /// <summary>
+    /// Sets the menu column separator property.
+    /// </summary>
+    /// <param name="separator">True to define the menu as a column separator. False otherwise.</param>
+    void SetColumnSeparator(bool column_separator);
+
+    /// <summary>
     /// Returns true if the menu is a parent menu (if this menu have submenus).
     /// </summary>
     /// <returns>Returns true if the menu is a parent menu (if this menu have submenus). Returns false otherwise.</returns>
@@ -247,6 +259,7 @@ namespace shellanything
     bool mVisible;
     bool mEnabled;
     bool mSeparator;
+    bool mColumnSeparator;
     uint32_t mCommandId;
     std::string mName;
     int mNameMaxLength;

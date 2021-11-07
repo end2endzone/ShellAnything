@@ -119,7 +119,7 @@ public:
 
 private:
   void BuildMenuTree(HMENU hMenu);
-  void BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos);
+  void BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos, bool & next_menu_is_column);
 };
 
 #endif //SA_SHELLEXTENSION_H

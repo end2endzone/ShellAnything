@@ -119,6 +119,7 @@ namespace shellanything { namespace test
       "test_files\\TestObjectFactory.testParseDefaults.xml",
       "test_files\\TestObjectFactory.testParseIcon.xml",
       "test_files\\TestObjectFactory.testParseMenuMaxLength.xml",
+      "test_files\\TestObjectFactory.testParseSeparator.xml",
       "test_files\\TestObjectFactory.testParseValidator.xml",
       "test_files\\tests.xml",
     };

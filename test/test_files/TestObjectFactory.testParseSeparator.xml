@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00" />
+    <menu separator="true" />
+    <menu separator="horizontal" />
+    <menu separator="column" />
+    <menu separator="vertical" />
+    <menu name="menu05" />
+  </shell>
+</root>

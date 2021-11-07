@@ -506,13 +506,28 @@ namespace shellanything
     //parse separator
     std::string menu_separator;
     bool have_separetor = ParseAttribute(element, "separator", true, true, menu_separator, error);
-    bool is_separator = false;
+    bool separator_parsed = false;
     if (have_separetor)
     {
-      is_separator = ra::strings::ParseBoolean(menu_separator);
-      if (is_separator)
+      //try to parse this menu separator as a boolean
+      bool is_horizontal_separator = false;
+      separator_parsed = ra::strings::Parse(menu_separator, is_horizontal_separator);
+      if (separator_parsed && is_horizontal_separator)
       {
         menu->SetSeparator(true);
+        return menu;
+      }
+
+      //try to parse as a string
+      menu_separator = ra::strings::Lowercase(menu_separator);
+      if (menu_separator == "horizontal")
+      {
+        menu->SetSeparator(true);
+        return menu;
+      }
+      else if (menu_separator == "vertical" || menu_separator == "column")
+      {
+        menu->SetColumnSeparator(true);
         return menu;
       }
     }

@@ -188,10 +188,26 @@ Menu names supports _keyboard mnemonics_, see the [Mnemonics / keyboard shortcut
 
 ### separator attribute: ###
 
-The `separator` attribute allows one to define a separator between menu options. To define a separator, one must set the `separator` attributes to one of the following values: `true`, `yes` or `on`. For example, add the following menu element in a *configuration file*:
+The `separator` attribute allows one to define an *horizontal* separator between menu options. To define an *horizontal* separator, one must set the `separator` attributes to one of the following values: `true`, `yes`, `on` or `horizontal`. For example, the following creates a separator between menu *foo* and *bar* :
 
 ```xml
+<menu name="foo" />
 <menu separator="true" />
+<menu name="bar" />
+```
+
+ShellAnything also support creating *vertical* (or column) separators. When using such a separator, *Windows* renders the popup menu with multiple columns. The menus following a column separator are rendered in a new column. For example, look at [this image](docs/multiple_columns_menu.png?raw=true) to see a multi-column menu. To define a *vertical* separator, one must set the `separator` attributes to value  `vertical` or `column`. For example, the following creates a two column menu :
+
+```xml
+<menu name="Left" />
+<menu name="logical" />
+<menu name="analytical" />
+<menu name="objective" />
+<menu separator="column" />
+<menu name="Right" />
+<menu name="intuitive" />
+<menu name="creativity" />
+<menu name="subjective" />
 ```
 
 

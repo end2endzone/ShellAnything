@@ -246,7 +246,7 @@ public:
   }
 };
 
-void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos)
+void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos, bool & next_menu_is_column)
 {
   //Expanded the menu's strings
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
@@ -257,6 +257,14 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   bool menu_visible   = menu->IsVisible();
   bool menu_enabled   = menu->IsEnabled();
   bool menu_separator = menu->IsSeparator();
+  bool menu_column    = menu->IsColumnSeparator();
+
+  //Skip column separator, those are not menu item
+  if (menu_column)
+  {
+    next_menu_is_column = true;
+    return;
+  }
 
   //Skip this menu if not visible
   if (!menu_visible)
@@ -288,6 +296,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   menuinfo.cbSize = sizeof(MENUITEMINFOW);
   menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
   menuinfo.fType = (menu_separator ? MFT_SEPARATOR : MFT_STRING);
+  menuinfo.fType += (next_menu_is_column ? MFT_MENUBARBREAK : 0);
   menuinfo.fState = (menu_enabled ? MFS_ENABLED : MFS_DISABLED);
   menuinfo.wID = menu_command_id;
   menuinfo.dwTypeData = (wchar_t*)title_utf16.c_str();
@@ -375,18 +384,27 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     }
   }
 
+  //handle column separator
+  if (next_menu_is_column)
+  {
+    menuinfo.fType |= MFT_MENUBARBREAK;
+  }
+  next_menu_is_column = false;
+
   //handle submenus
   if (menu->IsParentMenu())
   {
     menuinfo.fMask |= MIIM_SUBMENU;
     HMENU hSubMenu = CreatePopupMenu();
 
+    bool next_sub_menu_is_column = false;
+
     shellanything::Menu::MenuPtrList subs = menu->GetSubMenus();
     UINT sub_insert_pos = 0;
     for(size_t i=0; i<subs.size(); i++)
     {
       shellanything::Menu * submenu = subs[i];
-      BuildMenuTree(hSubMenu, submenu, sub_insert_pos);
+      BuildMenuTree(hSubMenu, submenu, sub_insert_pos, next_sub_menu_is_column);
     }
 
     menuinfo.hSubMenu = hSubMenu;
@@ -425,6 +443,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     m_BitmapCache.ResetCounters();
   }
 
+  bool next_menu_is_column = false;
+
   //browse through all shellanything menus and build the win32 popup menus
 
   //for each configuration
@@ -443,7 +463,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
         shellanything::Menu * menu = menus[j];
 
         //Add this menu to the tree
-        BuildMenuTree(hMenu, menu, insert_pos);
+        BuildMenuTree(hMenu, menu, insert_pos, next_menu_is_column);
       }
     }
   }
