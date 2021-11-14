@@ -9,6 +9,7 @@ Changes for 0.7.0
 * Fixed issue #92: New property for detecting file type based on content.
 * Fixed issue #96: Problems with Files > 2Gb
 * Fixed issue #97: Files and folders together do not start MENU.
+* Fixed issue #98: Show only one log warning message about missing icon for a file extension.
 
 
 Changes for 0.6.1

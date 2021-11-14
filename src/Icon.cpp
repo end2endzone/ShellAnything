@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/Icon.h"
+#include "shellanything/Context.h"
 #include "PropertyManager.h"
 #include "Win32Registry.h"
 
@@ -31,8 +32,12 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
+#include "rapidassist/strings.h"
+
 namespace shellanything
 {
+  Icon::FileExtensionSet Icon::mUnresolvedFileExtensions;
+
   Icon::Icon() :
     mIndex(Icon::INVALID_ICON_INDEX)
   {
@@ -74,6 +79,16 @@ namespace shellanything
     std::string file_extension = pmgr.Expand(mFileExtension);
     if (!file_extension.empty())
     {
+      //check for multiple values. keep the first value, forget about other selected file extensions.
+      const std::string separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+      if (file_extension.find(separator) != std::string::npos)
+      {
+        //multiple values detected.
+        ra::strings::StringVector extension_list = ra::strings::Split(file_extension, separator.c_str());
+        if (!extension_list.empty())
+          file_extension = extension_list[0];
+      }
+
       //try to find the path to the icon module for the given file extension.
       Win32Registry::REGISTRY_ICON resolved_icon = Win32Registry::GetFileTypeIcon(file_extension.c_str());
       if (!resolved_icon.path.empty() && resolved_icon.index != Win32Registry::INVALID_ICON_INDEX)
@@ -90,10 +105,19 @@ namespace shellanything
         //failed to find a valid icon.
         //using the default "unknown" icon
         Win32Registry::REGISTRY_ICON unknown_file_icon = Win32Registry::GetUnknownFileTypeIcon();
-        LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
         mPath = unknown_file_icon.path;
         mIndex = unknown_file_icon.index;
         mFileExtension = "";
+
+        //show the message only once in logs
+        const bool is_already_in_log = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
+        if (!is_already_in_log)
+        {
+          LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
+          
+          //remember this failure.
+          mUnresolvedFileExtensions.insert(file_extension);
+        }
       }
     }
   }

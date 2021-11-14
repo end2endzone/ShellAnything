@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace shellanything
 {
@@ -93,6 +94,8 @@ namespace shellanything
     void SetIndex(const int & index);
 
   private:
+    typedef std::set<std::string /*file extension*/> FileExtensionSet;
+    static FileExtensionSet mUnresolvedFileExtensions;
     std::string mFileExtension;
     std::string mPath;
     int mIndex;
