@@ -75,6 +75,8 @@ namespace shellanything
  
     std::string selection_path           ;
     std::string selection_dir            ;
+    std::string selection_dir_count      ;
+    std::string selection_dir_empty      ;
     std::string selection_parent_path    ;
     std::string selection_parent_filename;
     std::string selection_filename       ;
@@ -109,7 +111,7 @@ namespace shellanything
       //${selection.filename_noext} is selection.filename without file extension
       //${selection.filename.extension} is the file extension of the clicked element.
  
-      //build properties for this specific element
+      // Build properties for this specific element
       std::string element_selection_path            = element;
       std::string element_selection_dir             = isFile ? ra::filesystem::GetParentPath(element_selection_path) : element;
       std::string element_selection_parent_path     = ra::filesystem::GetParentPath(element_selection_path);
@@ -155,8 +157,27 @@ namespace shellanything
       selection_charset        .append( element_selection_charset         );
     }
  
+    // Directory based properties
+    if (elements.size() == 1)
+    {
+      const std::string & element = elements[0];
+      bool isDir = ra::filesystem::DirectoryExistsUtf8(element.c_str());
+      if (isDir)
+      {
+        ra::strings::StringVector files;
+        bool files_found = ra::filesystem::FindFilesUtf8(files, element.c_str(), 0);
+        if (files_found)
+        {
+          selection_dir_count = ra::strings::ToString(files.size());
+          selection_dir_empty = (files.size() == 0 ? "true" : "false");
+        }
+      }
+    }
+
     pmgr.SetProperty("selection.path"               , selection_path           );
     pmgr.SetProperty("selection.dir"                , selection_dir            );
+    pmgr.SetProperty("selection.dir.count"          , selection_dir_count      );
+    pmgr.SetProperty("selection.dir.empty"          , selection_dir_empty      );
     pmgr.SetProperty("selection.parent.path"        , selection_parent_path    );
     pmgr.SetProperty("selection.parent.filename"    , selection_parent_filename);
     pmgr.SetProperty("selection.filename"           , selection_filename       );
