@@ -101,5 +101,21 @@
       </actions>
     </menu>
 
+    <menu name="menu12">
+      <!-- istrue attribute is set -->
+      <visibility istrue="yes" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
+    <menu name="menu13">
+      <!-- isfalse attribute is set -->
+      <visibility isfalse="no" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

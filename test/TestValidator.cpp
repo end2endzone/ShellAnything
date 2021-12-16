@@ -28,6 +28,7 @@
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
+#include "rapidassist/process.h"
 
 namespace shellanything { namespace test
 {
@@ -1035,6 +1036,171 @@ namespace shellanything { namespace test
     ASSERT_FALSE( menu.IsVisible() );
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsTrueStatement)
+  {
+    ASSERT_TRUE(Validator::IsTrue("true"));
+    ASSERT_TRUE(Validator::IsTrue("tRue"));
+    ASSERT_TRUE(Validator::IsTrue("TRUE"));
 
+    ASSERT_TRUE(Validator::IsTrue("yes"));
+    ASSERT_TRUE(Validator::IsTrue("OK"));
+    ASSERT_TRUE(Validator::IsTrue("oN"));
+    ASSERT_TRUE(Validator::IsTrue("1"));
+
+    ASSERT_FALSE(Validator::IsTrue("foo"));
+
+    //test with system.true
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
+    ASSERT_FALSE(Validator::IsTrue("bar"));
+    pmgr.SetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME, "BaR");
+    ASSERT_TRUE(Validator::IsTrue("bar"));
+    pmgr.Clear();
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsFalseStatement)
+  {
+    ASSERT_TRUE(Validator::IsFalse("false"));
+    ASSERT_TRUE(Validator::IsFalse("fAlse"));
+    ASSERT_TRUE(Validator::IsFalse("FALSE"));
+
+    ASSERT_TRUE(Validator::IsFalse("no"));
+    ASSERT_TRUE(Validator::IsFalse("fail"));
+    ASSERT_TRUE(Validator::IsFalse("oFF"));
+    ASSERT_TRUE(Validator::IsFalse("0"));
+
+    ASSERT_FALSE(Validator::IsFalse("bar"));
+
+    //test with system.true
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    pmgr.Clear();
+    ASSERT_FALSE(Validator::IsFalse("foo"));
+    pmgr.SetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME, "fOo");
+    ASSERT_TRUE(Validator::IsFalse("foo"));
+    pmgr.Clear();
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsTrue)
+  {
+    Context c;
+    Context::ElementList elements;
+    elements.push_back( ra::process::GetCurrentProcessPath() );
+    c.SetElements(elements);
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure when a false/unkown statement is specified
+    v.SetIsTrue("no");
+    ASSERT_FALSE(v.Validate(c));
+    v.SetIsTrue("foo");
+    ASSERT_FALSE(v.Validate(c));
+
+    //assert success if the statement evaluates to true
+    static const char * statements[] = {
+      "true",
+      "tRue",
+      "TRUE",
+      "yes",
+      "OK",
+      "oN",
+      "1",
+    };
+    static const size_t num_statements = sizeof(statements) / sizeof(statements[0]);
+    for (size_t i = 0; i < num_statements; i++)
+    {
+      const char * statement = statements[i];
+      v.SetIsTrue(statement);
+      ASSERT_TRUE(v.Validate(c)) << "Statement '" << statement << "' is expected to evaluate to true";
+    }
+
+    //test with multiple values
+    std::string istrue;
+
+    //assert success if all statements evaluates to true
+    istrue.clear();
+    istrue += "yes";
+    istrue += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    istrue += "true";
+    istrue += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    istrue += "on";
+    v.SetIsTrue(istrue);
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure if the last element does not evaluates to true
+    //if multiple values are specified, all values must evaluate to true for the validation to be successful.
+    istrue.clear();
+    istrue += "yes";
+    istrue += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    istrue += "true";
+    istrue += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    istrue += "foo";
+    v.SetIsTrue(istrue);
+    ASSERT_FALSE(v.Validate(c));
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsFalse)
+  {
+    Context c;
+    Context::ElementList elements;
+    elements.push_back( ra::process::GetCurrentProcessPath() );
+    c.SetElements(elements);
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure when a true/unkown statement is specified
+    v.SetIsFalse("yes");
+    ASSERT_FALSE(v.Validate(c));
+    v.SetIsFalse("foo");
+    ASSERT_FALSE(v.Validate(c));
+
+    //assert success if the statement evaluates to false
+    static const char * statements[] = {
+      "false",
+      "faLSe",
+      "FALSE",
+      "no",
+      "FAIL",
+      "oFF",
+      "0",
+    };
+    static const size_t num_statements = sizeof(statements) / sizeof(statements[0]);
+    for (size_t i = 0; i < num_statements; i++)
+    {
+      const char * statement = statements[i];
+      v.SetIsFalse(statement);
+      ASSERT_TRUE(v.Validate(c)) << "Statement '" << statement << "' is expected to evaluate to false";
+    }
+
+    //test with multiple values
+    std::string isfalse;
+
+    //assert success if all statements evaluates to true
+    isfalse.clear();
+    isfalse += "no";
+    isfalse += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    isfalse += "false";
+    isfalse += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    isfalse += "off";
+    v.SetIsFalse(isfalse);
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure if the last element does not evaluates to false
+    //if multiple values are specified, all values must evaluate to false for the validation to be successful.
+    isfalse.clear();
+    isfalse += "no";
+    isfalse += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    isfalse += "false";
+    isfalse += SA_ISTRUE_ATTR_SEPARATOR_STR;
+    isfalse += "foo";
+    v.SetIsFalse(isfalse);
+    ASSERT_FALSE(v.Validate(c));
+  }
+  //--------------------------------------------------------------------------------------------------
 } //namespace test
 } //namespace shellanything

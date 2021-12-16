@@ -47,6 +47,28 @@ namespace shellanything
 
   public:
 
+    /// <summary>
+    /// Name of the property that defines the system true.
+    /// </summary>
+    static const std::string SYSTEM_TRUE_PROPERTY_NAME;
+
+    /// <summary>
+    /// Default value for the property 'SYSTEM_TRUE_PROPERTY_NAME'.
+    /// </summary>
+    static const std::string SYSTEM_TRUE_DEFAULT_VALUE;
+
+    /// <summary>
+    /// Name of the property that defines the system false.
+    /// </summary>
+    static const std::string SYSTEM_FALSE_PROPERTY_NAME;
+
+    /// <summary>
+    /// Default value for the property 'SYSTEM_FALSE_PROPERTY_NAME'.
+    /// </summary>
+    static const std::string SYSTEM_FALSE_DEFAULT_VALUE;
+
+  public:
+
     //------------------------
     // Typedef
     //------------------------

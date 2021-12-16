@@ -33,6 +33,11 @@ namespace shellanything
 {
   static const int EXPANDING_MAX_ITERATIONS = 20;
 
+  const std::string PropertyManager::SYSTEM_TRUE_PROPERTY_NAME = "system.true";
+  const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
+  const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
+  const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
+
   PropertyManager::PropertyManager()
   {
     RegisterEnvironmentVariables();
@@ -227,6 +232,9 @@ namespace shellanything
     SetProperty("path.separator"       , prop_path_separator       );
     SetProperty("line.separator"       , prop_line_separator       );
     SetProperty("newline"              , prop_line_separator       );
+
+    SetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME    , PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE   );
+    SetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME   , PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE  );
 
     // Set default property for multi selection. Issue #52.
     SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, Context::DEFAULT_MULTI_SELECTION_SEPARATOR);
