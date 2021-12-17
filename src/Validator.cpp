@@ -153,6 +153,26 @@ namespace shellanything
     mExprtk = exprtk;
   }
 
+  const std::string & Validator::GetIsTrue() const
+  {
+    return mIsTrue;
+  }
+
+  void Validator::SetIsTrue(const std::string & istrue)
+  {
+    mIsTrue = istrue;
+  }
+
+  const std::string & Validator::GetIsFalse() const
+  {
+    return mIsFalse;
+  }
+
+  void Validator::SetIsFalse(const std::string & isfalse)
+  {
+    mIsFalse = isfalse;
+  }
+
   const std::string & Validator::GetInserve() const
   {
     return mInverse;
@@ -223,6 +243,8 @@ namespace shellanything
 
   bool Validator::Validate(const Context & context) const
   {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+  	
     bool maxfiles_inversed = IsInversed("maxfiles");
     if (!maxfiles_inversed && context.GetNumFiles() > mMaxFiles)
         return false; //too many files selected
@@ -236,7 +258,6 @@ namespace shellanything
       return false; //too many directories selected
 
     //validate properties
-    PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string properties = pmgr.Expand(mProperties);
     if (!properties.empty())
     {
@@ -296,7 +317,67 @@ namespace shellanything
         return false;
     }
 
+    //validate istrue
+    const std::string istrue = pmgr.Expand(mIsTrue);
+    if (!istrue.empty())
+    {
+      bool inversed = IsInversed("istrue");
+      bool valid = ValidateIsTrue(context, istrue, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate isfalse
+    const std::string isfalse = pmgr.Expand(mIsFalse);
+    if (!isfalse.empty())
+    {
+      bool inversed = IsInversed("isfalse");
+      bool valid = ValidateIsFalse(context, isfalse, inversed);
+      if (!valid)
+        return false;
+    }
+
     return true;
+  }
+
+  bool Validator::IsTrue(const std::string & value)
+  {
+    std::string upper_case_value = ra::strings::Uppercase(value);
+    if (upper_case_value == "TRUE" ||
+        upper_case_value == "YES" ||
+        upper_case_value == "OK" ||
+        upper_case_value == "ON" ||
+        upper_case_value == "1"     )
+      return true;
+    
+    //check with system true
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    std::string system_true = pmgr.GetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME);
+    std::string upper_case_system_true = ra::strings::Uppercase(system_true);
+    if (upper_case_value == upper_case_system_true)
+      return true;
+
+    return false;
+  }
+
+  bool Validator::IsFalse(const std::string & value)
+  {
+    std::string upper_case_value = ra::strings::Uppercase(value);
+    if (upper_case_value == "FALSE" ||
+        upper_case_value == "NO" ||
+        upper_case_value == "FAIL" ||
+        upper_case_value == "OFF" ||
+        upper_case_value == "0"     )
+      return true;
+    
+    //check with system false
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+    std::string system_false = pmgr.GetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME);
+    std::string upper_case_system_false = ra::strings::Uppercase(system_false);
+    if (upper_case_value == upper_case_system_false)
+      return true;
+
+    return false;
   }
 
   bool Validator::ValidateProperties(const Context & context, const std::string & properties, bool inversed) const
@@ -610,6 +691,54 @@ namespace shellanything
       result = !result;
 
     return result;
+  }
+
+  bool Validator::ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const
+  {
+    if (istrue.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector statements = ra::strings::Split(istrue, SA_ISTRUE_ATTR_SEPARATOR_STR);
+
+    //for each boolean statement
+    for (size_t i = 0; i < statements.size(); i++)
+    {
+      const std::string & statement = statements[i];
+      bool match = IsTrue(statement);
+      if (!inversed && !match)
+        return false; //current statement does not evaluate to true
+      if (inversed && match)
+        return false; //current statement evaluates as true
+    }
+
+    return true;
+  }
+
+  bool Validator::ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const
+  {
+    if (isfalse.empty())
+      return true;
+
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector statements = ra::strings::Split(isfalse, SA_ISTRUE_ATTR_SEPARATOR_STR);
+
+    //for each boolean statement
+    for (size_t i = 0; i < statements.size(); i++)
+    {
+      const std::string & statement = statements[i];
+      bool match = IsFalse(statement);
+      if (!inversed && !match)
+        return false; //current statement does not evaluate to false
+      if (inversed && match)
+        return false; //current statement evaluates as false
+    }
+
+    return true;
   }
 
 } //namespace shellanything

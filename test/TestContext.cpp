@@ -26,6 +26,8 @@
 #include "shellanything/Context.h"
 #include "PropertyManager.h"
 #include "rapidassist/process.h"
+#include "rapidassist/filesystem.h"
+#include "rapidassist/testing.h"
 
 namespace shellanything { namespace test
 {
@@ -215,6 +217,76 @@ namespace shellanything { namespace test
     ASSERT_EQ( std::string(expected_string), actual_string );
  
     context.UnregisterProperties();
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testRegisterPropertiesSingleDirectory)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+   
+    Context context;
+#ifdef _WIN32
+    {
+      Context::ElementList elements;
+      elements.push_back("C:\\" );
+      context.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+ 
+    ASSERT_FALSE( pmgr.HasProperty("selection.dir.count") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.dir.empty") );
+ 
+    //act
+    context.RegisterProperties();
+ 
+    //assert
+    ASSERT_TRUE( pmgr.HasProperty("selection.dir.count") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.dir.empty") );
+ 
+    std::string selection_dir_count = pmgr.Expand("${selection.dir.count}");
+    std::string selection_dir_empty = pmgr.Expand("${selection.dir.empty}");
+ 
+    ASSERT_TRUE(ra::strings::IsNumeric(selection_dir_count.c_str()));
+    ASSERT_EQ( std::string("false"), selection_dir_empty);
+
+    context.UnregisterProperties();
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestContext, testRegisterPropertiesEmptyDirectory)
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+   
+    //create an empty directory
+    std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+    std::string empty_dir = temp_dir + ra::testing::GetTestQualifiedName();
+    ASSERT_TRUE(ra::filesystem::CreateDirectory(empty_dir.c_str()));
+
+    Context context;
+    Context::ElementList elements;
+    elements.push_back(empty_dir);
+    context.SetElements(elements);
+ 
+    ASSERT_FALSE( pmgr.HasProperty("selection.dir.count") );
+    ASSERT_FALSE( pmgr.HasProperty("selection.dir.empty") );
+ 
+    //act
+    context.RegisterProperties();
+ 
+    //assert
+    ASSERT_TRUE( pmgr.HasProperty("selection.dir.count") );
+    ASSERT_TRUE( pmgr.HasProperty("selection.dir.empty") );
+ 
+    std::string selection_dir_count = pmgr.Expand("${selection.dir.count}");
+    std::string selection_dir_empty = pmgr.Expand("${selection.dir.empty}");
+ 
+    ASSERT_EQ( std::string("0"), selection_dir_count);
+    ASSERT_EQ( std::string("true"), selection_dir_empty);
+
+    context.UnregisterProperties();
+
+    //cleanup
+    ra::filesystem::DeleteDirectory(empty_dir.c_str());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestContext, testRegisterPropertiesMultipleFiles)

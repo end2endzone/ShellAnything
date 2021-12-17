@@ -44,6 +44,10 @@
 #define SA_EXISTS_ATTR_SEPARATOR_STR          SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_PATTERN_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
 #define SA_PATTERN_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_ISTRUE_ATTR_SEPARATOR_CHAR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_ISTRUE_ATTR_SEPARATOR_STR          SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_ISFALSE_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_ISFALSE_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 
 namespace shellanything
 {
@@ -146,6 +150,26 @@ namespace shellanything
     void SetExprtk(const std::string & exprtk);
 
     /// <summary>
+    /// Getter for the 'istrue' parameter.
+    /// </summary>
+    const std::string & GetIsTrue() const;
+
+    /// <summary>
+    /// Setter for the 'istrue' parameter.
+    /// </summary>
+    void SetIsTrue(const std::string & istrue);
+
+    /// <summary>
+    /// Getter for the 'isfalse' parameter.
+    /// </summary>
+    const std::string & GetIsFalse() const;
+
+    /// <summary>
+    /// Setter for the 'isfalse' parameter.
+    /// </summary>
+    void SetIsFalse(const std::string & isfalse);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -176,6 +200,38 @@ namespace shellanything
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
     bool Validate(const Context & context) const;
 
+    /// <summary>
+    /// Validates if a given string can be evaluated as logical true.
+    /// </summary>
+    /// <remarks>
+    /// The following values shall be evaluated to true:
+    ///    true (case insensitive)
+    ///    yes (case insensitive)
+    ///    ok
+    ///    on
+    ///    1
+    ///    ${system.true}
+    /// </remarks>
+    /// <param name="value">The value to test as true</param>
+    /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
+    static bool IsTrue(const std::string & value);
+
+    /// <summary>
+    /// Validates if a given string can be evaluated as logical true.
+    /// </summary>
+    /// <remarks>
+    /// The following values shall be evaluated to false:
+    ///    false (case insensitive)
+    ///    no (case insensitive)
+    ///    fail
+    ///    off
+    ///    0
+    ///    ${system.false}
+    /// </remarks>
+    /// <param name="value">The value to test as true</param>
+    /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
+    static bool IsFalse(const std::string & value);
+
   private:
     bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
     bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
@@ -185,6 +241,8 @@ namespace shellanything
     bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
     bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
     bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
+    bool ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const;
+    bool ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const;
 
   private:
     int mMaxFiles;
@@ -195,6 +253,8 @@ namespace shellanything
     std::string mClass;
     std::string mPattern;
     std::string mExprtk;
+    std::string mIsTrue;
+    std::string mIsFalse;
     std::string mInverse;
   };
 

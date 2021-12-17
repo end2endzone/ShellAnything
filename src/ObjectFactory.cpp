@@ -243,6 +243,26 @@ namespace shellanything
       }
     }
 
+    //parse istrue
+    std::string istrue;
+    if (ParseAttribute(element, "istrue", true, true, istrue, error))
+    {
+      if (!istrue.empty())
+      {
+        validator->SetIsTrue(istrue);
+      }
+    }
+
+    //parse isfalse
+    std::string isfalse;
+    if (ParseAttribute(element, "isfalse", true, true, isfalse, error))
+    {
+      if (!isfalse.empty())
+      {
+        validator->SetIsFalse(isfalse);
+      }
+    }
+
     //success
     return validator;
   }

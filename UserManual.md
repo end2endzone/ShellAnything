@@ -19,6 +19,8 @@ This manual includes a description of the system functionalities and capabilitie
     * [exists attribute](#exists-attribute)
     * [properties attribute](#properties-attribute)
     * [exprtk attribute](#exprtk-attribute)
+    * [istrue attribute](#istrue-attribute)
+    * [isfalse attribute](#isfalse-attribute)
     * [inverse attribute](#inverse-attribute)
     * [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements)
   * [Icons](#icons)
@@ -445,6 +447,46 @@ The `exprtk` attribute uses the *exprtk library* to parse the expression. For mo
 
 
 
+### istrue attribute: ###
+
+The `istrue` attribute validates a menu if the specified value evaluates to *true*.
+
+If `istrue` attribute is set, the application will evaluate the given value. If the value evaluates to *true*, the validation is successful. To specify multiple values, one must separate each value with the `;` character. If multiple values are specified, **all values** must evaluates to *true* for the validation to be successful.
+
+If `istrue` attribute is not specified, then the validation is successful.
+
+For example, the following set a menu visible only when the property `initialized` evaluates to *true*:
+```xml
+<visibility istrue="${initialized}" />
+```
+
+The following values evaluates to *true* : `true`, `yes`, `ok`, `on` and `1`. The evaluation is case insensitive. All other values **does not** evaluates to true and will fail the validation. 
+
+For systems that are not configured in English, your system may use another value for *true*. For such system, ShellAnything has defined property `system.true` which allows one to set the property to the same value as `Yes` but in your system native language.
+For example, you can set property `system.true` to `是的`, `sí`, `हां`, `sim`, `да`, `はい`, `oui` or `ja`.
+
+
+
+### isfalse attribute: ###
+
+The `isfalse` attribute validates a menu if the specified value evaluates to *false*.
+
+If `isfalse` attribute is set, the application will evaluate the given value. If the value evaluates to *false*, the validation is successful. To specify multiple values, one must separate each value with the `;` character. If multiple values are specified, **all values** must evaluates to *false* for the validation to be successful.
+
+If `isfalse` attribute is not specified, then the validation is successful.
+
+For example, the following set a menu visible only when the property `initialized` evaluates to *false*:
+```xml
+<visibility isfalse="${initialized}" />
+```
+
+The following values evaluates to *false* : `false`, `no`, `fail`, `off` and `0`. The evaluation is case insensitive. All other values **does not** evaluates to false and will fail the validation. 
+
+For systems that are not configured in English, your system may use another value for *false*. For such system, ShellAnything has defined property `system.false` which allows one to set the property to the same value as `No` but in your system native language.
+For example, you can set property `system.false` to `不`, `नहीं`, `não`, `нет`, `いいえ`, `non` or `Nein`.
+
+
+
 ### inverse attribute: ###
 
 The `inverse` attribute inverts the logic of one or multiple attributes. For example, to inverse the meaning of the `maxfiles` attribute, set `inverse` attribute to the value `maxfiles`. 
@@ -464,6 +506,9 @@ The meaning of each inversed attribute in explained in the following table:
 | pattern        | Validates a menu if the selected file or directory **does not** match the wildcard pattern matching algorithm.<br>If multiple patterns are specified, **no pattern** must match the selected files for the validation to be successful.      |
 | exists         | Validates a menu if the selected file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.                                  |
 | properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.                                |
+| exprtk         | Validates a menu if the given string expression **does not** evaluates to logical _true_.<br>If multiple expressions are specified, **no expression** must evaluate to logical _true_ for the validation to be successful.                   |
+| istrue         | Validates a menu if the given value **does not** evaluates to logical _true_.<br>If multiple values are specified, **no value** must evaluate to logical _true_ for the validation to be successful.                                         |
+| isfalse        | Validates a menu if the given value **does not** evaluates to logical _false_.<br>If multiple values are specified, **no value** must evaluate to logical _false_ for the validation to be successful.                                       |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
 
@@ -512,7 +557,7 @@ The validity element should look like this:
 
 Multiple &lt;visibility&gt; or &lt;validity&gt; elements can be added under a &lt;menu&gt; element. The logical `or` operator is used with each element of the same type. In other words, &lt;visibility&gt; elements are evaluated together and so are &lt;validity&gt; elements. This feature allows combining elements to achieve more complex validation. 
 
-For example, the following set a menu visible of if only a single file is selected ***or*** if only a single directory is selected:
+For example, the following set a menu visible if only a single file is selected ***or*** if only a single directory is selected:
 ```xml
 <visibility maxfiles="1" maxfolders="0" />
 <visibility maxfiles="0" maxfolders="1" />
@@ -1070,25 +1115,35 @@ The application provides a list of dynamic properties. The values of these prope
 
 The following table defines the list of dynamic properties and their utility:
 
-| Property                     | Description                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| selection.path               | Matches the full path of the clicked element.                                                                     |
-| selection.dir                | Matches the directory of the clicked element.                                                                     |
-| selection.filename           | Matches the filename of the clicked element.                                                                      |
-| selection.filename.noext     | Matches the filename of the clicked element without the file extension.                                           |
-| selection.parent.path        | Matches the full path of the parent element.                                                                      |
-| selection.parent.filename    | Matches the filename of the parent element.                                                                       |
-| selection.filename.extension | Matches the file extension of the clicked element.                                                                |
-| selection.drive.letter       | Matches the drive letter of the clicked element. For example 'C'.                                                 |
-| selection.drive.path         | Matches the drive path of the clicked element. For example 'C:\'.                                                 |
-| selection.count              | Matches the number of clicked elements (files and directories).                                                   |
-| selection.files.count        | Matches the number of clicked files.                                                                              |
-| selection.directories.count  | Matches the number of clicked directories.                                                                        |
-| selection.mimetype           | Matches the [MIME type](https://en.wikipedia.org/wiki/Media_type) of the selected file. See below for examples.   |
-| selection.description        | Matches a general description of the file's content. See below for examples.                                      |
-| selection.charset            | Matches the [Character Set](https://www.w3schools.com/html/html_charset.asp) of the file. See below for examples. |
+| Property                     | Description                                                                                                                                                                             |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| selection.path               | Matches the full path of the clicked element.                                                                                                                                           |
+| selection.dir                | Matches the directory of the clicked element. When selecting a file, matches the directory of the clicked element. When selecting a directory, matches the path of the clicked element. |
+| selection.dir.count          | Matches the number of files and directories in directory `selection.dir`.                                                                                                               |
+| selection.dir.empty          | Set to `true` when directory `selection.dir` is empty. Set to `false` otherwise.                                                                                                        |
+| selection.filename           | Matches the filename of the clicked element.                                                                                                                                            |
+| selection.filename.noext     | Matches the filename of the clicked element without the file extension.                                                                                                                 |
+| selection.parent.path        | Matches the full path of the parent element.                                                                                                                                            |
+| selection.parent.filename    | Matches the filename of the parent element.                                                                                                                                             |
+| selection.filename.extension | Matches the file extension of the clicked element.                                                                                                                                      |
+| selection.drive.letter       | Matches the drive letter of the clicked element. For example `C`.                                                                                                                       |
+| selection.drive.path         | Matches the drive path of the clicked element. For example `C:\`.                                                                                                                       |
+| selection.count              | Matches the number of clicked elements (files and directories).                                                                                                                         |
+| selection.files.count        | Matches the number of clicked files.                                                                                                                                                    |
+| selection.directories.count  | Matches the number of clicked directories.                                                                                                                                              |
+| selection.mimetype           | Matches the [MIME type](https://en.wikipedia.org/wiki/Media_type) of the selected file. [See below](#mime-types-general-description-and-charset) for examples.                          |
+| selection.description        | Matches a general description of the file's content. See below for examples.                                                                                                            |
+| selection.charset            | Matches the [Character Set](https://www.w3schools.com/html/html_charset.asp) of the file. [See below](#mime-types-general-description-and-charset) for examples.                        |
 
 Selection-based properties are encoded in utf-8.
+
+**Notes:**
+Properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
+
+Properties `selection.dir.count` and  `selection.dir.empty` are empty when multiple elements are selected.
+
+The properties `selection.mimetype`, `selection.description` and `selection.mimetype` are based on the content of the selected file. The properties are provided by the *File* and *Libmagic* libraries to extract information about selected files. For more details, see the documentation at [github.com/Cirn09/file-windows](https://github.com/Cirn09/file-windows), [github.com/file/file](https://github.com/file/file) or the [official file documentation](http://www.darwinsys.com/file/).
+
 
 ### MIME types, general description and charset: ###
 
@@ -1131,12 +1186,6 @@ Another option is to create your own *Configuration* and add the following menu 
 Press `CTRL+C` when the message is shown to copy the values to the clipboard.
 
 
-**Notes:**
-Properties `selection.drive.letter` and  `selection.drive.path` are empty when user select files from a network share.
-
-The properties `selection.mimetype`, `selection.description` and `selection.mimetype` are based on the content of the selected file. The properties are provided by the *File* and *Libmagic* libraries to extract information about selected files. For more details, see the documentation at [github.com/Cirn09/file-windows](https://github.com/Cirn09/file-windows), [github.com/file/file](https://github.com/file/file) or the [official file documentation](http://www.darwinsys.com/file/).
-
-
 
 ## Multi-selection-based properties ##
 
@@ -1160,8 +1209,9 @@ The system will generates the following property values (note the `\r\n` charact
 | selection.drive.letter       | C`\r\n`C`\r\n`C                                                                                                                     |
 | selection.drive.path         | C:\\`\r\n`C:\\`\r\n`C:\\                                                                                                            |
 
-Notes:
+**Notes:**
 * Properties `selection.drive.letter` and  `selection.drive.path` are empty when all selected files are from a network share.
+* Properties `selection.dir.count` and  `selection.dir.empty` are empty when multiple files are selected.
 * Properties `selection.count`, `selection.files.count` and `selection.directories.count` are not multi-selection-based properties. They are defined as a single value whether a single or multiple elements are selected.
 
 
