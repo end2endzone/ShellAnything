@@ -1,4 +1,4 @@
-﻿![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
 
 
 # Overview #
@@ -32,6 +32,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;message&gt; action](#message-action)
     * [&lt;property&gt; action](#property-action)
     * [&lt;file&gt; action](#file-action)
+    * [&lt;stop&gt; action](#stop-action)
   * [Default](#default)
 * [Properties](#properties)
   * [Setting properties](#setting-properties)
@@ -986,6 +987,22 @@ The `encoding` attribute defines the encoding of the text file. The `encoding` a
 For example, the following action creates a new text file encoded in ANSI format, named `selection.txt` in the user's HOME directory :
 ```xml
 <file path="${env.USERPROFILE}\selection.txt" encoding="ansi">${selection.path}</file>
+```
+
+
+
+### &lt;stop&gt; action ###
+
+The &lt;stop&gt; element is used to stop the action execution sequence when a validation fails. The &lt;stop&gt; element supports dynamic properties and can be used to validate user entered data. The &lt;stop&gt; element must be added under the &lt;actions&gt; element.
+
+The &lt;stop&gt; elements have the same attributes as the [&lt;visibility&gt;](#visibility--validity) or [&lt;validity&gt;](#visibility--validity) elements. Namely, one can stop the action execution sequence using [properties](#properties-attribute), [exprtk](#exprtk-attribute), [istrue](#istrue-attribute), [isfalse](#isfalse-attribute) and [inverse](#inverse-attribute) attributes.
+
+For example, the following actions ask for an answer to a question and stop the action execution progress if the user answer _No_ :
+```xml
+<prompt type="yesno" name="proceed" title="Are you sure you want to proceed with the operation?"
+        valueyes="true" valueno="false" />
+<stop isfalse="${proceed}" />
+<exec path="..." />
 ```
 
 

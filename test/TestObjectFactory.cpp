@@ -27,6 +27,7 @@
 #include "shellanything/ConfigManager.h"
 #include "shellanything/Context.h"
 #include "shellanything/ActionExecute.h"
+#include "shellanything/ActionStop.h"
 #include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionMessage.h"
@@ -105,6 +106,23 @@ namespace shellanything { namespace test
       ActionExecute * action_execute = dynamic_cast<ActionExecute *>(action);
       if (action_execute)
         return action_execute;
+    }
+ 
+    return NULL;
+  }
+  //--------------------------------------------------------------------------------------------------
+  ActionStop * GetFirstActionStop(Menu * m)
+  {
+    if (!m)
+      return NULL;
+ 
+    Action::ActionPtrList actions = m->GetActions();
+    for(size_t i=0; i<actions.size(); i++)
+    {
+      Action * action = actions[i];
+      ActionStop * action_fail = dynamic_cast<ActionStop*>(action);
+      if (action_fail)
+        return action_fail;
     }
  
     return NULL;
@@ -399,6 +417,74 @@ namespace shellanything { namespace test
     //Assert menu03 attributes
     //<!-- missing path attribute --> <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
     ASSERT_EQ("", exec03->GetPath());
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParseActionStop)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+
+    //ASSERT a 13 menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ( 13, menus.size() );
+
+    //Assert all menus have a file element as the first action
+    ActionStop * stop00 = GetFirstActionStop(menus[ 0]);
+    ActionStop * stop01 = GetFirstActionStop(menus[ 1]);
+    ActionStop * stop02 = GetFirstActionStop(menus[ 2]);
+    ActionStop * stop03 = GetFirstActionStop(menus[ 3]);
+    ActionStop * stop04 = GetFirstActionStop(menus[ 4]);
+    ActionStop * stop05 = GetFirstActionStop(menus[ 5]);
+    ActionStop * stop06 = GetFirstActionStop(menus[ 6]);
+    ActionStop * stop07 = GetFirstActionStop(menus[ 7]);
+    ActionStop * stop08 = GetFirstActionStop(menus[ 8]);
+    ActionStop * stop09 = GetFirstActionStop(menus[ 9]);
+    ActionStop * stop10 = GetFirstActionStop(menus[10]);
+    ActionStop * stop11 = GetFirstActionStop(menus[11]);
+    ActionStop * stop12 = GetFirstActionStop(menus[12]);
+
+    ASSERT_TRUE( stop00 != NULL && stop00->GetValidator() != NULL );
+    ASSERT_TRUE( stop01 != NULL && stop01->GetValidator() != NULL );
+    ASSERT_TRUE( stop02 != NULL && stop02->GetValidator() != NULL );
+    ASSERT_TRUE( stop03 != NULL && stop03->GetValidator() != NULL );
+    ASSERT_TRUE( stop04 != NULL && stop04->GetValidator() != NULL );
+    ASSERT_TRUE( stop05 != NULL && stop05->GetValidator() != NULL );
+    ASSERT_TRUE( stop06 != NULL && stop06->GetValidator() != NULL );
+    ASSERT_TRUE( stop07 != NULL && stop07->GetValidator() != NULL );
+    ASSERT_TRUE( stop08 != NULL && stop08->GetValidator() != NULL );
+    ASSERT_TRUE( stop09 != NULL && stop09->GetValidator() != NULL );
+    ASSERT_TRUE( stop10 != NULL && stop10->GetValidator() != NULL );
+    ASSERT_TRUE( stop11 != NULL && stop11->GetValidator() != NULL );
+    ASSERT_TRUE( stop12 != NULL && stop12->GetValidator() != NULL );
+
+    ASSERT_EQ("bar",              stop00->GetValidator()->GetProperties());
+    ASSERT_EQ(5,                  stop01->GetValidator()->GetMaxFiles());
+    ASSERT_EQ(6,                  stop01->GetValidator()->GetMaxDirectories());
+    ASSERT_EQ("com;exe;bat;cmd",  stop02->GetValidator()->GetFileExtensions());
 
     //Cleanup
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
