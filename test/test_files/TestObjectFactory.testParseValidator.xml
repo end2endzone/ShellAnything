@@ -117,5 +117,13 @@
       </actions>
     </menu>
 
+    <menu name="menu14">
+      <!-- isempty attribute is set -->
+      <visibility isempty="hello" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

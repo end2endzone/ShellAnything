@@ -265,6 +265,16 @@ namespace shellanything
       }
     }
 
+    //parse isempty
+    std::string isempty;
+    if (ParseAttribute(element, "isempty", true, true, isempty, error))
+    {
+      if (!isempty.empty())
+      {
+        validator->SetIsEmpty(isempty);
+      }
+    }
+
     //success
     return validator;
   }

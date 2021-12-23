@@ -202,7 +202,7 @@ namespace shellanything { namespace test
  
     //ASSERT all menus are available
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ( 14, menus.size() );
+    ASSERT_EQ( 15, menus.size() );
 
     //Assert <visibility> tag properly parsed
     static const std::string expected_property = "bar";
@@ -217,6 +217,7 @@ namespace shellanything { namespace test
     static const std::string expected_exprtk = "2>1";
     static const std::string expected_istrue = "yes";
     static const std::string expected_isfalse = "no";
+    static const std::string expected_isempty = "hello";
 
     //Assert each menus have a visibility assigned
     for(size_t i=0; i<menus.size(); i++)
@@ -259,6 +260,7 @@ namespace shellanything { namespace test
     //Assert remaining menus
     ASSERT_EQ( expected_istrue,          menus[12]->GetVisibility(0)->GetIsTrue() );
     ASSERT_EQ( expected_isfalse,         menus[13]->GetVisibility(0)->GetIsFalse() );
+    ASSERT_EQ( expected_isempty,         menus[14]->GetVisibility(0)->GetIsEmpty() );
 
     //Cleanup
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

@@ -1202,5 +1202,67 @@ namespace shellanything { namespace test
     ASSERT_FALSE(v.Validate(c));
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsEmpty)
+  {
+    Context c;
+    Context::ElementList elements;
+    elements.push_back( ra::process::GetCurrentProcessPath() );
+    c.SetElements(elements);
+
+    Validator v;
+
+    //assert default
+    ASSERT_TRUE(v.Validate(c));
+
+    v.SetIsEmpty("");   // same as no value specified
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure when a non-empty value is specified
+    v.SetIsEmpty("foo");
+    ASSERT_FALSE(v.Validate(c));
+
+    v.SetIsEmpty("${property-that-does-not-exist}"); // similar to literal string "${property-that-does-not-exist}"
+    ASSERT_FALSE(v.Validate(c));
+
+    //create an empty property
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    pmgr.SetProperty("an-empty-property", "");
+
+    v.SetIsEmpty("${an-empty-property}"); // expands to an empty string
+    ASSERT_TRUE(v.Validate(c));
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestValidator, testIsEmptyInversed)
+  {
+    Context c;
+    Context::ElementList elements;
+    elements.push_back( ra::process::GetCurrentProcessPath() );
+    c.SetElements(elements);
+
+    Validator v;
+
+    v.SetInserve("isempty");
+
+    //assert default
+    ASSERT_TRUE(v.Validate(c));
+
+    v.SetIsEmpty("");   // same as no value specified
+    ASSERT_TRUE(v.Validate(c));
+
+    //assert failure when a non-empty value is specified
+    v.SetIsEmpty("foo");
+    ASSERT_TRUE(v.Validate(c));
+
+    v.SetIsEmpty("${property-that-does-not-exist}"); // similar to literal string "${property-that-does-not-exist}"
+    ASSERT_TRUE(v.Validate(c));
+
+    //create an empty property
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    pmgr.SetProperty("an-empty-property", "");
+
+    v.SetIsEmpty("${an-empty-property}"); // expands to an empty string
+    ASSERT_FALSE(v.Validate(c));
+  }
+  //--------------------------------------------------------------------------------------------------
 } //namespace test
 } //namespace shellanything
