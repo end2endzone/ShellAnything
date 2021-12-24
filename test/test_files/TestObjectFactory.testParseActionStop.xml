@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu00">
+      <actions>
+        <stop properties="bar" />
+      </actions>
+    </menu>
+
+    <menu name="menu01">
+      <!-- maxfiles and maxfolders attributes are set -->
+      <actions>
+        <stop maxfiles="5" maxfolders="6" />
+      </actions>
+    </menu>
+
+    <menu name="menu02">
+      <!-- fileextensions attribute is set -->
+      <actions>
+        <stop fileextensions="com;exe;bat;cmd" />
+      </actions>
+    </menu>
+
+    <menu name="menu03">
+      <!-- exists attribute is set -->
+      <actions>
+        <stop exists="C:\Users\Public;C:\Program Files (x86)" />
+      </actions>
+    </menu>
+
+    <menu name="menu04">
+      <!-- inverse attribute not specified -->
+      <actions>
+        <stop />
+      </actions>
+    </menu>
+
+    <menu name="menu05">
+      <!-- inverse attribute set to maxfiles -->
+      <actions>
+        <stop inverse="maxfiles" />
+      </actions>
+    </menu>
+
+    <menu name="menu06">
+      <!-- inverse multiple value -->
+      <actions>
+        <stop inverse="maxfiles;maxfolders" />
+      </actions>
+    </menu>
+
+    <menu name="menu07">
+      <!-- inverse unknown attribute -->
+      <actions>
+        <stop inverse="foo" />
+      </actions>
+    </menu>
+
+    <menu name="menu08">
+      <!-- class attribute is set -->
+      <actions>
+        <stop class="file" />
+      </actions>
+    </menu>
+
+    <menu name="menu09">
+      <!-- pattern attribute is set -->
+      <actions>
+        <stop pattern="*IMG_*" />
+      </actions>
+    </menu>
+
+    <menu name="menu10">
+      <!-- exprtk attribute is set -->
+      <actions>
+        <stop exprtk="2>1" />
+      </actions>
+    </menu>
+
+    <menu name="menu11">
+      <!-- istrue attribute is set -->
+      <actions>
+        <stop istrue="yes" />
+      </actions>
+    </menu>
+
+    <menu name="menu12">
+      <!-- isfalse attribute is set -->
+      <actions>
+        <stop isfalse="no" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

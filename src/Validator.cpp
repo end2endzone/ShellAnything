@@ -173,6 +173,16 @@ namespace shellanything
     mIsFalse = isfalse;
   }
 
+  const std::string & Validator::GetIsEmpty() const
+  {
+    return mIsEmpty;
+  }
+
+  void Validator::SetIsEmpty(const std::string & isempty)
+  {
+    mIsEmpty = isempty;
+  }
+
   const std::string & Validator::GetInserve() const
   {
     return mInverse;
@@ -333,6 +343,16 @@ namespace shellanything
     {
       bool inversed = IsInversed("isfalse");
       bool valid = ValidateIsFalse(context, isfalse, inversed);
+      if (!valid)
+        return false;
+    }
+
+    //validate isempty
+    const std::string isempty = pmgr.Expand(mIsEmpty);
+    if (!mIsEmpty.empty())  // note, testing with non-expanded value instead of expanded value
+    {
+      bool inversed = IsInversed("isempty");
+      bool valid = ValidateIsEmpty(context, isempty, inversed);
       if (!valid)
         return false;
     }
@@ -737,6 +757,19 @@ namespace shellanything
       if (inversed && match)
         return false; //current statement evaluates as false
     }
+
+    return true;
+  }
+
+  bool Validator::ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const
+  {
+    PropertyManager & pmgr = PropertyManager::GetInstance();
+
+    bool match = isempty.empty();
+    if (!inversed && !match)
+      return false; //current statement is not empty
+    if (inversed && match)
+      return false; //current statement is empty
 
     return true;
   }

@@ -1,4 +1,4 @@
-﻿![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
+![ShellAnything logo](docs/ShellAnything-splashscreen.jpg?raw=true)
 
 
 # Overview #
@@ -21,6 +21,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [exprtk attribute](#exprtk-attribute)
     * [istrue attribute](#istrue-attribute)
     * [isfalse attribute](#isfalse-attribute)
+    * [isempty attribute](#isempty-attribute)
     * [inverse attribute](#inverse-attribute)
     * [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements)
   * [Icons](#icons)
@@ -32,6 +33,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [&lt;message&gt; action](#message-action)
     * [&lt;property&gt; action](#property-action)
     * [&lt;file&gt; action](#file-action)
+    * [&lt;stop&gt; action](#stop-action)
   * [Default](#default)
 * [Properties](#properties)
   * [Setting properties](#setting-properties)
@@ -487,6 +489,19 @@ For example, you can set property `system.false` to `不`, `नहीं`, `não
 
 
 
+### isempty attribute: ###
+
+The `isempty` attribute validates a menu if the specified text is empty. The attribute does not support multiple values.
+
+If `isempty` attribute is not specified, then the validation is successful. If a text value is specified, the resulting expansion must be empty for the validation to be successful.
+
+For example, the following set a menu visible only when the property `first_selected` is empty:
+```xml
+<visibility isempty="${first_selection}" />
+```
+
+
+
 ### inverse attribute: ###
 
 The `inverse` attribute inverts the logic of one or multiple attributes. For example, to inverse the meaning of the `maxfiles` attribute, set `inverse` attribute to the value `maxfiles`. 
@@ -509,6 +524,7 @@ The meaning of each inversed attribute in explained in the following table:
 | exprtk         | Validates a menu if the given string expression **does not** evaluates to logical _true_.<br>If multiple expressions are specified, **no expression** must evaluate to logical _true_ for the validation to be successful.                   |
 | istrue         | Validates a menu if the given value **does not** evaluates to logical _true_.<br>If multiple values are specified, **no value** must evaluate to logical _true_ for the validation to be successful.                                         |
 | isfalse        | Validates a menu if the given value **does not** evaluates to logical _false_.<br>If multiple values are specified, **no value** must evaluate to logical _false_ for the validation to be successful.                                       |
+| isempty        | Validates a menu if the given text **is not** empty. If the attribute is not specified, then the validation is successful. Otherwise, if text is specified, the expanded value **must not** be empty.                                        |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
 
@@ -986,6 +1002,22 @@ The `encoding` attribute defines the encoding of the text file. The `encoding` a
 For example, the following action creates a new text file encoded in ANSI format, named `selection.txt` in the user's HOME directory :
 ```xml
 <file path="${env.USERPROFILE}\selection.txt" encoding="ansi">${selection.path}</file>
+```
+
+
+
+### &lt;stop&gt; action ###
+
+The &lt;stop&gt; element is used to stop the action execution sequence when a validation fails. The &lt;stop&gt; element supports dynamic properties and can be used to validate user entered data. The &lt;stop&gt; element must be added under the &lt;actions&gt; element.
+
+The &lt;stop&gt; elements have the same attributes as the [&lt;visibility&gt;](#visibility--validity) or [&lt;validity&gt;](#visibility--validity) elements. Namely, one can stop the action execution sequence using [properties](#properties-attribute), [exprtk](#exprtk-attribute), [istrue](#istrue-attribute), [isfalse](#isfalse-attribute) and [inverse](#inverse-attribute) attributes.
+
+For example, the following actions ask for an answer to a question and stop the action execution progress if the user answer _No_ :
+```xml
+<prompt type="yesno" name="continue" title="Are you sure you want to continue with the operation?"
+        valueyes="true" valueno="false" />
+<stop isfalse="${continue}" />
+<exec path="..." />
 ```
 
 

@@ -170,6 +170,16 @@ namespace shellanything
     void SetIsFalse(const std::string & isfalse);
 
     /// <summary>
+    /// Getter for the 'isempty' parameter.
+    /// </summary>
+    const std::string & GetIsEmpty() const;
+
+    /// <summary>
+    /// Setter for the 'isempty' parameter.
+    /// </summary>
+    void SetIsEmpty(const std::string & isempty);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -243,6 +253,7 @@ namespace shellanything
     bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
     bool ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const;
     bool ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const;
+    bool ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const;
 
   private:
     int mMaxFiles;
@@ -255,6 +266,7 @@ namespace shellanything
     std::string mExprtk;
     std::string mIsTrue;
     std::string mIsFalse;
+    std::string mIsEmpty;
     std::string mInverse;
   };
 

@@ -29,6 +29,7 @@
 #include "shellanything/Validator.h"
 #include "shellanything/ActionClipboard.h"
 #include "shellanything/ActionExecute.h"
+#include "shellanything/ActionStop.h"
 #include "shellanything/ActionFile.h"
 #include "shellanything/ActionPrompt.h"
 #include "shellanything/ActionProperty.h"
@@ -49,6 +50,7 @@ namespace shellanything
   static const std::string NODE_DEFAULTSETTINGS = "default";
   static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
   static const std::string NODE_ACTION_EXEC = "exec";
+  static const std::string NODE_ACTION_STOP = "stop";
   static const std::string NODE_ACTION_FILE = "file";
   static const std::string NODE_ACTION_PROMPT = "prompt";
   static const std::string NODE_ACTION_PROPERTY = "property";
@@ -151,7 +153,7 @@ namespace shellanything
       return NULL;
     }
 
-    if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name())
+    if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name() && NODE_ACTION_STOP != element->Name())
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
       return NULL;
@@ -263,6 +265,16 @@ namespace shellanything
       }
     }
 
+    //parse isempty
+    std::string isempty;
+    if (ParseAttribute(element, "isempty", true, true, isempty, error))
+    {
+      if (!isempty.empty())
+      {
+        validator->SetIsEmpty(isempty);
+      }
+    }
+
     //success
     return validator;
   }
@@ -329,6 +341,23 @@ namespace shellanything
       {
         action->SetVerb(tmp_str);
       }
+
+      //done parsing
+      return action;
+    }
+    else if (NODE_ACTION_STOP == element->Name())
+    {
+      ActionStop* action = new ActionStop();
+
+      //parse like a Validator
+      Validator* validator = ObjectFactory::GetInstance().ParseValidator(element, error);
+      if (validator == NULL)
+      {
+        delete action;
+        return NULL;
+      }
+
+      action->SetValidator(validator);
 
       //done parsing
       return action;

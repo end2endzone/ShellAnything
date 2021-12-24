@@ -34,6 +34,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionOpen.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ActionProperty.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/ActionStop.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Configuration.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
@@ -58,6 +59,7 @@ add_library(shellanything STATIC
   ActionOpen.cpp
   ActionPrompt.cpp
   ActionProperty.cpp
+  ActionStop.cpp
   Configuration.cpp
   ConfigManager.cpp
   Context.cpp

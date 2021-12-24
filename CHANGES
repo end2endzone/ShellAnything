@@ -1,6 +1,6 @@
 Changes for 0.8.0
 
-N/A
+* Fixed issue  #89: Show a confirmation prompt as an action before proceeding.
 
 
 Changes for 0.7.0
