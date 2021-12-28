@@ -62,10 +62,10 @@ namespace shellanything
     LOG(INFO) << __FUNCTION__ << "()";
     
     //validate existing configurations
-    ConfigurationPtrList configs_copy = GetConfigurations();
-    for(size_t i=0; i< configs_copy.size(); i++)
+    ConfigurationPtrList configs = GetConfigurations();
+    for(size_t i=0; i< configs.size(); i++)
     {
-      Configuration * config = configs_copy[i];
+      Configuration * config = configs[i];
 
       //compare the file's date at the load time and the current date
       const std::string & file_path = config->GetFilePath();
@@ -143,7 +143,7 @@ namespace shellanything
   void ConfigManager::Update(const Context & context)
   {
     //for each child
-    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -154,7 +154,7 @@ namespace shellanything
   Menu * ConfigManager::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -171,7 +171,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -181,7 +181,7 @@ namespace shellanything
     return nextCommandId;
   }
  
-  ConfigurationPtrList & ConfigManager::GetConfigurations()
+  ConfigurationPtrList ConfigManager::GetConfigurations()
   {
     return mConfigurations;
   }

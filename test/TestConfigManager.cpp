@@ -133,7 +133,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //Delete the source file of all remaining Configuration instance
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {
       Configuration * config = configs[i];
@@ -177,7 +177,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
@@ -232,7 +232,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
@@ -302,7 +302,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the files are loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 2, configs.size() );
 
     //Assign unique command ids
@@ -384,7 +384,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //act
@@ -421,7 +421,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //Query first menu
@@ -485,7 +485,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //Query all menus

@@ -57,7 +57,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of Configuration pointers handled by the manager
     /// </summary>
-    ConfigurationPtrList & GetConfigurations();
+    ConfigurationPtrList GetConfigurations();
 
     /// <summary>
     /// Returns true if the given path is a Configuration loaded by the manager.

@@ -449,7 +449,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
   //for each configuration
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::ConfigurationPtrList & configs = cmgr.GetConfigurations();
+  shellanything::ConfigurationPtrList configs = cmgr.GetConfigurations();
   UINT insert_pos = 0;
   for(size_t i=0; i<configs.size(); i++)
   {

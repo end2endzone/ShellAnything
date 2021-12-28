@@ -152,7 +152,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //Delete the source file of all remaining Configuration instance
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {
       Configuration * config = configs[i];
@@ -197,7 +197,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all menus are available
@@ -289,7 +289,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 3 menus are available
@@ -342,7 +342,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 5 menus are available
@@ -383,7 +383,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT all menus are available
@@ -447,7 +447,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 13 menus are available
@@ -515,7 +515,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 3 menus are available
@@ -573,7 +573,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
@@ -649,7 +649,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
@@ -709,7 +709,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
@@ -775,7 +775,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a DefaultSettings section is available
@@ -822,7 +822,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList & configs = cmgr.GetConfigurations();
+    ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a multiple menus are available
