@@ -290,7 +290,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ConfigurationPtrList & configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT that properties was applied

@@ -53,7 +53,7 @@ namespace shellanything
   void ConfigManager::Clear()
   {
     ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
-    mConfigurations.RemoveChildren();
+    DeleteAllConfigurations();
     Refresh(); //forces all loaded configurations to be unloaded
   }
 
@@ -62,10 +62,10 @@ namespace shellanything
     LOG(INFO) << __FUNCTION__ << "()";
     
     //validate existing configurations
-    Configuration::ConfigurationPtrList existing = GetConfigurations();
-    for(size_t i=0; i<existing.size(); i++)
+    ConfigurationPtrList configs_copy = GetConfigurations();
+    for(size_t i=0; i< configs_copy.size(); i++)
     {
-      Configuration * config = existing[i];
+      Configuration * config = configs_copy[i];
 
       //compare the file's date at the load time and the current date
       const std::string & file_path = config->GetFilePath();
@@ -81,7 +81,7 @@ namespace shellanything
         //file is missing or current configuration is out of date
         //forget about existing config
         LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
-        mConfigurations.RemoveChild(config);
+        DeleteConfiguration(config);
       }
     }
    
@@ -119,7 +119,7 @@ namespace shellanything
               else
               {
                 //add to current list of configurations
-                mConfigurations.AddChild(config);
+                mConfigurations.AddElement(config);
 
                 //apply default properties of the configuration
                 config->ApplyDefaultSettings();
@@ -143,7 +143,7 @@ namespace shellanything
   void ConfigManager::Update(const Context & context)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -154,7 +154,7 @@ namespace shellanything
   Menu * ConfigManager::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -171,7 +171,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigurationPtrList & configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -181,10 +181,9 @@ namespace shellanything
     return nextCommandId;
   }
  
-  Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
+  ConfigurationPtrList & ConfigManager::GetConfigurations()
   {
-    Configuration::ConfigurationPtrList configurations = FilterNodes<Configuration*>(mConfigurations.FindChildren("Configuration"));
-    return configurations;
+    return mConfigurations;
   }
 
   void ConfigManager::ClearSearchPath()
@@ -199,14 +198,30 @@ namespace shellanything
 
   bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
   {
-    for(size_t i=0; i<mConfigurations.Size(); i++)
+    for(size_t i=0; i<mConfigurations.size(); i++)
     {
-      const Node * node = mConfigurations.GetChild(i);
-      const Configuration * config = dynamic_cast<const Configuration *>(node);
+      const Configuration* config = mConfigurations[i];
       if (config != NULL && config->GetFilePath() == path)
         return true;
     }
     return false;
+  }
+
+  void ConfigManager::DeleteAllConfigurations()
+  {
+    size_t count = mConfigurations.GetSize();
+    for (size_t i = 0; i < count; i++)
+    {
+      Configuration* config = mConfigurations.GetElement(i);
+      delete config;
+    }
+    mConfigurations.Clear();
+  }
+
+  void ConfigManager::DeleteConfiguration(Configuration* config)
+  {
+    mConfigurations.RemoveElementByValue(config);
+    delete config;
   }
 
 } //namespace shellanything

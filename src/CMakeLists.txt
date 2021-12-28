@@ -40,6 +40,8 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/Context.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Icon.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/ListsBody.inc
+  ${CMAKE_SOURCE_DIR}/include/shellanything/ListsDeclaration.inc
   ${CMAKE_SOURCE_DIR}/include/shellanything/Menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Node.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h

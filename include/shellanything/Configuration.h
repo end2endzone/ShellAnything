@@ -39,11 +39,6 @@ namespace shellanything
   class Configuration : public Node
   {
   public:
-    /// <summary>
-    /// A list of Configuration pointer.
-    /// </summary>
-    typedef std::vector<Configuration*> ConfigurationPtrList;
-
     Configuration();
     virtual ~Configuration();
 
@@ -136,5 +131,14 @@ namespace shellanything
   };
 
 } //namespace shellanything
+
+/// <summary>
+/// A list of Configuration pointer.
+/// </summary>
+#define SA_LISTS_CLASS_NAME ConfigurationPtrList
+#define SA_LISTS_BASE_TYPE  Configuration *
+#include "shellanything/ListsDeclaration.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME
 
 #endif //SA_CONFIGURATION_H

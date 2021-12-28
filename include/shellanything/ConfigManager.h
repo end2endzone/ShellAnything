@@ -25,7 +25,6 @@
 #ifndef SA_CONFIGMANAGER_H
 #define SA_CONFIGMANAGER_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Context.h"
 
@@ -58,7 +57,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of Configuration pointers handled by the manager
     /// </summary>
-    Configuration::ConfigurationPtrList GetConfigurations();
+    ConfigurationPtrList & GetConfigurations();
 
     /// <summary>
     /// Returns true if the given path is a Configuration loaded by the manager.
@@ -111,9 +110,13 @@ namespace shellanything
     void AddSearchPath(const std::string & path);
 
   private:
+    //methods
+    void DeleteAllConfigurations();
+    void DeleteConfiguration(Configuration * config);
+
     //attributes
     PathList mPaths;
-    Node mConfigurations;
+    ConfigurationPtrList mConfigurations;
   };
 
 } //namespace shellanything
