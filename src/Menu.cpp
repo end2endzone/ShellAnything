@@ -39,7 +39,7 @@ namespace shellanything
   const uint32_t Menu::INVALID_COMMAND_ID = 0;
   const int Menu::DEFAULT_NAME_MAX_LENGTH = 250;
 
-  Menu::Menu() : Node("Menu"),
+  Menu::Menu() :
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mColumnSeparator(false),
@@ -74,6 +74,14 @@ namespace shellanything
       delete action;
     }
     mActions.clear();
+
+    // submenus
+    for(size_t i=0; i<mSubMenus.size(); i++)
+    {
+      Menu * sub = mSubMenus[i];
+      delete sub;
+    }
+    mSubMenus.Clear();
   }
 
   bool Menu::IsSeparator() const
@@ -98,8 +106,7 @@ namespace shellanything
 
   bool Menu::IsParentMenu() const
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    bool parent_menu = (sub_menus.size() != 0);
+    bool parent_menu = (mSubMenus.size() != 0);
     return parent_menu;
   }
 
@@ -207,7 +214,7 @@ namespace shellanything
     bool all_invisible_children = true;
 
     //for each child
-    Menu::MenuPtrList children = GetSubMenus();
+    MenuPtrList2 children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -232,7 +239,7 @@ namespace shellanything
       return this;
  
     //for each child
-    Menu::MenuPtrList children = GetSubMenus();
+    MenuPtrList2 children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -261,7 +268,7 @@ namespace shellanything
     }
 
     //for each child
-    Menu::MenuPtrList children = GetSubMenus();
+    MenuPtrList2 children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -345,10 +352,14 @@ namespace shellanything
       mVisibilities.push_back(validator);
   }
 
-  Menu::MenuPtrList Menu::GetSubMenus()
+  MenuPtrList2 Menu::GetSubMenus()
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    return sub_menus;
+    return mSubMenus;
+  }
+
+  void Menu::AddMenu(Menu* menu)
+  {
+    mSubMenus.AddElement(menu);
   }
 
   void Menu::AddAction(Action * action)
@@ -360,5 +371,7 @@ namespace shellanything
   {
     return mActions;
   }
+
+  void AddMenu(Menu* menu);
 
 } //namespace shellanything

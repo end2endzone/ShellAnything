@@ -41,7 +41,6 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
-#include "shellanything/Node.h"
 
 namespace shellanything { namespace test
 {

@@ -685,7 +685,7 @@ namespace shellanything
         delete menu;
         return NULL;
       }
-      menu->AddChild(submenu);
+      menu->AddMenu(submenu);
     }
 
     //find <icon> node under <menu>

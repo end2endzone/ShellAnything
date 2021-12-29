@@ -25,7 +25,6 @@
 #ifndef SA_MENU_H
 #define SA_MENU_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
 #include "shellanything/Action.h"
@@ -52,7 +51,7 @@ namespace shellanything
   /// <summary>
   /// The Menu class defines a displayed menu option.
   /// </summary>
-  class Menu : public Node
+  class Menu
   {
   public:
     /// <summary>
@@ -261,9 +260,15 @@ namespace shellanything
     const Action::ActionPtrList & GetActions() const;
 
     /// <summary>
+    /// Add a new sub menu to the menu. The menu instance takes ownership of the sub menu.
+    /// </summary>
+    /// <param name="menu">The given menu to add as a sub menu</param>
+    void AddMenu(Menu* menu);
+
+    /// <summary>
     /// Get the list of submenu of the menu.
     /// </summary>
-    MenuPtrList GetSubMenus();
+    MenuPtrList2 GetSubMenus();
 
   private:
     Icon mIcon;
@@ -278,6 +283,7 @@ namespace shellanything
     int mNameMaxLength;
     std::string mDescription;
     Action::ActionPtrList mActions;
+    MenuPtrList2 mSubMenus;
   };
 
 } //namespace shellanything

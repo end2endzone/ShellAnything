@@ -71,14 +71,14 @@ namespace shellanything { namespace test
     return c;
   }
 
-  void QueryAllMenusRecursive(Menu * menu, Menu::MenuPtrList & list)
+  void QueryAllMenusRecursive(Menu * menu, MenuPtrList2 & list)
   {
     if (menu == NULL)
       return;
 
-    list.push_back(menu);
+    list.AddElement(menu);
 
-    Menu::MenuPtrList submenus = menu->GetSubMenus();
+    MenuPtrList2 submenus = menu->GetSubMenus();
     for(size_t i=0; i<submenus.size(); i++)
     {
       Menu * submenu = submenus[i];
@@ -86,7 +86,7 @@ namespace shellanything { namespace test
     }
   }
 
-  void QueryAllMenusRecursive(Configuration * config, Menu::MenuPtrList & list)
+  void QueryAllMenusRecursive(Configuration * config, MenuPtrList2 & list)
   {
     if (config == NULL)
       return;
@@ -104,7 +104,7 @@ namespace shellanything { namespace test
     if (parent == NULL)
       return NULL;
 
-    Menu::MenuPtrList menus = parent->GetSubMenus();
+    MenuPtrList2 menus = parent->GetSubMenus();
     if (index >= menus.size())
       return NULL; //out of bounds
 
@@ -503,7 +503,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( option1_2_1_1  != NULL );
 
     //Query all menus
-    Menu::MenuPtrList menus;
+    MenuPtrList2 menus;
     QueryAllMenusRecursive(configs[0], menus);
 
     //Update the menus based on a context with a single file

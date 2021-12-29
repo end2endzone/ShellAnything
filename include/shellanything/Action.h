@@ -25,7 +25,6 @@
 #ifndef SA_ACTION_H
 #define SA_ACTION_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Context.h"
 #include <vector>
 
