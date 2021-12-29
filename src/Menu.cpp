@@ -25,6 +25,15 @@
 #include "shellanything/Menu.h"
 #include "Unicode.h"
 
+/// <summary>
+/// A list of Menu pointer.
+/// </summary>
+#define SA_LISTS_CLASS_NAME MenuPtrList2
+#define SA_LISTS_BASE_TYPE  Menu *
+#include "shellanything/ListsBody.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME
+
 namespace shellanything
 {
   const uint32_t Menu::INVALID_COMMAND_ID = 0;

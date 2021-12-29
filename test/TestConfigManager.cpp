@@ -91,7 +91,7 @@ namespace shellanything { namespace test
     if (config == NULL)
       return;
 
-    Menu::MenuPtrList menus = config->GetMenus();
+    MenuPtrList2 menus = config->GetMenus();
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * menu = menus[i];
@@ -117,7 +117,7 @@ namespace shellanything { namespace test
     if (config == NULL)
       return NULL;
 
-    Menu::MenuPtrList menus = config->GetMenus();
+    MenuPtrList2 menus = config->GetMenus();
     if (index >= menus.size())
       return NULL; //out of bounds
 
@@ -181,7 +181,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
     //Import another file into the workspace
@@ -236,7 +236,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
     //Inject another menu in the loaded xml file
@@ -339,7 +339,7 @@ namespace shellanything { namespace test
     ASSERT_NE( INVALID_CONFIGURATION, config );
 
     //search for an menu with "Run" and "parameters" in title
-    Menu::MenuPtrList menus = config->GetMenus();
+    MenuPtrList2 menus = config->GetMenus();
     Menu * run_with_params = NULL;
     for(size_t i=0; i<menus.size(); i++)
     {
@@ -425,7 +425,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //Query first menu
-    Menu::MenuPtrList menus = configs[0]->GetMenus();
+    MenuPtrList2 menus = configs[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
     Menu * first = menus[0];
     ASSERT_TRUE( first != NULL );

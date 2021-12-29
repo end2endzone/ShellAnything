@@ -107,7 +107,7 @@ namespace shellanything
     return encoding;
   }
 
-  Configuration::Configuration() : Node("Configuration"),
+  Configuration::Configuration() :
     mFileModifiedDate(0),
     mDefaults(NULL)
   {
@@ -234,7 +234,7 @@ namespace shellanything
       }
 
       //add the new menu to the current configuration
-      config->AddChild(menu);
+      config->AddMenu(menu);
 
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
@@ -279,7 +279,7 @@ namespace shellanything
   void Configuration::Update(const Context & context)
   {
     //for each child
-    Menu::MenuPtrList children = GetMenus();
+    MenuPtrList2 children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -327,7 +327,7 @@ namespace shellanything
   Menu * Configuration::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    Menu::MenuPtrList children = GetMenus();
+    MenuPtrList2 children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -344,7 +344,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    Menu::MenuPtrList children = GetMenus();
+    MenuPtrList2 children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -354,10 +354,9 @@ namespace shellanything
     return nextCommandId;
   }
  
-  Menu::MenuPtrList Configuration::GetMenus()
+  MenuPtrList2 Configuration::GetMenus()
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    return sub_menus;
+    return mMenus;
   }
 
   void Configuration::SetDefaultSettings(DefaultSettings * defaults)
@@ -371,6 +370,11 @@ namespace shellanything
   const DefaultSettings * Configuration::GetDefaultSettings() const
   {
     return mDefaults;
+  }
+
+  void Configuration::AddMenu(Menu* menu)
+  {
+    mMenus.AddElement(menu);
   }
 
 } //namespace shellanything

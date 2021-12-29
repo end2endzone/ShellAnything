@@ -201,7 +201,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 15, menus.size() );
 
     //Assert <visibility> tag properly parsed
@@ -293,7 +293,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 3 menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
     //Assert all icons are valid
@@ -346,7 +346,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 5 menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
     //Assert maxlength properly value for each menus
@@ -387,7 +387,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT all menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -451,7 +451,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 13 menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 13, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -519,7 +519,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 3 menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -577,7 +577,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
     //Assert all menus have a prompt element as the first action
@@ -653,7 +653,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
     //Assert all menus have a property element as the first action
@@ -713,7 +713,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a message element as the first action
@@ -826,7 +826,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a multiple menus are available
-    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    MenuPtrList2 menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ(6, menus.size());
 
     //Assert the following menus are separators

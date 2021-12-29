@@ -35,7 +35,20 @@
 
 namespace shellanything
 {
+  class Menu;
+} //namespace shellanything
 
+/// <summary>
+/// A list of Menu pointer.
+/// </summary>
+#define SA_LISTS_CLASS_NAME MenuPtrList2
+#define SA_LISTS_BASE_TYPE  Menu *
+#include "shellanything/ListsDeclaration.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME
+
+namespace shellanything
+{
   /// <summary>
   /// The Menu class defines a displayed menu option.
   /// </summary>

@@ -52,6 +52,11 @@ namespace shellanything
     return (*this);
   }
 
+  bool SA_LISTS_CLASS_NAME::IsEmpty() const
+  {
+    return mPImpl->elements.empty();
+  }
+
   size_t SA_LISTS_CLASS_NAME::GetSize() const
   {
     return mPImpl->elements.size();

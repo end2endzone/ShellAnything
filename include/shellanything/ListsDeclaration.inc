@@ -45,6 +45,12 @@
     typedef SA_LISTS_BASE_TYPE Element;
 
     /// <summary>
+    /// Define if the list is empty.
+    /// </summary>
+    bool IsEmpty() const;
+    inline bool empty() const { return IsEmpty(); } // for std::vector and std::list code compatibility.
+
+    /// <summary>
     /// Get the number of element in the list.
     /// </summary>
     size_t GetSize() const;

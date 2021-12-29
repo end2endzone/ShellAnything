@@ -457,7 +457,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     if (config)
     {
       //for each menu child
-      shellanything::Menu::MenuPtrList menus = config->GetMenus();
+      shellanything::MenuPtrList2 menus = config->GetMenus();
       for(size_t j=0; j<menus.size(); j++)
       {
         shellanything::Menu * menu = menus[j];
