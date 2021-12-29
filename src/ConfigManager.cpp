@@ -42,6 +42,13 @@ namespace shellanything
 
   ConfigManager::~ConfigManager()
   {
+    // delete configurations
+    for (size_t i = 0; i < mConfigurations.size(); i++)
+    {
+      Configuration* config = mConfigurations[i];
+      delete config;
+    }
+    mConfigurations.Clear();
   }
 
   ConfigManager & ConfigManager::GetInstance()

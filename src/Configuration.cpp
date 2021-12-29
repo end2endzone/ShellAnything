@@ -115,6 +115,13 @@ namespace shellanything
 
   Configuration::~Configuration()
   {
+    // delete menus
+    for (size_t i = 0; i < mMenus.size(); i++)
+    {
+      Menu* sub = mMenus[i];
+      delete sub;
+    }
+    mMenus.Clear();
   }
 
   Configuration * Configuration::LoadFile(const std::string & path, std::string & error)

@@ -51,7 +51,7 @@ namespace shellanything
 
   Menu::~Menu()
   {
-    // validities
+    // delete validities
     for(size_t i=0; i<mValidities.size(); i++)
     {
       Validator * validator = mValidities[i];
@@ -59,7 +59,7 @@ namespace shellanything
     }
     mValidities.clear();
 
-    // visibilities
+    // delete visibilities
     for(size_t i=0; i<mVisibilities.size(); i++)
     {
       Validator * validator = mVisibilities[i];
@@ -67,7 +67,7 @@ namespace shellanything
     }
     mVisibilities.clear();
 
-    // actions
+    // delete actions
     for(size_t i=0; i<mActions.size(); i++)
     {
       Action * action = mActions[i];
@@ -75,7 +75,7 @@ namespace shellanything
     }
     mActions.clear();
 
-    // submenus
+    // delete submenus
     for(size_t i=0; i<mSubMenus.size(); i++)
     {
       Menu * sub = mSubMenus[i];
