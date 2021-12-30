@@ -43,6 +43,7 @@ set(SHELLANYTHING_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/ListsBody.inc
   ${CMAKE_SOURCE_DIR}/include/shellanything/ListsDeclaration.inc
   ${CMAKE_SOURCE_DIR}/include/shellanything/Menu.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/String.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/Validator.h
 )
 
@@ -73,6 +74,7 @@ add_library(shellanything STATIC
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp
+  String.cpp
   Unicode.h
   Unicode.cpp
   Validator.cpp
