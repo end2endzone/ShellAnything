@@ -26,7 +26,6 @@
 #define SA_ICON_H
 
 #include <string>
-#include <vector>
 #include <set>
 
 namespace shellanything

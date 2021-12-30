@@ -26,7 +26,6 @@
 #define SA_UNICODE_H
 
 #include <string>
-#include <vector>
 
 namespace shellanything
 {

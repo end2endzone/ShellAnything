@@ -27,7 +27,6 @@
 
 #include "shellanything/Context.h"
 #include <string>
-#include <vector>
 
 #define SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR   ';'
 #define SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR    ";"

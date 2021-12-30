@@ -29,7 +29,6 @@
 #include "shellanything/Validator.h"
 #include "shellanything/Action.h"
 #include <string>
-#include <vector>
 #include <stdint.h>
 
 namespace shellanything
