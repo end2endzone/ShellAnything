@@ -277,7 +277,7 @@ namespace shellanything
   void Configuration::Update(const Context & context)
   {
     //for each child
-    MenuPtrList2 children = GetMenus();
+    MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -325,7 +325,7 @@ namespace shellanything
   Menu * Configuration::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    MenuPtrList2 children = GetMenus();
+    MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -342,7 +342,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    MenuPtrList2 children = GetMenus();
+    MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -352,7 +352,7 @@ namespace shellanything
     return nextCommandId;
   }
  
-  MenuPtrList2 Configuration::GetMenus()
+  MenuPtrList Configuration::GetMenus()
   {
     return mMenus;
   }

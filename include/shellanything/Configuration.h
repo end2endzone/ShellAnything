@@ -109,7 +109,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of menu pointers handled by the configuration.
     /// </summary>
-    MenuPtrList2 GetMenus();
+    MenuPtrList GetMenus();
 
     /// <summary>
     /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
@@ -133,7 +133,7 @@ namespace shellanything
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
-    MenuPtrList2 mMenus;
+    MenuPtrList mMenus;
   };
 
 } //namespace shellanything

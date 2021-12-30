@@ -28,7 +28,7 @@
 /// <summary>
 /// A list of Menu pointer.
 /// </summary>
-#define SA_LISTS_CLASS_NAME MenuPtrList2
+#define SA_LISTS_CLASS_NAME MenuPtrList
 #define SA_LISTS_BASE_TYPE  Menu *
 #include "shellanything/ListsBody.inc"
 #undef SA_LISTS_BASE_TYPE
@@ -214,7 +214,7 @@ namespace shellanything
     bool all_invisible_children = true;
 
     //for each child
-    MenuPtrList2 children = GetSubMenus();
+    MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -239,7 +239,7 @@ namespace shellanything
       return this;
  
     //for each child
-    MenuPtrList2 children = GetSubMenus();
+    MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -268,7 +268,7 @@ namespace shellanything
     }
 
     //for each child
-    MenuPtrList2 children = GetSubMenus();
+    MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -352,7 +352,7 @@ namespace shellanything
       mVisibilities.push_back(validator);
   }
 
-  MenuPtrList2 Menu::GetSubMenus()
+  MenuPtrList Menu::GetSubMenus()
   {
     return mSubMenus;
   }

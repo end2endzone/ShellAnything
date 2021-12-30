@@ -40,7 +40,7 @@ namespace shellanything
 /// <summary>
 /// A list of Menu pointer.
 /// </summary>
-#define SA_LISTS_CLASS_NAME MenuPtrList2
+#define SA_LISTS_CLASS_NAME MenuPtrList
 #define SA_LISTS_BASE_TYPE  Menu *
 #include "shellanything/ListsDeclaration.inc"
 #undef SA_LISTS_BASE_TYPE
@@ -54,11 +54,6 @@ namespace shellanything
   class Menu
   {
   public:
-    /// <summary>
-    /// A list of Menu pointers.
-    /// </summary>
-    typedef std::vector<Menu*> MenuPtrList;
-
     /// <summary>
     /// An invalid command id.
     /// </summary>
@@ -268,7 +263,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of submenu of the menu.
     /// </summary>
-    MenuPtrList2 GetSubMenus();
+    MenuPtrList GetSubMenus();
 
   private:
     Icon mIcon;
@@ -283,7 +278,7 @@ namespace shellanything
     int mNameMaxLength;
     std::string mDescription;
     ActionPtrList mActions;
-    MenuPtrList2 mSubMenus;
+    MenuPtrList mSubMenus;
   };
 
 } //namespace shellanything

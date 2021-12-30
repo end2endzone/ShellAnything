@@ -217,7 +217,7 @@ namespace shellanything { namespace test
     body->AddMenu(child2);
     body->AddMenu(child3);
 
-    MenuPtrList2 subs = body->GetSubMenus();
+    MenuPtrList subs = body->GetSubMenus();
     ASSERT_EQ(3, subs.size());
     ASSERT_EQ( child1, subs[0] );
     ASSERT_EQ( child2, subs[1] );

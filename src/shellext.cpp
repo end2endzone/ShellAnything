@@ -399,7 +399,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
     bool next_sub_menu_is_column = false;
 
-    shellanything::MenuPtrList2 subs = menu->GetSubMenus();
+    shellanything::MenuPtrList subs = menu->GetSubMenus();
     UINT sub_insert_pos = 0;
     for(size_t i=0; i<subs.size(); i++)
     {
@@ -457,7 +457,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     if (config)
     {
       //for each menu child
-      shellanything::MenuPtrList2 menus = config->GetMenus();
+      shellanything::MenuPtrList menus = config->GetMenus();
       for(size_t j=0; j<menus.size(); j++)
       {
         shellanything::Menu * menu = menus[j];
