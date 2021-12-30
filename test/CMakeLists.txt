@@ -82,8 +82,6 @@ add_executable(shellanything_unittest
   TestLibEval.h
   TestMenu.cpp
   TestMenu.h
-  TestNode.cpp
-  TestNode.h
   TestObjectFactory.cpp
   TestObjectFactory.h
   TestWin32Registry.cpp
