@@ -27,7 +27,6 @@
 
 #include "shellanything/Action.h"
 #include <string>
-#include <vector>
 #include <stdint.h>
 
 namespace shellanything
@@ -58,10 +57,10 @@ namespace shellanything
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & GetActions() const;
+    const ActionPtrList & GetActions() const;
 
   private:
-    Action::ActionPtrList mActions;
+    ActionPtrList mActions;
   };
 
 } //namespace shellanything

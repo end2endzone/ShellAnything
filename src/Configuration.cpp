@@ -49,15 +49,6 @@
 
 using namespace tinyxml2;
 
-/// <summary>
-/// A list of Configuration pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME ConfigurationPtrList
-#define SA_LISTS_BASE_TYPE  Configuration *
-#include "shellanything/ListsBody.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME
-
 namespace shellanything
 {
   std::string GetXmlEncoding(XMLDocument & doc, std::string & error)
@@ -301,7 +292,7 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::Action::ActionPtrList & actions = mDefaults->GetActions();
+      const shellanything::ActionPtrList & actions = mDefaults->GetActions();
 
       //convert 'actions' to a list of <const shellanything::ActionProperty *>
       typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
@@ -385,3 +376,12 @@ namespace shellanything
   }
 
 } //namespace shellanything
+
+/// <summary>
+/// A list of Configuration pointer.
+/// </summary>
+#define SA_LISTS_CLASS_NAME ConfigurationPtrList
+#define SA_LISTS_BASE_TYPE  Configuration *
+#include "shellanything/ListsBody.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME

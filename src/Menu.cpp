@@ -364,10 +364,10 @@ namespace shellanything
 
   void Menu::AddAction(Action * action)
   {
-    mActions.push_back(action);
+    mActions.AddElement(action);
   }
 
-  const Action::ActionPtrList & Menu::GetActions() const
+  const ActionPtrList & Menu::GetActions() const
   {
     return mActions;
   }

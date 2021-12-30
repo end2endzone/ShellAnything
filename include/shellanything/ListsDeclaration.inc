@@ -60,6 +60,7 @@
     /// Remove all elements in the list.
     /// </summary>
     void Clear();
+    inline void clear() { Clear(); } // for std::vector and std::list code compatibility.
 
     /// <summary>
     /// Get an element from an index.

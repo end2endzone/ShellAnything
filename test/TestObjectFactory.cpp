@@ -48,7 +48,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -65,7 +65,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -82,7 +82,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -99,7 +99,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -116,7 +116,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -133,7 +133,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];

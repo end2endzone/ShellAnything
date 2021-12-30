@@ -257,7 +257,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & GetActions() const;
+    const ActionPtrList & GetActions() const;
 
     /// <summary>
     /// Add a new sub menu to the menu. The menu instance takes ownership of the sub menu.
@@ -282,7 +282,7 @@ namespace shellanything
     std::string mName;
     int mNameMaxLength;
     std::string mDescription;
-    Action::ActionPtrList mActions;
+    ActionPtrList mActions;
     MenuPtrList2 mSubMenus;
   };
 

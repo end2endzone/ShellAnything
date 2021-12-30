@@ -688,7 +688,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::Action::ActionPtrList & actions = menu->GetActions();
+  const shellanything::ActionPtrList & actions = menu->GetActions();
   for(size_t i=0; i<actions.size(); i++)
   {
     LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
