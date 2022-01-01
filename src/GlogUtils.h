@@ -30,7 +30,7 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-#include "shellanything/String.h"
+#include <string>
 #include <stdint.h>
 
 namespace shellanything

@@ -26,7 +26,6 @@
 #include "shellanything/Context.h"
 #include "shellanything/ActionProperty.h"
 
-#include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
 #include "ObjectFactory.h"
@@ -99,7 +98,7 @@ namespace shellanything
     return encoding;
   }
 
-  Configuration::Configuration() :
+  Configuration::Configuration() : Node("Configuration"),
     mFileModifiedDate(0),
     mDefaults(NULL)
   {
@@ -107,24 +106,15 @@ namespace shellanything
 
   Configuration::~Configuration()
   {
-    // delete menus
-    for (size_t i = 0; i < mMenus.size(); i++)
-    {
-      Menu* sub = mMenus[i];
-      delete sub;
-    }
-    mMenus.Clear();
   }
 
-  Configuration * Configuration::LoadFile(const String & path, String & error_output)
+  Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
   {
-    std::string error;
     error = "";
 
     if (!ra::filesystem::FileExistsUtf8(path.c_str()))
     {
-      error = std::string("File '") + path.c_str() + "' not found.";
-      error_output = error.c_str();
+      error = "File '" + path + "' not found.";
       return NULL;
     }
 
@@ -145,12 +135,11 @@ namespace shellanything
       ra::random::GetRandomString(temp_filename, 10);
       temp_filename.append(".xml");
       std::string temp_path = ra::filesystem::GetTemporaryDirectory() + ra::filesystem::GetPathSeparatorStr() + temp_filename;
-      bool copied = ra::filesystem::CopyFileUtf8(path.c_str(), temp_path);
+      bool copied = ra::filesystem::CopyFileUtf8(path, temp_path);
       if (!copied)
       {
         error.clear();
-        error << "Failed to copy file '" << path.c_str() << "' to '" << temp_path << "'.";
-        error_output = error.c_str();
+        error << "Failed to copy file '" << path << "' to '" << temp_path << "'.";
         return NULL;
       }
 
@@ -182,7 +171,6 @@ namespace shellanything
       //Not an utf-8 encoded file.
       error.clear();
       error << "File is not encoded in UTF-8.";
-      error_output = error.c_str();
       return NULL;
     }
 
@@ -213,7 +201,7 @@ namespace shellanything
     while (xml_defaults)
     {
       //found a new menu node
-      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error_output);
+      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
@@ -229,7 +217,7 @@ namespace shellanything
     while (xml_menu)
     {
       //found a new menu node
-      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error_output);
+      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error);
       if (menu == NULL)
       {
         delete config;
@@ -237,7 +225,7 @@ namespace shellanything
       }
 
       //add the new menu to the current configuration
-      config->AddMenu(menu);
+      config->AddChild(menu);
 
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
@@ -246,9 +234,9 @@ namespace shellanything
     return config;
   }
 
-  bool Configuration::IsValidConfigFile(const String & path)
+  bool Configuration::IsValidConfigFile(const std::string & path)
   {
-    std::string file_extension = ra::filesystem::GetFileExtention(path.c_str());
+    std::string file_extension = ra::filesystem::GetFileExtention(path);
     file_extension = ra::strings::Uppercase(file_extension);
 
     if (file_extension == "XML")
@@ -259,12 +247,12 @@ namespace shellanything
     return false;
   }
 
-  const String & Configuration::GetFilePath() const
+  const std::string & Configuration::GetFilePath() const
   {
     return mFilePath;
   }
 
-  void Configuration::SetFilePath(const String & file_path)
+  void Configuration::SetFilePath(const std::string & file_path)
   {
     mFilePath = file_path;
   }
@@ -282,7 +270,7 @@ namespace shellanything
   void Configuration::Update(const Context & context)
   {
     //for each child
-    MenuPtrList children = GetMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -297,7 +285,7 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::ActionPtrList & actions = mDefaults->GetActions();
+      const shellanything::Action::ActionPtrList & actions = mDefaults->GetActions();
 
       //convert 'actions' to a list of <const shellanything::ActionProperty *>
       typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
@@ -330,7 +318,7 @@ namespace shellanything
   Menu * Configuration::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    MenuPtrList children = GetMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -347,7 +335,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    MenuPtrList children = GetMenus();
+    Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -357,9 +345,10 @@ namespace shellanything
     return nextCommandId;
   }
  
-  MenuPtrList Configuration::GetMenus()
+  Menu::MenuPtrList Configuration::GetMenus()
   {
-    return mMenus;
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
+    return sub_menus;
   }
 
   void Configuration::SetDefaultSettings(DefaultSettings * defaults)
@@ -375,18 +364,4 @@ namespace shellanything
     return mDefaults;
   }
 
-  void Configuration::AddMenu(Menu* menu)
-  {
-    mMenus.AddElement(menu);
-  }
-
 } //namespace shellanything
-
-/// <summary>
-/// A list of Configuration pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME ConfigurationPtrList
-#define SA_LISTS_BASE_TYPE  Configuration *
-#include "shellanything/ListsBody.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME

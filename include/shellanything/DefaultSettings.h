@@ -26,6 +26,9 @@
 #define SA_DEFAULTSETTINGS_H
 
 #include "shellanything/Action.h"
+#include <string>
+#include <vector>
+#include <stdint.h>
 
 namespace shellanything
 {
@@ -55,10 +58,10 @@ namespace shellanything
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const ActionPtrList & GetActions() const;
+    const Action::ActionPtrList & GetActions() const;
 
   private:
-    ActionPtrList mActions;
+    Action::ActionPtrList mActions;
   };
 
 } //namespace shellanything

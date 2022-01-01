@@ -34,13 +34,9 @@
 
 #include "rapidassist/strings.h"
 
-#include <string>
-#include <set>
-
 namespace shellanything
 {
-  typedef std::set<std::string> FileExtensionSet;
-  static FileExtensionSet gUnresolvedFileExtensions;
+  Icon::FileExtensionSet Icon::mUnresolvedFileExtensions;
 
   Icon::Icon() :
     mIndex(Icon::INVALID_ICON_INDEX)
@@ -80,11 +76,11 @@ namespace shellanything
   {
     //is this menu have a file extension ?
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    std::string file_extension = pmgr.Expand(mFileExtension).c_str();
+    std::string file_extension = pmgr.Expand(mFileExtension);
     if (!file_extension.empty())
     {
       //check for multiple values. keep the first value, forget about other selected file extensions.
-      const std::string separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME).c_str();
+      const std::string separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
       if (file_extension.find(separator) != std::string::npos)
       {
         //multiple values detected.
@@ -100,7 +96,7 @@ namespace shellanything
         //found the icon for the file extension
         //replace this menu's icon with the new information
         LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
-        mPath = resolved_icon.path.c_str();
+        mPath = resolved_icon.path;
         mIndex = resolved_icon.index;
         mFileExtension = "";
       }
@@ -109,39 +105,39 @@ namespace shellanything
         //failed to find a valid icon.
         //using the default "unknown" icon
         Win32Registry::REGISTRY_ICON unknown_file_icon = Win32Registry::GetUnknownFileTypeIcon();
-        mPath = unknown_file_icon.path.c_str();
+        mPath = unknown_file_icon.path;
         mIndex = unknown_file_icon.index;
         mFileExtension = "";
 
         //show the message only once in logs
-        const bool is_already_in_log = gUnresolvedFileExtensions.find(file_extension) != gUnresolvedFileExtensions.end();
+        const bool is_already_in_log = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
         if (!is_already_in_log)
         {
           LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
           
           //remember this failure.
-          gUnresolvedFileExtensions.insert(file_extension);
+          mUnresolvedFileExtensions.insert(file_extension);
         }
       }
     }
   }
 
-  const String & Icon::GetFileExtension() const
+  const std::string & Icon::GetFileExtension() const
   {
     return mFileExtension;
   }
 
-  void Icon::SetFileExtension(const String & file_extension)
+  void Icon::SetFileExtension(const std::string & file_extension)
   {
     mFileExtension = file_extension;
   }
 
-  const String & Icon::GetPath() const
+  const std::string & Icon::GetPath() const
   {
     return mPath;
   }
 
-  void Icon::SetPath(const String & path)
+  void Icon::SetPath(const std::string & path)
   {
     mPath = path;
   }

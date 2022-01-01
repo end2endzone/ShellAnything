@@ -47,7 +47,7 @@ namespace shellanything
   bool ActionClipboard::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string value = pmgr.Expand(mValue).c_str();
+    std::string value = pmgr.Expand(mValue);
 
     //get clipboard handler
     Win32Clipboard::Clipboard & clipboard = Win32Clipboard::Clipboard::GetInstance();
@@ -61,12 +61,12 @@ namespace shellanything
     return result;
   }
 
-  const String & ActionClipboard::GetValue() const
+  const std::string & ActionClipboard::GetValue() const
   {
     return mValue;
   }
 
-  void ActionClipboard::SetValue(const String & value)
+  void ActionClipboard::SetValue(const std::string & value)
   {
     mValue = value;
   }

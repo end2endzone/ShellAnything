@@ -49,37 +49,37 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const String & GetPath() const;
+    const std::string & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const String & path);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'content' parameter.
     /// </summary>
-    const String & GetText() const;
+    const std::string & GetText() const;
 
     /// <summary>
     /// Setter for the 'content' parameter.
     /// </summary>
-    void SetText(const String & text);
+    void SetText(const std::string & text);
 
     /// <summary>
     /// Getter for the 'encoding' parameter.
     /// </summary>
-    const String & GetEncoding() const;
+    const std::string & GetEncoding() const;
 
     /// <summary>
     /// Setter for the 'encoding' parameter.
     /// </summary>
-    void SetEncoding(const String & encoding);
+    void SetEncoding(const std::string & encoding);
 
   private:
-    String mPath;
-    String mText;
-    String mEncoding;
+    std::string mPath;
+    std::string mText;
+    std::string mEncoding;
   };
 
 } //namespace shellanything

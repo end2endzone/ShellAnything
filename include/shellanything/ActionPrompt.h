@@ -61,70 +61,70 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const String & GetName() const;
+    const std::string & GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const String & name);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'type' parameter.
     /// </summary>
-    const String & GetType() const;
+    const std::string & GetType() const;
 
     /// <summary>
     /// Setter for the 'type' parameter.
     /// </summary>
-    void SetType(const String & type);
+    void SetType(const std::string & type);
 
     /// <summary>
     /// Getter for the 'title' parameter.
     /// </summary>
-    const String & GetTitle() const;
+    const std::string & GetTitle() const;
 
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const String & title);
+    void SetTitle(const std::string & title);
 
     /// <summary>
     /// Getter for the 'default' parameter.
     /// </summary>
-    const String & GetDefault() const;
+    const std::string & GetDefault() const;
 
     /// <summary>
     /// Setter for the 'default' parameter.
     /// </summary>
-    void SetDefault(const String & default_value);
+    void SetDefault(const std::string & default_value);
 
     /// <summary>
     /// Getter for the 'valueyes' parameter.
     /// </summary>
-    const String & GetValueYes() const;
+    const std::string & GetValueYes() const;
 
     /// <summary>
     /// Setter for the 'valueyes' parameter.
     /// </summary>
-    void SetValueYes(const String & value_yes);
+    void SetValueYes(const std::string & value_yes);
 
     /// <summary>
     /// Getter for the 'valueno' parameter.
     /// </summary>
-    const String & GetValueNo() const;
+    const std::string & GetValueNo() const;
 
     /// <summary>
     /// Setter for the 'valueno' parameter.
     /// </summary>
-    void SetValueNo(const String & value_no);
+    void SetValueNo(const std::string & value_no);
 
   private:
-    String mType;
-    String mName;
-    String mTitle;
-    String mDefault;
-    String mValueYes;
-    String mValueNo;
+    std::string mType;
+    std::string mName;
+    std::string mTitle;
+    std::string mDefault;
+    std::string mValueYes;
+    std::string mValueNo;
   };
 
 } //namespace shellanything

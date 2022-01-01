@@ -42,13 +42,6 @@ namespace shellanything
 
   ConfigManager::~ConfigManager()
   {
-    // delete configurations
-    for (size_t i = 0; i < mConfigurations.size(); i++)
-    {
-      Configuration* config = mConfigurations[i];
-      delete config;
-    }
-    mConfigurations.Clear();
   }
 
   ConfigManager & ConfigManager::GetInstance()
@@ -60,7 +53,7 @@ namespace shellanything
   void ConfigManager::Clear()
   {
     ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
-    DeleteAllConfigurations();
+    mConfigurations.RemoveChildren();
     Refresh(); //forces all loaded configurations to be unloaded
   }
 
@@ -69,13 +62,13 @@ namespace shellanything
     LOG(INFO) << __FUNCTION__ << "()";
     
     //validate existing configurations
-    ConfigurationPtrList configs = GetConfigurations();
-    for(size_t i=0; i< configs.size(); i++)
+    Configuration::ConfigurationPtrList existing = GetConfigurations();
+    for(size_t i=0; i<existing.size(); i++)
     {
-      Configuration * config = configs[i];
+      Configuration * config = existing[i];
 
       //compare the file's date at the load time and the current date
-      const std::string file_path = config->GetFilePath().c_str();
+      const std::string & file_path = config->GetFilePath();
       const uint64_t & old_file_date = config->GetFileModifiedDate();
       const uint64_t new_file_date = ra::filesystem::GetFileModifiedDateUtf8(file_path);
       if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
@@ -88,17 +81,17 @@ namespace shellanything
         //file is missing or current configuration is out of date
         //forget about existing config
         LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
-        DeleteConfiguration(config);
+        mConfigurations.RemoveChild(config);
       }
     }
    
     //search every known path
     for (size_t i=0; i<mPaths.size(); i++)
     {
-      const std::string path = mPaths[i].c_str();
+      const std::string & path = mPaths[i];
  
       LOG(INFO) << "Searching configuration files in directory '" << path << "'";
-      
+
       //search files in each directory
       ra::strings::StringVector files;
       bool dir_found = ra::filesystem::FindFilesUtf8(files, path.c_str());
@@ -107,26 +100,26 @@ namespace shellanything
         //search through each files for *.xml files
         for(size_t j=0; j<files.size(); j++)
         {
-          const String file_path = files[j].c_str();
+          const std::string & file_path = files[j];
           if (Configuration::IsValidConfigFile(file_path))
           {
             //is this file already loaded ?
             if (!IsConfigFileLoaded(file_path))
             {
-              LOG(INFO) << "Found new configuration file '" << file_path.c_str() << "'";
+              LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
               //parse the file
-              String error;
+              std::string error;
               Configuration * config = Configuration::LoadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
-                LOG(ERROR) << "Failed loading configuration file '" << file_path.c_str() << "'. Error=" << error.c_str() << ".";
+                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
               }
               else
               {
                 //add to current list of configurations
-                mConfigurations.AddElement(config);
+                mConfigurations.AddChild(config);
 
                 //apply default properties of the configuration
                 config->ApplyDefaultSettings();
@@ -134,7 +127,7 @@ namespace shellanything
             }
             else
             {
-              LOG(INFO) << "Skipped configuration file '" << file_path.c_str() << "'. File is already loaded.";
+              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
             }
           }
         }
@@ -150,7 +143,7 @@ namespace shellanything
   void ConfigManager::Update(const Context & context)
   {
     //for each child
-    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -161,7 +154,7 @@ namespace shellanything
   Menu * ConfigManager::FindMenuByCommandId(const uint32_t & command_id)
   {
     //for each child
-    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -178,7 +171,7 @@ namespace shellanything
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
     for(size_t i=0; i<configurations.size(); i++)
     {
       Configuration * config = configurations[i];
@@ -188,9 +181,10 @@ namespace shellanything
     return nextCommandId;
   }
  
-  ConfigurationPtrList ConfigManager::GetConfigurations()
+  Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
   {
-    return mConfigurations;
+    Configuration::ConfigurationPtrList configurations = FilterNodes<Configuration*>(mConfigurations.FindChildren("Configuration"));
+    return configurations;
   }
 
   void ConfigManager::ClearSearchPath()
@@ -198,37 +192,21 @@ namespace shellanything
     mPaths.clear();
   }
 
-  void ConfigManager::AddSearchPath(const String & path)
+  void ConfigManager::AddSearchPath(const std::string & path)
   {
     mPaths.push_back(path);
   }
 
-  bool ConfigManager::IsConfigFileLoaded(const String & path) const
+  bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
   {
-    for(size_t i=0; i<mConfigurations.size(); i++)
+    for(size_t i=0; i<mConfigurations.Size(); i++)
     {
-      const Configuration* config = mConfigurations[i];
+      const Node * node = mConfigurations.GetChild(i);
+      const Configuration * config = dynamic_cast<const Configuration *>(node);
       if (config != NULL && config->GetFilePath() == path)
         return true;
     }
     return false;
-  }
-
-  void ConfigManager::DeleteAllConfigurations()
-  {
-    size_t count = mConfigurations.GetSize();
-    for (size_t i = 0; i < count; i++)
-    {
-      Configuration* config = mConfigurations.GetElement(i);
-      delete config;
-    }
-    mConfigurations.Clear();
-  }
-
-  void ConfigManager::DeleteConfiguration(Configuration* config)
-  {
-    mConfigurations.RemoveElementByValue(config);
-    delete config;
   }
 
 } //namespace shellanything

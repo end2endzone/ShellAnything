@@ -49,42 +49,42 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const String & GetPath() const;
+    const std::string & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const String & path);
+    void SetPath(const std::string & path);
 
     /// <summary>
     /// Getter for the 'basedir' parameter.
     /// </summary>
-    const String & GetBaseDir() const;
+    const std::string & GetBaseDir() const;
 
     /// <summary>
     /// Setter for the 'basedir' parameter.
     /// </summary>
-    void SetBaseDir(const String & base_dir);
+    void SetBaseDir(const std::string & base_dir);
 
     /// <summary>
     /// Getter for the 'arguments' parameter.
     /// </summary>
-    const String & GetArguments() const;
+    const std::string & GetArguments() const;
 
     /// <summary>
     /// Setter for the 'arguments' parameter.
     /// </summary>
-    void SetArguments(const String & arguments);
+    void SetArguments(const std::string & arguments);
 
     /// <summary>
     /// Getter for the 'verb' parameter.
     /// </summary>
-    const String& GetVerb() const;
+    const std::string& GetVerb() const;
 
     /// <summary>
     /// Setter for the 'verb' parameter.
     /// </summary>
-    void SetVerb(const String& verb);
+    void SetVerb(const std::string& verb);
 
   private:
     /// <summary>
@@ -104,10 +104,10 @@ namespace shellanything
     virtual bool ExecuteProcess(const Context & context) const;
 
   private:
-    String mPath;
-    String mBaseDir;
-    String mArguments;
-    String mVerb;
+    std::string mPath;
+    std::string mBaseDir;
+    std::string mArguments;
+    std::string mVerb;
   };
 
 } //namespace shellanything

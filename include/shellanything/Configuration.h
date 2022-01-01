@@ -25,6 +25,7 @@
 #ifndef SA_CONFIGURATION_H
 #define SA_CONFIGURATION_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Menu.h"
 #include "shellanything/DefaultSettings.h"
 #include <stdint.h>
@@ -35,9 +36,14 @@ namespace shellanything
   /// <summary>
   /// A configuration holds mutiple Menu instances.
   /// </summary>
-  class Configuration
+  class Configuration : public Node
   {
   public:
+    /// <summary>
+    /// A list of Configuration pointer.
+    /// </summary>
+    typedef std::vector<Configuration*> ConfigurationPtrList;
+
     Configuration();
     virtual ~Configuration();
 
@@ -53,24 +59,24 @@ namespace shellanything
     /// <param name="path">The file path to load</param>
     /// <param name="error">The error desription if the file cannot be loaded.</param>
     /// <returns>Returns a valid Configuration pointer if the file can be loaded. Returns NULL otherwise.</returns>
-    static Configuration * LoadFile(const String & path, String & error);
+    static Configuration * LoadFile(const std::string & path, std::string & error);
 
     /// <summary>
     /// Detect if a given file is a valid configuration file.
     /// </summary>
     /// <param name="path">The file path to load</param>
     /// <returns>Returns true if the file is a valid configuration file. Returns false otherwise.</returns>
-    static bool IsValidConfigFile(const String & path);
+    static bool IsValidConfigFile(const std::string & path);
 
     /// <summary>
     /// Returns the file path of this configuration.
     /// </summary>
-    const String & GetFilePath() const;
+    const std::string & GetFilePath() const;
 
     /// <summary>
     /// Set the file path of this configuration.
     /// </summary>
-    void SetFilePath(const String & file_path);
+    void SetFilePath(const std::string & file_path);
 
     /// <summary>
     /// Returns the configuration file's modified date.
@@ -109,7 +115,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of menu pointers handled by the configuration.
     /// </summary>
-    MenuPtrList GetMenus();
+    Menu::MenuPtrList GetMenus();
 
     /// <summary>
     /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
@@ -123,28 +129,12 @@ namespace shellanything
     /// <returns>Returns the DefaultSettings instance of the Configuration. Returns NULL if no DefaultSettings is set.</returns>
     const DefaultSettings * GetDefaultSettings() const;
 
-    /// <summary>
-    /// Add a Menu to this Configuration. The Configuration takes ownership of the Menu.
-    /// </summary>
-    /// <param name="menu">The Menu to add.</param>
-    void AddMenu(Menu * menu);
-
   private:
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
-    String mFilePath;
-    MenuPtrList mMenus;
+    std::string mFilePath;
   };
 
 } //namespace shellanything
-
-/// <summary>
-/// A list of Configuration pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME ConfigurationPtrList
-#define SA_LISTS_BASE_TYPE  Configuration *
-#include "shellanything/ListsDeclaration.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME
 
 #endif //SA_CONFIGURATION_H

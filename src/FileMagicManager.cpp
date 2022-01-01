@@ -53,7 +53,7 @@ std::string GetMGCPath()
       ra::strings::Format("0x%08x", error_code) + ": " + desc;
 
     //display an error on 
-    shellanything::ShowErrorMessage("ShellAnything Error", message.c_str());
+    shellanything::ShowErrorMessage("ShellAnything Error", message);
 
     return std::string();
   }
@@ -82,7 +82,7 @@ namespace shellanything
     }
     if (magic_load(magic_cookie, path.c_str()) == -1) {
       magic_cookie = NULL;
-      ShowErrorMessage("ShellAnything(libmagic) Error", String("ERROR loading with NULL file: ") + magic_error(magic_cookie));
+      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading with NULL file: ") + magic_error(magic_cookie));
       return;
     }
   }
@@ -99,63 +99,63 @@ namespace shellanything
     return _instance;
   }
 
-  String FileMagicManager::GetMIMEType(const String & path) const
+  std::string FileMagicManager::GetMIMEType(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_TYPE);
     const char *result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", String("ERROR loading file: ") + magic_error(magic_cookie));
-      return String();
+      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      return std::string();
     }
     else
     {
-      return String(result);
+      return std::string(result);
     }
   }
 
-  String FileMagicManager::GetDescription(const String & path) const
+  std::string FileMagicManager::GetDescription(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_NONE);
     const char *result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", String("ERROR loading file: ") + magic_error(magic_cookie));
-      return String();
+      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      return std::string();
     }
     else
     {
-      return String(result);
+      return std::string(result);
     }
   }
 
-  String FileMagicManager::GetExtension(const String & path) const
+  std::string FileMagicManager::GetExtension(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_EXTENSION);
     const char *result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", String("ERROR loading file: ") + magic_error(magic_cookie));
-      return String();
+      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      return std::string();
     }
     else
     {
-      return String(result);
+      return std::string(result);
     }
   }
 
-  String FileMagicManager::GetCharset(const String & path) const
+  std::string FileMagicManager::GetCharset(const std::string & path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_ENCODING);
     const char *result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", String("ERROR loading file: ") + magic_error(magic_cookie));
-      return String();
+      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      return std::string();
     }
     else
     {
-      return String(result);
+      return std::string(result);
     }
   }
 

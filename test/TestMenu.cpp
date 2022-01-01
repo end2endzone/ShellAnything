@@ -132,11 +132,11 @@ namespace shellanything { namespace test
     ASSERT_FALSE( deleted );
 
     //build tree
-    root->AddMenu(body);
-    body->AddMenu(child1);
-    body->AddMenu(child2);
-    body->AddMenu(child3);
-    child3->AddMenu(my_test_menu); //root takes ownership of my_test_menu
+    root->AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
+    child3->AddChild(my_test_menu); //root takes ownership of my_test_menu
 
     //destroy the tree
     delete root;
@@ -161,10 +161,10 @@ namespace shellanything { namespace test
     ASSERT_FALSE( deleted );
 
     //build tree
-    root->AddMenu(body);
-    body->AddMenu(child1);
-    body->AddMenu(child2);
-    body->AddMenu(child3);
+    root->AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
     child3->AddAction(my_test_action); //child3 takes ownership of my_test_menu
 
     //destroy the tree
@@ -212,12 +212,12 @@ namespace shellanything { namespace test
     ASSERT_TRUE( root->GetSubMenus().empty() );
 
     //build tree
-    root->AddMenu(body);
-    body->AddMenu(child1);
-    body->AddMenu(child2);
-    body->AddMenu(child3);
+    root->AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
 
-    MenuPtrList subs = body->GetSubMenus();
+    Menu::MenuPtrList subs = body->GetSubMenus();
     ASSERT_EQ(3, subs.size());
     ASSERT_EQ( child1, subs[0] );
     ASSERT_EQ( child2, subs[1] );
@@ -240,13 +240,13 @@ namespace shellanything { namespace test
     Menu * child6 = NewMenu("p2");
  
     //build tree
-    root->AddMenu(body);
-    body->AddMenu(child1);
-    body->AddMenu(child2);
-    body->AddMenu(child3);
-    child3->AddMenu(child4);
-    child3->AddMenu(child5);
-    body->AddMenu(child6);
+    root->AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
+    child3->AddChild(child4);
+    child3->AddChild(child5);
+    body->AddChild(child6);
  
     //act
     uint32_t nextAvailableId = root->AssignCommandIds(101);
@@ -279,13 +279,13 @@ namespace shellanything { namespace test
     Menu * child6 = NewMenu("p2");
  
     //build tree
-    root->AddMenu(body);
-    body->AddMenu(child1);
-    body->AddMenu(child2);
-    body->AddMenu(child3);
-    child3->AddMenu(child4);
-    child3->AddMenu(child5);
-    body->AddMenu(child6);
+    root->AddChild(body);
+    body->AddChild(child1);
+    body->AddChild(child2);
+    body->AddChild(child3);
+    child3->AddChild(child4);
+    child3->AddChild(child5);
+    body->AddChild(child6);
  
     //act
     uint32_t nextAvailableId = root->AssignCommandIds(101);

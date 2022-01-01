@@ -49,15 +49,15 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'value' parameter.
     /// </summary>
-    const String & GetValue() const;
+    const std::string & GetValue() const;
 
     /// <summary>
     /// Setter for the 'value' parameter.
     /// </summary>
-    void SetValue(const String & value);
+    void SetValue(const std::string & value);
 
   private:
-    String mValue;
+    std::string mValue;
   };
 
 } //namespace shellanything

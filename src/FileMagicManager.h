@@ -25,7 +25,7 @@
 #ifndef SA_MIMETYPE_H
 #define SA_MIMETYPE_H
 
-#include "shellanything/String.h"
+#include <string>
 #include "magic.h"
 
 namespace shellanything
@@ -44,10 +44,10 @@ namespace shellanything
 
     static FileMagicManager & GetInstance();
 
-    String GetMIMEType(const String & path) const;
-    String GetDescription(const String & path) const;
-    String GetExtension(const String & path) const;
-    String GetCharset(const String & path) const;
+    std::string GetMIMEType(const std::string & path) const;
+    std::string GetDescription(const std::string & path) const;
+    std::string GetExtension(const std::string & path) const;
+    std::string GetCharset(const std::string & path) const;
 
   private:
     magic_t magic_cookie;

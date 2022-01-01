@@ -43,10 +43,10 @@ namespace shellanything
 
   void DefaultSettings::AddAction(Action * action)
   {
-    mActions.AddElement(action);
+    mActions.push_back(action);
   }
 
-  const ActionPtrList & DefaultSettings::GetActions() const
+  const Action::ActionPtrList & DefaultSettings::GetActions() const
   {
     return mActions;
   }

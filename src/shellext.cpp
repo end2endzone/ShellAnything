@@ -399,7 +399,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
     bool next_sub_menu_is_column = false;
 
-    shellanything::MenuPtrList subs = menu->GetSubMenus();
+    shellanything::Menu::MenuPtrList subs = menu->GetSubMenus();
     UINT sub_insert_pos = 0;
     for(size_t i=0; i<subs.size(); i++)
     {
@@ -449,7 +449,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
   //for each configuration
   shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::ConfigurationPtrList configs = cmgr.GetConfigurations();
+  shellanything::Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
   UINT insert_pos = 0;
   for(size_t i=0; i<configs.size(); i++)
   {
@@ -457,7 +457,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
     if (config)
     {
       //for each menu child
-      shellanything::MenuPtrList menus = config->GetMenus();
+      shellanything::Menu::MenuPtrList menus = config->GetMenus();
       for(size_t j=0; j<menus.size(); j++)
       {
         shellanything::Menu * menu = menus[j];
@@ -688,7 +688,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::ActionPtrList & actions = menu->GetActions();
+  const shellanything::Action::ActionPtrList & actions = menu->GetActions();
   for(size_t i=0; i<actions.size(); i++)
   {
     LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";

@@ -26,7 +26,7 @@
 #define WIN32_UTILS_H
 
 #include <Windows.h>
-#include "shellanything/String.h"
+#include <string>
 
 namespace Win32Utils
 {

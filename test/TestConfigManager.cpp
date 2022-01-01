@@ -71,14 +71,14 @@ namespace shellanything { namespace test
     return c;
   }
 
-  void QueryAllMenusRecursive(Menu * menu, MenuPtrList & list)
+  void QueryAllMenusRecursive(Menu * menu, Menu::MenuPtrList & list)
   {
     if (menu == NULL)
       return;
 
-    list.AddElement(menu);
+    list.push_back(menu);
 
-    MenuPtrList submenus = menu->GetSubMenus();
+    Menu::MenuPtrList submenus = menu->GetSubMenus();
     for(size_t i=0; i<submenus.size(); i++)
     {
       Menu * submenu = submenus[i];
@@ -86,12 +86,12 @@ namespace shellanything { namespace test
     }
   }
 
-  void QueryAllMenusRecursive(Configuration * config, MenuPtrList & list)
+  void QueryAllMenusRecursive(Configuration * config, Menu::MenuPtrList & list)
   {
     if (config == NULL)
       return;
 
-    MenuPtrList menus = config->GetMenus();
+    Menu::MenuPtrList menus = config->GetMenus();
     for(size_t i=0; i<menus.size(); i++)
     {
       Menu * menu = menus[i];
@@ -104,7 +104,7 @@ namespace shellanything { namespace test
     if (parent == NULL)
       return NULL;
 
-    MenuPtrList menus = parent->GetSubMenus();
+    Menu::MenuPtrList menus = parent->GetSubMenus();
     if (index >= menus.size())
       return NULL; //out of bounds
 
@@ -117,7 +117,7 @@ namespace shellanything { namespace test
     if (config == NULL)
       return NULL;
 
-    MenuPtrList menus = config->GetMenus();
+    Menu::MenuPtrList menus = config->GetMenus();
     if (index >= menus.size())
       return NULL; //out of bounds
 
@@ -133,7 +133,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //Delete the source file of all remaining Configuration instance
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {
       Configuration * config = configs[i];
@@ -177,11 +177,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
     //Import another file into the workspace
@@ -232,11 +232,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a single menu is available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
  
     //Inject another menu in the loaded xml file
@@ -302,7 +302,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the files are loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 2, configs.size() );
 
     //Assign unique command ids
@@ -339,7 +339,7 @@ namespace shellanything { namespace test
     ASSERT_NE( INVALID_CONFIGURATION, config );
 
     //search for an menu with "Run" and "parameters" in title
-    MenuPtrList menus = config->GetMenus();
+    Menu::MenuPtrList menus = config->GetMenus();
     Menu * run_with_params = NULL;
     for(size_t i=0; i<menus.size(); i++)
     {
@@ -384,7 +384,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //act
@@ -421,11 +421,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //Query first menu
-    MenuPtrList menus = configs[0]->GetMenus();
+    Menu::MenuPtrList menus = configs[0]->GetMenus();
     ASSERT_EQ( 1, menus.size() );
     Menu * first = menus[0];
     ASSERT_TRUE( first != NULL );
@@ -485,7 +485,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //Query all menus
@@ -503,7 +503,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( option1_2_1_1  != NULL );
 
     //Query all menus
-    MenuPtrList menus;
+    Menu::MenuPtrList menus;
     QueryAllMenusRecursive(configs[0], menus);
 
     //Update the menus based on a context with a single file

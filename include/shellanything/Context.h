@@ -25,7 +25,8 @@
 #ifndef SA_CONTEXT_H
 #define SA_CONTEXT_H
 
-#include "shellanything/String.h"
+#include <string>
+#include <vector>
 
 namespace shellanything
 {
@@ -36,16 +37,17 @@ namespace shellanything
   class Context
   {
   public:
+    typedef std::vector<std::string> ElementList;
 
     /// <summary>
     /// Name of the property that contains the separator for multi-selection separator.
     /// </summary>
-    static const String MULTI_SELECTION_SEPARATOR_PROPERTY_NAME;
+    static const std::string MULTI_SELECTION_SEPARATOR_PROPERTY_NAME;
 
     /// <summary>
     /// Default value for the property 'MULTI_SELECTION_SEPARATOR_PROPERTY_NAME'.
     /// </summary>
-    static const String DEFAULT_MULTI_SELECTION_SEPARATOR;
+    static const std::string DEFAULT_MULTI_SELECTION_SEPARATOR;
 
     Context();
     Context(const Context & c);
@@ -69,12 +71,12 @@ namespace shellanything
     /// <summary>
     /// Get the list of elements of the Context.
     /// </summary>
-    const StringList & GetElements() const;
+    const ElementList & GetElements() const;
 
     /// <summary>
     /// Set the list of elements to the Context.
     /// </summary>
-    void SetElements(const StringList& elements);
+    void SetElements(const ElementList & elements);
 
     /// <summary>
     /// Get the number of files in the context.
@@ -87,7 +89,7 @@ namespace shellanything
     int GetNumDirectories() const;
 
   private:
-    StringList mElements;
+    ElementList mElements;
     int mNumFiles;
     int mNumDirectories;
   };

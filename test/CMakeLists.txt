@@ -82,6 +82,8 @@ add_executable(shellanything_unittest
   TestLibEval.h
   TestMenu.cpp
   TestMenu.h
+  TestNode.cpp
+  TestNode.h
   TestObjectFactory.cpp
   TestObjectFactory.h
   TestWin32Registry.cpp
@@ -90,8 +92,6 @@ add_executable(shellanything_unittest
   TestPropertyManager.h
   TestShellExtension.cpp
   TestShellExtension.h
-  TestString.cpp
-  TestString.h
   TestUnicode.cpp
   TestUnicode.h
   TestValidator.cpp

@@ -48,7 +48,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -65,7 +65,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -82,7 +82,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -99,7 +99,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -116,7 +116,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -133,7 +133,7 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    ActionPtrList actions = m->GetActions();
+    Action::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
       Action * action = actions[i];
@@ -152,7 +152,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //Delete the source file of all remaining Configuration instance
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     for(size_t i=0; i<configs.size(); i++)
     {
       Configuration * config = configs[i];
@@ -197,11 +197,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 15, menus.size() );
 
     //Assert <visibility> tag properly parsed
@@ -289,11 +289,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 3 menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
     //Assert all icons are valid
@@ -342,11 +342,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT all 5 menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
     //Assert maxlength properly value for each menus
@@ -383,11 +383,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT all menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -447,11 +447,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 13 menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 13, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -515,11 +515,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a 3 menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a file element as the first action
@@ -573,11 +573,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 5, menus.size() );
 
     //Assert all menus have a prompt element as the first action
@@ -649,11 +649,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 3, menus.size() );
 
     //Assert all menus have a property element as the first action
@@ -709,11 +709,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
 
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
 
     //ASSERT a multiple menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ( 4, menus.size() );
 
     //Assert all menus have a message element as the first action
@@ -775,7 +775,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a DefaultSettings section is available
@@ -822,11 +822,11 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT a multiple menus are available
-    MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
     ASSERT_EQ(6, menus.size());
 
     //Assert the following menus are separators

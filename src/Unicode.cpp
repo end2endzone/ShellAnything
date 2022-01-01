@@ -24,8 +24,6 @@
 
 #include "Unicode.h"
 
-#include <string>
-
 namespace shellanything
 {
 
@@ -132,9 +130,9 @@ namespace shellanything
     return num_code_points;
   }
   
-  String SubstringUtf8(const char * str, size_t start, size_t length)
+  std::string SubstringUtf8(const char * str, size_t start, size_t length)
   {
-    String output;
+    std::string output;
 
     if (str == NULL || length == 0)
       return output;

@@ -25,21 +25,12 @@
 #include "shellanything/Menu.h"
 #include "Unicode.h"
 
-/// <summary>
-/// A list of Menu pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME MenuPtrList
-#define SA_LISTS_BASE_TYPE  Menu *
-#include "shellanything/ListsBody.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME
-
 namespace shellanything
 {
   const uint32_t Menu::INVALID_COMMAND_ID = 0;
   const int Menu::DEFAULT_NAME_MAX_LENGTH = 250;
 
-  Menu::Menu() :
+  Menu::Menu() : Node("Menu"),
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mColumnSeparator(false),
@@ -51,7 +42,7 @@ namespace shellanything
 
   Menu::~Menu()
   {
-    // delete validities
+    // validities
     for(size_t i=0; i<mValidities.size(); i++)
     {
       Validator * validator = mValidities[i];
@@ -59,7 +50,7 @@ namespace shellanything
     }
     mValidities.clear();
 
-    // delete visibilities
+    // visibilities
     for(size_t i=0; i<mVisibilities.size(); i++)
     {
       Validator * validator = mVisibilities[i];
@@ -67,21 +58,13 @@ namespace shellanything
     }
     mVisibilities.clear();
 
-    // delete actions
+    // actions
     for(size_t i=0; i<mActions.size(); i++)
     {
       Action * action = mActions[i];
       delete action;
     }
     mActions.clear();
-
-    // delete submenus
-    for(size_t i=0; i<mSubMenus.size(); i++)
-    {
-      Menu * sub = mSubMenus[i];
-      delete sub;
-    }
-    mSubMenus.Clear();
   }
 
   bool Menu::IsSeparator() const
@@ -106,16 +89,17 @@ namespace shellanything
 
   bool Menu::IsParentMenu() const
   {
-    bool parent_menu = (mSubMenus.size() != 0);
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
+    bool parent_menu = (sub_menus.size() != 0);
     return parent_menu;
   }
 
-  const String & Menu::GetName() const
+  const std::string & Menu::GetName() const
   {
     return mName;
   }
 
-  void Menu::SetName(const String & name)
+  void Menu::SetName(const std::string & name)
   {
     mName = name;
   }
@@ -136,7 +120,7 @@ namespace shellanything
       mNameMaxLength = DEFAULT_NAME_MAX_LENGTH;
   }
 
-  void Menu::TruncateName(String & str)
+  void Menu::TruncateName(std::string & str)
   {
     // Issue #55: Menu name maximum length limit and escape string
   
@@ -147,7 +131,7 @@ namespace shellanything
     if (num_cp <= mNameMaxLength)
       return; // Nothing to do.
 
-    String truncated_str = SubstringUtf8(str.c_str(), 0, mNameMaxLength);
+    std::string truncated_str = SubstringUtf8(str.c_str(), 0, mNameMaxLength);
 
     // Add a trailing "..." indicating that we reached the maximum length for a menu
     if (num_cp > DEFAULT_NAME_MAX_LENGTH)
@@ -156,12 +140,12 @@ namespace shellanything
     str = truncated_str;
   }
 
-  const String & Menu::GetDescription() const
+  const std::string & Menu::GetDescription() const
   {
     return mDescription;
   }
 
-  void Menu::SetDescription(const String & description)
+  void Menu::SetDescription(const std::string & description)
   {
     mDescription = description;
   }
@@ -214,7 +198,7 @@ namespace shellanything
     bool all_invisible_children = true;
 
     //for each child
-    MenuPtrList children = GetSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -239,7 +223,7 @@ namespace shellanything
       return this;
  
     //for each child
-    MenuPtrList children = GetSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -268,7 +252,7 @@ namespace shellanything
     }
 
     //for each child
-    MenuPtrList children = GetSubMenus();
+    Menu::MenuPtrList children = GetSubMenus();
     for(size_t i=0; i<children.size(); i++)
     {
       Menu * child = children[i];
@@ -352,26 +336,20 @@ namespace shellanything
       mVisibilities.push_back(validator);
   }
 
-  MenuPtrList Menu::GetSubMenus()
+  Menu::MenuPtrList Menu::GetSubMenus()
   {
-    return mSubMenus;
-  }
-
-  void Menu::AddMenu(Menu* menu)
-  {
-    mSubMenus.AddElement(menu);
+    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
+    return sub_menus;
   }
 
   void Menu::AddAction(Action * action)
   {
-    mActions.AddElement(action);
+    mActions.push_back(action);
   }
 
-  const ActionPtrList & Menu::GetActions() const
+  const Action::ActionPtrList & Menu::GetActions() const
   {
     return mActions;
   }
-
-  void AddMenu(Menu* menu);
 
 } //namespace shellanything

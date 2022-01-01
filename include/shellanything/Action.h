@@ -25,7 +25,9 @@
 #ifndef SA_ACTION_H
 #define SA_ACTION_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Context.h"
+#include <vector>
 
 namespace shellanything
 {
@@ -36,6 +38,11 @@ namespace shellanything
   class Action
   {
   public:
+    /// <summary>
+    /// A list of Action class pointers.
+    /// </summary>
+    typedef std::vector<Action*> ActionPtrList;
+
     Action();
     virtual ~Action();
 
@@ -55,14 +62,5 @@ namespace shellanything
 
 
 } //namespace shellanything
-
-/// <summary>
-/// A list of Action pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME ActionPtrList
-#define SA_LISTS_BASE_TYPE  Action *
-#include "shellanything/ListsDeclaration.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME
 
 #endif //SA_ACTION_H

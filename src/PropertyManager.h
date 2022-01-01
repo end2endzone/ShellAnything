@@ -25,7 +25,8 @@
 #ifndef SA_PROPERTYMANAGER_H
 #define SA_PROPERTYMANAGER_H
 
-#include "shellanything/String.h"
+#include <string>
+#include <map>
 
 namespace shellanything
 {
@@ -49,24 +50,29 @@ namespace shellanything
     /// <summary>
     /// Name of the property that defines the system true.
     /// </summary>
-    static const String SYSTEM_TRUE_PROPERTY_NAME;
+    static const std::string SYSTEM_TRUE_PROPERTY_NAME;
 
     /// <summary>
     /// Default value for the property 'SYSTEM_TRUE_PROPERTY_NAME'.
     /// </summary>
-    static const String SYSTEM_TRUE_DEFAULT_VALUE;
+    static const std::string SYSTEM_TRUE_DEFAULT_VALUE;
 
     /// <summary>
     /// Name of the property that defines the system false.
     /// </summary>
-    static const String SYSTEM_FALSE_PROPERTY_NAME;
+    static const std::string SYSTEM_FALSE_PROPERTY_NAME;
 
     /// <summary>
     /// Default value for the property 'SYSTEM_FALSE_PROPERTY_NAME'.
     /// </summary>
-    static const String SYSTEM_FALSE_DEFAULT_VALUE;
+    static const std::string SYSTEM_FALSE_DEFAULT_VALUE;
 
   public:
+
+    //------------------------
+    // Typedef
+    //------------------------
+    typedef std::map<std::string /*name*/, std::string /*value*/> PropertyMap;
 
     /// <summary>
     /// Clears all the registered properties.
@@ -78,7 +84,7 @@ namespace shellanything
     /// Delete the given property.
     /// </summary>
     /// <param name="name">The name of the property to delete.</param>
-    void ClearProperty(const String & name);
+    void ClearProperty(const std::string & name);
 
     /// <summary>
     /// Check if a property have been set.
@@ -86,21 +92,21 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the property to check.</param>
     /// <returns>Returns true if the property is set. Returns false otherwise.</returns>
-    bool HasProperty(const String & name) const;
+    bool HasProperty(const std::string & name) const;
 
     /// <summary>
     /// Sets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to set.</param>
     /// <param name="value">The new value of the property.</param>
-    void SetProperty(const String & name, const String & value);
+    void SetProperty(const std::string & name, const std::string & value);
 
     /// <summary>
     /// Gets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
-    const String & GetProperty(const String & name) const;
+    const std::string & GetProperty(const std::string & name) const;
 
     /// <summary>
     /// Expands the given string by replacing property variable reference by the actual variable's value.
@@ -111,7 +117,7 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    String Expand(const String & value) const;
+    std::string Expand(const std::string & value) const;
 
     /// <summary>
     /// Expands the given string by replacing property variable reference by the actual variable's value.
@@ -122,13 +128,13 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    String ExpandOnce(const String & value) const;
+    std::string ExpandOnce(const std::string & value) const;
 
   private:
+
     void RegisterEnvironmentVariables();
     void RegisterDefaultProperties();
-    struct Properties;
-    Properties* p;
+    PropertyMap properties;
   };
 
 } //namespace shellanything

@@ -46,23 +46,23 @@ namespace shellanything
 
   bool ActionPrompt::IsYesNoQuestion() const
   {
-    bool yes_no_question = (!mType.empty() && ra::strings::Uppercase(mType.c_str()) == "YESNO");
+    bool yes_no_question = (!mType.empty() && ra::strings::Uppercase(mType) == "YESNO");
     return yes_no_question;
   }
 
   bool ActionPrompt::IsOkQuestion() const
   {
-    bool ok_question = (!mType.empty() && ra::strings::Uppercase(mType.c_str()) == "OK");
+    bool ok_question = (!mType.empty() && ra::strings::Uppercase(mType) == "OK");
     return ok_question;
   }
 
   bool ActionPrompt::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string name = pmgr.Expand(mName).c_str();
-    const std::string title = pmgr.Expand(mTitle).c_str();
-    const std::string default_value = pmgr.Expand(mDefault).c_str();
-    const std::string type = mType.c_str();
+    const std::string name = pmgr.Expand(mName);
+    const std::string title = pmgr.Expand(mTitle);
+    const std::string default_value = pmgr.Expand(mDefault);
+    const std::string & type = mType;
 
     static const char * caption = "Question / Prompt";
     static const HWND parent_window = NULL;
@@ -93,10 +93,10 @@ namespace shellanything
       switch(result)
       {
       case IDYES:
-        answer = mValueYes.c_str();
+        answer = mValueYes;
         break;
       case IDNO:
-        answer = mValueNo.c_str();
+        answer = mValueNo;
         break;
       default:
       case IDCANCEL:
@@ -122,67 +122,67 @@ namespace shellanything
 
     //update the property
     LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'.";
-    pmgr.SetProperty(name.c_str(), answer.c_str());
+    pmgr.SetProperty(name, answer);
 
     return true;
   }
 
-  const String & ActionPrompt::GetType() const
+  const std::string & ActionPrompt::GetType() const
   {
     return mType;
   }
 
-  void ActionPrompt::SetType(const String & type)
+  void ActionPrompt::SetType(const std::string & type)
   {
     mType = type;
   }
 
-  const String & ActionPrompt::GetName() const
+  const std::string & ActionPrompt::GetName() const
   {
     return mName;
   }
 
-  void ActionPrompt::SetName(const String & name)
+  void ActionPrompt::SetName(const std::string & name)
   {
     mName = name;
   }
 
-  const String & ActionPrompt::GetTitle() const
+  const std::string & ActionPrompt::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionPrompt::SetTitle(const String & title)
+  void ActionPrompt::SetTitle(const std::string & title)
   {
     mTitle = title;
   }
 
-  const String & ActionPrompt::GetDefault() const
+  const std::string & ActionPrompt::GetDefault() const
   {
     return mDefault;
   }
 
-  void ActionPrompt::SetDefault(const String & default_value)
+  void ActionPrompt::SetDefault(const std::string & default_value)
   {
     mDefault = default_value;
   }
 
-  const String & ActionPrompt::GetValueYes() const
+  const std::string & ActionPrompt::GetValueYes() const
   {
     return mValueYes;
   }
 
-  void ActionPrompt::SetValueYes(const String & value_yes)
+  void ActionPrompt::SetValueYes(const std::string & value_yes)
   {
     mValueYes = value_yes;
   }
 
-  const String & ActionPrompt::GetValueNo() const
+  const std::string & ActionPrompt::GetValueNo() const
   {
     return mValueNo;
   }
 
-  void ActionPrompt::SetValueNo(const String & value_no)
+  void ActionPrompt::SetValueNo(const std::string & value_no)
   {
     mValueNo = value_no;
   }

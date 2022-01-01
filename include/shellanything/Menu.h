@@ -25,34 +25,28 @@
 #ifndef SA_MENU_H
 #define SA_MENU_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
 #include "shellanything/Action.h"
-#include "shellanything/String.h"
+#include <string>
+#include <vector>
 #include <stdint.h>
 
 namespace shellanything
 {
-  class Menu;
-} //namespace shellanything
 
-/// <summary>
-/// A list of Menu pointer.
-/// </summary>
-#define SA_LISTS_CLASS_NAME MenuPtrList
-#define SA_LISTS_BASE_TYPE  Menu *
-#include "shellanything/ListsDeclaration.inc"
-#undef SA_LISTS_BASE_TYPE
-#undef SA_LISTS_CLASS_NAME
-
-namespace shellanything
-{
   /// <summary>
   /// The Menu class defines a displayed menu option.
   /// </summary>
-  class Menu
+  class Menu : public Node
   {
   public:
+    /// <summary>
+    /// A list of Menu pointers.
+    /// </summary>
+    typedef std::vector<Menu*> MenuPtrList;
+
     /// <summary>
     /// An invalid command id.
     /// </summary>
@@ -106,12 +100,12 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const String & GetName() const;
+    const std::string & GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const String & name);
+    void SetName(const std::string & name);
 
     /// <summary>
     /// Getter for the 'max_length' parameter.
@@ -134,17 +128,17 @@ namespace shellanything
     /// because property expansion can shorten or lengthen the given string.
     /// </remarks>
     /// <param name="str">The expanded string value which length must be validated.</param>
-    void TruncateName(String & str);
+    void TruncateName(std::string & str);
 
     /// <summary>
     /// Getter for the 'description' parameter.
     /// </summary>
-    const String & GetDescription() const;
+    const std::string & GetDescription() const;
 
     /// <summary>
     /// Setter for the 'description' parameter.
     /// </summary>
-    void SetDescription(const String & description);
+    void SetDescription(const std::string & description);
 
     /// <summary>
     /// Get this menu icon instance.
@@ -251,13 +245,7 @@ namespace shellanything
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const ActionPtrList & GetActions() const;
-
-    /// <summary>
-    /// Add a new sub menu to the menu. The menu instance takes ownership of the sub menu.
-    /// </summary>
-    /// <param name="menu">The given menu to add as a sub menu</param>
-    void AddMenu(Menu* menu);
+    const Action::ActionPtrList & GetActions() const;
 
     /// <summary>
     /// Get the list of submenu of the menu.
@@ -273,11 +261,10 @@ namespace shellanything
     bool mSeparator;
     bool mColumnSeparator;
     uint32_t mCommandId;
-    String mName;
+    std::string mName;
     int mNameMaxLength;
-    String mDescription;
-    ActionPtrList mActions;
-    MenuPtrList mSubMenus;
+    std::string mDescription;
+    Action::ActionPtrList mActions;
   };
 
 } //namespace shellanything

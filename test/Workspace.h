@@ -25,7 +25,7 @@
 #ifndef SA_TEST_WORKSPACE_H
 #define SA_TEST_WORKSPACE_H
 
-#include "shellanything/String.h"
+#include <string>
 
 namespace shellanything
 {

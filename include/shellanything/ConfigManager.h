@@ -25,6 +25,7 @@
 #ifndef SA_CONFIGMANAGER_H
 #define SA_CONFIGMANAGER_H
 
+#include "shellanything/Node.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Context.h"
 
@@ -50,21 +51,21 @@ namespace shellanything
     /// <summary>
     /// A list of string for holding configuration paths.
     /// </summary>
-    typedef std::vector<String> PathList;
+    typedef std::vector<std::string> PathList;
 
     static ConfigManager & GetInstance();
     
     /// <summary>
     /// Get the list of Configuration pointers handled by the manager
     /// </summary>
-    ConfigurationPtrList GetConfigurations();
+    Configuration::ConfigurationPtrList GetConfigurations();
 
     /// <summary>
     /// Returns true if the given path is a Configuration loaded by the manager.
     /// </summary>
     /// <param name="path">The path of a Configuration file</param>
     /// <returns>Returns true if the given path is a Configuration loaded by the manager. Returns false otherwise.</returns>
-    bool IsConfigFileLoaded(const String & path) const;
+    bool IsConfigFileLoaded(const std::string & path) const;
 
     /// <summary>
     /// Clears the configuration manager of all loaded Configuration
@@ -107,16 +108,12 @@ namespace shellanything
     /// Add a new search path to the path list.
     /// </summary>
     /// <param name="path">The path to add to the search list.</param>
-    void AddSearchPath(const String & path);
+    void AddSearchPath(const std::string & path);
 
   private:
-    //methods
-    void DeleteAllConfigurations();
-    void DeleteConfiguration(Configuration * config);
-
     //attributes
     PathList mPaths;
-    ConfigurationPtrList mConfigurations;
+    Node mConfigurations;
   };
 
 } //namespace shellanything

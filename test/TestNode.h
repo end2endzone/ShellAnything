@@ -22,14 +22,14 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef TEST_SA_STRING_H
-#define TEST_SA_STRING_H
+#ifndef TEST_SA_NODE_H
+#define TEST_SA_NODE_H
 
 #include <gtest/gtest.h>
 
 namespace shellanything { namespace test
 {
-  class TestString : public ::testing::Test
+  class TestNode : public ::testing::Test
   {
   public:
     virtual void SetUp();
@@ -39,4 +39,4 @@ namespace shellanything { namespace test
 } //namespace test
 } //namespace shellanything
 
-#endif //TEST_SA_STRING_H
+#endif //TEST_SA_NODE_H

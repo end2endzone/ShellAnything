@@ -84,7 +84,7 @@ namespace shellanything { namespace test
     action->SetBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
-    config->AddMenu(menu);
+    config->AddChild(menu);
     menu->AddValidity(validity);
     menu->AddAction(action);
   }
@@ -290,7 +290,7 @@ namespace shellanything { namespace test
     cmgr.Refresh();
  
     //ASSERT the file is loaded
-    ConfigurationPtrList configs = cmgr.GetConfigurations();
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
     ASSERT_EQ( 1, configs.size() );
  
     //ASSERT that properties was applied
