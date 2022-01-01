@@ -44,6 +44,12 @@ namespace shellanything
     mPImpl->str = str;
   }
 
+  String::String(const char* str, const size_t count)
+  {
+    mPImpl = new String::PImpl();
+    mPImpl->str.append(str, count);
+  }
+
   String::String(const String& str)
   {
     mPImpl = new String::PImpl();
@@ -109,6 +115,60 @@ namespace shellanything
     return (*this);
   }
 
+  String String::operator+(const char* str)
+  {
+    String temp = (*this);
+    temp += str;
+    return temp;
+  }
+
+  String String::operator+(const String& str)
+  {
+    String temp = (*this);
+    temp += str;
+    return temp;
+  }
+
+  bool String::operator<  (const char* str) const
+  {
+    return mPImpl->str < str;
+  }
+
+  bool String::operator<  (const String& str) const
+  {
+    return mPImpl->str < str.mPImpl->str;
+  }
+
+  bool String::operator<= (const char* str) const
+  {
+    return mPImpl->str <= str;
+  }
+
+  bool String::operator<= (const String& str) const
+  {
+    return mPImpl->str <= str.mPImpl->str;
+  }
+
+  bool String::operator>  (const char* str) const
+  {
+    return mPImpl->str > str;
+  }
+
+  bool String::operator>  (const String& str) const
+  {
+    return mPImpl->str > str.mPImpl->str;
+  }
+
+  bool String::operator>= (const char* str) const
+  {
+    return mPImpl->str >= str;
+  }
+
+  bool String::operator>= (const String& str) const
+  {
+    return mPImpl->str >= str.mPImpl->str;
+  }
+
   const char* String::GetValue() const
   {
     return mPImpl->str.c_str();
@@ -127,6 +187,11 @@ namespace shellanything
   void String::Clear()
   {
     return mPImpl->str.clear();
+  }
+
+  void String::Reserve(const size_t size)
+  {
+    mPImpl->str.reserve(size);
   }
 
   size_t String::Find(const char value) const
@@ -159,4 +224,80 @@ namespace shellanything
     return mPImpl->str.find(value.mPImpl->str, offset);
   }
 
+  void String::Append(const char value)
+  {
+    mPImpl->str.append(1, value);
+  }
+
+  void String::Append(const char* value)
+  {
+    mPImpl->str.append(value);
+  }
+
+  void String::Append(const char* value, const size_t count)
+  {
+    mPImpl->str.append(value, count);
+  }
+
+  void String::Append(const size_t count, const char value)
+  {
+    mPImpl->str.append(count, value);
+  }
+
+  void String::Append(const String& value)
+  {
+    mPImpl->str.append(value.mPImpl->str);
+  }
+
 } //namespace shellanything
+
+shellanything::String operator+(const shellanything::String& s1, const shellanything::String& s2)
+{
+  shellanything::String temp = (s1);
+  temp += s2;
+  return temp;
+}
+
+shellanything::String operator+(const char* s1, const shellanything::String& s2)
+{
+  shellanything::String temp = (s1);
+  temp += s2;
+  return temp;
+}
+
+shellanything::String operator+(const shellanything::String& s1, const char* s2)
+{
+  shellanything::String temp = (s1);
+  temp += s2;
+  return temp;
+}
+
+//bool operator<  (const char* s1, const shellanything::String& s2)
+//{
+//  return shellanything::String(s1) < s2;
+//}
+//
+//bool operator<= (const char* s1, const shellanything::String& s2)
+//{
+//  return shellanything::String(s1) <= s2;
+//}
+//
+//bool operator>  (const char* s1, const shellanything::String& s2)
+//{
+//  return shellanything::String(s1) > s2;
+//}
+//
+//bool operator>= (const char* s1, const shellanything::String& s2)
+//{
+//  return shellanything::String(s1) >= s2;
+//}
+
+
+/// <summary>
+/// A list of String.
+/// </summary>
+#define SA_LISTS_CLASS_NAME StringList
+#define SA_LISTS_BASE_TYPE  String
+#include "shellanything/ListsBody.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME

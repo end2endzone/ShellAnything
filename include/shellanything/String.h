@@ -22,6 +22,9 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#ifndef SA_STRING_H
+#define SA_STRING_H
+
  namespace shellanything
 {
 
@@ -33,6 +36,7 @@
   public:
     String();
     String(const char* str);
+    String(const char* str, const size_t count);
     String(const String& str);
     virtual ~String();
 
@@ -48,6 +52,16 @@
     bool operator!=(const String& str) const;
     String& operator+=(const char* str);
     String& operator+=(const String& str);
+    String operator+(const char* str);
+    String operator+(const String& str);
+    bool operator<  (const char* str) const;
+    bool operator<  (const String& str) const;
+    bool operator<= (const char* str) const;
+    bool operator<= (const String& str) const;
+    bool operator>  (const char* str) const;
+    bool operator>  (const String& str) const;
+    bool operator>= (const char* str) const;
+    bool operator>= (const String& str) const;
 
     /// <summary>
     /// Get the internal value of the string.
@@ -74,7 +88,14 @@
     inline void clear() { Clear(); } // for std::vector and std::list code compatibility.
 
     /// <summary>
-    /// Find a value in the list.
+    /// Reserve an amount of memory for the string.
+    /// </summary>
+    /// <param name="size">Amount of memory to reserve in bytes.</param>
+    void Reserve(const size_t size);
+    inline void reserve(const size_t size) { Reserve(size); } // for std::vector and std::list code compatibility.
+
+    /// <summary>
+    /// Find a value in the string.
     /// </summary>
     /// <param name="value">A value to find within the string.</param>
     /// <returns>Returns the position where the search value was found. Returns INVALID_INDEX otherwise.</returns>
@@ -86,7 +107,7 @@
     inline size_t find(const String& value) const { return Find(value); } // for std::vector and std::list code compatibility.
 
     /// <summary>
-    /// Find a value in the list, starting at the given offset.
+    /// Find a value in the string, starting at the given offset.
     /// </summary>
     /// <param name="value">A value to find within the string.</param>
     /// <param name="offset">Position at which the search must start.</param>
@@ -98,9 +119,45 @@
     inline size_t find(const char* value, size_t offset) const   { return Find(value, offset); } // for std::vector and std::list code compatibility.
     inline size_t find(const String& value, size_t offset) const { return Find(value, offset); } // for std::vector and std::list code compatibility.
 
+    /// <summary>
+    /// Appends a value in the string.
+    /// </summary>
+    /// <param name="value">A value to find within the string.</param>
+    /// <param name="count">Maximum length of the appended string.value to find within the string.</param>
+    void Append(const char value);
+    void Append(const char* value);
+    void Append(const char* value, const size_t count);
+    void Append(const size_t count, const char value);
+    void Append(const String& value);
+    inline void append(const char value)                      { return Append(value);        } // for std::vector and std::list code compatibility.
+    inline void append(const char* value)                     { return Append(value);        } // for std::vector and std::list code compatibility.
+    inline void append(const char* value, const size_t count) { return Append(value, count); } // for std::vector and std::list code compatibility.
+    inline void append(const size_t count, const char value)  { return Append(count, value); } // for std::vector and std::list code compatibility.
+    inline void append(const String& value)                   { return Append(value);        } // for std::vector and std::list code compatibility.
+
   private:
     struct PImpl;
     PImpl* mPImpl;
   };
 
+
 } //namespace shellanything
+
+shellanything::String operator+(const shellanything::String& s1, const shellanything::String& s2);
+shellanything::String operator+(const char* s1, const shellanything::String& s2);
+shellanything::String operator+(const shellanything::String& s1, const char* s2);
+//bool operator<  (const char* s1, const shellanything::String& s2);
+//bool operator<= (const char* s1, const shellanything::String& s2);
+//bool operator>  (const char* s1, const shellanything::String& s2);
+//bool operator>= (const char* s1, const shellanything::String& s2);
+
+/// <summary>
+/// A list of String.
+/// </summary>
+#define SA_LISTS_CLASS_NAME StringList
+#define SA_LISTS_BASE_TYPE  String
+#include "shellanything/ListsDeclaration.inc"
+#undef SA_LISTS_BASE_TYPE
+#undef SA_LISTS_CLASS_NAME
+
+#endif //SA_STRING_H
