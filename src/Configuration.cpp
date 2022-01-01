@@ -98,7 +98,7 @@ namespace shellanything
     return encoding;
   }
 
-  Configuration::Configuration() : Node("Configuration"),
+  Configuration::Configuration() :
     mFileModifiedDate(0),
     mDefaults(NULL)
   {
@@ -106,6 +106,7 @@ namespace shellanything
 
   Configuration::~Configuration()
   {
+    DeleteChildren();
   }
 
   Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
@@ -225,7 +226,7 @@ namespace shellanything
       }
 
       //add the new menu to the current configuration
-      config->AddChild(menu);
+      config->AddMenu(menu);
 
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
@@ -347,8 +348,7 @@ namespace shellanything
  
   Menu::MenuPtrList Configuration::GetMenus()
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    return sub_menus;
+    return mMenus;
   }
 
   void Configuration::SetDefaultSettings(DefaultSettings * defaults)
@@ -362,6 +362,27 @@ namespace shellanything
   const DefaultSettings * Configuration::GetDefaultSettings() const
   {
     return mDefaults;
+  }
+
+  void Configuration::AddMenu(Menu* menu)
+  {
+    mMenus.push_back(menu);
+  }
+
+  void Configuration::DeleteChildren()
+  {
+    // delete menus
+    for (size_t i = 0; i < mMenus.size(); i++)
+    {
+      Menu* sub = mMenus[i];
+      delete sub;
+    }
+    mMenus.clear();
+  }
+
+  void Configuration::DeleteChild(Menu* menu)
+  {
+    delete menu;
   }
 
 } //namespace shellanything

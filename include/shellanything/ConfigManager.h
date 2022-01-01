@@ -25,7 +25,6 @@
 #ifndef SA_CONFIGMANAGER_H
 #define SA_CONFIGMANAGER_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Context.h"
 
@@ -111,9 +110,13 @@ namespace shellanything
     void AddSearchPath(const std::string & path);
 
   private:
+    //methods
+    void DeleteChildren();
+    void DeleteChild(Configuration * config);
+
     //attributes
     PathList mPaths;
-    Node mConfigurations;
+    Configuration::ConfigurationPtrList mConfigurations;
   };
 
 } //namespace shellanything

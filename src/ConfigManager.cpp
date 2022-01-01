@@ -42,6 +42,7 @@ namespace shellanything
 
   ConfigManager::~ConfigManager()
   {
+    DeleteChildren();
   }
 
   ConfigManager & ConfigManager::GetInstance()
@@ -53,7 +54,7 @@ namespace shellanything
   void ConfigManager::Clear()
   {
     ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
-    mConfigurations.RemoveChildren();
+    DeleteChildren();
     Refresh(); //forces all loaded configurations to be unloaded
   }
 
@@ -81,7 +82,7 @@ namespace shellanything
         //file is missing or current configuration is out of date
         //forget about existing config
         LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
-        mConfigurations.RemoveChild(config);
+        DeleteChild(config);
       }
     }
    
@@ -119,7 +120,7 @@ namespace shellanything
               else
               {
                 //add to current list of configurations
-                mConfigurations.AddChild(config);
+                mConfigurations.push_back(config);
 
                 //apply default properties of the configuration
                 config->ApplyDefaultSettings();
@@ -183,8 +184,7 @@ namespace shellanything
  
   Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
   {
-    Configuration::ConfigurationPtrList configurations = FilterNodes<Configuration*>(mConfigurations.FindChildren("Configuration"));
-    return configurations;
+    return mConfigurations;
   }
 
   void ConfigManager::ClearSearchPath()
@@ -199,14 +199,30 @@ namespace shellanything
 
   bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
   {
-    for(size_t i=0; i<mConfigurations.Size(); i++)
+    for(size_t i=0; i<mConfigurations.size(); i++)
     {
-      const Node * node = mConfigurations.GetChild(i);
-      const Configuration * config = dynamic_cast<const Configuration *>(node);
+      const Configuration* config = mConfigurations[i];
       if (config != NULL && config->GetFilePath() == path)
         return true;
     }
     return false;
+  }
+
+  void ConfigManager::DeleteChildren()
+  {
+    // delete configurations
+    for (size_t i = 0; i < mConfigurations.size(); i++)
+    {
+      Configuration* config = mConfigurations[i];
+      delete config;
+    }
+    mConfigurations.clear();
+  }
+
+  void ConfigManager::DeleteChild(Configuration* config)
+  {
+    mConfigurations.erase(std::find(mConfigurations.begin(), mConfigurations.end(), config));
+    delete config;
   }
 
 } //namespace shellanything

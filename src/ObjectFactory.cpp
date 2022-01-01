@@ -554,9 +554,9 @@ namespace shellanything
 
     //parse separator
     std::string menu_separator;
-    bool have_separetor = ParseAttribute(element, "separator", true, true, menu_separator, error);
+    bool have_separator = ParseAttribute(element, "separator", true, true, menu_separator, error);
     bool separator_parsed = false;
-    if (have_separetor)
+    if (have_separator)
     {
       //try to parse this menu separator as a boolean
       bool is_horizontal_separator = false;
@@ -685,7 +685,7 @@ namespace shellanything
         delete menu;
         return NULL;
       }
-      menu->AddChild(submenu);
+      menu->AddMenu(submenu);
     }
 
     //find <icon> node under <menu>

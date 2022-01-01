@@ -84,7 +84,7 @@ namespace shellanything { namespace test
     action->SetBaseDir("C:\\Users\\MartyMcfly\\AppData\\Local\\Temp");
 
     //link everything
-    config->AddChild(menu);
+    config->AddMenu(menu);
     menu->AddValidity(validity);
     menu->AddAction(action);
   }

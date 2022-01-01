@@ -25,7 +25,6 @@
 #ifndef SA_VALIDATION_H
 #define SA_VALIDATION_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Context.h"
 #include <string>
 #include <vector>

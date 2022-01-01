@@ -25,7 +25,6 @@
 #ifndef SA_CONFIGURATION_H
 #define SA_CONFIGURATION_H
 
-#include "shellanything/Node.h"
 #include "shellanything/Menu.h"
 #include "shellanything/DefaultSettings.h"
 #include <stdint.h>
@@ -36,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// A configuration holds mutiple Menu instances.
   /// </summary>
-  class Configuration : public Node
+  class Configuration
   {
   public:
     /// <summary>
@@ -129,10 +128,21 @@ namespace shellanything
     /// <returns>Returns the DefaultSettings instance of the Configuration. Returns NULL if no DefaultSettings is set.</returns>
     const DefaultSettings * GetDefaultSettings() const;
 
+    /// <summary>
+    /// Add a Menu to this Configuration. The Configuration takes ownership of the Menu.
+    /// </summary>
+    /// <param name="menu">The Menu to add.</param>
+    void AddMenu(Menu * menu);
+
   private:
+    //methods
+    void DeleteChildren();
+    void DeleteChild(Menu* menu);
+
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
+    Menu::MenuPtrList mMenus;
   };
 
 } //namespace shellanything

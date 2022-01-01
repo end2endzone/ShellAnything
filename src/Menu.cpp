@@ -30,7 +30,7 @@ namespace shellanything
   const uint32_t Menu::INVALID_COMMAND_ID = 0;
   const int Menu::DEFAULT_NAME_MAX_LENGTH = 250;
 
-  Menu::Menu() : Node("Menu"),
+  Menu::Menu() :
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mColumnSeparator(false),
@@ -42,7 +42,7 @@ namespace shellanything
 
   Menu::~Menu()
   {
-    // validities
+    // delete validities
     for(size_t i=0; i<mValidities.size(); i++)
     {
       Validator * validator = mValidities[i];
@@ -50,7 +50,7 @@ namespace shellanything
     }
     mValidities.clear();
 
-    // visibilities
+    // delete visibilities
     for(size_t i=0; i<mVisibilities.size(); i++)
     {
       Validator * validator = mVisibilities[i];
@@ -58,13 +58,21 @@ namespace shellanything
     }
     mVisibilities.clear();
 
-    // actions
+    // delete actions
     for(size_t i=0; i<mActions.size(); i++)
     {
       Action * action = mActions[i];
       delete action;
     }
     mActions.clear();
+
+    // delete submenus
+    for(size_t i=0; i<mSubMenus.size(); i++)
+    {
+      Menu * sub = mSubMenus[i];
+      delete sub;
+    }
+    mSubMenus.clear();
   }
 
   bool Menu::IsSeparator() const
@@ -89,8 +97,7 @@ namespace shellanything
 
   bool Menu::IsParentMenu() const
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    bool parent_menu = (sub_menus.size() != 0);
+    bool parent_menu = (mSubMenus.size() != 0);
     return parent_menu;
   }
 
@@ -338,8 +345,12 @@ namespace shellanything
 
   Menu::MenuPtrList Menu::GetSubMenus()
   {
-    Menu::MenuPtrList sub_menus = FilterNodes<Menu*>(this->FindChildren("Menu"));
-    return sub_menus;
+    return mSubMenus;
+  }
+
+  void Menu::AddMenu(Menu* menu)
+  {
+    mSubMenus.push_back(menu);
   }
 
   void Menu::AddAction(Action * action)
