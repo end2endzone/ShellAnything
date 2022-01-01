@@ -92,8 +92,6 @@ add_executable(shellanything_unittest
   TestPropertyManager.h
   TestShellExtension.cpp
   TestShellExtension.h
-  TestString.cpp
-  TestString.h
   TestUnicode.cpp
   TestUnicode.h
   TestValidator.cpp
