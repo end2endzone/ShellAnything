@@ -29,23 +29,34 @@
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
 
+#include <map>
+
 namespace shellanything
 {
+  typedef std::map<String /*name*/, String /*value*/> PropertyMap;
+  struct PropertyManager::Properties
+  {
+    PropertyMap properties;
+  };
+
   static const int EXPANDING_MAX_ITERATIONS = 20;
 
-  const std::string PropertyManager::SYSTEM_TRUE_PROPERTY_NAME = "system.true";
-  const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
-  const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
-  const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
+  const String PropertyManager::SYSTEM_TRUE_PROPERTY_NAME = "system.true";
+  const String PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
+  const String PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
+  const String PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
 
   PropertyManager::PropertyManager()
   {
+    this->p = new Properties();
     RegisterEnvironmentVariables();
     RegisterDefaultProperties();
   }
 
   PropertyManager::~PropertyManager()
   {
+    delete this->p;
+    this->p = NULL;
   }
 
   PropertyManager & PropertyManager::GetInstance()
@@ -56,49 +67,49 @@ namespace shellanything
 
   void PropertyManager::Clear()
   {
-    properties.clear();
+    p->properties.clear();
     RegisterEnvironmentVariables();
     RegisterDefaultProperties();
   }
 
-  void PropertyManager::ClearProperty(const std::string & name)
+  void PropertyManager::ClearProperty(const String & name)
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
+    PropertyMap::const_iterator propertyIt = p->properties.find(name);
+    bool found = (propertyIt != p->properties.end());
     if (found)
     {
-      properties.erase(propertyIt);
+      p->properties.erase(propertyIt);
     }
   }
 
-  bool PropertyManager::HasProperty(const std::string & name) const
+  bool PropertyManager::HasProperty(const String & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
+    PropertyMap::const_iterator propertyIt = p->properties.find(name);
+    bool found = (propertyIt != p->properties.end());
     return found;
   }
 
-  void PropertyManager::SetProperty(const std::string & name, const std::string & value)
+  void PropertyManager::SetProperty(const String & name, const String & value)
   {
     //overwrite previous property
-    properties[name] = value;
+    p->properties[name] = value;
   }
 
-  const std::string & PropertyManager::GetProperty(const std::string & name) const
+  const String & PropertyManager::GetProperty(const String & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
+    PropertyMap::const_iterator propertyIt = p->properties.find(name);
+    bool found = (propertyIt != p->properties.end());
     if (found)
     {
-      const std::string & value = propertyIt->second;
+      const String & value = propertyIt->second;
       return value;
     }
 
-    static std::string EMPTY_VALUE;
+    static String EMPTY_VALUE;
     return EMPTY_VALUE;
   }
 
-  inline bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
+  inline bool IsPropertyReference(const String & token_open, const String & token_close, const String & value, size_t offset, String & name)
   {
     size_t value_length = value.size();
     name.clear();
@@ -124,7 +135,7 @@ namespace shellanything
     size_t length = (token_close_pos) - name_start_pos;
     if (length == 0)
       return false;
-    std::string temp_name(&value[name_start_pos], length);
+    String temp_name(&value[name_start_pos], length);
 
     //Validate if name
     PropertyManager & pmgr = PropertyManager::GetInstance();
@@ -134,11 +145,11 @@ namespace shellanything
     return exists;
   }
 
-  std::string PropertyManager::Expand(const std::string & value) const
+  String PropertyManager::Expand(const String & value) const
   {
     int count = 1;
-    std::string previous = value;
-    std::string output = ExpandOnce(value);
+    String previous = value;
+    String output = ExpandOnce(value);
 
     //Prevent circular reference by expanding at most 20 times.
     while(output != previous && count <= EXPANDING_MAX_ITERATIONS)
@@ -151,15 +162,15 @@ namespace shellanything
     return output;
   }
 
-  std::string PropertyManager::ExpandOnce(const std::string & value) const
+  String PropertyManager::ExpandOnce(const String & value) const
   {
     //Process expansion in-place
     std::string output;
     output.reserve(value.size()*2);
-    output = value;
+    output = value.c_str();
 
-    static const std::string token_open = "${";
-    static const std::string token_close = "}";
+    static const String token_open = "${";
+    static const String token_close = "}";
 
     //Prevent circular reference by dfining a counter which counts how many time a character position was expanded.
     int count = 1;
@@ -175,11 +186,11 @@ namespace shellanything
       previous_pos = i;
 
       //If we find a property reference token at this location...
-      std::string name;
-      if (strncmp(&output[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, output, i, name))
+      String name;
+      if (strncmp(&output[i], token_open.c_str(), token_open.size()) == 0 && IsPropertyReference(token_open, token_close, output.c_str(), i, name))
       {
         //Found a property reference at output[i]
-        const std::string & property_value = this->GetProperty(name);
+        const std::string property_value = this->GetProperty(name).c_str();
 
         //Replace the property reference by the property's value
         size_t token_length = token_open.size() + name.size() + token_close.size();
@@ -201,7 +212,7 @@ namespace shellanything
       }
     }
 
-    return output;
+    return output.c_str();
   }
 
   void PropertyManager::RegisterEnvironmentVariables()
@@ -219,15 +230,15 @@ namespace shellanything
       std::string value = ra::environment::GetEnvironmentVariableUtf8(var.c_str());
       
       //register the variable as a valid property
-      SetProperty(name, value);
+      SetProperty(name.c_str(), value.c_str());
     }
   }
 
   void PropertyManager::RegisterDefaultProperties()
   {
     //define global properties
-    std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
-    std::string prop_line_separator         = ra::environment::GetLineSeparator();
+    String prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
+    String prop_line_separator         = ra::environment::GetLineSeparator();
 
     SetProperty("path.separator"       , prop_path_separator       );
     SetProperty("line.separator"       , prop_line_separator       );

@@ -25,8 +25,7 @@
 #ifndef SA_ICON_H
 #define SA_ICON_H
 
-#include <string>
-#include <set>
+#include "shellanything/String.h"
 
 namespace shellanything
 {
@@ -65,22 +64,22 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'fileextension' parameter.
     /// </summary>
-    const std::string & GetFileExtension() const;
+    const String & GetFileExtension() const;
 
     /// <summary>
     /// Setter for the 'fileextension' parameter.
     /// </summary>
-    void SetFileExtension(const std::string & file_extension);
+    void SetFileExtension(const String & file_extension);
 
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const std::string & GetPath() const;
+    const String & GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & path);
+    void SetPath(const String & path);
 
     /// <summary>
     /// Getter for the 'index' parameter.
@@ -93,10 +92,8 @@ namespace shellanything
     void SetIndex(const int & index);
 
   private:
-    typedef std::set<std::string /*file extension*/> FileExtensionSet;
-    static FileExtensionSet mUnresolvedFileExtensions;
-    std::string mFileExtension;
-    std::string mPath;
+    String mFileExtension;
+    String mPath;
     int mIndex;
   };
 

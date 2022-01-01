@@ -47,9 +47,9 @@ namespace shellanything
   bool ActionProperty::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    std::string name = pmgr.Expand(mName);
-    std::string value = pmgr.Expand(mValue);
-    std::string exprtk = pmgr.Expand(mExprtk);
+    std::string name = pmgr.Expand(mName).c_str();
+    std::string value = pmgr.Expand(mValue).c_str();
+    std::string exprtk = pmgr.Expand(mExprtk).c_str();
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!exprtk.empty())
@@ -74,11 +74,11 @@ namespace shellanything
     //debug
     LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
 
-    pmgr.SetProperty(name, value);
+    pmgr.SetProperty(name.c_str(), value.c_str());
 
     // If a user has changed property 'selection.multi.separator', the context must rebuild selection-based properties.
     // See issue #52 for details.
-    if (name == Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
+    if (Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME == name.c_str())
     {
       // Force the context to rebuild selection.* properties.
       context.RegisterProperties();
@@ -87,32 +87,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionProperty::GetName() const
+  const String & ActionProperty::GetName() const
   {
     return mName;
   }
 
-  void ActionProperty::SetName(const std::string & name)
+  void ActionProperty::SetName(const String & name)
   {
     mName = name;
   }
 
-  const std::string & ActionProperty::GetValue() const
+  const String & ActionProperty::GetValue() const
   {
     return mValue;
   }
 
-  void ActionProperty::SetValue(const std::string & value)
+  void ActionProperty::SetValue(const String & value)
   {
     mValue = value;
   }
 
-  const std::string & ActionProperty::GetExprtk() const
+  const String & ActionProperty::GetExprtk() const
   {
     return mExprtk;
   }
 
-  void ActionProperty::SetExprtk(const std::string & exprtk)
+  void ActionProperty::SetExprtk(const String & exprtk)
   {
     mExprtk = exprtk;
   }

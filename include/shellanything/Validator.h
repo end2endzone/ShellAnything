@@ -26,7 +26,8 @@
 #define SA_VALIDATION_H
 
 #include "shellanything/Context.h"
-#include <string>
+#include "shellanything/String.h"
+#include <vector>
 
 #define SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR   ';'
 #define SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR    ";"
@@ -90,102 +91,102 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'properties' parameter.
     /// </summary>
-    const std::string & GetProperties() const;
+    const String & GetProperties() const;
 
     /// <summary>
     /// Setter for the 'properties' parameter.
     /// </summary>
-    void SetProperties(const std::string & properties);
+    void SetProperties(const String & properties);
 
     /// <summary>
     /// Getter for the 'fileextensions' parameter.
     /// </summary>
-    const std::string & GetFileExtensions() const;
+    const String & GetFileExtensions() const;
 
     /// <summary>
     /// Setter for the 'fileextensions' parameter.
     /// </summary>
-    void SetFileExtensions(const std::string & file_extensions);
+    void SetFileExtensions(const String & file_extensions);
 
     /// <summary>
     /// Getter for the 'fileexists' parameter.
     /// </summary>
-    const std::string & GetFileExists() const;
+    const String & GetFileExists() const;
 
     /// <summary>
     /// Setter for the 'fileexists' parameter.
     /// </summary>
-    void SetFileExists(const std::string & file_exists);
+    void SetFileExists(const String & file_exists);
 
     /// <summary>
     /// Getter for the 'class' parameter.
     /// </summary>
-    const std::string & GetClass() const;
+    const String & GetClass() const;
 
     /// <summary>
     /// Setter for the 'class' parameter.
     /// </summary>
-    void SetClass(const std::string & classes);
+    void SetClass(const String & classes);
 
     /// <summary>
     /// Getter for the 'pattern' parameter.
     /// </summary>
-    const std::string & GetPattern() const;
+    const String & GetPattern() const;
 
     /// <summary>
     /// Setter for the 'pattern' parameter.
     /// </summary>
-    void SetPattern(const std::string & pattern);
+    void SetPattern(const String & pattern);
 
     /// <summary>
     /// Getter for the 'exprtk' parameter.
     /// </summary>
-    const std::string & GetExprtk() const;
+    const String & GetExprtk() const;
 
     /// <summary>
     /// Setter for the 'exprtk' parameter.
     /// </summary>
-    void SetExprtk(const std::string & exprtk);
+    void SetExprtk(const String & exprtk);
 
     /// <summary>
     /// Getter for the 'istrue' parameter.
     /// </summary>
-    const std::string & GetIsTrue() const;
+    const String & GetIsTrue() const;
 
     /// <summary>
     /// Setter for the 'istrue' parameter.
     /// </summary>
-    void SetIsTrue(const std::string & istrue);
+    void SetIsTrue(const String & istrue);
 
     /// <summary>
     /// Getter for the 'isfalse' parameter.
     /// </summary>
-    const std::string & GetIsFalse() const;
+    const String & GetIsFalse() const;
 
     /// <summary>
     /// Setter for the 'isfalse' parameter.
     /// </summary>
-    void SetIsFalse(const std::string & isfalse);
+    void SetIsFalse(const String & isfalse);
 
     /// <summary>
     /// Getter for the 'isempty' parameter.
     /// </summary>
-    const std::string & GetIsEmpty() const;
+    const String & GetIsEmpty() const;
 
     /// <summary>
     /// Setter for the 'isempty' parameter.
     /// </summary>
-    void SetIsEmpty(const std::string & isempty);
+    void SetIsEmpty(const String & isempty);
 
     /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
-    const std::string & GetInserve() const;
+    const String & GetInserve() const;
 
     /// <summary>
     /// Setter for the 'inserve' parameter.
     /// </summary>
-    void SetInserve(const std::string & inserve);
+    void SetInserve(const String & inserve);
 
     /// <summary>
     /// Returns true if the given attribute name is in the list of inversed attributes.
@@ -222,7 +223,7 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The value to test as true</param>
     /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
-    static bool IsTrue(const std::string & value);
+    static bool IsTrue(const String & value);
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
@@ -238,34 +239,34 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The value to test as true</param>
     /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
-    static bool IsFalse(const std::string & value);
+    static bool IsFalse(const String & value);
 
   private:
-    bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
-    bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
-    bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
-    bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
-    bool ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
-    bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
-    bool ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const;
-    bool ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const;
-    bool ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const;
+    bool ValidateProperties(const Context & context, const String & properties, bool inversed) const;
+    bool ValidateFileExtensions(const Context & context, const String & file_extensions, bool inversed) const;
+    bool ValidateExists(const Context & context, const String & file_exists, bool inversed) const;
+    bool ValidateClass(const Context & context, const String & class_, bool inversed) const;
+    bool ValidateSingleFileMultipleClasses(const String & path, const String & class_, bool inversed) const;
+    bool ValidateSingleFileSingleClass(const String & path, const String & class_, bool inversed) const;
+    bool ValidatePattern(const Context & context, const String & pattern, bool inversed) const;
+    bool ValidateExprtk(const Context & context, const String & exprtk, bool inversed) const;
+    bool ValidateIsTrue(const Context & context, const String & istrue, bool inversed) const;
+    bool ValidateIsFalse(const Context & context, const String & isfalse, bool inversed) const;
+    bool ValidateIsEmpty(const Context & context, const String & isempty, bool inversed) const;
 
   private:
     int mMaxFiles;
     int mMaxDirectories;
-    std::string mProperties;
-    std::string mFileExtensions;
-    std::string mFileExists;
-    std::string mClass;
-    std::string mPattern;
-    std::string mExprtk;
-    std::string mIsTrue;
-    std::string mIsFalse;
-    std::string mIsEmpty;
-    std::string mInverse;
+    String mProperties;
+    String mFileExtensions;
+    String mFileExists;
+    String mClass;
+    String mPattern;
+    String mExprtk;
+    String mIsTrue;
+    String mIsFalse;
+    String mIsEmpty;
+    String mInverse;
   };
 
 } //namespace shellanything

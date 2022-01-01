@@ -42,17 +42,17 @@
 namespace shellanything
 {
 
-  void ShowErrorMessage(const std::string & title, const std::string & message)
+  void ShowErrorMessage(const String & title, const String & message)
   {
     HWND hWnd = GetDesktopWindow();
     MessageBoxA(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
   }
 
-  void ShowErrorMessageUtf8(const std::string & title, const std::string & message)
+  void ShowErrorMessageUtf8(const String & title, const String & message)
   {
     HWND hWnd = GetDesktopWindow();
-    std::wstring   title_unicode = ra::unicode::Utf8ToUnicode(title);
-    std::wstring message_unicode = ra::unicode::Utf8ToUnicode(message);
+    std::wstring   title_unicode = ra::unicode::Utf8ToUnicode(title.c_str());
+    std::wstring message_unicode = ra::unicode::Utf8ToUnicode(message.c_str());
     MessageBoxW(hWnd, message_unicode.c_str(), title_unicode.c_str(), MB_OK | MB_ICONERROR);
   }
 

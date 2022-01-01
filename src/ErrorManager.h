@@ -25,7 +25,7 @@
 #ifndef SA_PLATFORM_H
 #define SA_PLATFORM_H
 
-#include "rapidassist/strings.h"
+#include "shellanything/String.h"
 
 namespace shellanything
 {
@@ -35,14 +35,14 @@ namespace shellanything
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  void ShowErrorMessage(const std::string & title, const std::string & message);
+  void ShowErrorMessage(const String & title, const String & message);
 
   /// <summary>
   /// Show an error message encoded in utf8 to the user.
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  void ShowErrorMessageUtf8(const std::string & title, const std::string & message);
+  void ShowErrorMessageUtf8(const String & title, const String & message);
 
 } //namespace shellanything
 

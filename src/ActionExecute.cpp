@@ -49,7 +49,7 @@ namespace shellanything
   bool ActionExecute::Execute(const Context& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
-    std::string verb = pmgr.Expand(mVerb);
+    std::string verb = pmgr.Expand(mVerb).c_str();
 
     //If a verb was specified, delegate to VerbExecute(). Otherwise, use ProcessExecute().
     if (verb.empty())
@@ -61,10 +61,10 @@ namespace shellanything
   bool ActionExecute::ExecuteVerb(const Context& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
-    std::string path      = pmgr.Expand(mPath);
-    std::string basedir   = pmgr.Expand(mBaseDir);
-    std::string arguments = pmgr.Expand(mArguments);
-    std::string verb      = pmgr.Expand(mVerb);
+    std::string path      = pmgr.Expand(mPath).c_str();
+    std::string basedir   = pmgr.Expand(mBaseDir).c_str();
+    std::string arguments = pmgr.Expand(mArguments).c_str();
+    std::string verb      = pmgr.Expand(mVerb).c_str();
 
     std::wstring pathW      = ra::unicode::Utf8ToUnicode(path);
     std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
@@ -119,9 +119,9 @@ namespace shellanything
   bool ActionExecute::ExecuteProcess(const Context & context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
-    std::string path      = pmgr.Expand(mPath);
-    std::string basedir   = pmgr.Expand(mBaseDir);
-    std::string arguments = pmgr.Expand(mArguments);
+    std::string path      = pmgr.Expand(mPath).c_str();
+    std::string basedir   = pmgr.Expand(mBaseDir).c_str();
+    std::string arguments = pmgr.Expand(mArguments).c_str();
 
     bool basedir_missing = basedir.empty();
     bool arguments_missing = arguments.empty();
@@ -130,27 +130,27 @@ namespace shellanything
     //If not specified try to fill basedir with the best option available
     if (basedir.empty())
     {
-      const shellanything::Context::ElementList & elements = context.GetElements();
+      const shellanything::StringList & elements = context.GetElements();
       size_t num_dir    = context.GetNumDirectories();
       size_t num_files  = context.GetNumFiles();
       if (num_dir == 1 && elements.size() == 1)
       {
         //if a single directory was selected
-        basedir = elements[0];
+        basedir = elements[0].c_str();
       }
       else if (num_files == 1 && elements.size() == 1)
       {
         //if a single file was selected
-        const std::string & selected_file = elements[0];
+        const std::string & selected_file = elements[0].c_str();
         const std::string parent_dir = ra::filesystem::GetParentPath(selected_file);
-        basedir = parent_dir;
+        basedir = parent_dir.c_str();
       }
       else if (num_dir == 0 && num_files >= 2 && elements.size() >= 1)
       {
         //if a multiple files was selected
-        const std::string & first_selected_file = elements[0];
-        const std::string first_parent_dir = ra::filesystem::GetParentPath(first_selected_file);
-        basedir = first_parent_dir;
+        const std::string & first_selected_file = elements[0].c_str();
+        const std::string first_parent_dir = ra::filesystem::GetParentPath(first_selected_file.c_str());
+        basedir = first_parent_dir.c_str();
       }
     }
 
@@ -196,42 +196,42 @@ namespace shellanything
     return success;
   }
 
-  const std::string & ActionExecute::GetPath() const
+  const String & ActionExecute::GetPath() const
   {
     return mPath;
   }
 
-  void ActionExecute::SetPath(const std::string & path)
+  void ActionExecute::SetPath(const String & path)
   {
     mPath = path;
   }
 
-  const std::string & ActionExecute::GetBaseDir() const
+  const String & ActionExecute::GetBaseDir() const
   {
     return mBaseDir;
   }
 
-  void ActionExecute::SetBaseDir(const std::string & base_dir)
+  void ActionExecute::SetBaseDir(const String & base_dir)
   {
     mBaseDir = base_dir;
   }
 
-  const std::string & ActionExecute::GetArguments() const
+  const String & ActionExecute::GetArguments() const
   {
     return mArguments;
   }
 
-  void ActionExecute::SetArguments(const std::string & arguments)
+  void ActionExecute::SetArguments(const String & arguments)
   {
     mArguments = arguments;
   }
 
-  const std::string& ActionExecute::GetVerb() const
+  const String& ActionExecute::GetVerb() const
   {
     return mVerb;
   }
 
-  void ActionExecute::SetVerb(const std::string& verb)
+  void ActionExecute::SetVerb(const String& verb)
   {
     mVerb = verb;
   }

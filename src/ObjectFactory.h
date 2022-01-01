@@ -57,7 +57,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an Icon to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns true if the object was properly parsed. Returns false otherwise.</returns>
-    bool ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
+    bool ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, String & error);
 
     /// <summary>
     /// Parses a Validator class from xml. Returns NULL if the parsing failed.
@@ -65,7 +65,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains a Validator to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid Validator pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Validator * ParseValidator(const tinyxml2::XMLElement * element, std::string & error);
+    Validator * ParseValidator(const tinyxml2::XMLElement * element, String & error);
 
     /// <summary>
     /// Parses a Action class from xml. Returns NULL if the parsing failed.
@@ -73,7 +73,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an Action to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid Action pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Action * ParseAction(const tinyxml2::XMLElement * element, std::string & error);
+    Action * ParseAction(const tinyxml2::XMLElement * element, String & error);
 
     /// <summary>
     /// Parses a Menu class from xml. Returns NULL if the parsing failed.
@@ -81,7 +81,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an Menu to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid Menu pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Menu * ParseMenu(const tinyxml2::XMLElement * element, std::string & error);
+    Menu * ParseMenu(const tinyxml2::XMLElement * element, String & error);
 
     /// <summary>
     /// Parses a DefaultSettings class from xml. Returns NULL if the parsing failed.
@@ -89,7 +89,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an DefaultSettings to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid DefaultSettings pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    DefaultSettings * ParseDefaults(const tinyxml2::XMLElement * element, std::string & error);
+    DefaultSettings * ParseDefaults(const tinyxml2::XMLElement * element, String & error);
   };
 
 } //namespace shellanything

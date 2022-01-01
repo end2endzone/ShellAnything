@@ -25,7 +25,7 @@
 #ifndef SA_UNICODE_H
 #define SA_UNICODE_H
 
-#include <string>
+#include "shellanything/String.h"
 
 namespace shellanything
 {
@@ -61,7 +61,7 @@ namespace shellanything
   /// <param name="start">The index in code points where the substring must start. Set to 0 to start at the beginning of the string.</param>
   /// <param name="length">The length in code points of the output substring.</param>
   /// <returns>Returns a substring from a given utf-8 encoded string. Returns an empty string if the given string is not properly utf-8 encoded.</returns>
-  std::string SubstringUtf8(const char * str, size_t start, size_t length);
+  String SubstringUtf8(const char * str, size_t start, size_t length);
 
 } //namespace shellanything
 

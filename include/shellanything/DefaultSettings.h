@@ -26,8 +26,6 @@
 #define SA_DEFAULTSETTINGS_H
 
 #include "shellanything/Action.h"
-#include <string>
-#include <stdint.h>
 
 namespace shellanything
 {

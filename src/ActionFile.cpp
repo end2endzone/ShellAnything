@@ -46,9 +46,9 @@ namespace shellanything
   bool ActionFile::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string path = pmgr.Expand(mPath);
-    std::string text = pmgr.Expand(mText);
-    const std::string encoding = pmgr.Expand(mEncoding);
+    const std::string path = pmgr.Expand(mPath).c_str();
+    std::string text = pmgr.Expand(mText).c_str();
+    const std::string encoding = pmgr.Expand(mEncoding).c_str();
 
     //debug
     LOG(INFO) << "Writing file '" << path << "'.";
@@ -95,32 +95,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionFile::GetPath() const
+  const String & ActionFile::GetPath() const
   {
     return mPath;
   }
 
-  void ActionFile::SetPath(const std::string & path)
+  void ActionFile::SetPath(const String & path)
   {
     mPath = path;
   }
 
-  const std::string & ActionFile::GetText() const
+  const String & ActionFile::GetText() const
   {
     return mText;
   }
 
-  void ActionFile::SetText(const std::string & text)
+  void ActionFile::SetText(const String & text)
   {
     mText = text;
   }
 
-  const std::string & ActionFile::GetEncoding() const
+  const String & ActionFile::GetEncoding() const
   {
     return mEncoding;
   }
 
-  void ActionFile::SetEncoding(const std::string & encoding)
+  void ActionFile::SetEncoding(const String & encoding)
   {
     mEncoding = encoding;
   }

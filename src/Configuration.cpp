@@ -26,6 +26,7 @@
 #include "shellanything/Context.h"
 #include "shellanything/ActionProperty.h"
 
+#include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
 #include "ObjectFactory.h"
@@ -115,13 +116,15 @@ namespace shellanything
     mMenus.Clear();
   }
 
-  Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
+  Configuration * Configuration::LoadFile(const String & path, String & error_output)
   {
+    std::string error;
     error = "";
 
     if (!ra::filesystem::FileExistsUtf8(path.c_str()))
     {
-      error = "File '" + path + "' not found.";
+      error = std::string("File '") + path.c_str() + "' not found.";
+      error_output = error.c_str();
       return NULL;
     }
 
@@ -142,11 +145,12 @@ namespace shellanything
       ra::random::GetRandomString(temp_filename, 10);
       temp_filename.append(".xml");
       std::string temp_path = ra::filesystem::GetTemporaryDirectory() + ra::filesystem::GetPathSeparatorStr() + temp_filename;
-      bool copied = ra::filesystem::CopyFileUtf8(path, temp_path);
+      bool copied = ra::filesystem::CopyFileUtf8(path.c_str(), temp_path);
       if (!copied)
       {
         error.clear();
-        error << "Failed to copy file '" << path << "' to '" << temp_path << "'.";
+        error << "Failed to copy file '" << path.c_str() << "' to '" << temp_path << "'.";
+        error_output = error.c_str();
         return NULL;
       }
 
@@ -178,6 +182,7 @@ namespace shellanything
       //Not an utf-8 encoded file.
       error.clear();
       error << "File is not encoded in UTF-8.";
+      error_output = error.c_str();
       return NULL;
     }
 
@@ -208,7 +213,7 @@ namespace shellanything
     while (xml_defaults)
     {
       //found a new menu node
-      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
+      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error_output);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
@@ -224,7 +229,7 @@ namespace shellanything
     while (xml_menu)
     {
       //found a new menu node
-      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error);
+      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error_output);
       if (menu == NULL)
       {
         delete config;
@@ -241,9 +246,9 @@ namespace shellanything
     return config;
   }
 
-  bool Configuration::IsValidConfigFile(const std::string & path)
+  bool Configuration::IsValidConfigFile(const String & path)
   {
-    std::string file_extension = ra::filesystem::GetFileExtention(path);
+    std::string file_extension = ra::filesystem::GetFileExtention(path.c_str());
     file_extension = ra::strings::Uppercase(file_extension);
 
     if (file_extension == "XML")
@@ -254,12 +259,12 @@ namespace shellanything
     return false;
   }
 
-  const std::string & Configuration::GetFilePath() const
+  const String & Configuration::GetFilePath() const
   {
     return mFilePath;
   }
 
-  void Configuration::SetFilePath(const std::string & file_path)
+  void Configuration::SetFilePath(const String & file_path)
   {
     mFilePath = file_path;
   }

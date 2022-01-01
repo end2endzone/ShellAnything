@@ -92,7 +92,7 @@ namespace shellanything
     return elements;
   }
 
-  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
+  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, String & attr_value, String & error)
   {
     if (element == NULL)
     {
@@ -110,7 +110,9 @@ namespace shellanything
     }
     else if (!attr_node)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing attribute '" + std::string(attr_name) + "'.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing attribute '" + attr_name + "'.";
+      error = temp.c_str();
       return false;
     }
 
@@ -118,25 +120,31 @@ namespace shellanything
 
     if (!allow_empty_values && attr_value.empty())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " have attribute '" + std::string(attr_name) + "' value empty.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " have attribute '" + attr_name + "' value empty.";
+      error = temp.c_str();
       return false;
     }
 
     return true;
   }
 
-  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
+  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, String & error)
   {
-    std::string str_value;    
-    if (!ParseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
+    std::string str_value;
+    String s;
+    if (!ParseAttribute(element, attr_name, is_optional, allow_empty_values, s, error))
       return false; //error is already set
+    str_value = s.c_str();
 
     //convert string to int
     int int_value = -1;
     if (!ra::strings::Parse(str_value, int_value))
     {
       //failed parsing
-      error << "Failed parsing attribute '" << attr_name << "' of node '" << element->Name() << "'.";
+      std::string temp;
+      temp << "Failed parsing attribute '" << attr_name << "' of node '" << element->Name() << "'.";
+      error = temp.c_str();
       return false;
     }
 
@@ -145,7 +153,7 @@ namespace shellanything
     return true;
   }
 
-  Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, std::string & error)
+  Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, String & error)
   {
     if (element == NULL)
     {
@@ -155,14 +163,16 @@ namespace shellanything
 
     if (NODE_VALIDITY != element->Name() && NODE_VISIBILITY != element->Name() && NODE_ACTION_STOP != element->Name())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is not a <validity> or <visibility> node";
+      error = temp.c_str();
       return NULL;
     }
 
     Validator * validator = new Validator();
 
     //parse class
-    std::string class_;
+    String class_;
     if (ParseAttribute(element, "class", true, true, class_, error))
     {
       if (!class_.empty())
@@ -172,7 +182,7 @@ namespace shellanything
     }
 
     //parse pattern
-    std::string pattern;
+    String pattern;
     if (ParseAttribute(element, "pattern", true, true, pattern, error))
     {
       if (!pattern.empty())
@@ -182,7 +192,7 @@ namespace shellanything
     }
 
     //parse exprtk
-    std::string exprtk;
+    String exprtk;
     if (ParseAttribute(element, "exprtk", true, true, exprtk, error))
     {
       if (!exprtk.empty())
@@ -206,7 +216,7 @@ namespace shellanything
     }
 
     //parse fileextensions
-    std::string fileextensions;
+    String fileextensions;
     if (ParseAttribute(element, "fileextensions", true, true, fileextensions, error))
     {
       if (!fileextensions.empty())
@@ -216,7 +226,7 @@ namespace shellanything
     }
 
     //parse exists
-    std::string exists;
+    String exists;
     if (ParseAttribute(element, "exists", true, true, exists, error))
     {
       if (!exists.empty())
@@ -226,7 +236,7 @@ namespace shellanything
     }
 
     //parse properties
-    std::string properties;
+    String properties;
     if (ParseAttribute(element, "properties", true, true, properties, error))
     {
       if (!properties.empty())
@@ -236,7 +246,7 @@ namespace shellanything
     }
 
     //parse inverse
-    std::string inverse;
+    String inverse;
     if (ParseAttribute(element, "inverse", true, true, inverse, error))
     {
       if (!inverse.empty())
@@ -246,7 +256,7 @@ namespace shellanything
     }
 
     //parse istrue
-    std::string istrue;
+    String istrue;
     if (ParseAttribute(element, "istrue", true, true, istrue, error))
     {
       if (!istrue.empty())
@@ -256,7 +266,7 @@ namespace shellanything
     }
 
     //parse isfalse
-    std::string isfalse;
+    String isfalse;
     if (ParseAttribute(element, "isfalse", true, true, isfalse, error))
     {
       if (!isfalse.empty())
@@ -266,7 +276,7 @@ namespace shellanything
     }
 
     //parse isempty
-    std::string isempty;
+    String isempty;
     if (ParseAttribute(element, "isempty", true, true, isempty, error))
     {
       if (!isempty.empty())
@@ -279,7 +289,7 @@ namespace shellanything
     return validator;
   }
 
-  Action * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
+  Action * ObjectFactory::ParseAction(const XMLElement* element, String & error)
   {
     if (element == NULL)
     {
@@ -288,7 +298,7 @@ namespace shellanything
     }
 
     //temporary parsed attribute values
-    std::string tmp_str;
+    String tmp_str;
     int tmp_int = -1;
 
     if (NODE_ACTION_CLIPBOARD == element->Name())
@@ -526,7 +536,9 @@ namespace shellanything
     }
     else
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      error = temp.c_str();
       return NULL;
     }
 
@@ -534,7 +546,7 @@ namespace shellanything
     return NULL;
   }
 
-  Menu * ObjectFactory::ParseMenu(const XMLElement* element, std::string & error)
+  Menu * ObjectFactory::ParseMenu(const XMLElement* element, String & error)
   {
     if (element == NULL)
     {
@@ -545,7 +557,9 @@ namespace shellanything
     std::string xml_name = element->Name();
     if (xml_name != NODE_MENU)
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      error = temp.c_str();
       return NULL;
     }
 
@@ -553,14 +567,14 @@ namespace shellanything
     Menu * menu = new Menu();
 
     //parse separator
-    std::string menu_separator;
-    bool have_separetor = ParseAttribute(element, "separator", true, true, menu_separator, error);
+    String menu_separator;
+    bool have_separator = ParseAttribute(element, "separator", true, true, menu_separator, error);
     bool separator_parsed = false;
-    if (have_separetor)
+    if (have_separator)
     {
       //try to parse this menu separator as a boolean
       bool is_horizontal_separator = false;
-      separator_parsed = ra::strings::Parse(menu_separator, is_horizontal_separator);
+      separator_parsed = ra::strings::Parse(menu_separator.c_str(), is_horizontal_separator);
       if (separator_parsed && is_horizontal_separator)
       {
         menu->SetSeparator(true);
@@ -568,7 +582,7 @@ namespace shellanything
       }
 
       //try to parse as a string
-      menu_separator = ra::strings::Lowercase(menu_separator);
+      menu_separator = ra::strings::Lowercase(menu_separator.c_str()).c_str();
       if (menu_separator == "horizontal")
       {
         menu->SetSeparator(true);
@@ -582,7 +596,7 @@ namespace shellanything
     }
 
     //parse name
-    std::string menu_name;
+    String menu_name;
     if (!ParseAttribute(element, "name", false, false, menu_name, error))
     {
       delete menu;
@@ -591,14 +605,14 @@ namespace shellanything
     menu->SetName(menu_name);
 
     //parse description
-    std::string menu_desc;
+    String menu_desc;
     if (!ParseAttribute(element, "description", true, true, menu_desc, error))
     {
       menu->SetDescription(menu_desc);
     }
 
     //parse icon
-    std::string icon_path;
+    String icon_path;
     if (ParseAttribute(element, "icon", true, true, icon_path, error))
     {
       Icon icon;
@@ -607,11 +621,11 @@ namespace shellanything
     }
 
     //parse maxlength
-    std::string maxlength_str;
+    String maxlength_str;
     if (ParseAttribute(element, "maxlength", true, true, maxlength_str, error))
     {
       int maxlength = 0;
-      if (ra::strings::Parse(maxlength_str, maxlength) && maxlength > 0)
+      if (ra::strings::Parse(maxlength_str.c_str(), maxlength) && maxlength > 0)
       {
         menu->SetNameMaxLength(maxlength);
       }
@@ -705,7 +719,7 @@ namespace shellanything
     return menu;
   }
 
-  bool ObjectFactory::ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
+  bool ObjectFactory::ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, String & error)
   {
     if (element == NULL)
     {
@@ -713,19 +727,21 @@ namespace shellanything
       return false;
     }
 
-    std::string xml_name = element->Name();
-    if (xml_name != NODE_ICON)
+    String xml_name = element->Name();
+    if (NODE_ICON != xml_name.c_str())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      error = temp.c_str();
       return NULL;
     }
 
     //parse path
-    std::string icon_path;
+    String icon_path;
     bool hasPath = ParseAttribute(element, "path", true, true, icon_path, error);
 
     //parse fileextension
-    std::string icon_fileextension;
+    String icon_fileextension;
     bool hasFileExtension = ParseAttribute(element, "fileextension", true, true, icon_fileextension, error);
     
     if (!hasPath && !hasFileExtension)
@@ -752,7 +768,7 @@ namespace shellanything
     return true;
   }
 
-  DefaultSettings * ObjectFactory::ParseDefaults(const XMLElement* element, std::string & error)
+  DefaultSettings * ObjectFactory::ParseDefaults(const XMLElement* element, String & error)
   {
     if (element == NULL)
     {
@@ -760,10 +776,12 @@ namespace shellanything
       return NULL;
     }
 
-    std::string xml_name = element->Name();
-    if (xml_name != NODE_DEFAULTSETTINGS)
+    String xml_name = element->Name();
+    if (NODE_DEFAULTSETTINGS != xml_name.c_str())
     {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      std::string temp;
+      temp = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      error = temp.c_str();
       return NULL;
     }
 

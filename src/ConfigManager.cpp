@@ -75,7 +75,7 @@ namespace shellanything
       Configuration * config = configs[i];
 
       //compare the file's date at the load time and the current date
-      const std::string & file_path = config->GetFilePath();
+      const std::string file_path = config->GetFilePath().c_str();
       const uint64_t & old_file_date = config->GetFileModifiedDate();
       const uint64_t new_file_date = ra::filesystem::GetFileModifiedDateUtf8(file_path);
       if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
@@ -95,10 +95,10 @@ namespace shellanything
     //search every known path
     for (size_t i=0; i<mPaths.size(); i++)
     {
-      const std::string & path = mPaths[i];
+      const std::string path = mPaths[i].c_str();
  
       LOG(INFO) << "Searching configuration files in directory '" << path << "'";
-
+      
       //search files in each directory
       ra::strings::StringVector files;
       bool dir_found = ra::filesystem::FindFilesUtf8(files, path.c_str());
@@ -107,21 +107,21 @@ namespace shellanything
         //search through each files for *.xml files
         for(size_t j=0; j<files.size(); j++)
         {
-          const std::string & file_path = files[j];
+          const String file_path = files[j].c_str();
           if (Configuration::IsValidConfigFile(file_path))
           {
             //is this file already loaded ?
             if (!IsConfigFileLoaded(file_path))
             {
-              LOG(INFO) << "Found new configuration file '" << file_path << "'";
+              LOG(INFO) << "Found new configuration file '" << file_path.c_str() << "'";
 
               //parse the file
-              std::string error;
+              String error;
               Configuration * config = Configuration::LoadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
-                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
+                LOG(ERROR) << "Failed loading configuration file '" << file_path.c_str() << "'. Error=" << error.c_str() << ".";
               }
               else
               {
@@ -134,7 +134,7 @@ namespace shellanything
             }
             else
             {
-              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
+              LOG(INFO) << "Skipped configuration file '" << file_path.c_str() << "'. File is already loaded.";
             }
           }
         }
@@ -198,12 +198,12 @@ namespace shellanything
     mPaths.clear();
   }
 
-  void ConfigManager::AddSearchPath(const std::string & path)
+  void ConfigManager::AddSearchPath(const String & path)
   {
     mPaths.push_back(path);
   }
 
-  bool ConfigManager::IsConfigFileLoaded(const std::string & path) const
+  bool ConfigManager::IsConfigFileLoaded(const String & path) const
   {
     for(size_t i=0; i<mConfigurations.size(); i++)
     {

@@ -38,25 +38,25 @@ namespace shellanything
     return false;
   }
 
-  std::string GetDriveLetter(const std::string & element)
+  String GetDriveLetter(const String & element)
   {
-    std::string letter;
+    String letter;
     if (element.size() >= 2 && element[1] == ':' && IsDriveLetter(element[0]))
       letter.append(1, element[0]);
     return letter;
   }
 
-  std::string GetDrivePath(const std::string & element)
+  String GetDrivePath(const String & element)
   {
-    std::string letter;
+    String letter;
     if (element.size() >= 3 && element[1] == ':' && IsDriveLetter(element[0]) && element[2] == '\\')
       letter.append(element.c_str(), 3);
     return letter;
   }
 
-  bool IsNetworkPath(const std::string & path)
+  bool IsNetworkPath(const String & path)
   {
-    if (path.size() >= 2 && path.substr(0, 2) == "\\\\")
+    if (path.size() >= 2 && (path[0] == '\\' && path[1] == '\\'))
     {
       // The path starts with \\
       // Extract hostname
@@ -76,7 +76,7 @@ namespace shellanything
     return false;
   }
 
-  DRIVE_CLASS GetDriveClassFromPath(const std::string & path)
+  DRIVE_CLASS GetDriveClassFromPath(const String & path)
   {
     // Patch for DRIVE_CLASS_NETWORK.
     // The function GetDriveTypeA() will return DRIVE_UNKNOWN when the given path is a network path.
@@ -97,7 +97,7 @@ namespace shellanything
         // The functions returns DRIVE_NO_ROOT_DIR even if the drive letter, of the given non-existing path, is a CD-ROM or DVD-Drive.
         // However, the function will return DRIVE_CDROM is the root path of the same path is used, even if there are no disk in the optical drive.
         // To work around these issues, try to resolve with the root path of the drive.
-        std::string root_path = GetDrivePath(path);
+        String root_path = GetDrivePath(path);
         if (root_path.empty() || // We may be dealing with a network path
             root_path == path  ) // We are already using a root drive path
         {
@@ -126,7 +126,7 @@ namespace shellanything
     };
   }
 
-  DRIVE_CLASS GetDriveClassFromString(const std::string & value)
+  DRIVE_CLASS GetDriveClassFromString(const String & value)
   {
     if (value == "drive:removable")
       return DRIVE_CLASS_REMOVABLE;

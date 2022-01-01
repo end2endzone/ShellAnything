@@ -28,7 +28,7 @@
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
 #include "shellanything/Action.h"
-#include <string>
+#include "shellanything/String.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -106,12 +106,12 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const std::string & GetName() const;
+    const String & GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & name);
+    void SetName(const String & name);
 
     /// <summary>
     /// Getter for the 'max_length' parameter.
@@ -134,17 +134,17 @@ namespace shellanything
     /// because property expansion can shorten or lengthen the given string.
     /// </remarks>
     /// <param name="str">The expanded string value which length must be validated.</param>
-    void TruncateName(std::string & str);
+    void TruncateName(String & str);
 
     /// <summary>
     /// Getter for the 'description' parameter.
     /// </summary>
-    const std::string & GetDescription() const;
+    const String & GetDescription() const;
 
     /// <summary>
     /// Setter for the 'description' parameter.
     /// </summary>
-    void SetDescription(const std::string & description);
+    void SetDescription(const String & description);
 
     /// <summary>
     /// Get this menu icon instance.
@@ -273,9 +273,9 @@ namespace shellanything
     bool mSeparator;
     bool mColumnSeparator;
     uint32_t mCommandId;
-    std::string mName;
+    String mName;
     int mNameMaxLength;
-    std::string mDescription;
+    String mDescription;
     ActionPtrList mActions;
     MenuPtrList mSubMenus;
   };

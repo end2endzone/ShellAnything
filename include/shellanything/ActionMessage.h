@@ -49,37 +49,37 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'title' parameter.
     /// </summary>
-    const std::string & GetTitle() const;
+    const String & GetTitle() const;
 
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & title);
+    void SetTitle(const String & title);
 
     /// <summary>
     /// Getter for the 'caption' parameter.
     /// </summary>
-    const std::string & GetCaption() const;
+    const String & GetCaption() const;
 
     /// <summary>
     /// Setter for the 'caption' parameter.
     /// </summary>
-    void SetCaption(const std::string & caption);
+    void SetCaption(const String & caption);
 
     /// <summary>
     /// Getter for the 'icon' parameter.
     /// </summary>
-    const std::string & GetIcon() const;
+    const String & GetIcon() const;
 
     /// <summary>
     /// Setter for the 'icon' parameter.
     /// </summary>
-    void SetIcon(const std::string & icon);
+    void SetIcon(const String & icon);
 
   private:
-    std::string mTitle;
-    std::string mCaption;
-    std::string mIcon;
+    String mTitle;
+    String mCaption;
+    String mIcon;
   };
 
 } //namespace shellanything

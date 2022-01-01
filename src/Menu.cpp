@@ -110,12 +110,12 @@ namespace shellanything
     return parent_menu;
   }
 
-  const std::string & Menu::GetName() const
+  const String & Menu::GetName() const
   {
     return mName;
   }
 
-  void Menu::SetName(const std::string & name)
+  void Menu::SetName(const String & name)
   {
     mName = name;
   }
@@ -136,7 +136,7 @@ namespace shellanything
       mNameMaxLength = DEFAULT_NAME_MAX_LENGTH;
   }
 
-  void Menu::TruncateName(std::string & str)
+  void Menu::TruncateName(String & str)
   {
     // Issue #55: Menu name maximum length limit and escape string
   
@@ -147,7 +147,7 @@ namespace shellanything
     if (num_cp <= mNameMaxLength)
       return; // Nothing to do.
 
-    std::string truncated_str = SubstringUtf8(str.c_str(), 0, mNameMaxLength);
+    String truncated_str = SubstringUtf8(str.c_str(), 0, mNameMaxLength);
 
     // Add a trailing "..." indicating that we reached the maximum length for a menu
     if (num_cp > DEFAULT_NAME_MAX_LENGTH)
@@ -156,12 +156,12 @@ namespace shellanything
     str = truncated_str;
   }
 
-  const std::string & Menu::GetDescription() const
+  const String & Menu::GetDescription() const
   {
     return mDescription;
   }
 
-  void Menu::SetDescription(const std::string & description)
+  void Menu::SetDescription(const String & description)
   {
     mDescription = description;
   }

@@ -53,24 +53,24 @@ namespace shellanything
     /// <param name="path">The file path to load</param>
     /// <param name="error">The error desription if the file cannot be loaded.</param>
     /// <returns>Returns a valid Configuration pointer if the file can be loaded. Returns NULL otherwise.</returns>
-    static Configuration * LoadFile(const std::string & path, std::string & error);
+    static Configuration * LoadFile(const String & path, String & error);
 
     /// <summary>
     /// Detect if a given file is a valid configuration file.
     /// </summary>
     /// <param name="path">The file path to load</param>
     /// <returns>Returns true if the file is a valid configuration file. Returns false otherwise.</returns>
-    static bool IsValidConfigFile(const std::string & path);
+    static bool IsValidConfigFile(const String & path);
 
     /// <summary>
     /// Returns the file path of this configuration.
     /// </summary>
-    const std::string & GetFilePath() const;
+    const String & GetFilePath() const;
 
     /// <summary>
     /// Set the file path of this configuration.
     /// </summary>
-    void SetFilePath(const std::string & file_path);
+    void SetFilePath(const String & file_path);
 
     /// <summary>
     /// Returns the configuration file's modified date.
@@ -132,7 +132,7 @@ namespace shellanything
   private:
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
-    std::string mFilePath;
+    String mFilePath;
     MenuPtrList mMenus;
   };
 

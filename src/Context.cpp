@@ -33,8 +33,8 @@
 
 namespace shellanything
 {
-  const std::string Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME = "selection.multi.separator";
-  const std::string Context::DEFAULT_MULTI_SELECTION_SEPARATOR = ra::environment::GetLineSeparator();
+  const String Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME = "selection.multi.separator";
+  const String Context::DEFAULT_MULTI_SELECTION_SEPARATOR = ra::environment::GetLineSeparator();
 
   Context::Context() :
     mNumFiles(0),
@@ -68,7 +68,7 @@ namespace shellanything
    
     FileMagicManager & fm = FileMagicManager::GetInstance();
 
-    const Context::ElementList & elements = GetElements();
+    const StringList & elements = GetElements();
  
     if (elements.empty())
       return; // Nothing to register
@@ -93,12 +93,12 @@ namespace shellanything
     std::string selection_charset        ;
 
     // Get the separator string for multiple selection 
-    const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+    const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME).c_str();
 
     // For each element
     for(size_t i=0; i<elements.size(); i++)
     {
-      const std::string & element = elements[i];
+      const std::string & element = elements[i].c_str();
  
       bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
       bool isDir = ra::filesystem::DirectoryExistsUtf8(element.c_str());
@@ -119,12 +119,12 @@ namespace shellanything
       std::string element_selection_filename        = ra::filesystem::GetFilename(element_selection_path.c_str());
       std::string element_selection_filename_noext  = ra::filesystem::GetFilenameWithoutExtension(element_selection_path.c_str());
       std::string element_selection_filename_ext    = ra::filesystem::GetFileExtention(element_selection_filename);
-      std::string element_selection_drive_letter    = GetDriveLetter(element);
-      std::string element_selection_drive_path      = GetDrivePath(element);
-      std::string element_selection_mimetype        = fm.GetMIMEType(element_selection_path);
-      std::string element_selection_description     = fm.GetDescription(element_selection_path);
-      //std::string element_selection_libmagic_ext  = fm.GetExtension(element_selection_path);
-      std::string element_selection_charset         = fm.GetCharset(element_selection_path);
+      std::string element_selection_drive_letter    = GetDriveLetter(element.c_str()).c_str();
+      std::string element_selection_drive_path      = GetDrivePath(element.c_str()).c_str();
+      std::string element_selection_mimetype        = fm.GetMIMEType(element_selection_path.c_str()).c_str();
+      std::string element_selection_description     = fm.GetDescription(element_selection_path.c_str()).c_str();
+      //std::string element_selection_libmagic_ext  = fm.GetExtension(element_selection_path.c_str()).c_str();
+      std::string element_selection_charset         = fm.GetCharset(element_selection_path.c_str()).c_str();
  
       // Add a separator between values
       if (!selection_path           .empty()) selection_path            .append( selection_multi_separator );
@@ -160,7 +160,7 @@ namespace shellanything
     // Directory based properties
     if (elements.size() == 1)
     {
-      const std::string & element = elements[0];
+      const std::string & element = elements[0].c_str();
       bool isDir = ra::filesystem::DirectoryExistsUtf8(element.c_str());
       if (isDir)
       {
@@ -174,30 +174,30 @@ namespace shellanything
       }
     }
 
-    pmgr.SetProperty("selection.path"               , selection_path           );
-    pmgr.SetProperty("selection.dir"                , selection_dir            );
-    pmgr.SetProperty("selection.dir.count"          , selection_dir_count      );
-    pmgr.SetProperty("selection.dir.empty"          , selection_dir_empty      );
-    pmgr.SetProperty("selection.parent.path"        , selection_parent_path    );
-    pmgr.SetProperty("selection.parent.filename"    , selection_parent_filename);
-    pmgr.SetProperty("selection.filename"           , selection_filename       );
-    pmgr.SetProperty("selection.filename.noext"     , selection_filename_noext );
-    pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   );
-    pmgr.SetProperty("selection.drive.letter"       , selection_drive_letter   );
-    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
-    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     );
-    pmgr.SetProperty("selection.mimetype"           , selection_mimetype       );
-    pmgr.SetProperty("selection.description"        , selection_description    );
-    //pmgr.SetProperty("selection.libmagic_ext"     , selection_libmagic_ext   );
-    pmgr.SetProperty("selection.charset"            , selection_charset        );
+    pmgr.SetProperty("selection.path"               , selection_path           .c_str());
+    pmgr.SetProperty("selection.dir"                , selection_dir            .c_str());
+    pmgr.SetProperty("selection.dir.count"          , selection_dir_count      .c_str());
+    pmgr.SetProperty("selection.dir.empty"          , selection_dir_empty      .c_str());
+    pmgr.SetProperty("selection.parent.path"        , selection_parent_path    .c_str());
+    pmgr.SetProperty("selection.parent.filename"    , selection_parent_filename.c_str());
+    pmgr.SetProperty("selection.filename"           , selection_filename       .c_str());
+    pmgr.SetProperty("selection.filename.noext"     , selection_filename_noext .c_str());
+    pmgr.SetProperty("selection.filename.extension" , selection_filename_ext   .c_str());
+    pmgr.SetProperty("selection.drive.letter"       , selection_drive_letter   .c_str());
+    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     .c_str());
+    pmgr.SetProperty("selection.drive.path"         , selection_drive_path     .c_str());
+    pmgr.SetProperty("selection.mimetype"           , selection_mimetype       .c_str());
+    pmgr.SetProperty("selection.description"        , selection_description    .c_str());
+    //pmgr.SetProperty("selection.libmagic_ext"     , selection_libmagic_ext   .c_str());
+    pmgr.SetProperty("selection.charset"            , selection_charset        .c_str());
 
     selection_count             = ra::strings::ToString(elements.size());
     selection_files_count       = ra::strings::ToString(this->GetNumFiles());
     selection_directories_count = ra::strings::ToString(this->GetNumDirectories());
 
-    pmgr.SetProperty("selection.count"             , selection_count            );
-    pmgr.SetProperty("selection.files.count"       , selection_files_count      );
-    pmgr.SetProperty("selection.directories.count" , selection_directories_count);
+    pmgr.SetProperty("selection.count"             , selection_count            .c_str());
+    pmgr.SetProperty("selection.files.count"       , selection_files_count      .c_str());
+    pmgr.SetProperty("selection.directories.count" , selection_directories_count.c_str());
   }
  
   void Context::UnregisterProperties() const
@@ -218,12 +218,12 @@ namespace shellanything
     pmgr.ClearProperty("selection.charset"            );
   }
  
-  const Context::ElementList & Context::GetElements() const
+  const StringList & Context::GetElements() const
   {
     return mElements;
   }
 
-  void Context::SetElements(const Context::ElementList & elements)
+  void Context::SetElements(const StringList & elements)
   {
     mElements = elements;
 
@@ -233,7 +233,7 @@ namespace shellanything
     // Update stats
     for(size_t i=0; i<elements.size(); i++)
     {
-      const std::string & element = elements[i];
+      const std::string & element = elements[i].c_str();
       bool isFile = ra::filesystem::FileExistsUtf8(element.c_str());
       bool isDir  = ra::filesystem::DirectoryExistsUtf8(element.c_str());
       if (isFile)

@@ -48,9 +48,9 @@ namespace shellanything
   bool ActionMessage::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    const std::string title = pmgr.Expand(mTitle);
-    const std::string caption = pmgr.Expand(mCaption);
-    const std::string icon = pmgr.Expand(mIcon);
+    const std::string title = pmgr.Expand(mTitle).c_str();
+    const std::string caption = pmgr.Expand(mCaption).c_str();
+    const std::string icon = pmgr.Expand(mIcon).c_str();
 
     //convert to windows unicode...
     std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);
@@ -86,32 +86,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionMessage::GetTitle() const
+  const String & ActionMessage::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionMessage::SetTitle(const std::string & title)
+  void ActionMessage::SetTitle(const String & title)
   {
     mTitle = title;
   }
 
-  const std::string & ActionMessage::GetCaption() const
+  const String & ActionMessage::GetCaption() const
   {
     return mCaption;
   }
 
-  void ActionMessage::SetCaption(const std::string & caption)
+  void ActionMessage::SetCaption(const String & caption)
   {
     mCaption = caption;
   }
 
-  const std::string & ActionMessage::GetIcon() const
+  const String & ActionMessage::GetIcon() const
   {
     return mIcon;
   }
 
-  void ActionMessage::SetIcon(const std::string & icon)
+  void ActionMessage::SetIcon(const String & icon)
   {
     mIcon = icon;
   }

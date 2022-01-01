@@ -49,37 +49,37 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const std::string & GetName() const;
+    const String & GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & name);
+    void SetName(const String & name);
 
     /// <summary>
     /// Getter for the 'value' parameter.
     /// </summary>
-    const std::string & GetValue() const;
+    const String & GetValue() const;
 
     /// <summary>
     /// Setter for the 'value' parameter.
     /// </summary>
-    void SetValue(const std::string & value);
+    void SetValue(const String & value);
 
     /// <summary>
     /// Getter for the 'exprtk' parameter.
     /// </summary>
-    const std::string & GetExprtk() const;
+    const String & GetExprtk() const;
 
     /// <summary>
     /// Setter for the 'exprtk' parameter.
     /// </summary>
-    void SetExprtk(const std::string & exprtk);
+    void SetExprtk(const String & exprtk);
 
   private:
-    std::string mName;
-    std::string mValue;
-    std::string mExprtk;
+    String mName;
+    String mValue;
+    String mExprtk;
   };
 
 

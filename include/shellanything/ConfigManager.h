@@ -50,7 +50,7 @@ namespace shellanything
     /// <summary>
     /// A list of string for holding configuration paths.
     /// </summary>
-    typedef std::vector<std::string> PathList;
+    typedef std::vector<String> PathList;
 
     static ConfigManager & GetInstance();
     
@@ -64,7 +64,7 @@ namespace shellanything
     /// </summary>
     /// <param name="path">The path of a Configuration file</param>
     /// <returns>Returns true if the given path is a Configuration loaded by the manager. Returns false otherwise.</returns>
-    bool IsConfigFileLoaded(const std::string & path) const;
+    bool IsConfigFileLoaded(const String & path) const;
 
     /// <summary>
     /// Clears the configuration manager of all loaded Configuration
@@ -107,7 +107,7 @@ namespace shellanything
     /// Add a new search path to the path list.
     /// </summary>
     /// <param name="path">The path to add to the search list.</param>
-    void AddSearchPath(const std::string & path);
+    void AddSearchPath(const String & path);
 
   private:
     //methods
