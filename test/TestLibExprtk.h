@@ -22,14 +22,14 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef TEST_SA_LIBEVAL_H
-#define TEST_SA_LIBEVAL_H
+#ifndef TEST_SA_LIBEXPRTK_H
+#define TEST_SA_LIBEXPRTK_H
 
 #include <gtest/gtest.h>
 
 namespace shellanything { namespace test
 {
-  class TestLibEval : public ::testing::Test
+  class TestLibExprtk : public ::testing::Test
   {
   public:
     virtual void SetUp();
@@ -39,4 +39,4 @@ namespace shellanything { namespace test
 } //namespace test
 } //namespace shellanything
 
-#endif //TEST_SA_LIBEVAL_H
+#endif //TEST_SA_LIBEXPRTK_H

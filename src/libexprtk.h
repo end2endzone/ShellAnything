@@ -22,8 +22,8 @@
 * SOFTWARE.
 *********************************************************************************/
 
-#ifndef SA_LIBEVAL_H
-#define SA_LIBEVAL_H
+#ifndef SA_LIBEXPRTK_H
+#define SA_LIBEXPRTK_H
 
 #include <string.h>
 
@@ -71,4 +71,4 @@ inline int EvaluateBooleanEx(const char * expression_string, int * result) { ret
 }
 #endif
 
-#endif //SA_LIBEVAL_H
+#endif //SA_LIBEXPRTK_H

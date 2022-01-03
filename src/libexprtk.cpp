@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "libEval.h"
+#include "libexprtk.h"
 
 #include <stdint.h>
 #include <stddef.h>

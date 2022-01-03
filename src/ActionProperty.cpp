@@ -24,7 +24,7 @@
 
 #include "shellanything/ActionProperty.h"
 #include "PropertyManager.h"
-#include "libEval.h"
+#include "libexprtk.h"
 
 #include "rapidassist/strings.h"
 

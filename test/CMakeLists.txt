@@ -78,8 +78,8 @@ add_executable(shellanything_unittest
   TestIcon.h
   TestInputBox.cpp
   TestInputBox.h
-  TestLibEval.cpp
-  TestLibEval.h
+  TestLibExprtk.cpp
+  TestLibExprtk.h
   TestMenu.cpp
   TestMenu.h
   TestObjectFactory.cpp

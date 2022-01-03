@@ -107,11 +107,11 @@ add_library(shellext SHARED
   Win32Registry.h
 )
 
-add_library(libeval SHARED
+add_library(libexprtk SHARED
   ${EXPRTK_HEADER_PATH}
-  libeval.h
-  libeval.cpp
-  libeval.def
+  libexprtk.h
+  libexprtk.cpp
+  libexprtk.def
 )
 
 # Group external files as filter for Visual Studio
@@ -152,10 +152,10 @@ add_custom_command( TARGET shellanything POST_BUILD
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(shellanything   PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 set_target_properties(shellext        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-set_target_properties(libeval         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(libexprtk         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # exprtk.hpp(15607): fatal error C1128: number of sections exceeded object file format limit : compile with /bigobj
-target_compile_options(libeval PRIVATE "/bigobj")
+target_compile_options(libexprtk PRIVATE "/bigobj")
 
 # Define include directories for exported code.
 target_include_directories(shellanything
@@ -165,7 +165,7 @@ target_include_directories(shellanything
     ${GTEST_INCLUDE_DIR}
     rapidassist
     glog::glog
-    libeval
+    libexprtk
     libmagic
 )
 target_include_directories(shellext
@@ -176,13 +176,13 @@ target_include_directories(shellext
     glog::glog
     libmagic
 )
-target_include_directories(libeval
+target_include_directories(libexprtk
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     ${PACKAGE_DOWNLOAD_DIR}/exprtk-master
 )
-target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libeval libmagic)
+target_link_libraries(shellanything   PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libexprtk libmagic)
 target_link_libraries(shellext        PRIVATE shellanything rapidassist glog::glog libmagic)
 
 # Also add Tinyxml2 include and libraries.
@@ -210,7 +210,7 @@ install(FILES ${LIBMAGIC_MGC_DIR}/magic.mgc
               ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
-install(FILES libeval.h
+install(FILES libexprtk.h
               DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR}/shellanything)
 install(TARGETS shellext
         EXPORT shellanything-targets
@@ -218,7 +218,7 @@ install(TARGETS shellext
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
-install(TARGETS libeval
+install(TARGETS libexprtk
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

@@ -28,7 +28,7 @@
 #include "PropertyManager.h"
 #include "DriveClass.h"
 #include "Wildcard.h"
-#include "libEval.h"
+#include "libexprtk.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
 

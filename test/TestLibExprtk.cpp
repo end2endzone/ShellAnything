@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestLibEval.h"
-#include "libEval.h"
+#include "TestLibExprtk.h"
+#include "libexprtk.h"
 #include "PropertyManager.h"
 
 namespace shellanything { namespace test
@@ -31,15 +31,15 @@ namespace shellanything { namespace test
   const double epsilon = 0.000001;
 
   //--------------------------------------------------------------------------------------------------
-  void TestLibEval::SetUp()
+  void TestLibExprtk::SetUp()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  void TestLibEval::TearDown()
+  void TestLibExprtk::TearDown()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestLibEval, testSingleValue)
+  TEST_F(TestLibExprtk, testSingleValue)
   {
     double result = 0.0;
     int success = EvaluateDoubleEx("5.3", &result);
@@ -47,13 +47,13 @@ namespace shellanything { namespace test
     ASSERT_NEAR(result, 5.3, epsilon);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestLibEval, testError)
+  TEST_F(TestLibExprtk, testError)
   {
     double result = 0.0;
     static const size_t BUFFER_SIZE = 1024;
     char buffer[BUFFER_SIZE] = {0};
     int success = EvaluateDouble("foobar;", &result, buffer, BUFFER_SIZE);
-    ASSERT_EQ(1, success);
+    ASSERT_EQ(0, success);
     ASSERT_GT(strlen(buffer), 0);
     printf("Found full error: '%s'\n", buffer);
 
@@ -62,7 +62,7 @@ namespace shellanything { namespace test
     static const size_t TRUNCATED_BUFFER_SIZE = 13;
     memset(buffer, RESET_CHARACTER, BUFFER_SIZE);
     success = EvaluateDouble("foobar;", &result, buffer, TRUNCATED_BUFFER_SIZE);
-    ASSERT_EQ(1, success);
+    ASSERT_EQ(0, success);
     ASSERT_EQ('\0', buffer[TRUNCATED_BUFFER_SIZE-1]); // assert last character of the buffer is the string end character
     ASSERT_EQ(RESET_CHARACTER, buffer[TRUNCATED_BUFFER_SIZE]); // assert next character outside of given buffer is untouched.
     for(size_t i=TRUNCATED_BUFFER_SIZE; i<BUFFER_SIZE; i++)
@@ -70,14 +70,14 @@ namespace shellanything { namespace test
     printf("Found truncated error: '%s'\n", buffer);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestLibEval, testStringPlusScalar) //Adding a string with a scalar is expected to fail evaluation
+  TEST_F(TestLibExprtk, testStringPlusScalar) //Adding a string with a scalar is expected to fail evaluation
   {
     double result = 0.0;
     int success = EvaluateDoubleEx("'4'+5", &result);
-    ASSERT_EQ(1, success); //
+    ASSERT_EQ(0, success); //
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestLibEval, testIfsSingleLine)
+  TEST_F(TestLibExprtk, testIfsSingleLine)
   {
     double result = 0.0;
     int success = false;
