@@ -107,10 +107,11 @@ add_library(shellext SHARED
   Win32Registry.h
 )
 
-add_library(libeval STATIC
+add_library(libeval SHARED
   ${EXPRTK_HEADER_PATH}
-  libEval.h
-  libEval.cpp
+  libeval.h
+  libeval.cpp
+  libeval.def
 )
 
 # Group external files as filter for Visual Studio
@@ -209,6 +210,8 @@ install(FILES ${LIBMAGIC_MGC_DIR}/magic.mgc
               ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
+install(FILES libeval.h
+              DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR}/shellanything)
 install(TARGETS shellext
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

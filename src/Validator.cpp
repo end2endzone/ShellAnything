@@ -698,8 +698,8 @@ namespace shellanything
     char error[ERROR_SIZE];
     error[0] = '\0';
 
-    bool result = false;
-    bool evaluated = Evaluate(exprtk.c_str(), &result, error, ERROR_SIZE);
+    int result = false;
+    int evaluated = EvaluateBoolean(exprtk.c_str(), &result, error, ERROR_SIZE);
     if (!evaluated)
     {
       LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";

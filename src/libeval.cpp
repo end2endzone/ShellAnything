@@ -24,11 +24,17 @@
 
 #include "libEval.h"
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <algorithm>    // std::min
 #include <stdio.h>      // snprintf
 
 #define _SCL_SECURE_NO_WARNINGS
 #include "exprtk.hpp"
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 // https://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
 #if defined(_MSC_VER) && _MSC_VER < 1900
@@ -59,54 +65,49 @@ __inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
 #endif
 
 
-namespace shellanything
+int EvaluateDouble(const char * expression_string, double * result, char * error_buffer, int error_size)
 {
+  if (error_buffer != NULL && error_size > 0)
+    error_buffer[0] = '\0';
 
-  bool Evaluate(const char * expression_string, double * result, char * error_buffer, size_t error_size)
+  typedef exprtk::expression<double> expression_t;
+  typedef exprtk::parser<double>         parser_t;
+
+  expression_t expression;
+  parser_t parser;
+
+  if (!parser.compile(expression_string,expression))
   {
+    //Output error description in output
     if (error_buffer != NULL && error_size > 0)
-      error_buffer[0] = '\0';
-
-    typedef exprtk::expression<double> expression_t;
-    typedef exprtk::parser<double>         parser_t;
-
-    expression_t expression;
-    parser_t parser;
-
-    if (!parser.compile(expression_string,expression))
     {
-      //Output error description in output
-      if (error_buffer != NULL && error_size > 0)
-      {
-        std::string error_description = parser.error();
+      std::string error_description = parser.error();
 
-        size_t min_buffer_size = std::min(error_description.size()+1, error_size); // +1 to include the last non-NULL character
-        snprintf(error_buffer, min_buffer_size, "%s", error_description.c_str());
-      }
-      return false;
+      size_t min_buffer_size = MIN(error_description.size()+1, error_size); // +1 to include the last non-NULL character
+      snprintf(error_buffer, min_buffer_size, "%s", error_description.c_str());
     }
-
-    if (result)
-      *result = expression.value();
-
-    return true;
+    return 0;
   }
 
-  bool Evaluate(const char * expression_string, bool * result, char * error, size_t error_size)
+  if (result)
+    *result = expression.value();
+
+  return 1;
+}
+
+int EvaluateBoolean(const char * expression_string, int* result, char * error, int error_size)
+{
+  double tmp = 0.0;
+  bool success = EvaluateDouble(expression_string, &tmp, error, error_size);
+  if (!success)
+    return 0;
+
+  if (result)
   {
-    double tmp = 0.0;
-    bool success = Evaluate(expression_string, &tmp, error, error_size);
-    if (!success)
-      return false;
-
-    if (result)
-    {
-      if (tmp != 0.0)
-        *result = true;
-      else
-        *result = false;
-    }
-    return true;
+    if (tmp != 0.0)
+      *result = 1;
+    else
+      *result = 0;
   }
-
-} //namespace shellanything
+  return 1;
+}

@@ -42,8 +42,8 @@ namespace shellanything { namespace test
   TEST_F(TestLibEval, testSingleValue)
   {
     double result = 0.0;
-    bool success = Evaluate("5.3", &result);
-    ASSERT_TRUE(success);
+    int success = EvaluateDoubleEx("5.3", &result);
+    ASSERT_EQ(1, success);
     ASSERT_NEAR(result, 5.3, epsilon);
   }
   //--------------------------------------------------------------------------------------------------
@@ -52,8 +52,8 @@ namespace shellanything { namespace test
     double result = 0.0;
     static const size_t BUFFER_SIZE = 1024;
     char buffer[BUFFER_SIZE] = {0};
-    bool success = Evaluate("foobar;", &result, buffer, BUFFER_SIZE);
-    ASSERT_FALSE(success);
+    int success = EvaluateDouble("foobar;", &result, buffer, BUFFER_SIZE);
+    ASSERT_EQ(1, success);
     ASSERT_GT(strlen(buffer), 0);
     printf("Found full error: '%s'\n", buffer);
 
@@ -61,8 +61,8 @@ namespace shellanything { namespace test
     static const char RESET_CHARACTER = '\n';
     static const size_t TRUNCATED_BUFFER_SIZE = 13;
     memset(buffer, RESET_CHARACTER, BUFFER_SIZE);
-    success = Evaluate("foobar;", &result, buffer, TRUNCATED_BUFFER_SIZE);
-    ASSERT_FALSE(success);
+    success = EvaluateDouble("foobar;", &result, buffer, TRUNCATED_BUFFER_SIZE);
+    ASSERT_EQ(1, success);
     ASSERT_EQ('\0', buffer[TRUNCATED_BUFFER_SIZE-1]); // assert last character of the buffer is the string end character
     ASSERT_EQ(RESET_CHARACTER, buffer[TRUNCATED_BUFFER_SIZE]); // assert next character outside of given buffer is untouched.
     for(size_t i=TRUNCATED_BUFFER_SIZE; i<BUFFER_SIZE; i++)
@@ -73,25 +73,25 @@ namespace shellanything { namespace test
   TEST_F(TestLibEval, testStringPlusScalar) //Adding a string with a scalar is expected to fail evaluation
   {
     double result = 0.0;
-    bool success = Evaluate("'4'+5", &result);
-    ASSERT_FALSE(success); //
+    int success = EvaluateDoubleEx("'4'+5", &result);
+    ASSERT_EQ(1, success); //
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestLibEval, testIfsSingleLine)
   {
     double result = 0.0;
-    bool success = false;
+    int success = false;
     
     // Test successful if
     result = 0.0;
-    success = Evaluate("if (10 > 3, 2.1, 5.7)", &result);
-    ASSERT_TRUE(success);
+    success = EvaluateDoubleEx("if (10 > 3, 2.1, 5.7)", &result);
+    ASSERT_EQ(1, success);
     ASSERT_NEAR(result, 2.1, epsilon);
 
     // Test failing if
     result = 0.0;
-    success = Evaluate("if (10 < 3, 2.1, 5.7)", &result);
-    ASSERT_TRUE(success);
+    success = EvaluateDoubleEx("if (10 < 3, 2.1, 5.7)", &result);
+    ASSERT_EQ(1, success);
     ASSERT_NEAR(result, 5.7, epsilon);
   }
   //--------------------------------------------------------------------------------------------------
