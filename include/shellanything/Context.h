@@ -25,6 +25,8 @@
 #ifndef SA_CONTEXT_H
 #define SA_CONTEXT_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <string>
 #include <vector>
 
@@ -34,7 +36,7 @@ namespace shellanything
   /// <summary>
   /// A Context class holds a list of files and/or directories.
   /// </summary>
-  class Context
+  class SHELLANYTHING_EXPORT Context
   {
   public:
     typedef std::vector<std::string> ElementList;

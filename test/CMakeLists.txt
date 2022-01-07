@@ -27,24 +27,6 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
 
-# Include files from shellanything library which are not public
-set(SHELLANYTHING_PRIVATE_FILES ""
-  ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
-  ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
-  ${CMAKE_SOURCE_DIR}/src/GlogUtils.h
-  ${CMAKE_SOURCE_DIR}/src/GlogUtils.cpp
-  ${CMAKE_SOURCE_DIR}/src/InputBox.h
-  ${CMAKE_SOURCE_DIR}/src/InputBox.cpp
-  ${CMAKE_SOURCE_DIR}/src/ErrorManager.h
-  ${CMAKE_SOURCE_DIR}/src/ErrorManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/PropertyManager.h
-  ${CMAKE_SOURCE_DIR}/src/PropertyManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/Win32Registry.h
-  ${CMAKE_SOURCE_DIR}/src/Win32Registry.cpp
-  ${CMAKE_SOURCE_DIR}/src/Win32Utils.h
-  ${CMAKE_SOURCE_DIR}/src/Win32Utils.cpp
-)
-
 add_executable(shellanything_unittest
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
@@ -109,8 +91,8 @@ add_executable(shellanything_unittest
 )
 
 # Group external files as filter for Visual Studio
-source_group("Test Configuration Files"       FILES ${CONFIGURATION_TEST_FILES})
-source_group("ShellAnything Library Files"    FILES ${SHELLANYTHING_PRIVATE_FILES})
+source_group("Test Configuration Files"             FILES ${CONFIGURATION_TEST_FILES})
+source_group("ShellAnything Private Shared Files"   FILES ${SHELLANYTHING_PRIVATE_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)
@@ -121,8 +103,8 @@ endif()
 set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog libmagic ${CMAKE_SOURCE_DIR}/src)
-add_dependencies(shellanything_unittest shellanything shellext libmagic)
-target_link_libraries(shellanything_unittest PUBLIC shellanything shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libmagic)
+add_dependencies(shellanything_unittest sa.core shellext libmagic)
+target_link_libraries(shellanything_unittest PUBLIC sa.core shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libexprtk libmagic)
 
 # Copy test configuration files database to target dir
 add_custom_command( TARGET shellanything_unittest POST_BUILD

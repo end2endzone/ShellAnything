@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that fails as a validator.
   /// </summary>
-  class ActionStop : public Action
+  class SHELLANYTHING_EXPORT ActionStop : public Action
   {
   public:
     ActionStop();

@@ -33,7 +33,7 @@ namespace shellanything
   /// <summary>
   /// Action class that prompts the user for a value.
   /// </summary>
-  class ActionMessage : public Action
+  class SHELLANYTHING_EXPORT ActionMessage : public Action
   {
   public:
     ActionMessage();

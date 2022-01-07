@@ -1,13 +1,6 @@
 #include "GlogUtils.h"
 #include "ErrorManager.h"
-
-#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h> //for MAX_PATH
-#undef GetEnvironmentVariable
-#undef DeleteFile
-#undef CreateDirectory
-#undef CopyFile
-#undef CreateFile
+#include "SaUtils.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
@@ -17,13 +10,8 @@
 #include "rapidassist/user.h"
 
 //Global declarations
-char      g_Path[MAX_PATH];         // Path to this DLL. 
+char      g_Path[4096];             // Path to this DLL. 
 char *    g_argv[] = {g_Path, ""};  // For google::InitGoogleLogging(g_argv[0])
-
-//External declarations
-static const std::string  EMPTY_STRING;
-static const std::wstring EMPTY_WIDE_STRING;
-extern std::string GetCurrentModulePath();
 
 namespace shellanything
 {

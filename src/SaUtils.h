@@ -22,46 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ACTION_H
-#define SA_ACTION_H
+#ifndef SA_UTILS_H
+#define SA_UTILS_H
 
-#include "shellanything/export.h"
-#include "shellanything/config.h"
-#include "shellanything/Context.h"
-#include <vector>
+#include <string>
 
-namespace shellanything
-{
+/// <summary>
+/// Get the current module path. This file must be included only in DLL and not static libraries.
+/// </summary>
+/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
+std::string GetCurrentModulePath();
 
-  /// <summary>
-  /// Abstract action class.
-  /// </summary>
-  class SHELLANYTHING_EXPORT Action
-  {
-  public:
-    /// <summary>
-    /// A list of Action class pointers.
-    /// </summary>
-    typedef std::vector<Action*> ActionPtrList;
+/// <summary>
+/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
+/// </summary>
+/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
+std::string GetCurrentModulePathUtf8();
 
-    Action();
-    virtual ~Action();
-
-  private:
-    // Disable copy constructor and copy operator
-    Action(const Action&);
-    Action& operator=(const Action&);
-  public:
-
-    /// <summary>
-    /// Execute the action on the system.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const = 0;
-  };
-
-
-} //namespace shellanything
-
-#endif //SA_ACTION_H
+#endif //SA_UTILS_H

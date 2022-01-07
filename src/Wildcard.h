@@ -25,6 +25,9 @@
 #ifndef SA_WILDCARD_H
 #define SA_WILDCARD_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
+
 namespace shellanything
 {
   /// <summary>
@@ -63,7 +66,7 @@ namespace shellanything
   /// Simplify a wildcard pattern. Remove sequences of '*' characters.
   /// </summary>
   /// <param name="pattern">The wildcard pattern to simplify.</param>
-  void WildcardSimplify(char * pattern);
+  SHELLANYTHING_EXPORT void WildcardSimplify(char * pattern);
 
   /// <summary>
   /// Finds the position of each wildcard character in the given string.
@@ -73,7 +76,7 @@ namespace shellanything
   /// <param name="offsets">An array of size_t elements which, if provided, contains the offsets where a wildcard character is found. Can be NULL.</param>
   /// <param name="offsets_size">The size of the 'offsets' array in bytes. Mostly sizeof(offsets). Can be 0 if 'offsets' is NULL.</param>
   /// <returns>Returns the number of wildcard characters found in str.</returns>
-  size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size);
+  SHELLANYTHING_EXPORT size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size);
 
   /// <summary>
   /// Evaluates if the given string contains at least one wildcard character.
@@ -91,7 +94,7 @@ namespace shellanything
   /// <param name="value">The value to match.</param>
   /// <param name="matches">The list of matches which allows the pattern to expand to the given value.</param>
   /// <returns>Returns true if the given pattern with wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
-  bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches);
+  SHELLANYTHING_EXPORT bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches);
 
   /// <summary>
   /// Returns true if the given pattern with wildcard characters matches the given value.
@@ -100,7 +103,7 @@ namespace shellanything
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
   /// <returns>Returns true if the given pattern with wildcard characters matches the given value. Returns false otherwise.</returns>
-  bool WildcardMatch(const char * pattern, const char * value);
+  SHELLANYTHING_EXPORT bool WildcardMatch(const char * pattern, const char * value);
 
 } //namespace shellanything
 

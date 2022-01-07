@@ -33,7 +33,7 @@ namespace shellanything
   /// <summary>
   /// Action class that changes the value of a property.
   /// </summary>
-  class ActionProperty : public Action
+  class SHELLANYTHING_EXPORT ActionProperty : public Action
   {
   public:
     ActionProperty();

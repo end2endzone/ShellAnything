@@ -25,12 +25,14 @@
 #ifndef SA_MIMETYPE_H
 #define SA_MIMETYPE_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <string>
 #include "magic.h"
 
 namespace shellanything
 {
-  class FileMagicManager
+  class SHELLANYTHING_EXPORT FileMagicManager
   {
   private:
     FileMagicManager();

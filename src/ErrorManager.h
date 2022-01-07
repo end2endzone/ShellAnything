@@ -25,6 +25,8 @@
 #ifndef SA_PLATFORM_H
 #define SA_PLATFORM_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "rapidassist/strings.h"
 
 namespace shellanything
@@ -35,14 +37,14 @@ namespace shellanything
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  void ShowErrorMessage(const std::string & title, const std::string & message);
+  SHELLANYTHING_EXPORT void ShowErrorMessage(const std::string & title, const std::string & message);
 
   /// <summary>
   /// Show an error message encoded in utf8 to the user.
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  void ShowErrorMessageUtf8(const std::string & title, const std::string & message);
+  SHELLANYTHING_EXPORT void ShowErrorMessageUtf8(const std::string & title, const std::string & message);
 
 } //namespace shellanything
 

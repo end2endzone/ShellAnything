@@ -25,6 +25,8 @@
 #ifndef SA_MENU_H
 #define SA_MENU_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Icon.h"
 #include "shellanything/Validator.h"
 #include "shellanything/Action.h"
@@ -38,7 +40,7 @@ namespace shellanything
   /// <summary>
   /// The Menu class defines a displayed menu option.
   /// </summary>
-  class Menu
+  class SHELLANYTHING_EXPORT Menu
   {
   public:
     /// <summary>

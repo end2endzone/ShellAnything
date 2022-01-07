@@ -25,6 +25,8 @@
 #ifndef SA_VALIDATION_H
 #define SA_VALIDATION_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Context.h"
 #include <string>
 #include <vector>
@@ -51,7 +53,7 @@
 namespace shellanything
 {
 
-  class Validator
+  class SHELLANYTHING_EXPORT Validator
   {
   public:
     /// <summary>

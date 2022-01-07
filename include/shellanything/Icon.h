@@ -25,6 +25,8 @@
 #ifndef SA_ICON_H
 #define SA_ICON_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <string>
 #include <vector>
 #include <set>
@@ -35,7 +37,7 @@ namespace shellanything
   /// <summary>
   /// Icon class encapsulate the path to a system's icon.
   /// </summary>
-  class Icon
+  class SHELLANYTHING_EXPORT Icon
   {
   public:
     /// <summary>

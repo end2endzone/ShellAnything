@@ -25,6 +25,8 @@
 #ifndef SA_CONFIGMANAGER_H
 #define SA_CONFIGMANAGER_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Configuration.h"
 #include "shellanything/Context.h"
 
@@ -34,7 +36,7 @@ namespace shellanything
   /// <summary>
   /// The ConfigManager holds mutiple Configuration instances.
   /// </summary>
-  class ConfigManager
+  class SHELLANYTHING_EXPORT ConfigManager
   {
   private:
     ConfigManager();

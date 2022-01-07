@@ -122,13 +122,7 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/version.h.in ${SHELLANYTHING_VERSION_HEA
 # config.h file
 set(SHELLANYTHING_CONFIG_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/config.h)
 message("Generating ${SHELLANYTHING_CONFIG_HEADER}...")
-if (BUILD_SHARED_LIBS)
-  set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE "#define SHELLANYTHING_BUILT_AS_SHARED")
-else()
-  set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE "#define SHELLANYTHING_BUILT_AS_STATIC")
-endif()
 configure_file( ${CMAKE_SOURCE_DIR}/src/config.h.in ${SHELLANYTHING_CONFIG_HEADER} )
-set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE)
 
 # Define installation directories
 set(SHELLANYTHING_INSTALL_ROOT_DIR     "/")
@@ -169,6 +163,20 @@ include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header 
                     ${CMAKE_BINARY_DIR}/include                 # for ${SHELLANYTHING_VERSION_HEADER} and ${SHELLANYTHING_CONFIG_HEADER} generated files.
 )
 
+# Include files from shellanything library which are not public
+set(SHELLANYTHING_PRIVATE_FILES ""
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
+  ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
+  ${CMAKE_SOURCE_DIR}/src/GlogUtils.h
+  ${CMAKE_SOURCE_DIR}/src/GlogUtils.cpp
+  ${CMAKE_SOURCE_DIR}/src/SaUtils.h
+  ${CMAKE_SOURCE_DIR}/src/SaUtils.cpp
+  ${CMAKE_SOURCE_DIR}/src/Win32Registry.h
+  ${CMAKE_SOURCE_DIR}/src/Win32Registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/Win32Utils.h
+  ${CMAKE_SOURCE_DIR}/src/Win32Utils.cpp
+)
+
 # Subprojects
 add_subdirectory(src)
 
@@ -180,18 +188,15 @@ endif()
 # Support for static and shared library
 ##############################################################################################################################################
 
-if (BUILD_SHARED_LIBS)
-  set(SHELLANYTHING_EXPORT_HEADER_FILENAME "export.h")
-  set(SHELLANYTHING_EXPORT_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/${SHELLANYTHING_EXPORT_HEADER_FILENAME})
-  message("Generating ${SHELLANYTHING_EXPORT_HEADER_FILENAME} for shared library...")
-  include (GenerateExportHeader) 
-  GENERATE_EXPORT_HEADER(shellanything 
-               BASE_NAME shellanything 
-               EXPORT_MACRO_NAME SHELLANYTHING_EXPORT 
-               EXPORT_FILE_NAME ${SHELLANYTHING_EXPORT_HEADER} 
-               STATIC_DEFINE SHELLANYTHING_BUILT_AS_STATIC
-  )
-endif()
+set(SHELLANYTHING_EXPORT_HEADER_FILENAME "export.h")
+set(SHELLANYTHING_EXPORT_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/${SHELLANYTHING_EXPORT_HEADER_FILENAME})
+message("Generating ${SHELLANYTHING_EXPORT_HEADER_FILENAME} for shared library...")
+include (GenerateExportHeader) 
+GENERATE_EXPORT_HEADER( sa.core 
+                        BASE_NAME shellanything 
+                        EXPORT_MACRO_NAME SHELLANYTHING_EXPORT 
+                        EXPORT_FILE_NAME ${SHELLANYTHING_EXPORT_HEADER} 
+)
 
 ##############################################################################################################################################
 # Generate doxygen documentation

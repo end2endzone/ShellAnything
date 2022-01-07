@@ -25,6 +25,8 @@
 #ifndef SA_DRIVETYPES_H
 #define SA_DRIVETYPES_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <string>
 
 namespace shellanything
@@ -46,7 +48,7 @@ namespace shellanything
   /// </summary>
   /// <param name="element">The path to an element.</param>
   /// <returns>Returns the drive letter of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
-  std::string GetDriveLetter(const std::string & element);
+  SHELLANYTHING_EXPORT std::string GetDriveLetter(const std::string & element);
 
   /// <summary>
   /// Returns the drive path of the given path. The drive path is returned as 3 characters path. For example "C:\".
@@ -54,7 +56,7 @@ namespace shellanything
   /// </summary>
   /// <param name="element">The path to an element.</param>
   /// <returns>Returns the drive path of the given path. Returns an empty string if the element is not mapped to a drive.</returns>
-  std::string GetDrivePath(const std::string & element);
+  SHELLANYTHING_EXPORT std::string GetDrivePath(const std::string & element);
 
   /// <summary>
   /// Define if the given path is a network path.
@@ -62,14 +64,14 @@ namespace shellanything
   /// </summary>
   /// <param name="path">The path to a valid file or directory.</param>
   /// <returns>Returns true when the given path is a network path. Returns false otherwise.</returns>
-  bool IsNetworkPath(const std::string & path);
+  SHELLANYTHING_EXPORT bool IsNetworkPath(const std::string & path);
 
   /// <summary>
   /// Returns the drive class based on the given path.
   /// </summary>
   /// <param name="path">The path to a valid file or directory.</param>
   /// <returns>Returns the drive class based on the given path. Returns DRIVE_CLASS_UNKNOWN if drive class cannot be found.</returns>
-  DRIVE_CLASS GetDriveClassFromPath(const std::string & path);
+  SHELLANYTHING_EXPORT DRIVE_CLASS GetDriveClassFromPath(const std::string & path);
 
   /// <summary>
   /// Returns the drive class based on the given string.
@@ -77,14 +79,14 @@ namespace shellanything
   /// </summary>
   /// <param name="value">The string representation of a DRIVE_CLASS.</param>
   /// <returns>Returns the given drive type based on the given string. Returns DRIVE_CLASS_UNKNOWN if the string value is unknown.</returns>
-  DRIVE_CLASS GetDriveClassFromString(const std::string & value);
+  SHELLANYTHING_EXPORT DRIVE_CLASS GetDriveClassFromString(const std::string & value);
     
   /// <summary>
   /// Convert a DRIVE_CLASS value to a string representation.
   /// </summary>
   /// <param name="class_">The drive class value to convert. Must be a valid enumeration of DRIVE_CLASS.</param>
   /// <returns>Returns the string representation of the given DRIVE_CLASS enumeration value. Returns "drive:unknown" if 'class_' is not a valid value of DRIVE_CLASS.</returns>
-  const char * ToString(DRIVE_CLASS & value);
+  SHELLANYTHING_EXPORT const char * ToString(DRIVE_CLASS & value);
 
 } //namespace shellanything
 

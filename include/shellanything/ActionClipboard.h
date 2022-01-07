@@ -33,7 +33,7 @@ namespace shellanything
   /// <summary>
   /// Action class that changes the clipboard.
   /// </summary>
-  class ActionClipboard : public Action
+  class SHELLANYTHING_EXPORT ActionClipboard : public Action
   {
   public:
     ActionClipboard();

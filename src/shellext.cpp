@@ -37,6 +37,7 @@
 #include "shellanything/ConfigManager.h"
 #include "shellanything/version.h"
 #include "PropertyManager.h"
+#include "SaUtils.h"
 
 #include <assert.h>
 
@@ -44,81 +45,9 @@
 UINT      g_cRefDll = 0;            // Reference counter of this DLL
 HINSTANCE g_hmodDll = 0;            // HINSTANCE of the DLL
 
-static const std::string  EMPTY_STRING;
-static const std::wstring EMPTY_WIDE_STRING;
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
 HMENU CContextMenu::m_previousMenu = 0;
-
-std::string GetCurrentModulePath()
-{
-  std::string path;
-  char buffer[MAX_PATH] = {0};
-  HMODULE hModule = NULL;
-  if (!GetModuleHandleExA( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                          (LPCSTR) __FUNCTION__,
-                          &hModule))
-  {
-    uint32_t error_code = ra::errors::GetLastErrorCode();
-    std::string desc = ra::errors::GetErrorCodeDescription(error_code);
-    std::string message = std::string() +
-      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
-      "\n" +
-      "Failed getting the file path of the current module.\n" +
-      "The following error code was returned:\n" +
-      "\n" +
-      ra::strings::Format("0x%08x", error_code) + ": " + desc;
-
-    //display an error on 
-    shellanything::ShowErrorMessage("ShellAnything Error", message);
-
-    return EMPTY_STRING;
-  }
-
-  /*get the path of this DLL*/
-  GetModuleFileName(hModule, buffer, sizeof(buffer));
-  if (buffer[0] != '\0')
-  {
-    path = buffer;
-  }
-  return path;
-}
-
-std::string GetCurrentModulePathUtf8()
-{
-  std::string path;
-  wchar_t buffer[MAX_PATH] = {0};
-  HMODULE hModule = NULL;
-  if (!GetModuleHandleExW( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                          (LPCWSTR) __FUNCTIONW__,
-                          &hModule))
-  {
-    uint32_t error_code = ra::errors::GetLastErrorCode();
-    std::string desc = ra::errors::GetErrorCodeDescription(error_code);
-    std::string message = std::string() +
-      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
-      "\n" +
-      "Failed getting the file path of the current module.\n" +
-      "The following error code was returned:\n" +
-      "\n" +
-      ra::strings::Format("0x%08x", error_code) + ": " + desc;
-
-    //display an error on 
-    shellanything::ShowErrorMessage("ShellAnything Error", message);
-
-    return EMPTY_STRING;
-  }
-
-  /*get the path of this DLL*/
-  GetModuleFileNameW(hModule, buffer, sizeof(buffer));
-  if (buffer[0] != '\0')
-  {
-    path = ra::unicode::UnicodeToUtf8(buffer);
-  }
-  return path;
-}
 
 std::string GuidToString(GUID guid)
 {

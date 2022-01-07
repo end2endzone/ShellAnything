@@ -25,6 +25,8 @@
 #ifndef SA_NODEFACTORY_H
 #define SA_NODEFACTORY_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Menu.h"
 #include "shellanything/Action.h"
 #include "shellanything/Icon.h"
@@ -38,7 +40,7 @@ namespace shellanything
   /// <summary>
   /// An utility class for parsing this procet's classes from xml
   /// </summary>
-  class ObjectFactory
+  class SHELLANYTHING_EXPORT ObjectFactory
   {
   private:
     ObjectFactory();

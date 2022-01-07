@@ -25,6 +25,8 @@
 #ifndef SA_CONFIGURATION_H
 #define SA_CONFIGURATION_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Menu.h"
 #include "shellanything/DefaultSettings.h"
 #include <stdint.h>
@@ -35,7 +37,7 @@ namespace shellanything
   /// <summary>
   /// A configuration holds mutiple Menu instances.
   /// </summary>
-  class Configuration
+  class SHELLANYTHING_EXPORT Configuration
   {
   public:
     /// <summary>

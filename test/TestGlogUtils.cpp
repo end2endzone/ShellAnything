@@ -24,6 +24,7 @@
 
 #include "TestGlogUtils.h"
 #include "GlogUtils.h"
+#include "SaUtils.h"
 
 #include "ErrorManager.h"
 #include <Windows.h>
@@ -39,41 +40,6 @@
 
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
-
-std::string GetCurrentModulePath()
-{
-  std::string path;
-  char buffer[MAX_PATH] = {0};
-  HMODULE hModule = NULL;
-  if (!GetModuleHandleExA( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                          (LPCSTR) __FUNCTION__,
-                          &hModule))
-  {
-    DWORD dwError = GetLastError();
-    std::string desc = ra::errors::GetErrorCodeDescription(dwError);
-    std::string message = std::string() +
-      "Error in function '" + __FUNCTION__ + "()', file '" + __FILE__ + "', line " + ra::strings::ToString(__LINE__) + ".\n" +
-      "\n" +
-      "Failed getting the file path of the current module.\n" +
-      "The following error code was returned:\n" +
-      "\n" +
-      ra::strings::Format("0x%08x", dwError) + ": " + desc;
-
-    //display an error on 
-    shellanything::ShowErrorMessage("ShellAnything Error", message);
-
-    return EMPTY_STRING;
-  }
-
-  /*get the path of this DLL*/
-  GetModuleFileName(hModule, buffer, sizeof(buffer));
-  if (buffer[0] != '\0')
-  {
-    path = buffer;
-  }
-  return path;
-}
 
 std::string GetLogDirectorySafe()
 {

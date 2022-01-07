@@ -33,7 +33,7 @@ namespace shellanything
   /// <summary>
   /// Action class that executes a program.
   /// </summary>
-  class ActionExecute : public Action
+  class SHELLANYTHING_EXPORT ActionExecute : public Action
   {
   public:
     ActionExecute();

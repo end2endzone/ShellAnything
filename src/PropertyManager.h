@@ -25,6 +25,8 @@
 #ifndef SA_PROPERTYMANAGER_H
 #define SA_PROPERTYMANAGER_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <string>
 #include <map>
 
@@ -33,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// Manages the property system
   /// </summary>
-  class PropertyManager
+  class SHELLANYTHING_EXPORT PropertyManager
   {
   public:
     static PropertyManager & GetInstance();

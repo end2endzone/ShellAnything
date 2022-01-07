@@ -25,10 +25,12 @@
 #ifndef INPUTBOX_H
 #define INPUTBOX_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include <Windows.h>
 #include <string>
 
-class CInputBox
+class SHELLANYTHING_EXPORT CInputBox
 {
 public:
   /// <summary>

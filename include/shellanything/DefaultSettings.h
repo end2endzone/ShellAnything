@@ -25,6 +25,8 @@
 #ifndef SA_DEFAULTSETTINGS_H
 #define SA_DEFAULTSETTINGS_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "shellanything/Action.h"
 
 namespace shellanything
@@ -33,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// The DefaultSettings class defines the default values when a configuration .
   /// </summary>
-  class DefaultSettings
+  class SHELLANYTHING_EXPORT DefaultSettings
   {
   public:
 

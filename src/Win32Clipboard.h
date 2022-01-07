@@ -25,13 +25,14 @@
 #ifndef WIN32_CLIPBOARD_H
 #define WIN32_CLIPBOARD_H
 
+#include "shellanything/export.h"
 #include <vector>
 #include <string>
 
 namespace Win32Clipboard
 {
 
-  class Clipboard
+  class SHELLANYTHING_EXPORT Clipboard
   {
   private:
     Clipboard();

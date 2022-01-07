@@ -33,7 +33,7 @@ namespace shellanything
   /// <summary>
   /// Action class that opens a documents using default application.
   /// </summary>
-  class ActionOpen : public Action
+  class SHELLANYTHING_EXPORT ActionOpen : public Action
   {
   public:
     ActionOpen();
