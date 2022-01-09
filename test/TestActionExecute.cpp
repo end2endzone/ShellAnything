@@ -47,6 +47,14 @@
 
 namespace shellanything { namespace test
 {
+  void KillCalculatorProcess()
+  {
+    system("cmd.exe /c taskkill /IM calc.exe >NUL 2>NUL");
+
+    // On Windows 10, calc.exe launches Calculator which is an application in the Microsoft App Store.
+    //The executable path is something similar to C:\Program Files\WindowsApps\Microsoft.WindowsCalculator_10.2103.8.0_x64__8wbfmf6g6wwcr\Calculator.exe
+    system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%Calculator.exe'\" DELETE >NUL 2>NUL");
+  }
 
   //--------------------------------------------------------------------------------------------------
   void TestActionExecute::SetUp()
@@ -80,7 +88,7 @@ namespace shellanything { namespace test
 
     //Cleanup
     ra::timing::Millisleep(500);
-    system("cmd.exe /c taskkill /IM calc.exe >NUL 2>NUL");
+    KillCalculatorProcess();
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestActionExecute, testBaseDir)
@@ -108,7 +116,7 @@ namespace shellanything { namespace test
 
     //Cleanup
     ra::timing::Millisleep(500);
-    system("cmd.exe /c taskkill /IM calc.exe >NUL 2>NUL");
+    KillCalculatorProcess();
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestActionExecute, testArguments)
@@ -172,7 +180,8 @@ namespace shellanything { namespace test
     //Skip this test if run on AppVeyor as it requires administrative (elevated) privileges.
     if (ra::testing::IsAppVeyor() ||
         ra::testing::IsJenkins() ||
-        ra::testing::IsTravis())
+        ra::testing::IsTravis() ||
+        ra::testing::IsGitHubActions())
     {
       printf("Skipping tests as it requires administrative (elevated) privileges.\n");
       return;
