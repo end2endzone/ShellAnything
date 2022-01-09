@@ -220,8 +220,7 @@ namespace shellanything
   std::string GetLogDirectory()
   {
     //Issue #10 - Change the log directory if run from the unit tests executable
-    std::string process_path = ra::process::GetCurrentProcessPath();
-    if (process_path.find("_unittest") != std::string::npos)
+    if (IsTestingEnvironment())
     {
       //This DLL is executed by the unit tests.
 
@@ -287,6 +286,14 @@ namespace shellanything
     return true;
   }
 
+  bool IsTestingEnvironment()
+  {
+    std::string process_path = ra::process::GetCurrentProcessPath();
+    if (process_path.find("_unittest") != std::string::npos)
+      return true;
+    return false;
+  }
+
   void DeletePreviousLogs(int max_age_seconds)
   {
     std::string log_dir = GetLogDirectory();
@@ -315,8 +322,8 @@ namespace shellanything
   void DeletePreviousLogs()
   {
     static const int DAYS_TO_SECONDS = 86400;
-    static const int MAX_DAYS_OLD = 5*DAYS_TO_SECONDS; //5 days old maximum
-    DeletePreviousLogs(MAX_DAYS_OLD);
+    static const int MAX_SECONDS_OLD = 5*DAYS_TO_SECONDS; //5 days old maximum
+    DeletePreviousLogs(MAX_SECONDS_OLD);
   }
 
   void InitLogger()
@@ -339,8 +346,17 @@ namespace shellanything
 
     //delete previous logs for easier debugging
     static const int DAYS_TO_SECONDS = 86400;
-    static const int MAX_5_DAYS_OLD = 10*DAYS_TO_SECONDS; //10 days old maximum
-    DeletePreviousLogs(MAX_5_DAYS_OLD);
+    if (!IsTestingEnvironment())
+    {
+      static const int MAX_10_DAYS_OLD = 10 * DAYS_TO_SECONDS; //10 days old maximum
+      DeletePreviousLogs(MAX_10_DAYS_OLD);
+    }
+    else
+    {
+      // Delete all previous logs if we are in a testing environment.
+      static const int MAX_1_SECOND_OLD = 1; //1 second old maximum
+      DeletePreviousLogs(MAX_1_SECOND_OLD);
+    }
 
     // Prepare Google's logging library.
     fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr

@@ -1344,8 +1344,11 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   {
     g_hmodDll = hInstance;
 
-    // Initialize Google's logging library.
-    shellanything::InitLogger();
+    if (!shellanything::IsTestingEnvironment())
+    {
+      // Initialize Google's logging library.
+      shellanything::InitLogger();
+    }
 
     LogEnvironment();
 
@@ -1354,8 +1357,11 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {
-    // Shutdown Google's logging library.
-    google::ShutdownGoogleLogging();
+    if (!shellanything::IsTestingEnvironment())
+    {
+      // Shutdown Google's logging library.
+      google::ShutdownGoogleLogging();
+    }
   }
   return 1;
 }

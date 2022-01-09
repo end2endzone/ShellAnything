@@ -104,6 +104,13 @@ namespace shellanything { namespace test
   {
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestGlogUtils, testTestingEnvironment)
+  {
+    bool testing = IsTestingEnvironment();
+
+    ASSERT_TRUE( testing );
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestGlogUtils, testValidLogDirectory)
   {
     std::string log_dir = GetLogDirectorySafe();

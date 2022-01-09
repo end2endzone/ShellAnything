@@ -1,5 +1,6 @@
 Changes for 0.8.0
 
+* Now using GLOG (Google Logging Library) as a shared DLL instead of a static library.
 * Fixed issue  #89: Show a confirmation prompt as an action before proceeding.
 
 

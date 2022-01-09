@@ -55,6 +55,7 @@ namespace shellanything
   bool HasDirectoryWriteAccess(const std::string & path);
   std::string GetLogDirectory();
   bool IsLogFile(const std::string & path);
+  bool IsTestingEnvironment();
 
   void DeletePreviousLogs(int max_age_seconds);
   void DeletePreviousLogs();

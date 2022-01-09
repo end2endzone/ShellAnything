@@ -148,6 +148,10 @@ add_custom_command( TARGET sa.core POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll $<TARGET_FILE_DIR:sa.core>/zlib.dll
                     COMMENT "Copying zlib.dll.")
+add_custom_command( TARGET sa.core POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_FILE:glog::glog> $<TARGET_FILE_DIR:sa.core>/$<TARGET_FILE_NAME:glog::glog>
+                    COMMENT "Copying glog.")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(sa.core         PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})

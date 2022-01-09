@@ -49,26 +49,15 @@ int main(int argc, char **argv)
   if (has_PrintProcessSettings)
     return shellanything::PrintProcessSettings(argc, argv);
 
-  // Prepare Google's logging library.
-  fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
-  fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'
-  fLI::FLAGS_stderrthreshold = INT_MAX; //disable console output
-  fLI::FLAGS_logbufsecs = 0; //flush logs after each LOG() calls
-  fLI::FLAGS_minloglevel = google::GLOG_INFO;
-  fLI::FLAGS_v = 4; //disables vlog(2), vlog(3), vlog(4)
-
-  google::SetLogFilenameExtension(".log");
+  // Initialize Google's logging library.
+  shellanything::InitLogger();
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
   //When running tests from a developer environment, the log directory is expected to have write access.
   //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
-  std::string log_dir = shellanything::GetLogDirectory();
-  fLS::FLAGS_log_dir = log_dir;
+  std::string log_dir = fLS::FLAGS_log_dir;
   printf("Using log directory: '%s'.\n", log_dir.c_str());
-
-  // Initialize Google's logging library.
-  google::InitGoogleLogging(argv[0]);
 
   LOG(INFO) << "Starting unit tests";
   LOG(INFO) << __FUNCTION__ << "() - BEGIN";
@@ -95,5 +84,9 @@ int main(int argc, char **argv)
   int wResult = RUN_ALL_TESTS(); //Find and run all tests
 
   LOG(INFO) << __FUNCTION__ << "() - END";
+
+  // Shutdown Google's logging library.
+  google::ShutdownGoogleLogging();
+
   return wResult; // returns 0 if all the tests are successful, or 1 otherwise
 }
