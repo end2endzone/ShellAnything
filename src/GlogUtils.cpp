@@ -289,7 +289,7 @@ namespace shellanything
   bool IsTestingEnvironment()
   {
     std::string process_path = ra::process::GetCurrentProcessPath();
-    if (process_path.find("_unittest") != std::string::npos)
+    if (process_path.find("sa.tests") != std::string::npos)
       return true;
     return false;
   }

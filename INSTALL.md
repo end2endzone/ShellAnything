@@ -187,9 +187,9 @@ Test are disabled by default and must be manually enabled. See the [Build Option
 
 Test are automatically build when building the solution.
 
-To run tests, navigate to the `build/bin` folder and run `shellanything_unittest` executable. For Windows users, the executable is located in `build\bin\Release`.
+To run tests, navigate to the `build/bin` folder and run `sa.tests` executable. For Windows users, the executable is located in `build\bin\Release`.
 
-Test results are saved in junit format in file `shellanything_unittest.x64.debug.xml` or `shellanything_unittest.x64.release.xml` depending on the selected configuration.
+Test results are saved in junit format in file `sa.tests.x64.debug.xml` or `sa.tests.x64.release.xml` depending on the selected configuration.
 
 The latest test results are available at the beginning of the [README.md](README.md) file.
 

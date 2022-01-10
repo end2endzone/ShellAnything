@@ -27,7 +27,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
 
-add_executable(shellanything_unittest
+add_executable(sa.tests
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
@@ -100,16 +100,16 @@ if(NOT WIN32)
 endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(shellanything_unittest PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(sa.tests PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(shellanything_unittest PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog libmagic ${CMAKE_SOURCE_DIR}/src)
-add_dependencies(shellanything_unittest sa.core shellext libmagic)
-target_link_libraries(shellanything_unittest PUBLIC sa.core shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libexprtk libmagic)
+target_include_directories(sa.tests PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog libmagic ${CMAKE_SOURCE_DIR}/src)
+add_dependencies(sa.tests sa.core shellext libmagic)
+target_link_libraries(sa.tests PUBLIC sa.core shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libexprtk libmagic)
 
 # Copy test configuration files database to target dir
-add_custom_command( TARGET shellanything_unittest POST_BUILD
+add_custom_command( TARGET sa.tests POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    ${CMAKE_CURRENT_SOURCE_DIR}/test_files $<TARGET_FILE_DIR:shellanything_unittest>/test_files
+                    ${CMAKE_CURRENT_SOURCE_DIR}/test_files $<TARGET_FILE_DIR:sa.tests>/test_files
                     COMMENT "Copying test configuration files database.")
 
 # Copy test configuration files to build dir for local execution (from within the IDE)
@@ -118,7 +118,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test_files DESTINATION ${CMAKE_CURRENT_BIN
 # Copy default configuration files to build dir for local execution (from within the IDE)
 file(COPY ${CMAKE_SOURCE_DIR}/resources/configurations DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-install(TARGETS shellanything_unittest
+install(TARGETS sa.tests
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

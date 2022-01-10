@@ -89,5 +89,5 @@ test_script:
 # ShellAnything-0.1.0-win64.zip
 
 artifacts:
-- path: .\build\bin\Release\shellanything_unittest.*.release.xml
+- path: .\build\bin\Release\sa.tests.*.release.xml
 - path: .\build\shellanything-*-win*.*

@@ -130,7 +130,7 @@ namespace shellanything
     printf("has_windows_write_access=%d\n", (int)has_windows_write_access);
 
     // print to a file
-    FILE * f = fopen("shellanything_unittest.ProcessSettings.txt", "w");
+    FILE * f = fopen("sa.tests.ProcessSettings.txt", "w");
     if (!f)
       return 1;
 

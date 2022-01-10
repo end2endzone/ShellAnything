@@ -28,9 +28,9 @@ echo Testing project
 echo =======================================================================
 cd /d %PRODUCT_SOURCE_DIR%\build\bin\%CONFIGURATION%
 if "%CONFIGURATION%" == "Debug" (
-  shellanything_unittest-d.exe
+  sa.tests-d.exe
 ) else (
-  shellanything_unittest.exe
+  sa.tests.exe
 )
 
 ::reset error in case of test case fail

@@ -199,7 +199,7 @@ namespace shellanything { namespace test
 
     std::string self_path = ra::process::GetCurrentProcessPath();
     std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
-    std::string output_filename = "shellanything_unittest.ProcessSettings.txt";
+    std::string output_filename = "sa.tests.ProcessSettings.txt";
     std::string output_file_path = temp_dir + "\\" + output_filename;
     std::string arguments = "--PrintProcessSettings --foobar";
 

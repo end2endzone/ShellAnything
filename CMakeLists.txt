@@ -357,13 +357,13 @@ endif (WIX_FOUND)
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
 set(CPACK_PACKAGE_EXECUTABLES
   # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
-  # "$<TARGET_FILE_NAME:shellanything_unittest>" "Run Unit Tests"
+  # "$<TARGET_FILE_NAME:sa.tests>" "Run Unit Tests"
 
   # Issue #60 Unit tests cannot execute from installation directory:
   # The shortcut created by NSIS does not "Start in" 'bin' directory which is a problem for unit tests.
   # See issue #60 for details.
   # The shortcut will be created manually. See CPACK_NSIS_CREATE_ICONS_EXTRA below.
-  # "shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
+  # "sa.tests${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
 )
 
 #######################
@@ -406,10 +406,10 @@ set(CPACK_NSIS_MENU_LINKS
 # Shortcuts that must start in 'bin' directory must be created manually...
 # NSIS CreateShortCut documentation: https://nsis.sourceforge.io/Reference/CreateShortCut
 # Note: CMake escaping mechanism is complicated. In short, to insert a backslash, use the literal string \\\\ and to insert a double-quote character, use the literal string \\\" .
-#       Also, generator expression variable such as `$<TARGET_FILE_NAME:shellanything_unittest>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
+#       Also, generator expression variable such as `$<TARGET_FILE_NAME:sa.tests>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
 SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
   SetOutPath \\\"$INSTDIR\\\\bin\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe\\\"
+  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\sa.tests${CMAKE_DEBUG_POSTFIX}.exe\\\"
   CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Register shell extension.lnk\\\"   \\\"$INSTDIR\\\\bin\\\\register.bat\\\"
   CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Unregister shell extension.lnk\\\" \\\"$INSTDIR\\\\bin\\\\unregister.bat\\\"
   SetOutPath \\\"$INSTDIR\\\"
@@ -440,7 +440,7 @@ set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
 # See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
 
 # Define start menu shortcuts for WIX
-set_property(INSTALL "bin/$<TARGET_FILE_NAME:shellanything_unittest>"   PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
 set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )

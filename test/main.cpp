@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     outputXml.append(log_dir);
     outputXml.append("\\");
   }
-  outputXml.append("shellanything_unittest");
+  outputXml.append("sa.tests");
   outputXml += (ra::environment::IsProcess32Bit() ? ".x86" : ".x64");
   outputXml += (ra::environment::IsConfigurationDebug() ? ".debug" : ".release");
   outputXml += ".xml";
