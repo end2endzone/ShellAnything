@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "TestIcon.h"
-#include "shellanything/Icon.h"
-#include "shellanything/Context.h"
+#include "Icon.h"
+#include "Context.h"
 #include "PropertyManager.h"
 #include "GlogUtils.h"
 #include "rapidassist/filesystem.h"

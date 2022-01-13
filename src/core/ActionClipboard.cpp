@@ -22,58 +22,53 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestActionStop.h"
-#include "Context.h"
-#include "ActionStop.h"
+#include "ActionClipboard.h"
 #include "PropertyManager.h"
-#include "rapidassist/testing.h"
+#include "Win32Clipboard.h"
 
-namespace shellanything { namespace test
+#include "rapidassist/unicode.h"
+
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
+namespace shellanything
 {
 
-  //--------------------------------------------------------------------------------------------------
-  void TestActionStop::SetUp()
+  ActionClipboard::ActionClipboard()
+  {
+  }
+
+  ActionClipboard::~ActionClipboard()
+  {
+  }
+
+  bool ActionClipboard::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.Clear();
+    std::string value = pmgr.Expand(mValue);
+
+    //get clipboard handler
+    Win32Clipboard::Clipboard & clipboard = Win32Clipboard::Clipboard::GetInstance();
+
+    //debug
+    LOG(INFO) << "Setting clipboard to '" << value << "'.";
+
+    //set clipboard value
+    bool result = clipboard.SetTextUtf8(value);
+
+    return result;
   }
-  //--------------------------------------------------------------------------------------------------
-  void TestActionStop::TearDown()
+
+  const std::string & ActionClipboard::GetValue() const
   {
+    return mValue;
   }
-  //--------------------------------------------------------------------------------------------------
-  TEST_F(TestActionStop, testActionStop)
+
+  void ActionClipboard::SetValue(const std::string & value)
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
-
-    //Create a valid context
-    Context c;
-    Context::ElementList elements;
-    elements.push_back("C:\\Windows\\System32\\calc.exe");
-    c.SetElements(elements);
-
-    c.RegisterProperties();
-
-    Validator * v = new Validator();
-
-    ActionStop action;
-    action.SetValidator(v);
-
-    v->SetMaxFiles(10);
-    ASSERT_TRUE( action.Execute(c) );
-
-    v->SetMaxFiles(0);
-    ASSERT_FALSE(action.Execute(c));
-
-    v->SetMaxFiles(99999);
-    v->SetProperties("foo");
-    pmgr.SetProperty("foo", "bar");
-    ASSERT_TRUE(action.Execute(c));
-
-    pmgr.ClearProperty("foo");
-    ASSERT_FALSE(action.Execute(c));
+    mValue = value;
   }
-  //--------------------------------------------------------------------------------------------------
 
-} //namespace test
 } //namespace shellanything

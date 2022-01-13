@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestContext.h"
-#include "shellanything/Context.h"
+#include "Context.h"
 #include "PropertyManager.h"
 #include "rapidassist/process.h"
 #include "rapidassist/filesystem.h"

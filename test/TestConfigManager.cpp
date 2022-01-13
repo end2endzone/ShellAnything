@@ -24,8 +24,8 @@
 
 #include "TestConfigManager.h"
 #include "Workspace.h"
-#include "shellanything/ConfigManager.h"
-#include "shellanything/Context.h"
+#include "ConfigManager.h"
+#include "Context.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"

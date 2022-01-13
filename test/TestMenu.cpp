@@ -23,9 +23,9 @@
  *********************************************************************************/
 
 #include "TestMenu.h"
-#include "shellanything/Icon.h"
-#include "shellanything/Menu.h"
-#include "shellanything/ActionExecute.h"
+#include "Icon.h"
+#include "Menu.h"
+#include "ActionExecute.h"
 
 namespace shellanything { namespace test
 {

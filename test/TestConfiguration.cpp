@@ -24,10 +24,10 @@
 
 #include "TestConfiguration.h"
 #include "Workspace.h"
-#include "shellanything/ConfigManager.h"
-#include "shellanything/Configuration.h"
-#include "shellanything/Menu.h"
-#include "shellanything/ActionExecute.h"
+#include "ConfigManager.h"
+#include "Configuration.h"
+#include "Menu.h"
+#include "ActionExecute.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/testing.h"

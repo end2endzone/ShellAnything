@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "TestActionProperty.h"
-#include "shellanything/Context.h"
-#include "shellanything/ActionProperty.h"
+#include "Context.h"
+#include "ActionProperty.h"
 #include "PropertyManager.h"
 
 #include "rapidassist/strings.h"

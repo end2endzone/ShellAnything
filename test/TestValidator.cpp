@@ -23,9 +23,9 @@
  *********************************************************************************/
 
 #include "TestValidator.h"
-#include "shellanything/Validator.h"
-#include "shellanything/Menu.h"
-#include "shellanything/Context.h"
+#include "Validator.h"
+#include "Menu.h"
+#include "Context.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/process.h"

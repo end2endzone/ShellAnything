@@ -22,58 +22,57 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestActionStop.h"
-#include "Context.h"
 #include "ActionStop.h"
 #include "PropertyManager.h"
-#include "rapidassist/testing.h"
+#include "rapidassist/strings.h"
+#include "rapidassist/unicode.h"
 
-namespace shellanything { namespace test
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
+namespace shellanything
 {
 
-  //--------------------------------------------------------------------------------------------------
-  void TestActionStop::SetUp()
+  ActionStop::ActionStop() :
+    mValidator(NULL)
+  {
+  }
+
+  ActionStop::~ActionStop()
+  {
+    if (mValidator)
+      delete mValidator;
+    mValidator = NULL;
+  }
+
+  bool ActionStop::Execute(const Context & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
-    pmgr.Clear();
+
+    if (!mValidator)
+      return true;
+
+    bool validated = mValidator->Validate(context);
+
+    //update the property
+    if (validated)
+      LOG(INFO) << "ActionStop: Validation is successful.";
+    else
+      LOG(INFO) << "ActionStop: Validation has failed.";
+
+    return validated;
   }
-  //--------------------------------------------------------------------------------------------------
-  void TestActionStop::TearDown()
+
+  Validator* ActionStop::GetValidator()
   {
+    return mValidator;
   }
-  //--------------------------------------------------------------------------------------------------
-  TEST_F(TestActionStop, testActionStop)
+
+  void ActionStop::SetValidator(Validator* validator)
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
-
-    //Create a valid context
-    Context c;
-    Context::ElementList elements;
-    elements.push_back("C:\\Windows\\System32\\calc.exe");
-    c.SetElements(elements);
-
-    c.RegisterProperties();
-
-    Validator * v = new Validator();
-
-    ActionStop action;
-    action.SetValidator(v);
-
-    v->SetMaxFiles(10);
-    ASSERT_TRUE( action.Execute(c) );
-
-    v->SetMaxFiles(0);
-    ASSERT_FALSE(action.Execute(c));
-
-    v->SetMaxFiles(99999);
-    v->SetProperties("foo");
-    pmgr.SetProperty("foo", "bar");
-    ASSERT_TRUE(action.Execute(c));
-
-    pmgr.ClearProperty("foo");
-    ASSERT_FALSE(action.Execute(c));
+    mValidator = validator;
   }
-  //--------------------------------------------------------------------------------------------------
 
-} //namespace test
 } //namespace shellanything

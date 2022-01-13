@@ -24,7 +24,7 @@
 
 #include "TestDemoSamples.h"
 #include "PropertyManager.h"
-#include "shellanything/ActionPrompt.h"
+#include "ActionPrompt.h"
 
 namespace shellanything { namespace test
 {

@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "TestActionExecute.h"
-#include "shellanything/Context.h"
-#include "shellanything/ActionExecute.h"
+#include "Context.h"
+#include "ActionExecute.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem_utf8.h"

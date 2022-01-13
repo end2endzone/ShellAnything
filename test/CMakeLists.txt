@@ -32,7 +32,6 @@ add_executable(sa.tests
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
-  ${SHELLANYTHING_PRIVATE_FILES}
   main.cpp
   ArgumentsHandler.cpp
   ArgumentsHandler.h
@@ -92,7 +91,6 @@ add_executable(sa.tests
 
 # Group external files as filter for Visual Studio
 source_group("Test Configuration Files"             FILES ${CONFIGURATION_TEST_FILES})
-source_group("ShellAnything Private Shared Files"   FILES ${SHELLANYTHING_PRIVATE_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)
@@ -102,9 +100,31 @@ endif()
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(sa.tests PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_include_directories(sa.tests PRIVATE ${GTEST_INCLUDE_DIR} rapidassist glog::glog libmagic ${CMAKE_SOURCE_DIR}/src)
-add_dependencies(sa.tests sa.core shellext libmagic)
-target_link_libraries(sa.tests PUBLIC sa.core shellext PRIVATE ${PTHREAD_LIBRARIES} ${GTEST_LIBRARIES} rapidassist glog::glog libexprtk libmagic)
+# Define include directories for the executable.
+target_include_directories(sa.tests
+  PRIVATE
+    ${GTEST_INCLUDE_DIR}
+    rapidassist
+    glog::glog
+    libmagic
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/core
+)
+
+# Define linking dependencies.
+add_dependencies(sa.tests sa.shared sa.core shellext libmagic)
+target_link_libraries(sa.tests
+  PRIVATE
+    sa.shared
+    sa.core
+    shellext
+    ${PTHREAD_LIBRARIES}
+    ${GTEST_LIBRARIES}
+    rapidassist
+    glog::glog
+    libexprtk
+    libmagic
+)
 
 # Copy test configuration files database to target dir
 add_custom_command( TARGET sa.tests POST_BUILD

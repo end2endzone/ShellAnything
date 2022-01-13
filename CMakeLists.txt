@@ -163,20 +163,6 @@ include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header 
                     ${CMAKE_BINARY_DIR}/include                 # for ${SHELLANYTHING_VERSION_HEADER} and ${SHELLANYTHING_CONFIG_HEADER} generated files.
 )
 
-# Include files from shellanything library which are not public
-set(SHELLANYTHING_PRIVATE_FILES ""
-  ${CMAKE_SOURCE_DIR}/src/BitmapCache.h
-  ${CMAKE_SOURCE_DIR}/src/BitmapCache.cpp
-  ${CMAKE_SOURCE_DIR}/src/GlogUtils.h
-  ${CMAKE_SOURCE_DIR}/src/GlogUtils.cpp
-  ${CMAKE_SOURCE_DIR}/src/SaUtils.h
-  ${CMAKE_SOURCE_DIR}/src/SaUtils.cpp
-  ${CMAKE_SOURCE_DIR}/src/Win32Registry.h
-  ${CMAKE_SOURCE_DIR}/src/Win32Registry.cpp
-  ${CMAKE_SOURCE_DIR}/src/Win32Utils.h
-  ${CMAKE_SOURCE_DIR}/src/Win32Utils.cpp
-)
-
 # Subprojects
 add_subdirectory(src)
 
