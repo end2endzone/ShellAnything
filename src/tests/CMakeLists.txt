@@ -107,6 +107,7 @@ target_include_directories(sa.tests
     rapidassist
     glog::glog
     libmagic
+    ${CMAKE_SOURCE_DIR}/src/libexprtk
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/core
 )

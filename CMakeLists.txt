@@ -167,7 +167,7 @@ include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header 
 add_subdirectory(src)
 
 if(SHELLANYTHING_BUILD_TEST)
-  add_subdirectory(test)
+  add_subdirectory(src/tests)
 endif()
 
 ##############################################################################################################################################
