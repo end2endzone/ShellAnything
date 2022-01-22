@@ -16,7 +16,7 @@
           <exec path="git.exe" basedir="${selection.parent.path}" arguments="mv &quot;${selection.filename}&quot; &quot;${git.duplicate.filename}&quot;" />
           
           <!-- Checkout again the original filename -->
-          <exec path="git.exe" basedir="${selection.parent.path}" arguments="checkout HEAD &quot;${selection.filename}&quot;" />
+          <exec path="git.exe" basedir="${selection.parent.path}" arguments="checkout HEAD~ &quot;${selection.filename}&quot;" />
 
           <property name="git.duplicate.filename" value="" />
         </actions>
