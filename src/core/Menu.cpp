@@ -303,7 +303,7 @@ namespace shellanything
     mEnabled = enabled;
   }
 
-  size_t Menu::GetValidityCount()
+  size_t Menu::GetValidityCount() const
   {
     return mValidities.size();
   }
@@ -323,7 +323,7 @@ namespace shellanything
       mValidities.push_back(validator);
   }
 
-  size_t Menu::GetVisibilityCount()
+  size_t Menu::GetVisibilityCount() const
   {
     return mVisibilities.size();
   }

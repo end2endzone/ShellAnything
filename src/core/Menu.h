@@ -204,7 +204,7 @@ namespace shellanything
     /// <summary>
     /// Get the number of Validator instances used for validity.
     /// </summary>
-    size_t GetValidityCount();
+    size_t GetValidityCount() const;
 
     /// <summary>
     /// Get a Validator instance used for validity.
@@ -222,7 +222,7 @@ namespace shellanything
     /// <summary>
     /// Get the number of Validator instances used for visibility.
     /// </summary>
-    size_t GetVisibilityCount();
+    size_t GetVisibilityCount() const;
 
     /// <summary>
     /// Get a Validator instance used for visibility.
