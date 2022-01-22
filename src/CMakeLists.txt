@@ -35,6 +35,7 @@ add_subdirectory(shared)
 add_subdirectory(libexprtk)
 add_subdirectory(core)
 add_subdirectory(shellextension)
+add_subdirectory(api)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
         DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
