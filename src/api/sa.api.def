@@ -55,6 +55,10 @@ EXPORTS
   sa_menu_get_name_string
   sa_menu_get_sub_menu_count
   sa_menu_get_sub_menu_element
+  sa_menu_get_validity_count
+  sa_menu_get_validity_element
+  sa_menu_get_visibility_count
+  sa_menu_get_visibility_element
   sa_menu_is_enabled
   sa_menu_is_separator
   sa_menu_is_visible
@@ -90,3 +94,37 @@ EXPORTS
   sa_string_free
   sa_string_init
   sa_string_valid
+  sa_validator_get_class_buffer
+  sa_validator_get_class_string
+  sa_validator_get_exprtk_buffer
+  sa_validator_get_exprtk_string
+  sa_validator_get_file_exists_buffer
+  sa_validator_get_file_exists_string
+  sa_validator_get_file_extensions_buffer
+  sa_validator_get_file_extensions_string
+  sa_validator_get_inverse_buffer
+  sa_validator_get_inverse_string
+  sa_validator_get_isfalse_buffer
+  sa_validator_get_isfalse_string
+  sa_validator_get_istrue_buffer
+  sa_validator_get_istrue_string
+  sa_validator_get_max_directories
+  sa_validator_get_max_files
+  sa_validator_get_pattern_buffer
+  sa_validator_get_pattern_string
+  sa_validator_get_properties_buffer
+  sa_validator_get_properties_string
+  sa_validator_is_attribute_inversed
+  sa_validator_set_class
+  sa_validator_set_exprtk
+  sa_validator_set_file_exists
+  sa_validator_set_file_extensions
+  sa_validator_set_inverse
+  sa_validator_set_isfalse
+  sa_validator_set_istrue
+  sa_validator_set_max_directories
+  sa_validator_set_max_files
+  sa_validator_set_pattern
+  sa_validator_set_properties
+  sa_validator_to_immutable
+  sa_validator_validate

@@ -9,6 +9,7 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_properties.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_string.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_validator.h
 )
 
 add_library(sa.api SHARED
@@ -28,6 +29,7 @@ add_library(sa.api SHARED
   sa_string_private.h
   sa_types_private.cpp
   sa_types_private.h
+  sa_validator.cpp
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables

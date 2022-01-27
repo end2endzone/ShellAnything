@@ -211,7 +211,7 @@ namespace shellanything
     /// </summary>
     /// <param name="index">The index of the requested instance.</param>
     /// <returns>Returns a valid Validator instance. Returns NULL if index is invalid.</returns>
-    const Validator * GetValidity(size_t index);
+    const Validator * GetValidity(size_t index) const;
 
     /// <summary>
     /// Add a new validity instance used for validity to menu. The menu instance takes ownership of the validator.
@@ -229,7 +229,7 @@ namespace shellanything
     /// </summary>
     /// <param name="index">The index of the requested instance.</param>
     /// <returns>Returns a valid Validator instance. Returns NULL if index is invalid.</returns>
-    const Validator * GetVisibility(size_t index);
+    const Validator * GetVisibility(size_t index) const;
 
     /// <summary>
     /// Add a new Validator instance used for visibility to menu. The menu instance takes ownership of the validator.

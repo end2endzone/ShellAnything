@@ -48,3 +48,8 @@ const shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_immu
       shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_t*                object) { return (      shellanything::Configuration*)(object); }
 sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::Configuration* object) { sa_configuration_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
 sa_configuration_t                  AS_TYPE_CONFIGURATION(      shellanything::Configuration* object) { sa_configuration_t            my_type; my_type.opaque = (void*)(object); return my_type; }
+
+const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*      object) { return (const shellanything::Validator*)(object); }
+      shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t*                object) { return (      shellanything::Validator*)(object); }
+sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object) { sa_validator_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
+sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object) { sa_validator_t            my_type; my_type.opaque = (void*)(object); return my_type; }

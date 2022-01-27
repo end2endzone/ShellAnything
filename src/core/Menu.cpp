@@ -308,7 +308,7 @@ namespace shellanything
     return mValidities.size();
   }
 
-  const Validator * Menu::GetValidity(size_t index)
+  const Validator * Menu::GetValidity(size_t index) const
   {
     const Validator * validator = NULL;
     size_t count = mValidities.size();
@@ -328,7 +328,7 @@ namespace shellanything
     return mVisibilities.size();
   }
 
-  const Validator * Menu::GetVisibility(size_t index)
+  const Validator * Menu::GetVisibility(size_t index) const
   {
     const Validator * validator = NULL;
     size_t count = mVisibilities.size();

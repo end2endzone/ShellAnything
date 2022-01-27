@@ -32,12 +32,14 @@
 #include "Icon.h"
 #include "Menu.h"
 #include "Configuration.h"
+#include "Validator.h"
 
 #include "shellanything/sa_action.h"
 #include "shellanything/sa_context.h"
 #include "shellanything/sa_icon.h"
 #include "shellanything/sa_menu.h"
 #include "shellanything/sa_configuration.h"
+#include "shellanything/sa_validator.h"
 
 const shellanything::Action*  AS_CLASS_ACTION(sa_action_immutable_t*      object);
       shellanything::Action*  AS_CLASS_ACTION(sa_action_t*                object);
@@ -63,6 +65,11 @@ const shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_immu
       shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_t*                object);
 sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::Configuration* object);
 sa_configuration_t                  AS_TYPE_CONFIGURATION(      shellanything::Configuration* object);
+
+const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*      object);
+      shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t*                object);
+sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object);
+sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object);
 
 
 #endif //SA_API_STRING_PRIVATE_H

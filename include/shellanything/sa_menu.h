@@ -29,6 +29,7 @@
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_icon.h"
 #include "shellanything/sa_action.h"
+#include "shellanything/sa_validator.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -174,10 +175,42 @@ size_t sa_menu_get_action_count(sa_menu_immutable_t* menu);
 /// Get an action subscribed to the menu.
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
-/// <param name="index">The sub menu index</param>
+/// <param name="index">The action index</param>
 /// <param name="submenu">The output action structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_action_element(sa_menu_t* menu, size_t index, sa_action_t* action);
+
+/// <summary>
+/// Get how many visibility validators are subscribed to the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <returns>Returns how many visibility validators are subscribed to the menu</returns>
+size_t sa_menu_get_visibility_count(sa_menu_immutable_t* menu);
+
+/// <summary>
+/// Get a visibility validators subscribed to the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <param name="index">The validator index</param>
+/// <param name="submenu">The output validator structure object</param>
+/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
+sa_error_t sa_menu_get_visibility_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator);
+
+/// <summary>
+/// Get how many validity validators are subscribed to the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <returns>Returns how many validity validators are subscribed to the menu</returns>
+size_t sa_menu_get_validity_count(sa_menu_immutable_t* menu);
+
+/// <summary>
+/// Get a validity validators subscribed to the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <param name="index">The validator index</param>
+/// <param name="submenu">The output validator structure object</param>
+/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
+sa_error_t sa_menu_get_validity_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator);
 
 /// <summary>
 /// Get how many sub menu are under the current menu.

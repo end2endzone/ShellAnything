@@ -156,6 +156,40 @@ sa_error_t sa_menu_get_action_element(sa_menu_t* menu, size_t index, sa_action_t
   return SA_ERROR_SUCCESS;
 }
 
+size_t sa_menu_get_visibility_count(sa_menu_immutable_t* menu)
+{
+  size_t count = AS_CLASS_MENU(menu)->GetVisibilityCount();
+  return count;
+}
+
+sa_error_t sa_menu_get_visibility_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator)
+{
+  if (validator == NULL)
+    return SA_ERROR_INVALID_ARGUMENTS;
+  if (index >= AS_CLASS_MENU(menu)->GetVisibilityCount())
+    return SA_ERROR_VALUE_OUT_OF_BOUNDS;
+  const shellanything::Validator* element = AS_CLASS_MENU(menu)->GetVisibility(index);
+  *validator = AS_TYPE_VALIDATOR(element);
+  return SA_ERROR_SUCCESS;
+}
+
+size_t sa_menu_get_validity_count(sa_menu_immutable_t* menu)
+{
+  size_t count = AS_CLASS_MENU(menu)->GetValidityCount();
+  return count;
+}
+
+sa_error_t sa_menu_get_validity_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator)
+{
+  if (validator == NULL)
+    return SA_ERROR_INVALID_ARGUMENTS;
+  if (index >= AS_CLASS_MENU(menu)->GetValidityCount())
+    return SA_ERROR_VALUE_OUT_OF_BOUNDS;
+  const shellanything::Validator* element = AS_CLASS_MENU(menu)->GetValidity(index);
+  *validator = AS_TYPE_VALIDATOR(element);
+  return SA_ERROR_SUCCESS;
+}
+
 size_t sa_menu_get_sub_menu_count(sa_menu_t* menu)
 {
   shellanything::Menu::MenuPtrList subs = AS_CLASS_MENU(menu)->GetSubMenus();
