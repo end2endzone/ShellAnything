@@ -48,7 +48,7 @@ namespace shellanything { namespace test
     std::string cur_process = ra::process::GetCurrentProcessPath();
 
     std::string path = cur_process;
-    ra::strings::Replace(path, "sa.tests", "shellext");
+    ra::strings::Replace(path, "sa.tests", "sa.shellextension");
     ra::strings::Replace(path, ".exe", ".dll");
     return path;
   }

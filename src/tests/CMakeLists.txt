@@ -113,12 +113,12 @@ target_include_directories(sa.tests
 )
 
 # Define linking dependencies.
-add_dependencies(sa.tests sa.shared sa.core shellext libmagic)
+add_dependencies(sa.tests sa.shared sa.core sa.shellextension libmagic)
 target_link_libraries(sa.tests
   PRIVATE
     sa.shared
     sa.core
-    shellext
+    sa.shellextension
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist

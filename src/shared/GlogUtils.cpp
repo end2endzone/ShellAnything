@@ -68,7 +68,7 @@ namespace shellanything
   {
     GLOG_DATETIME dt = {0};
 
-    //shellext-d.dll.PCNAME.JohnSmith.log.INFO.20190503-180515.14920.log
+    //sa.shellextension-d.dll.PCNAME.JohnSmith.log.INFO.20190503-180515.14920.log
     
     std::string filename = ra::filesystem::GetFilename(path.c_str());
     
@@ -127,8 +127,8 @@ namespace shellanything
   std::string GetLogDestination(int level)
   {
     //For issue #7 - Change the default filename format for log files
-    //NATIVE FORMAT:  shellext-d.dll.SES-MBL-WPC0866.beauchamp.a3.log.INFO.20180120-124422.8732.log
-    //DESIRED FORMAT: shellext-d.dll.INFO.20180120-124422.8732.log
+    //NATIVE FORMAT:  sa.shellextension-d.dll.SES-MBL-WPC0866.beauchamp.a3.log.INFO.20180120-124422.8732.log
+    //DESIRED FORMAT: sa.shellextension-d.dll.INFO.20180120-124422.8732.log
 
     // The function google::SetLogDestination() is expecting a full path (including the destination directory)
 
@@ -360,7 +360,7 @@ namespace shellanything
 
     // Prepare Google's logging library.
     fLB::FLAGS_logtostderr = false; //on error, print to stdout instead of stderr
-    fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 shellext.cpp:847]'
+    fLB::FLAGS_log_prefix = 1; //prefix each message in file/console with 'E0405 19:13:07.577863  6652 sa.shellextension.cpp:847]'
     fLI::FLAGS_stderrthreshold = INT_MAX; //disable console output
     fLI::FLAGS_logbufsecs = 0; //flush logs after each LOG() calls
     fLI::FLAGS_minloglevel = google::GLOG_INFO;

@@ -110,7 +110,7 @@ BEGIN
             VALUE "FileDescription", "ShellAnything Shell Extension"
             VALUE "FileVersion", "@SHELLANYTHING_VERSION@"
             VALUE "LegalCopyright", "MIT License"
-            VALUE "OriginalFilename", "shellext.dll"
+            VALUE "OriginalFilename", "sa.shellextension.dll"
             VALUE "ProductName", "ShellAnything"
             VALUE "ProductVersion", "@SHELLANYTHING_VERSION@"
         END

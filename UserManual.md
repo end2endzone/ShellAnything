@@ -81,7 +81,7 @@ To register the shell extension, execute the following commands:
    For instance, `cd /d C:\Program Files\ShellAnything`.
 
 3) Register the shell extension with the command:
-   `regsvr32 shellext.dll`
+   `regsvr32 sa.shellextension.dll`
    
 4) The following confirmation message should displayed:
 ```
@@ -89,7 +89,7 @@ To register the shell extension, execute the following commands:
 RegSvr32
 
 [Content]
-DllRegisterServer in shellext.dll succeeded.
+DllRegisterServer in sa.shellextension.dll succeeded.
 
 [OK]
 ```
@@ -118,7 +118,7 @@ To unregister the shell extension, execute the following commands:
    For instance, `cd /d C:\Program Files\ShellAnything`.
 
 3) Register the shell extension with the following command:
-   `regsvr32 /u shellext.dll`
+   `regsvr32 /u sa.shellextension.dll`
    
 4) The following confirmation message should displayed:
 ```
@@ -126,7 +126,7 @@ To unregister the shell extension, execute the following commands:
 RegSvr32
 
 [Content]
-DllUnregisterServer in shellext.dll succeeded.
+DllUnregisterServer in sa.shellextension.dll succeeded.
 
 [OK]
 ```
@@ -1511,13 +1511,13 @@ The following table defines each field identifier in the filename format:
 
 | Identifier | Description                                                                                                                                                           |
 |:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    name    | Matches the name of the dll that generates log messages. Usually `shellext.dll`.                                                                                      |
+|    name    | Matches the name of the dll that generates log messages. Usually `sa.shellextension.dll`.                                                                             |
 |    LEVEL   | The logging level. Accepted values are `ERROR`, `WARNING` and `INFO`. See [glog documentation](https://github.com/google/glog/blob/v0.4.0/doc/glog.html) for details. |
 |    date    | The current date when the file was created in `yyyymmdd` format.                                                                                                      |
 |    time    | The current date when the file was created in `hhmmss` format.                                                                                                        |
 |     pid    | The Process Id which generates the log message.                                                                                                                       |
 
-For example, `shellext.dll.INFO.20191125-083305.9456.log` is a valid log filename.
+For example, `sa.shellextension.dll.INFO.20191125-083305.9456.log` is a valid log filename.
 
 
 
@@ -1531,9 +1531,9 @@ The application supports 3 differents logging levels: `ERROR`, `WARNING` and `IN
 
 Each level have a dedicated log file for storing messages. For example:
 ```
-shellext.dll.INFO.20191125-083305.9456.log
-shellext.dll.WARNING.20191125-083701.9456.log
-shellext.dll.ERROR.20191125-084152.9456.log
+sa.shellextension.dll.INFO.20191125-083305.9456.log
+sa.shellextension.dll.WARNING.20191125-083701.9456.log
+sa.shellextension.dll.ERROR.20191125-084152.9456.log
 ```
 See [Filename Format](#filename-format) for details.
 

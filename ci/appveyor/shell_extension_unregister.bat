@@ -39,9 +39,9 @@ if %errorLevel% == 0 (
 echo Proceeding with the Shell Extension unregistration.
 cd /d "%PRODUCT_SOURCE_DIR%\build\bin\%CONFIGURATION%"
 if "%CONFIGURATION%" == "Debug" (
-  regsvr32 /u shellext-d.dll
+  regsvr32 /u sa.shellextension-d.dll
 ) else (
-  regsvr32 /u shellext.dll
+  regsvr32 /u sa.shellextension.dll
 )
 
 ::Return to launch folder

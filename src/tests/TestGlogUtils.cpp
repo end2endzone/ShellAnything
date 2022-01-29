@@ -137,7 +137,7 @@ namespace shellanything { namespace test
 
     //test from filename
     {
-      GLOG_DATETIME dt = GetFileDateTime("shellext-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
+      GLOG_DATETIME dt = GetFileDateTime("sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
 
       ASSERT_EQ(2019, dt.year   );
       ASSERT_EQ(  05, dt.month  );
@@ -149,7 +149,7 @@ namespace shellanything { namespace test
 
     //test from file path
     {
-      GLOG_DATETIME dt = GetFileDateTime("C:\\Users\\JohnSmith\\ShellAnything\\Logs\\shellext-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
+      GLOG_DATETIME dt = GetFileDateTime("C:\\Users\\JohnSmith\\ShellAnything\\Logs\\sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
 
       ASSERT_EQ(2019, dt.year   );
       ASSERT_EQ(  05, dt.month  );

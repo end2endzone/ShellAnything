@@ -1,4 +1,4 @@
-add_library(shellext SHARED
+add_library(sa.shellextension SHARED
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
@@ -12,10 +12,10 @@ add_library(shellext SHARED
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(shellext        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(sa.shellextension        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the library.
-target_include_directories(shellext
+target_include_directories(sa.shellextension
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
@@ -27,7 +27,7 @@ target_include_directories(shellext
 )
 
 # Define linking dependencies.
-target_link_libraries(shellext
+target_link_libraries(sa.shellextension
   PRIVATE
     sa.core
     sa.shared
@@ -37,7 +37,7 @@ target_link_libraries(shellext
 )
 
 # Define files that will be part of the installation package.
-install(TARGETS shellext
+install(TARGETS sa.shellextension
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

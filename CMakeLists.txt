@@ -342,7 +342,7 @@ endif (WIX_FOUND)
 # For more flexibility, see the following: 
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
 set(CPACK_PACKAGE_EXECUTABLES
-  # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
+  # CMake generator expression such as '$<TARGET_FILE_NAME:sa.shellextension>' do not work with CPACK_PACKAGE_EXECUTABLES.
   # "$<TARGET_FILE_NAME:sa.tests>" "Run Unit Tests"
 
   # Issue #60 Unit tests cannot execute from installation directory:
