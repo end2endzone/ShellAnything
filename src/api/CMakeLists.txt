@@ -5,6 +5,7 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_context.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_error.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_icon.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_logging.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_memory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_menu.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_properties.h
@@ -21,6 +22,7 @@ add_library(sa.api SHARED
   sa_context.cpp
   sa_error.cpp
   sa_icon.cpp
+  sa_logging.cpp
   sa_memory.cpp
   sa_menu.cpp
   sa_properties.cpp
@@ -41,6 +43,7 @@ target_include_directories(sa.api
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
+    glog::glog
     ${CMAKE_SOURCE_DIR}/src/core
 )
 
@@ -49,6 +52,7 @@ add_dependencies(sa.api sa.core)
 target_link_libraries(sa.api
   PRIVATE
     rapidassist
+    glog::glog
     sa.core
 )
 

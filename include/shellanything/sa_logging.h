@@ -22,38 +22,36 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_API_ERROR_MANAGER_H
-#define SA_API_ERROR_MANAGER_H
+#ifndef SA_API_LOGGING_H
+#define SA_API_LOGGING_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef enum {
-  SA_ERROR_SUCCESS = 0,
-  SA_ERROR_INVALID_ARGUMENTS,
-  SA_ERROR_BUFFER_TOO_SMALL,
-  SA_ERROR_VALUE_OUT_OF_BOUNDS,
-  SA_ERROR_NOT_FOUND,
-  SA_ERROR_ALREADY_EXIST,
-  SA_ERROR_MISSING_RESOURCE,
-  SA_ERROR_BUSY,
-  SA_ERROR_UNKNOWN = -1,
-} sa_error_t;
+  SA_LOG_LEVEL_INFO = 0,
+  SA_LOG_LEVEL_WARNING,
+  SA_LOG_LEVEL_ERROR,
+  SA_LOG_LEVEL_FATAL,
+} sa_log_level_t;
 
 /// <summary>
-/// Show an error message encoded in ansi to the user.
+/// Log a custom message in logs.
 /// </summary>
-/// <param name="title">The caption title of the window.</param>
-/// <param name="message">The message to display to the user.</param>
-void sa_error_show_message(const char * title, const char * message);
+/// <param name="level">The level of the log message.</param>
+/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
+/// <param name="message">The message to print in the logs.</param>
+void sa_logging_print(sa_log_level_t level, const char * source_name, const char * message);
 
 /// <summary>
-/// Show an error message encoded in utf8 to the user.
+/// Log a custom message in logs.
 /// </summary>
-/// <param name="title">The caption title of the window.</param>
-/// <param name="message">The message to display to the user.</param>
-void sa_error_show_message_utf8(const char* title, const char* message);
+/// <param name="level">The level of the log message.</param>
+/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
+/// <param name="format">The format of the </param>
+/// <param name="...">The arguments in the log to print</param>
+void sa_logging_print_format(sa_log_level_t level, const char* source_name, const char* format, ...);
 
 #ifdef __cplusplus
 }
