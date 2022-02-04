@@ -122,13 +122,7 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/version.h.in ${SHELLANYTHING_VERSION_HEA
 # config.h file
 set(SHELLANYTHING_CONFIG_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/config.h)
 message("Generating ${SHELLANYTHING_CONFIG_HEADER}...")
-if (BUILD_SHARED_LIBS)
-  set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE "#define SHELLANYTHING_BUILT_AS_SHARED")
-else()
-  set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE "#define SHELLANYTHING_BUILT_AS_STATIC")
-endif()
 configure_file( ${CMAKE_SOURCE_DIR}/src/config.h.in ${SHELLANYTHING_CONFIG_HEADER} )
-set(SHELLANYTHING_BUILD_TYPE_CPP_DEFINE)
 
 # Define installation directories
 set(SHELLANYTHING_INSTALL_ROOT_DIR     "/")
@@ -173,25 +167,22 @@ include_directories(${SHELLANYTHING_INCLUDE_DIR}                # public header 
 add_subdirectory(src)
 
 if(SHELLANYTHING_BUILD_TEST)
-  add_subdirectory(test)
+  add_subdirectory(src/tests)
 endif()
 
 ##############################################################################################################################################
 # Support for static and shared library
 ##############################################################################################################################################
 
-if (BUILD_SHARED_LIBS)
-  set(SHELLANYTHING_EXPORT_HEADER_FILENAME "export.h")
-  set(SHELLANYTHING_EXPORT_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/${SHELLANYTHING_EXPORT_HEADER_FILENAME})
-  message("Generating ${SHELLANYTHING_EXPORT_HEADER_FILENAME} for shared library...")
-  include (GenerateExportHeader) 
-  GENERATE_EXPORT_HEADER(shellanything 
-               BASE_NAME shellanything 
-               EXPORT_MACRO_NAME SHELLANYTHING_EXPORT 
-               EXPORT_FILE_NAME ${SHELLANYTHING_EXPORT_HEADER} 
-               STATIC_DEFINE SHELLANYTHING_BUILT_AS_STATIC
-  )
-endif()
+set(SHELLANYTHING_EXPORT_HEADER_FILENAME "export.h")
+set(SHELLANYTHING_EXPORT_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/${SHELLANYTHING_EXPORT_HEADER_FILENAME})
+message("Generating ${SHELLANYTHING_EXPORT_HEADER_FILENAME} for shared library...")
+include (GenerateExportHeader) 
+GENERATE_EXPORT_HEADER( sa.core 
+                        BASE_NAME shellanything 
+                        EXPORT_MACRO_NAME SHELLANYTHING_EXPORT 
+                        EXPORT_FILE_NAME ${SHELLANYTHING_EXPORT_HEADER} 
+)
 
 ##############################################################################################################################################
 # Generate doxygen documentation
@@ -351,14 +342,14 @@ endif (WIX_FOUND)
 # For more flexibility, see the following: 
 # https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
 set(CPACK_PACKAGE_EXECUTABLES
-  # CMake generator expression such as '$<TARGET_FILE_NAME:shellext>' do not work with CPACK_PACKAGE_EXECUTABLES.
-  # "$<TARGET_FILE_NAME:shellanything_unittest>" "Run Unit Tests"
+  # CMake generator expression such as '$<TARGET_FILE_NAME:sa.shellextension>' do not work with CPACK_PACKAGE_EXECUTABLES.
+  # "$<TARGET_FILE_NAME:sa.tests>" "Run Unit Tests"
 
   # Issue #60 Unit tests cannot execute from installation directory:
   # The shortcut created by NSIS does not "Start in" 'bin' directory which is a problem for unit tests.
   # See issue #60 for details.
   # The shortcut will be created manually. See CPACK_NSIS_CREATE_ICONS_EXTRA below.
-  # "shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
+  # "sa.tests${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
 )
 
 #######################
@@ -401,10 +392,10 @@ set(CPACK_NSIS_MENU_LINKS
 # Shortcuts that must start in 'bin' directory must be created manually...
 # NSIS CreateShortCut documentation: https://nsis.sourceforge.io/Reference/CreateShortCut
 # Note: CMake escaping mechanism is complicated. In short, to insert a backslash, use the literal string \\\\ and to insert a double-quote character, use the literal string \\\" .
-#       Also, generator expression variable such as `$<TARGET_FILE_NAME:shellanything_unittest>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
+#       Also, generator expression variable such as `$<TARGET_FILE_NAME:sa.tests>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
 SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
   SetOutPath \\\"$INSTDIR\\\\bin\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\shellanything_unittest${CMAKE_DEBUG_POSTFIX}.exe\\\"
+  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\sa.tests${CMAKE_DEBUG_POSTFIX}.exe\\\"
   CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Register shell extension.lnk\\\"   \\\"$INSTDIR\\\\bin\\\\register.bat\\\"
   CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Unregister shell extension.lnk\\\" \\\"$INSTDIR\\\\bin\\\\unregister.bat\\\"
   SetOutPath \\\"$INSTDIR\\\"
@@ -435,7 +426,7 @@ set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
 # See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
 
 # Define start menu shortcuts for WIX
-set_property(INSTALL "bin/$<TARGET_FILE_NAME:shellanything_unittest>"   PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
 set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )

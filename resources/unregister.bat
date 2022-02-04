@@ -15,10 +15,10 @@ if %errorLevel% == 0 (
 :: Unregistering the Shell Extension.
 echo Proceeding with the Shell Extension unregistration.
 cd /d %~dp0
-if exist "shellext.dll" (
-  regsvr32 /u shellext.dll
+if exist "sa.shellextension.dll" (
+  regsvr32 /u sa.shellextension.dll
 ) else (
-  regsvr32 /u shellext-d.dll
+  regsvr32 /u sa.shellextension-d.dll
 )
 
 pause

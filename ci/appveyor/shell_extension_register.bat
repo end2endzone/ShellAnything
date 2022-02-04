@@ -39,9 +39,9 @@ if %errorLevel% == 0 (
 echo Proceeding with the Shell Extension registration.
 cd /d "%PRODUCT_SOURCE_DIR%\build\bin\%CONFIGURATION%"
 if "%CONFIGURATION%" == "Debug" (
-  regsvr32 shellext-d.dll
+  regsvr32 sa.shellextension-d.dll
 ) else (
-  regsvr32 shellext.dll
+  regsvr32 sa.shellextension.dll
 )
 
 ::Return to launch folder

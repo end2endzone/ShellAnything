@@ -1,6 +1,10 @@
 Changes for 0.8.0
 
+**NOTE:** The file name of Shellanything's shell extension is now `sa.shellextension.dll`. If you update from a previous version, make sure you unregister the previous shell extension (formally `shellext.dll`). 
+* Now using GLOG (Google Logging Library) as a shared DLL instead of a static library.
+* Now using libexprtk as a shared DLL instead of a static library.
 * Fixed issue  #89: Show a confirmation prompt as an action before proceeding.
+* Fixed issue #103: ShellAnything API in C.
 
 
 Changes for 0.7.0
