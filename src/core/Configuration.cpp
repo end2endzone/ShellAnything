@@ -201,7 +201,7 @@ namespace shellanything
     const XMLElement* xml_defaults = xml_shell->FirstChildElement("default");
     while (xml_defaults)
     {
-      //found a new menu node
+      //found a new defaults node
       DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
@@ -211,6 +211,30 @@ namespace shellanything
 
       //next defaults node
       xml_defaults = xml_defaults->NextSiblingElement("default");
+    }
+
+    //find <plugins> nodes under <shell>
+    const XMLElement* xml_plugins = xml_shell->FirstChildElement("plugins");
+    while (xml_plugins)
+    {
+      //find <plugin> nodes under <plugins>
+      const XMLElement* xml_plugin = xml_plugins->FirstChildElement("plugin");
+      while (xml_plugin)
+      {
+        //found a new plugin node
+        Plugin* plugin = ObjectFactory::GetInstance().ParsePlugin(xml_plugin, error);
+        if (plugin != NULL)
+        {
+          //add the new plugin to the current configuration
+          config->AddPlugin(plugin);
+        }
+
+        //next xml_plugin node
+        xml_plugin = xml_plugin->NextSiblingElement("plugin");
+      }
+
+      //next plugins node
+      xml_plugins = xml_plugins->NextSiblingElement("plugins");
     }
 
     //find <menu> nodes under <shell>
@@ -346,6 +370,16 @@ namespace shellanything
     return nextCommandId;
   }
  
+  void Configuration::AddPlugin(Plugin* plugin)
+  {
+    mPlugins.push_back(plugin);
+  }
+
+  const Plugin::PluginPtrList& Configuration::GetPlugins() const
+  {
+    return mPlugins;
+  }
+
   Menu::MenuPtrList Configuration::GetMenus()
   {
     return mMenus;
@@ -371,6 +405,14 @@ namespace shellanything
 
   void Configuration::DeleteChildren()
   {
+    // delete plugins
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* plugin = mPlugins[i];
+      delete plugin;
+    }
+    mPlugins.clear();
+
     // delete menus
     for (size_t i = 0; i < mMenus.size(); i++)
     {

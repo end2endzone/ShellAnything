@@ -30,8 +30,10 @@
 #include "Menu.h"
 #include "Action.h"
 #include "Icon.h"
+#include "Configuration.h"
 #include "Validator.h"
 #include "DefaultSettings.h"
+#include "Plugin.h"
 #include "tinyxml2.h"
 
 namespace shellanything
@@ -92,6 +94,14 @@ namespace shellanything
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid DefaultSettings pointer if the object was properly parsed. Returns NULL otherwise.</returns>
     DefaultSettings * ParseDefaults(const tinyxml2::XMLElement * element, std::string & error);
+
+    /// <summary>
+    /// Parses a plugin from xml. Returns NULL if the parsing failed.
+    /// </summary>
+    /// <param name="element">The xml element that contains a PluginDescriptor to parse.</param>
+    /// <param name="error">The error description if the parsing failed.</param>
+    /// <returns>Returns a valid plugin pointer if the object was properly parsed. Returns NULL otherwise.</returns>
+    Plugin * ParsePlugin(const tinyxml2::XMLElement * element, std::string & error);
   };
 
 } //namespace shellanything

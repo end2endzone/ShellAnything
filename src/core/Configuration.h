@@ -29,6 +29,7 @@
 #include "shellanything/config.h"
 #include "Menu.h"
 #include "DefaultSettings.h"
+#include "Plugin.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -114,6 +115,17 @@ namespace shellanything
     uint32_t AssignCommandIds(const uint32_t & first_command_id);
 
     /// <summary>
+    /// Add a new plugin to the Configuration. The Configuration instance takes ownership of the plugin.
+    /// </summary>
+    /// <param name="plugin">The given plugin_descriptor to add to the Configuration</param>
+    void AddPlugin(Plugin* plugin);
+
+    /// <summary>
+    /// Get the list of plugin of the Configuration.
+    /// </summary>
+    const Plugin::PluginPtrList& GetPlugins() const;
+
+    /// <summary>
     /// Get the list of menu pointers handled by the configuration.
     /// </summary>
     Menu::MenuPtrList GetMenus();
@@ -144,6 +156,7 @@ namespace shellanything
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
+    Plugin::PluginPtrList mPlugins;
     Menu::MenuPtrList mMenus;
   };
 

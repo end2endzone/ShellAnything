@@ -44,6 +44,8 @@ add_library(sa.core SHARED
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp
+  Plugin.h
+  Plugin.cpp
   Unicode.h
   Unicode.cpp
   Validator.cpp

@@ -799,6 +799,56 @@ namespace shellanything { namespace test
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParsePlugins)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT 2 plugins parsed
+    const Plugin::PluginPtrList & plugins = cmgr.GetConfigurations()[0]->GetPlugins();
+    ASSERT_EQ(3, plugins.size());
+
+    const Plugin* plugin1 = plugins[0];
+    const Plugin* plugin2 = plugins[1];
+    const Plugin* plugin3 = plugins[2];
+    ASSERT_TRUE( plugin1 != NULL );
+    ASSERT_TRUE( plugin2 != NULL );
+    ASSERT_TRUE( plugin3 != NULL );
+
+    ASSERT_EQ( std::string("C:\\foo\\bar\\time.dll"),           plugin1->GetPath());
+    ASSERT_EQ( std::string("C:\\myapp\\running.dll" ),          plugin2->GetPath());
+    ASSERT_EQ( std::string("${config.directory}\\email.dll" ),  plugin3->GetPath());
+
+    ASSERT_EQ( std::string("start_time;end_time"),  plugin1->GetConditions());
+    ASSERT_EQ( std::string("running" ),             plugin2->GetConditions());
+
+    ASSERT_EQ( std::string("email" ),               plugin3->GetActions());
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseSeparator)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();

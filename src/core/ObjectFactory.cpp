@@ -56,6 +56,7 @@ namespace shellanything
   static const std::string NODE_ACTION_PROPERTY = "property";
   static const std::string NODE_ACTION_OPEN = "open";
   static const std::string NODE_ACTION_MESSAGE = "message";
+  static const std::string NODE_PLUGIN = "plugin";
 
   ObjectFactory::ObjectFactory()
   {
@@ -803,6 +804,55 @@ namespace shellanything
     }
 
     return defaults;
+  }
+
+  Plugin* ObjectFactory::ParsePlugin(const tinyxml2::XMLElement* element, std::string& error)
+  {
+    if (element == NULL)
+    {
+      error = "XMLElement is NULL";
+      return false;
+    }
+
+    std::string xml_name = element->Name();
+    if (xml_name != NODE_PLUGIN)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      return NULL;
+    }
+
+    //parse path
+    std::string path;
+    bool hasPath = ParseAttribute(element, "path", true, true, path, error);
+    if (!hasPath)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing a path attribute.";
+      return NULL;
+    }
+
+    //parse description
+    std::string description;
+    bool hasDescription = ParseAttribute(element, "description", true, true, description, error);
+
+    //parse conditions
+    std::string conditions;
+    bool hasConditions = ParseAttribute(element, "conditions", true, true, conditions, error);
+
+    //parse actions
+    std::string actions;
+    bool hasActions = ParseAttribute(element, "actions", true, true, actions, error);
+
+    Plugin* plugin = new Plugin();
+    plugin->SetPath(path);
+    if (hasDescription)
+      plugin->SetDescription(description);
+    if (hasConditions)
+      plugin->SetConditions(conditions);
+    if (hasActions)
+      plugin->SetActions(actions);
+
+    //success
+    return plugin;
   }
 
 } //namespace shellanything
