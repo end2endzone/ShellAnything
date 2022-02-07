@@ -55,6 +55,8 @@ add_library(sa.core SHARED
   ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
+  PropertyStore.h
+  PropertyStore.cpp
   Win32Clipboard.h
   Win32Clipboard.cpp
   Wildcard.cpp

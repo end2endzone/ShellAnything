@@ -56,46 +56,31 @@ namespace shellanything
 
   void PropertyManager::Clear()
   {
-    properties.clear();
+    properties.Clear();
     RegisterEnvironmentVariables();
     RegisterDefaultProperties();
   }
 
   void PropertyManager::ClearProperty(const std::string & name)
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
-    if (found)
-    {
-      properties.erase(propertyIt);
-    }
+    properties.ClearProperty(name);
   }
 
   bool PropertyManager::HasProperty(const std::string & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
+    bool found = properties.HasProperty(name);
     return found;
   }
 
   void PropertyManager::SetProperty(const std::string & name, const std::string & value)
   {
-    //overwrite previous property
-    properties[name] = value;
+    properties.SetProperty(name, value);
   }
 
   const std::string & PropertyManager::GetProperty(const std::string & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
-    if (found)
-    {
-      const std::string & value = propertyIt->second;
-      return value;
-    }
-
-    static std::string EMPTY_VALUE;
-    return EMPTY_VALUE;
+    const std::string& value = properties.GetProperty(name);
+    return value;
   }
 
   inline bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)

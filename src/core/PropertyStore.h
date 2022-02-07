@@ -22,10 +22,9 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_PROPERTYMANAGER_H
-#define SA_PROPERTYMANAGER_H
+#ifndef SA_PROPERTY_STORE_H
+#define SA_PROPERTY_STORE_H
 
-#include "PropertyStore.h"
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include <string>
@@ -34,47 +33,27 @@
 namespace shellanything
 {
   /// <summary>
-  /// Manages the property system
+  /// Defines a key-value property store
   /// </summary>
-  class SHELLANYTHING_EXPORT PropertyManager
+  class SHELLANYTHING_EXPORT PropertyStore
   {
   public:
-    static PropertyManager & GetInstance();
-  private:
-    PropertyManager();
-    ~PropertyManager();
-
-    // Disable copy constructor and copy operator
-    PropertyManager(const PropertyManager&);
-    PropertyManager& operator=(const PropertyManager&);
-
-  public:
+    PropertyStore();
+    PropertyStore(const PropertyStore& store);
+    virtual ~PropertyStore();
 
     /// <summary>
-    /// Name of the property that defines the system true.
+    /// Copy operator
     /// </summary>
-    static const std::string SYSTEM_TRUE_PROPERTY_NAME;
+    const PropertyStore& operator =(const PropertyStore& store);
 
-    /// <summary>
-    /// Default value for the property 'SYSTEM_TRUE_PROPERTY_NAME'.
-    /// </summary>
-    static const std::string SYSTEM_TRUE_DEFAULT_VALUE;
-
-    /// <summary>
-    /// Name of the property that defines the system false.
-    /// </summary>
-    static const std::string SYSTEM_FALSE_PROPERTY_NAME;
-
-    /// <summary>
-    /// Default value for the property 'SYSTEM_FALSE_PROPERTY_NAME'.
-    /// </summary>
-    static const std::string SYSTEM_FALSE_DEFAULT_VALUE;
-
-  public:
+    //------------------------
+    // Typedef
+    //------------------------
+    typedef std::map<std::string /*name*/, std::string /*value*/> PropertyMap;
 
     /// <summary>
     /// Clears all the registered properties.
-    /// Note that environement variable properties are still registered to the manager.
     /// </summary>
     void Clear();
 
@@ -106,35 +85,10 @@ namespace shellanything
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
     const std::string & GetProperty(const std::string & name) const;
 
-    /// <summary>
-    /// Expands the given string by replacing property variable reference by the actual variable's value.
-    /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
-    /// </summary>
-    /// <remarks>
-    /// The string is expanded until there are no change in the given string.
-    /// </remarks>
-    /// <param name="value">The given value to expand.</param>
-    /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    std::string Expand(const std::string & value) const;
-
-    /// <summary>
-    /// Expands the given string by replacing property variable reference by the actual variable's value.
-    /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
-    /// </summary>
-    /// <remarks>
-    /// The string is expanded in a single pass. Some property reference may not be expanded after the first pass.
-    /// </remarks>
-    /// <param name="value">The given value to expand.</param>
-    /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    std::string ExpandOnce(const std::string & value) const;
-
   private:
-
-    void RegisterEnvironmentVariables();
-    void RegisterDefaultProperties();
-    PropertyStore properties;
+    PropertyMap properties;
   };
 
 } //namespace shellanything
 
-#endif //SA_PROPERTYMANAGER_H
+#endif //SA_PROPERTY_STORE_H
