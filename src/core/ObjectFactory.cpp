@@ -24,6 +24,7 @@
 
 #include "ObjectFactory.h"
 
+#include "PropertyManager.h"
 #include "Configuration.h"
 #include "Menu.h"
 #include "Validator.h"
@@ -146,6 +147,16 @@ namespace shellanything
     return true;
   }
 
+  void ObjectFactory::SetActivePlugins(const Plugin::PluginPtrList& plugins)
+  {
+    mPlugins = plugins;
+  }
+
+  void ObjectFactory::ClearActivePlugins()
+  {
+    mPlugins.clear();
+  }
+
   Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, std::string & error)
   {
     if (element == NULL)
@@ -161,6 +172,8 @@ namespace shellanything
     }
 
     Validator * validator = new Validator();
+
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //parse class
     std::string class_;
@@ -275,6 +288,32 @@ namespace shellanything
         validator->SetIsEmpty(isempty);
       }
     }
+
+    //parse plugin's custom conditions attributes
+    PropertyStore customs_attributes;
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* p = mPlugins[i];
+      if (!p)
+        continue;
+
+      //for each condition
+      const std::string conditions_str = pmgr.Expand(p->GetConditions());
+      ra::strings::StringVector conditions = ra::strings::Split(conditions_str, SA_CONDITIONS_ATTR_SEPARATOR_STR);
+      for (size_t j = 0; j < conditions.size(); j++)
+      {
+        const std::string& condition = conditions[j];
+
+        //try to parse this condition
+        std::string value;
+        bool hasCondition = ParseAttribute(element, condition.c_str(), true, true, value, error);
+        if (hasCondition)
+        {
+          customs_attributes.SetProperty(condition, value);
+        }
+      }
+    }
+    validator->SetCustomAttributes(customs_attributes);
 
     //success
     return validator;

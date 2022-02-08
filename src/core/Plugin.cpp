@@ -23,6 +23,10 @@
  *********************************************************************************/
 
 #include "Plugin.h"
+#include "PropertyManager.h"
+#include "Validator.h"
+
+#include "rapidassist/strings.h"
 
 namespace shellanything
 {
@@ -89,6 +93,51 @@ namespace shellanything
   void Plugin::SetActions(const std::string& actions)
   {
     mActions = actions;
+  }
+
+  bool Plugin::Validate(const Context& context) const
+  {
+    return true;
+  }
+
+  Plugin* Plugin::FindPluginByConditionName(const PluginPtrList& plugins, const std::string& name)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    for (size_t i = 0; i < plugins.size(); i++)
+    {
+      Plugin* plugin = plugins[i];
+      if (!plugin)
+        continue;
+      const std::string expanded = pmgr.Expand(plugin->GetConditions());
+      const ra::strings::StringVector values = ra::strings::Split(expanded, SA_CONDITIONS_ATTR_SEPARATOR_STR);
+      for (size_t j = 0; j < values.size(); j++)
+      {
+        const std::string& value = values[j];
+        if (value == name)
+          return plugin;
+      }
+    }
+    return NULL;
+  }
+
+  Plugin* Plugin::FindPluginByActionName(const PluginPtrList& plugins, const std::string& name)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    for (size_t i = 0; i < plugins.size(); i++)
+    {
+      Plugin* plugin = plugins[i];
+      if (!plugin)
+        continue;
+      const std::string expanded = pmgr.Expand(plugin->GetActions());
+      const ra::strings::StringVector values = ra::strings::Split(expanded, SA_ACTIONS_ATTR_SEPARATOR_STR);
+      for (size_t j = 0; j < values.size(); j++)
+      {
+        const std::string& value = values[j];
+        if (value == name)
+          return plugin;
+      }
+    }
+    return NULL;
   }
 
 } //namespace shellanything

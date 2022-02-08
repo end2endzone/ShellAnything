@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "Context.h"
 #include <string>
 #include <vector>
 
@@ -92,6 +93,29 @@ namespace shellanything
     /// Setter for the 'actions' parameter.
     /// </summary>
     void SetActions(const std::string& actions);
+
+    /// <summary>
+    /// Evaluate if a plugin condition is validated based on the given attribute values.
+    /// </summary>
+    /// <param name="context">The context used for validating.</param>
+    /// <returns>Returns true if the validation succeeds. Returns false otherwise.</returns>
+    bool Validate(const Context& context) const;
+
+    /// <summary>
+    /// Find a plugin which has a condition field matching the given name.
+    /// </summary>
+    /// <param name="plugins">The list of plugins</param>
+    /// <param name="name">The name of the attribute to find</param>
+    /// <returns>Returns a Plugin pointer matching the query. Returns NULL otherwise</returns>
+    static Plugin* FindPluginByConditionName(const PluginPtrList& plugins, const std::string& name);
+
+    /// <summary>
+    /// Find a plugin which has a condition field matching the given name.
+    /// </summary>
+    /// <param name="plugins">The list of plugins</param>
+    /// <param name="name">The name of the attribute to find</param>
+    /// <returns>Returns a Plugin pointer matching the query. Returns NULL otherwise</returns>
+    static Plugin* FindPluginByActionName(const PluginPtrList& plugins, const std::string& name);
 
   private:
     std::string mPath;

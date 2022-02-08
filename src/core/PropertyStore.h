@@ -28,6 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include <string>
+#include <vector>
 #include <map>
 
 namespace shellanything
@@ -41,6 +42,11 @@ namespace shellanything
     PropertyStore();
     PropertyStore(const PropertyStore& store);
     virtual ~PropertyStore();
+
+    /// <summary>
+    /// A list of property names
+    /// </summary>
+    typedef std::vector<std::string> PropertyList;
 
     /// <summary>
     /// Copy operator
@@ -84,6 +90,24 @@ namespace shellanything
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
     const std::string & GetProperty(const std::string & name) const;
+
+    /// <summary>
+    /// Counts how many properties are registered in the store.
+    /// </summary>
+    /// <returns>Returns how many properties are registered in the store.</returns>
+    size_t GetPropertyCount() const;
+
+    /// <summary>
+    /// Returns whether the list container is empty
+    /// </summary>
+    /// <returns>Returns true if the store is empty. Returns false otherwise.</returns>
+    bool IsEmpty() const;
+
+    /// <summary>
+    /// Get the list of properties in the store
+    /// </summary>
+    /// <param name="names">The output list of properties</param>
+    void GetProperties(PropertyList & names) const;
 
   private:
     PropertyMap properties;

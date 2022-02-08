@@ -56,6 +56,17 @@ namespace shellanything
     static ObjectFactory & GetInstance();
 
     /// <summary>
+    /// Set the list of active plugins that must be used for parsing object.
+    /// </summary>
+    /// <param name="plugins">The list of plugins objects.</param>
+    void SetActivePlugins(const Plugin::PluginPtrList& plugins);
+
+    /// <summary>
+    /// Clears the active plugins used for parsing.
+    /// </summary>
+    void ClearActivePlugins();
+
+    /// <summary>
     /// Parses an Icon class from xml. Returns false if the parsing failed.
     /// </summary>
     /// <param name="element">The xml element that contains an Icon to parse.</param>
@@ -102,6 +113,9 @@ namespace shellanything
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid plugin pointer if the object was properly parsed. Returns NULL otherwise.</returns>
     Plugin * ParsePlugin(const tinyxml2::XMLElement * element, std::string & error);
+
+  public:
+    Plugin::PluginPtrList mPlugins;
   };
 
 } //namespace shellanything

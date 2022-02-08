@@ -27,7 +27,9 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "PropertyStore.h"
 #include "Context.h"
+#include "Plugin.h"
 #include <string>
 #include <vector>
 
@@ -49,6 +51,10 @@
 #define SA_ISTRUE_ATTR_SEPARATOR_STR          SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_ISFALSE_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
 #define SA_ISFALSE_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_CONDITIONS_ATTR_SEPARATOR_CHAR     SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_CONDITIONS_ATTR_SEPARATOR_STR      SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_ACTIONS_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_ACTIONS_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 
 namespace shellanything
 {
@@ -181,6 +187,16 @@ namespace shellanything
     void SetIsEmpty(const std::string & isempty);
 
     /// <summary>
+    /// Get the custom attributes (key and values) defined by plugins.
+    /// </summary>
+    const PropertyStore & GetCustomAttributes() const;
+
+    /// <summary>
+    /// Set the custom attributes (key and values).
+    /// </summary>
+    void SetCustomAttributes(const PropertyStore& attributes);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -210,6 +226,17 @@ namespace shellanything
     /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
     bool Validate(const Context & context) const;
+
+    /// <summary>
+    /// Set the list of active plugins that must be used for validating.
+    /// </summary>
+    /// <param name="plugins">The list of plugins objects.</param>
+    void SetActivePlugins(const Plugin::PluginPtrList& plugins);
+
+    /// <summary>
+    /// Clears the active plugins used for validating.
+    /// </summary>
+    void ClearActivePlugins();
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
@@ -269,6 +296,8 @@ namespace shellanything
     std::string mIsFalse;
     std::string mIsEmpty;
     std::string mInverse;
+    PropertyStore mCustomAttributes;
+    Plugin::PluginPtrList mPlugins;
   };
 
 } //namespace shellanything

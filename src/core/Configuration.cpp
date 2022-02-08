@@ -237,6 +237,11 @@ namespace shellanything
       xml_plugins = xml_plugins->NextSiblingElement("plugins");
     }
 
+    //set active plugins for parsing child elements
+    //notify the ObjectParser about this configuration's plugins.
+    const Plugin::PluginPtrList & active_plugins = config->GetPlugins();
+    ObjectFactory::GetInstance().SetActivePlugins(active_plugins);
+    
     //find <menu> nodes under <shell>
     const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
     while (xml_menu)
@@ -246,6 +251,7 @@ namespace shellanything
       if (menu == NULL)
       {
         delete config;
+        ObjectFactory::GetInstance().ClearActivePlugins();
         return NULL;
       }
 
@@ -255,6 +261,9 @@ namespace shellanything
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
     }
+
+    //cleanup ObjectFactory plugins.
+    ObjectFactory::GetInstance().ClearActivePlugins();
 
     return config;
   }

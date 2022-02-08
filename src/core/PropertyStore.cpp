@@ -90,4 +90,26 @@ namespace shellanything
     return EMPTY_VALUE;
   }
 
+  size_t PropertyStore::GetPropertyCount() const
+  {
+    return properties.size();
+  }
+
+  bool PropertyStore::IsEmpty() const
+  {
+    return properties.empty();
+  }
+
+  void PropertyStore::GetProperties(PropertyList& names) const
+  {
+    names.clear();
+    names.reserve(properties.size());
+    for (PropertyMap::const_iterator it = properties.begin(); it != properties.end(); ++it)
+    {
+      const std::string& key = (it->first);
+      const std::string& value = (it->second);
+      names.push_back(key);
+    }
+  }
+
 } //namespace shellanything

@@ -183,6 +183,16 @@ namespace shellanything
     mIsEmpty = isempty;
   }
 
+  const PropertyStore& Validator::GetCustomAttributes() const
+  {
+    return mCustomAttributes;
+  }
+
+  void Validator::SetCustomAttributes(const PropertyStore& attributes)
+  {
+    mCustomAttributes = attributes;
+  }
+
   const std::string & Validator::GetInserve() const
   {
     return mInverse;
@@ -355,6 +365,35 @@ namespace shellanything
       bool valid = ValidateIsEmpty(context, isempty, inversed);
       if (!valid)
         return false;
+    }
+
+    //validate custom attributes
+    if (!mCustomAttributes.IsEmpty() && !mPlugins.empty())
+    {
+      //For each plugins
+      for (size_t i = 0; i < mPlugins.size(); i++)
+      {
+        Plugin* p = mPlugins[i];
+
+        //check that all plugin's conditions have a value (or empty)
+        bool have_all_attributes = true;
+        const std::string conditions_str = pmgr.Expand(p->GetConditions());
+        ra::strings::StringVector conditions = ra::strings::Split(conditions_str, SA_CONDITIONS_ATTR_SEPARATOR_STR);
+        for (size_t j = 0; j < conditions.size() && have_all_attributes; j++)
+        {
+          const std::string& condition = conditions[j];
+          if (!mCustomAttributes.HasProperty(condition))
+            have_all_attributes = false;
+        }
+        if (have_all_attributes)
+        {
+          //this validator's attributes matches this plugin's conditions.
+          //ask the plugin to validate the selection
+          bool valid = p->Validate(context);
+          if (!valid)
+            return false;
+        }
+      }
     }
 
     return true;

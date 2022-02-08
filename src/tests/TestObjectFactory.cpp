@@ -845,6 +845,21 @@ namespace shellanything { namespace test
 
     ASSERT_EQ( std::string("email" ),               plugin3->GetActions());
 
+    //Get first visibility.
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(1, menus.size());
+    Menu* menu0 = menus[0];
+    ASSERT_TRUE(menu0 != NULL);
+    ASSERT_EQ(1, menu0->GetVisibilityCount());
+    const Validator* visibility0 = menu0->GetVisibility(0);
+    ASSERT_TRUE(visibility0 != NULL);
+
+    //ASSERT custom attributes
+    const PropertyStore& attr = visibility0->GetCustomAttributes();
+    ASSERT_EQ(std::string("08:00"), attr.GetProperty("start_time"));
+    ASSERT_EQ(std::string("16:00"), attr.GetProperty("end_time"));
+    ASSERT_EQ(std::string("notepad.exe"), attr.GetProperty("running"));
+    
     //Cleanup
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
