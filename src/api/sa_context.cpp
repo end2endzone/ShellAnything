@@ -84,7 +84,7 @@ sa_error_t sa_context_get_element_string(sa_context_immutable_t* ctx, size_t idx
   if (idx >= elements.size())
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
-  sa_cstr_copy_string(str, element);
+  sa_string_copy_stdstr(str, element);
   return SA_ERROR_SUCCESS;
 }
 

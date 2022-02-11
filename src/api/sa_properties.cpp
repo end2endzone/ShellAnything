@@ -82,7 +82,7 @@ sa_error_t sa_properties_get_string(const char* name, sa_string_t* str)
   if (!sa_properties_exists(name))
     return SA_ERROR_NOT_FOUND;
   const std::string& property_value = pmgr.GetProperty(name);
-  sa_cstr_copy_string(str, property_value);
+  sa_string_copy_stdstr(str, property_value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -104,7 +104,7 @@ sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str)
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
-  sa_cstr_copy_string(str, expanded_value);
+  sa_string_copy_stdstr(str, expanded_value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -126,6 +126,6 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);
-  sa_cstr_copy_string(str, expanded_value);
+  sa_string_copy_stdstr(str, expanded_value);
   return SA_ERROR_SUCCESS;
 }

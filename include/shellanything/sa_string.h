@@ -31,10 +31,9 @@
 extern "C" {
 #endif
 
-typedef struct sa_string_t  {
-  char* buffer;
-  size_t size;    // size of the allocated buffer.
-  size_t length;  // length of the string in bytes.
+
+typedef struct {
+  void* opaque;
 } sa_string_t;
 
 /// <summary>
@@ -44,24 +43,44 @@ typedef struct sa_string_t  {
 void sa_string_init(sa_string_t* str);
 
 /// <summary>
-/// Allocate a new string based on the given size
+/// Create a new string.
 /// </summary>
 /// <param name="str">A pointer to a string</param>
-/// <param name="size">The size of the string buffer in bytes.</param>
-void sa_string_alloc(sa_string_t* str, size_t size);
+void sa_string_create(sa_string_t* str);
+
+/// <summary>
+/// Create a new string initialized with the given cstr value
+/// </summary>
+/// <param name="str">A pointer to a string</param>
+/// <param name="value">The initial value of the string</param>
+void sa_string_create_from_cstr(sa_string_t* str, const char * value);
+
+/// <summary>
+/// Create a new string initialized with the given string value
+/// </summary>
+/// <param name="str">A pointer to a string</param>
+/// <param name="value">The initial value of the string</param>
+void sa_string_create_from_str(sa_string_t* str, sa_string_t * value);
 
 /// <summary>
 /// Free an existing string.
 /// </summary>
 /// <param name="str">A pointer to a string</param>
-void sa_string_free(sa_string_t* str);
+void sa_string_destroy(sa_string_t* str);
 
 /// <summary>
-/// Check if a string is valid
+/// Get the length of a string.
 /// </summary>
 /// <param name="str">A pointer to a string</param>
-/// <returns>Returns 1 when the given string is valid. Returns 0 otherwise.</returns>
-int sa_string_valid(sa_string_t* str);
+/// <returns>Returns the length of string in bytes.</returns>
+size_t sa_string_get_length(sa_string_t* str);
+
+/// <summary>
+/// Get the value of a string as a null-terminated string.
+/// </summary>
+/// <param name="str">A pointer to a string</param>
+/// <returns>Returns a immutable buffer matching the value of a string.</returns>
+const char * sa_string_get_value(sa_string_t* str);
 
 #ifdef __cplusplus
 }

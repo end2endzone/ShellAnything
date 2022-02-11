@@ -27,6 +27,8 @@
 
 #include "shellanything/sa_error.h"
 
+#include <string>
+
 #include "Action.h"
 #include "Context.h"
 #include "Icon.h"
@@ -70,6 +72,11 @@ const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*    
       shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t*                object);
 sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object);
 sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object);
+
+//const std::string* AS_CLASS_STRING(sa_string_immutable_t*      object);
+      std::string* AS_CLASS_STRING(sa_string_t*                object);
+//sa_string_immutable_t        AS_TYPE_STRING(const std::string* object);
+sa_string_t                  AS_TYPE_STRING(      std::string* object);
 
 
 #endif //SA_API_STRING_PRIVATE_H

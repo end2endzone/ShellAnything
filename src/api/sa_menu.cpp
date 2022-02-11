@@ -63,7 +63,7 @@ sa_error_t sa_menu_get_name_buffer(sa_menu_immutable_t* menu, int* length, char*
 sa_error_t sa_menu_get_name_string(sa_menu_immutable_t* menu, sa_string_t* str)
 {
   const std::string& name = AS_CLASS_MENU(menu)->GetName();
-  sa_cstr_copy_string(str, name);
+  sa_string_copy_stdstr(str, name);
   return SA_ERROR_SUCCESS;
 }
 
@@ -84,7 +84,7 @@ sa_error_t sa_menu_get_description_buffer(sa_menu_immutable_t* menu, int* length
 sa_error_t sa_menu_get_description_string(sa_menu_immutable_t* menu, sa_string_t* str)
 {
   const std::string& description = AS_CLASS_MENU(menu)->GetDescription();
-  sa_cstr_copy_string(str, description);
+  sa_string_copy_stdstr(str, description);
   return SA_ERROR_SUCCESS;
 }
 

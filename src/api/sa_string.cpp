@@ -24,53 +24,43 @@
 
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_memory.h"
-#include <string>
-
-void sa_cstr_copy_string(sa_string_t* str, std::string& from)
-{
-  sa_string_free(str);
-  sa_string_alloc(str, from.size());
-  if (sa_string_valid(str)) {
-    memcpy(str->buffer, from.c_str(), from.size()+1); // +1 to copy terminating \0 character
-    str->length = from.size();
-  }
-}
+#include "sa_types_private.h"
 
 void sa_string_init(sa_string_t* str)
 {
-  if (sa_string_valid(str))
-    memset(str, 0, sizeof(sa_string_t));
+  memset(str, 0, sizeof(sa_string_t));
 }
 
-void sa_string_alloc(sa_string_t* str, size_t size)
+void sa_string_create(sa_string_t* str)
 {
-  // free old value
-  if (sa_string_valid(str)) {
-    sa_string_free(str);
-  }
-
-  // zeroize the string
-  sa_string_init(str);
-
-  // allocate a bew buffer for the string
-  str->buffer = (char*)sa_memory_alloc(size);
-  if (str->buffer) {
-    str->size = size;
-    str->length = 0;
-  }
+  str->opaque = new std::string();
 }
 
-void sa_string_free(sa_string_t* str)
+void sa_string_create_from_cstr(sa_string_t* str, const char* value)
 {
-  if (sa_string_valid(str)) {
-    sa_memory_free(str->buffer);
-  }
+  str->opaque = new std::string(value);
+}
+
+void sa_string_create_from_str(sa_string_t* str, sa_string_t* value)
+{
+  str->opaque = new std::string(*AS_CLASS_STRING(str));
+}
+
+void sa_string_destroy(sa_string_t* str)
+{
+  if (str->opaque)
+    delete str->opaque;
   sa_string_init(str);
 }
 
-int sa_string_valid(sa_string_t* str)
+size_t sa_string_get_length(sa_string_t* str)
 {
-  if (str == NULL || str->buffer == NULL || str->size == 0)
-    return 0;
-  return 1;
+  size_t length = AS_CLASS_STRING(str)->length();
+  return length;
+}
+
+const char * sa_string_get_value(sa_string_t* str)
+{
+  const char* value = AS_CLASS_STRING(str)->c_str();
+  return value;
 }

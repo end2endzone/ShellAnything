@@ -68,7 +68,7 @@ sa_error_t sa_configuration_load_file_string(const char* path, sa_string_t* erro
   if (config == NULL)
   {
     // Copy the error string. Truncate the error if necessary.
-    sa_cstr_copy_string(error_str, tmp_error);
+    sa_string_copy_stdstr(error_str, tmp_error);
     return SA_ERROR_UNKNOWN;
   }
 
@@ -98,7 +98,7 @@ sa_error_t sa_configuration_get_file_path_buffer(sa_configuration_immutable_t* c
 sa_error_t sa_configuration_get_file_path_string(sa_configuration_immutable_t* configuration, sa_string_t* str)
 {
   const std::string& file_path = AS_CLASS_CONFIGURATION(configuration)->GetFilePath();
-  sa_cstr_copy_string(str, file_path);
+  sa_string_copy_stdstr(str, file_path);
   return SA_ERROR_SUCCESS;
 }
 
@@ -132,7 +132,7 @@ sa_error_t sa_configuration_get_description_buffer(sa_configuration_immutable_t*
 sa_error_t sa_configuration_get_description_string(sa_configuration_immutable_t* configuration, sa_string_t* str)
 {
   const std::string& path = AS_CLASS_CONFIGURATION(configuration)->GetFilePath();
-  sa_cstr_copy_string(str, path);
+  sa_string_copy_stdstr(str, path);
   return SA_ERROR_SUCCESS;
 }
 

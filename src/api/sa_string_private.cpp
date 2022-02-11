@@ -24,15 +24,11 @@
 
 #include "shellanything/sa_string.h"
 #include "sa_string_private.h"
+#include "sa_types_private.h"
 
-void sa_cstr_copy_string(sa_string_t* dest_str, const std::string& src_str)
+void sa_string_copy_stdstr(sa_string_t* dest_str, const std::string& src_str)
 {
-  sa_string_free(dest_str);
-  sa_string_alloc(dest_str, src_str.size());
-  if (sa_string_valid(dest_str)) {
-    memcpy(dest_str->buffer, src_str.c_str(), src_str.size()+1); // +1 to copy terminating \0 character
-    dest_str->length = src_str.size();
-  }
+  *AS_CLASS_STRING(dest_str) = src_str;
 }
 
 sa_error_t sa_cstr_copy_buffer(char* dest_buffer, size_t dest_size, int* length, const std::string& src_str)
@@ -75,5 +71,5 @@ void sa_cstr_copy_truncate_buffer(char* dest_buffer, size_t dest_size, const cha
 void sa_cstr_copy_truncate_string(char* dest_buffer, size_t dest_size, sa_string_t* str)
 {
   if (str)
-    sa_cstr_copy_truncate_buffer(dest_buffer, dest_size, str->buffer);
+    sa_cstr_copy_truncate_buffer(dest_buffer, dest_size, AS_CLASS_STRING(str)->c_str());
 }

@@ -56,7 +56,7 @@ sa_error_t sa_icon_get_file_extension_buffer(sa_icon_immutable_t* icon, int* len
 sa_error_t sa_icon_get_file_extension_string(sa_icon_immutable_t* icon, sa_string_t* str)
 {
   const std::string& fileextension = AS_CLASS_ICON(icon)->GetFileExtension();
-  sa_cstr_copy_string(str, fileextension);
+  sa_string_copy_stdstr(str, fileextension);
   return SA_ERROR_SUCCESS;
 }
 
@@ -82,7 +82,7 @@ sa_error_t sa_icon_get_path_buffer(sa_icon_immutable_t* icon, int* length, char*
 sa_error_t sa_icon_get_path_string(sa_icon_immutable_t* icon, sa_string_t* str)
 {
   const std::string& path = AS_CLASS_ICON(icon)->GetPath();
-  sa_cstr_copy_string(str, path);
+  sa_string_copy_stdstr(str, path);
   return SA_ERROR_SUCCESS;
 }
 
