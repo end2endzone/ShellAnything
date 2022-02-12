@@ -22,56 +22,55 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ACTION_OPEN_H
-#define SA_ACTION_OPEN_H
+#ifndef SA_IACTIONFACTORY_H
+#define SA_IACTIONFACTORY_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "Action.h"
-#include "IActionFactory.h"
+#include <vector>
 
 namespace shellanything
 {
 
   /// <summary>
-  /// Action class that opens a documents using default application.
+  /// Abstract action class.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionOpen : public Action
+  class SHELLANYTHING_EXPORT IActionFactory
   {
   public:
-    ActionOpen();
-    virtual ~ActionOpen();
-
     /// <summary>
-    /// Name of the xml element for this action.
+    /// A list of Action class pointers.
     /// </summary>
-    static const std::string XML_ELEMENT_NAME;
+    typedef std::vector<IActionFactory*> IActionFactoryPtrList;
 
-    /// <summary>
-    /// Instanciate an IActionFactory that is able to parse this action.
-    /// </summary>
-    /// <returns>Returns a IActionFactory to parse this action.</returns>
-    static IActionFactory* NewFactory();
 
-    /// <summary>
-    /// Open a document with the default application.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const;
-
-    /// <summary>
-    /// Getter for the 'path' parameter.
-    /// </summary>
-    const std::string & GetPath() const;
-
-    /// <summary>
-    /// Setter for the 'path' parameter.
-    /// </summary>
-    void SetPath(const std::string & path);
+    IActionFactory();
+    virtual ~IActionFactory();
 
   private:
-    std::string mPath;
+    // Disable copy constructor and copy operator
+    IActionFactory(const IActionFactory&);
+    IActionFactory& operator=(const IActionFactory&);
+  public:
+
+    /// <summary>
+    /// Get the name of the action. This name should exactly match the name of the xml element it can support.
+    /// </summary>
+    /// <returns>Returns the name of the action.</returns>
+    virtual const std::string& GetName() const = 0;
+
+    /// <summary>
+    /// Parse an Action from a xml.
+    /// </summary>
+    /// <param name="xml">A string that contains the xml element (including child nodes) to parse.</param>
+    /// <param name="error">Provides an error description in case the parsing fails.</param>
+    /// <returns>Returns a pointer to a valid Action if the parsing is succesful. Returns NULL otherwise.</returns>
+    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const = 0;
+
   };
+
 
 } //namespace shellanything
 
-#endif //SA_ACTION_OPEN_H
+#endif //SA_IACTIONFACTORY_H

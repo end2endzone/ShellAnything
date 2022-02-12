@@ -26,6 +26,7 @@
 #define SA_ACTION_EXECUTE_H
 
 #include "Action.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
@@ -38,6 +39,17 @@ namespace shellanything
   public:
     ActionExecute();
     virtual ~ActionExecute();
+
+    /// <summary>
+    /// Name of the xml element for this action.
+    /// </summary>
+    static const std::string XML_ELEMENT_NAME;
+
+    /// <summary>
+    /// Instanciate an IActionFactory that is able to parse this action.
+    /// </summary>
+    /// <returns>Returns a IActionFactory to parse this action.</returns>
+    static IActionFactory* NewFactory();
 
     /// <summary>
     /// Execute an application.

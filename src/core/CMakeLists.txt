@@ -38,6 +38,8 @@ add_library(sa.core SHARED
   DefaultSettings.cpp
   FileMagicManager.h
   FileMagicManager.cpp
+  IActionFactory.h
+  IActionFactory.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp
@@ -57,6 +59,8 @@ add_library(sa.core SHARED
   PropertyManager.cpp
   PropertyStore.h
   PropertyStore.cpp
+  Registry.h
+  Registry.cpp
   Win32Clipboard.h
   Win32Clipboard.cpp
   Wildcard.cpp

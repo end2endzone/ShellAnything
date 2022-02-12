@@ -27,6 +27,7 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
+#include "ObjectFactory.h"
 
 #include <windows.h>
 #pragma warning( push )
@@ -34,9 +35,82 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
+#include "tinyxml2.h"
+using namespace tinyxml2;
+
 
 namespace shellanything
 {
+  const std::string ActionExecute::XML_ELEMENT_NAME = "exec";
+
+  class ActionExecuteFactory : public virtual IActionFactory
+  {
+  public:
+    ActionExecuteFactory() {}
+    virtual ~ActionExecuteFactory() {}
+
+    virtual const std::string& GetName() const { return ActionExecute::XML_ELEMENT_NAME; }
+
+    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const
+    {
+      tinyxml2::XMLDocument doc;
+      XMLError result = doc.Parse(xml.c_str());
+      if (result != XML_SUCCESS)
+      {
+        if (doc.ErrorStr())
+        {
+          error = doc.ErrorStr();
+          return NULL;
+        }
+        else
+        {
+          error = "Unknown error reported by XML library.";
+          return NULL;
+        }
+      }
+      XMLElement* element = doc.FirstChildElement(GetName().c_str());
+
+      ActionExecute* action = new ActionExecute();
+      std::string tmp_str;
+
+      //parse path
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "path", false, true, tmp_str, error))
+      {
+        action->SetPath(tmp_str);
+      }
+
+      //parse arguments
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "arguments", true, true, tmp_str, error))
+      {
+        action->SetArguments(tmp_str);
+      }
+
+      //parse basedir
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "basedir", true, true, tmp_str, error))
+      {
+        action->SetBaseDir(tmp_str);
+      }
+
+      //parse verb
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "verb", true, true, tmp_str, error))
+      {
+        action->SetVerb(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+
+  };
+
+  IActionFactory* ActionExecute::NewFactory()
+  {
+    return new ActionExecuteFactory();
+  }
 
   ActionExecute::ActionExecute()
   {

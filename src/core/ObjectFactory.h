@@ -34,6 +34,7 @@
 #include "Validator.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"
+#include "Registry.h"
 #include "tinyxml2.h"
 
 namespace shellanything
@@ -54,6 +55,30 @@ namespace shellanything
 
   public:
     static ObjectFactory & GetInstance();
+
+    /// <summary>
+    /// Parse a string attribute in a xml node.
+    /// </summary>
+    /// <param name="element">The tinyxml element to read from</param>
+    /// <param name="attr_name">The name of the attribute find</param>
+    /// <param name="is_optional">True if the attribute is optional. False otherwise. An error is reported if the attribute is mandatory and missing.</param>
+    /// <param name="allow_empty_values">True if the attribute is allowed to be empty. False otherwise. An error is reported if the arribute is </param>
+    /// <param name="attr_value">The output attribute value.</param>
+    /// <param name="error">An output error description string.</param>
+    /// <returns>Returns true if the attribute was parsed. Returns false otherwise.</returns>
+    static bool ParseAttribute(const tinyxml2::XMLElement* element, const char* attr_name, bool is_optional, bool allow_empty_values, std::string& attr_value, std::string& error);
+
+    /// <summary>
+    /// Parse an integer attribute in a xml node.
+    /// </summary>
+    /// <param name="element">The tinyxml element to read from</param>
+    /// <param name="attr_name">The name of the attribute find</param>
+    /// <param name="is_optional">True if the attribute is optional. False otherwise. An error is reported if the attribute is mandatory and missing.</param>
+    /// <param name="allow_empty_values">True if the attribute is allowed to be empty. False otherwise. An error is reported if the arribute is </param>
+    /// <param name="attr_value">The output attribute value.</param>
+    /// <param name="error">An output error description string.</param>
+    /// <returns>Returns true if the attribute was parsed. Returns false otherwise.</returns>
+    static bool ParseAttribute(const tinyxml2::XMLElement* element, const char* attr_name, bool is_optional, bool allow_empty_values, int& attr_value, std::string& error);
 
     /// <summary>
     /// Set the list of active plugins that must be used for parsing object.
@@ -115,6 +140,7 @@ namespace shellanything
     Plugin * ParsePlugin(const tinyxml2::XMLElement * element, std::string & error);
 
   public:
+    Registry registry;
     Plugin::PluginPtrList mPlugins;
   };
 

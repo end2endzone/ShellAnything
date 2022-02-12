@@ -22,56 +22,44 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ACTION_OPEN_H
-#define SA_ACTION_OPEN_H
-
-#include "Action.h"
-#include "IActionFactory.h"
+#include "Registry.h"
 
 namespace shellanything
 {
 
-  /// <summary>
-  /// Action class that opens a documents using default application.
-  /// </summary>
-  class SHELLANYTHING_EXPORT ActionOpen : public Action
+  Registry::Registry()
   {
-  public:
-    ActionOpen();
-    virtual ~ActionOpen();
+  }
 
-    /// <summary>
-    /// Name of the xml element for this action.
-    /// </summary>
-    static const std::string XML_ELEMENT_NAME;
+  Registry::~Registry()
+  {
+    // cleanup action factories
+    for (ActionFactoryMap::iterator it = mActionFactories.begin(); it != mActionFactories.end(); ++it)
+    {
+      const std::string& key = (it->first);
+      IActionFactory* factory = (it->second);
+      delete factory;
+    }
+    mActionFactories.clear();
 
-    /// <summary>
-    /// Instanciate an IActionFactory that is able to parse this action.
-    /// </summary>
-    /// <returns>Returns a IActionFactory to parse this action.</returns>
-    static IActionFactory* NewFactory();
+  }
 
-    /// <summary>
-    /// Open a document with the default application.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const;
+  IActionFactory* Registry::GetActionFactoryFromName(const std::string& name) const
+  {
+    ActionFactoryMap::const_iterator it = mActionFactories.find(name);
+    bool found = (it != mActionFactories.end());
+    if (found)
+    {
+      IActionFactory* factory = it->second;
+      return factory;
+    }
+    return NULL;
+  }
 
-    /// <summary>
-    /// Getter for the 'path' parameter.
-    /// </summary>
-    const std::string & GetPath() const;
-
-    /// <summary>
-    /// Setter for the 'path' parameter.
-    /// </summary>
-    void SetPath(const std::string & path);
-
-  private:
-    std::string mPath;
-  };
+  void Registry::AddActionFactory(IActionFactory* factory)
+  {
+    const std::string& name = factory->GetName();
+    mActionFactories[name] = factory;
+  }
 
 } //namespace shellanything
-
-#endif //SA_ACTION_OPEN_H

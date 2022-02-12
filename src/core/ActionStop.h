@@ -27,6 +27,7 @@
 
 #include "Action.h"
 #include "Validator.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
@@ -39,6 +40,17 @@ namespace shellanything
   public:
     ActionStop();
     virtual ~ActionStop();
+
+    /// <summary>
+    /// Name of the xml element for this action.
+    /// </summary>
+    static const std::string XML_ELEMENT_NAME;
+
+    /// <summary>
+    /// Instanciate an IActionFactory that is able to parse this action.
+    /// </summary>
+    /// <returns>Returns a IActionFactory to parse this action.</returns>
+    static IActionFactory* NewFactory();
 
     /// <summary>
     /// Prompts the user for a value.

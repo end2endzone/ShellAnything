@@ -27,14 +27,102 @@
 #include "InputBox.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
+#include "ObjectFactory.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
 #include <glog/logging.h>
 #pragma warning( pop )
 
+#include "tinyxml2.h"
+using namespace tinyxml2;
+
 namespace shellanything
 {
+  const std::string ActionPrompt::XML_ELEMENT_NAME = "prompt";
+
+  class ActionPromptFactory : public virtual IActionFactory
+  {
+  public:
+    ActionPromptFactory() {}
+    virtual ~ActionPromptFactory() {}
+
+    virtual const std::string& GetName() const { return ActionPrompt::XML_ELEMENT_NAME; }
+
+    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const
+    {
+      tinyxml2::XMLDocument doc;
+      XMLError result = doc.Parse(xml.c_str());
+      if (result != XML_SUCCESS)
+      {
+        if (doc.ErrorStr())
+        {
+          error = doc.ErrorStr();
+          return NULL;
+        }
+        else
+        {
+          error = "Unknown error reported by XML library.";
+          return NULL;
+        }
+      }
+      XMLElement* element = doc.FirstChildElement(GetName().c_str());
+
+      ActionPrompt* action = new ActionPrompt();
+      std::string tmp_str;
+
+      //parse name
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "name", false, true, tmp_str, error))
+      {
+        action->SetName(tmp_str);
+      }
+
+      //parse title
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "title", false, true, tmp_str, error))
+      {
+        action->SetTitle(tmp_str);
+      }
+
+      //parse default
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "default", true, true, tmp_str, error))
+      {
+        action->SetDefault(tmp_str);
+      }
+
+      //parse type
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "type", true, true, tmp_str, error))
+      {
+        action->SetType(tmp_str);
+      }
+
+      //parse valueyes
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "valueyes", true, true, tmp_str, error))
+      {
+        action->SetValueYes(tmp_str);
+      }
+
+      //parse valueno
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "valueno", true, true, tmp_str, error))
+      {
+        action->SetValueNo(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+
+  };
+
+  IActionFactory* ActionPrompt::NewFactory()
+  {
+    return new ActionPromptFactory();
+  }
 
   ActionPrompt::ActionPrompt()
   {

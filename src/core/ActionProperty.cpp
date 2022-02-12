@@ -25,6 +25,7 @@
 #include "ActionProperty.h"
 #include "PropertyManager.h"
 #include "libexprtk.h"
+#include "ObjectFactory.h"
 
 #include "rapidassist/strings.h"
 
@@ -33,8 +34,74 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
+#include "tinyxml2.h"
+using namespace tinyxml2;
+
 namespace shellanything
 {
+  const std::string ActionProperty::XML_ELEMENT_NAME = "property";
+
+  class ActionPropertyFactory : public virtual IActionFactory
+  {
+  public:
+    ActionPropertyFactory() {}
+    virtual ~ActionPropertyFactory() {}
+
+    virtual const std::string& GetName() const { return ActionProperty::XML_ELEMENT_NAME; }
+
+    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const
+    {
+      tinyxml2::XMLDocument doc;
+      XMLError result = doc.Parse(xml.c_str());
+      if (result != XML_SUCCESS)
+      {
+        if (doc.ErrorStr())
+        {
+          error = doc.ErrorStr();
+          return NULL;
+        }
+        else
+        {
+          error = "Unknown error reported by XML library.";
+          return NULL;
+        }
+      }
+      XMLElement* element = doc.FirstChildElement(GetName().c_str());
+
+      ActionProperty* action = new ActionProperty();
+      std::string tmp_str;
+
+      //parse name
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "name", false, true, tmp_str, error))
+      {
+        action->SetName(tmp_str);
+      }
+
+      //parse value
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "value", true, true, tmp_str, error))
+      {
+        action->SetValue(tmp_str);
+      }
+
+      //parse exprtk
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "exprtk", true, true, tmp_str, error))
+      {
+        action->SetExprtk(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+
+  };
+
+  IActionFactory* ActionProperty::NewFactory()
+  {
+    return new ActionPropertyFactory();
+  }
 
   ActionProperty::ActionProperty()
   {

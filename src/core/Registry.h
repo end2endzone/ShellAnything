@@ -22,56 +22,61 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ACTION_OPEN_H
-#define SA_ACTION_OPEN_H
+#ifndef SA_REGISTRY_H
+#define SA_REGISTRY_H
 
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 #include "Action.h"
 #include "IActionFactory.h"
+#include <map>
 
 namespace shellanything
 {
 
   /// <summary>
-  /// Action class that opens a documents using default application.
+  /// Abstract action class.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionOpen : public Action
+  class SHELLANYTHING_EXPORT Registry
   {
   public:
-    ActionOpen();
-    virtual ~ActionOpen();
 
-    /// <summary>
-    /// Name of the xml element for this action.
-    /// </summary>
-    static const std::string XML_ELEMENT_NAME;
-
-    /// <summary>
-    /// Instanciate an IActionFactory that is able to parse this action.
-    /// </summary>
-    /// <returns>Returns a IActionFactory to parse this action.</returns>
-    static IActionFactory* NewFactory();
-
-    /// <summary>
-    /// Open a document with the default application.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const;
-
-    /// <summary>
-    /// Getter for the 'path' parameter.
-    /// </summary>
-    const std::string & GetPath() const;
-
-    /// <summary>
-    /// Setter for the 'path' parameter.
-    /// </summary>
-    void SetPath(const std::string & path);
+    Registry();
+    virtual ~Registry();
 
   private:
-    std::string mPath;
+    // Disable copy constructor and copy operator
+    Registry(const Registry&);
+    Registry& operator=(const Registry&);
+  public:
+
+    /// <summary>
+    /// Get an IActionFactory instance that can parse the given xml element name.
+    /// </summary>
+    /// <param name="name">The name of the xml element.</param>
+    /// <returns>Returns an IActionFactory instance that can parse the given name. Returns NULL otherwise.</returns>
+    IActionFactory* GetActionFactoryFromName(const std::string& name) const;
+
+    /// <summary>
+    /// Add an IActionFactory to the registry. The registry takes ownership of the given IActionFactory.
+    /// </summary>
+    /// <param name="factory">A valid IActionFactory instance</param>
+    void AddActionFactory(IActionFactory* factory);
+
+  private:
+
+    //------------------------
+    // Typedef
+    //------------------------
+    typedef std::map<std::string /*name*/, IActionFactory* /*factory*/> ActionFactoryMap;
+
+    //------------------------
+    // Members
+    //------------------------
+    ActionFactoryMap mActionFactories;
   };
+
 
 } //namespace shellanything
 
-#endif //SA_ACTION_OPEN_H
+#endif //SA_REGISTRY_H
