@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_PROMPT_H
 #define SA_ACTION_PROMPT_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that prompts the user for a value.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionPrompt : public Action
+  class SHELLANYTHING_EXPORT ActionPrompt : public virtual IAction
   {
   public:
     ActionPrompt();

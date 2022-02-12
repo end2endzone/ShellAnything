@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/sa_action.h"
-#include "Action.h"
+#include "IAction.h"
 #include "Context.h"
 #include "sa_types_private.h"
 

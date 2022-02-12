@@ -29,7 +29,7 @@
 
 #include <string>
 
-#include "Action.h"
+#include "IAction.h"
 #include "Context.h"
 #include "Icon.h"
 #include "Menu.h"
@@ -43,10 +43,10 @@
 #include "shellanything/sa_configuration.h"
 #include "shellanything/sa_validator.h"
 
-const shellanything::Action*  AS_CLASS_ACTION(sa_action_immutable_t*      object);
-      shellanything::Action*  AS_CLASS_ACTION(sa_action_t*                object);
-sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::Action* object);
-sa_action_t                   AS_TYPE_ACTION(      shellanything::Action* object);
+const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*      object);
+      shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                object);
+sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::IAction* object);
+sa_action_t                   AS_TYPE_ACTION(      shellanything::IAction* object);
 
 const shellanything::Context* AS_CLASS_CONTEXT(sa_context_immutable_t*      object);
       shellanything::Context* AS_CLASS_CONTEXT(sa_context_t*                object);

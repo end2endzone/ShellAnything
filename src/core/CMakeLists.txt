@@ -1,5 +1,5 @@
 set(SHELLANYTHING_CORE_HEADER_FILES ""
-  ${CMAKE_SOURCE_DIR}/src/core/Action.h
+  ${CMAKE_SOURCE_DIR}/src/core/IAction.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionClipboard.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionExecute.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionFile.h
@@ -23,7 +23,7 @@ add_library(sa.core SHARED
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_DEFAULT_FILES}
   ${SHELLANYTHING_CORE_HEADER_FILES}
-  Action.cpp
+  IAction.cpp
   ActionClipboard.cpp
   ActionExecute.cpp
   ActionFile.cpp

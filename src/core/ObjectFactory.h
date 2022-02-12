@@ -28,7 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "Menu.h"
-#include "Action.h"
+#include "IAction.h"
 #include "Icon.h"
 #include "Configuration.h"
 #include "Validator.h"
@@ -108,12 +108,12 @@ namespace shellanything
     Validator * ParseValidator(const tinyxml2::XMLElement * element, std::string & error);
 
     /// <summary>
-    /// Parses a Action class from xml. Returns NULL if the parsing failed.
+    /// Parses a IAction class from xml. Returns NULL if the parsing failed.
     /// </summary>
-    /// <param name="element">The xml element that contains an Action to parse.</param>
+    /// <param name="element">The xml element that contains an IAction to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
-    /// <returns>Returns a valid Action pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Action * ParseAction(const tinyxml2::XMLElement * element, std::string & error);
+    /// <returns>Returns a valid IAction pointer if the object was properly parsed. Returns NULL otherwise.</returns>
+    IAction * ParseAction(const tinyxml2::XMLElement * element, std::string & error);
 
     /// <summary>
     /// Parses a Menu class from xml. Returns NULL if the parsing failed.

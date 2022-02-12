@@ -617,11 +617,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::Action::ActionPtrList & actions = menu->GetActions();
+  const shellanything::IAction::ActionPtrList & actions = menu->GetActions();
   for(size_t i=0; i<actions.size(); i++)
   {
     LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
-    const shellanything::Action * action = actions[i];
+    const shellanything::IAction * action = actions[i];
     if (action)
     {
       ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.

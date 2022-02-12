@@ -61,7 +61,7 @@ namespace shellanything
     // delete actions
     for(size_t i=0; i<mActions.size(); i++)
     {
-      Action * action = mActions[i];
+      IAction * action = mActions[i];
       delete action;
     }
     mActions.clear();
@@ -353,12 +353,12 @@ namespace shellanything
     mSubMenus.push_back(menu);
   }
 
-  void Menu::AddAction(Action * action)
+  void Menu::AddAction(IAction * action)
   {
     mActions.push_back(action);
   }
 
-  const Action::ActionPtrList & Menu::GetActions() const
+  const IAction::ActionPtrList & Menu::GetActions() const
   {
     return mActions;
   }

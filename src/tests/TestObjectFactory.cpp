@@ -48,10 +48,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionPrompt * action_prompt = dynamic_cast<ActionPrompt *>(action);
       if (action_prompt)
         return action_prompt;
@@ -65,10 +65,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionProperty * action_property = dynamic_cast<ActionProperty *>(action);
       if (action_property)
         return action_property;
@@ -82,10 +82,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionMessage * action_message = dynamic_cast<ActionMessage *>(action);
       if (action_message)
         return action_message;
@@ -99,10 +99,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionExecute * action_execute = dynamic_cast<ActionExecute *>(action);
       if (action_execute)
         return action_execute;
@@ -116,10 +116,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionStop * action_fail = dynamic_cast<ActionStop*>(action);
       if (action_fail)
         return action_fail;
@@ -133,10 +133,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionFile * action_file = dynamic_cast<ActionFile *>(action);
       if (action_file)
         return action_file;

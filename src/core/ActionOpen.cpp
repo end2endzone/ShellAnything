@@ -55,7 +55,7 @@ namespace shellanything
 
     virtual const std::string& GetName() const { return ActionOpen::XML_ELEMENT_NAME; }
 
-    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const
+    virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
     {
       tinyxml2::XMLDocument doc;
       XMLError result = doc.Parse(xml.c_str());

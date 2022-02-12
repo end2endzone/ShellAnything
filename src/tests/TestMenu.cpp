@@ -52,7 +52,7 @@ namespace shellanything { namespace test
     bool * deleted_flag;
   };
 
-  class MyAction : public Action
+  class MyAction : public virtual IAction
   {
   public:
     MyAction(bool * deleted_flag, bool * executed_flag)

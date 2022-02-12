@@ -27,7 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 #include <map>
 

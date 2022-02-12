@@ -22,17 +22,46 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "Action.h"
+#ifndef SA_IACTION_H
+#define SA_IACTION_H
+
+#include "shellanything/export.h"
+#include "shellanything/config.h"
+#include "Context.h"
+#include <vector>
 
 namespace shellanything
 {
 
-  Action::Action()
+  /// <summary>
+  /// Abstract action class.
+  /// </summary>
+  class SHELLANYTHING_EXPORT IAction
   {
-  }
+  public:
+    /// <summary>
+    /// A list of IAction class pointers.
+    /// </summary>
+    typedef std::vector<IAction*> ActionPtrList;
 
-  Action::~Action()
-  {
-  }
+    IAction();
+    virtual ~IAction();
+
+  private:
+    // Disable copy constructor and copy operator
+    IAction(const IAction&);
+    IAction& operator=(const IAction&);
+  public:
+
+    /// <summary>
+    /// Execute the action on the system.
+    /// </summary>
+    /// <param name="context">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
+    virtual bool Execute(const Context & context) const = 0;
+  };
+
 
 } //namespace shellanything
+
+#endif //SA_IACTION_H

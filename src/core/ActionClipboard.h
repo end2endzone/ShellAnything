@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_CLIPBOARD_H
 #define SA_ACTION_CLIPBOARD_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that changes the clipboard.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionClipboard : public Action
+  class SHELLANYTHING_EXPORT ActionClipboard : public virtual IAction
   {
   public:
     ActionClipboard();

@@ -55,7 +55,7 @@ namespace shellanything
 
   ObjectFactory::ObjectFactory()
   {
-    // Add Action factories for native actions.
+    // Add IAction factories for native actions.
     registry.AddActionFactory(ActionClipboard::NewFactory());
     registry.AddActionFactory(ActionExecute::NewFactory());
     registry.AddActionFactory(ActionFile::NewFactory());
@@ -322,7 +322,7 @@ namespace shellanything
     return validator;
   }
 
-  Action * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
+  IAction * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -341,8 +341,8 @@ namespace shellanything
       element->Accept(&printer);
       std::string text = printer.CStr();
 
-      //try to parse an Action from the string
-      Action* action = factory->ParseFromXml(text, error);
+      //try to parse an IAction from the string
+      IAction* action = factory->ParseFromXml(text, error);
       return action;
     }
 
@@ -477,7 +477,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Action * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
+        IAction * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
         if (action == NULL)
         {
           delete menu;
@@ -595,7 +595,7 @@ namespace shellanything
       const tinyxml2::XMLElement * element = elements[i];
 
       //found a new action node
-      Action * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
+      IAction * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
       if (abstract_action)
       {
         //filter out all type of actions except ActionProperty actions

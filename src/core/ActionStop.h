@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_STOP_H
 #define SA_ACTION_STOP_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "Validator.h"
 #include "IActionFactory.h"
 
@@ -35,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// Action class that fails as a validator.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionStop : public Action
+  class SHELLANYTHING_EXPORT ActionStop : public virtual IAction
   {
   public:
     ActionStop();

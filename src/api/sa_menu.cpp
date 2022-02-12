@@ -26,7 +26,7 @@
 #include "sa_string_private.h"
 #include "Menu.h"
 #include "Icon.h"
-#include "Action.h"
+#include "IAction.h"
 #include "sa_types_private.h"
 
 using namespace shellanything;
@@ -139,7 +139,7 @@ void sa_menu_set_enabled(sa_menu_t* menu, int enabled)
 
 size_t sa_menu_get_action_count(sa_menu_immutable_t* menu)
 {
-  shellanything::Action::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
+  shellanything::IAction::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
   size_t count = actions.size();
   return count;
 }
@@ -148,10 +148,10 @@ sa_error_t sa_menu_get_action_element(sa_menu_t* menu, size_t index, sa_action_t
 {
   if (action == NULL)
     return SA_ERROR_INVALID_ARGUMENTS;
-  shellanything::Action::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
+  shellanything::IAction::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
   if (actions.empty() || index > (actions.size() - 1))
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
-  shellanything::Action* action_element = actions[index];
+  shellanything::IAction* action_element = actions[index];
   *action = AS_TYPE_ACTION(action_element);
   return SA_ERROR_SUCCESS;
 }

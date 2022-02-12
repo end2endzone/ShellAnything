@@ -27,7 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Action.h"
+#include "IAction.h"
 #include <vector>
 
 namespace shellanything
@@ -40,10 +40,9 @@ namespace shellanything
   {
   public:
     /// <summary>
-    /// A list of Action class pointers.
+    /// A list of IAction class pointers.
     /// </summary>
     typedef std::vector<IActionFactory*> IActionFactoryPtrList;
-
 
     IActionFactory();
     virtual ~IActionFactory();
@@ -65,8 +64,8 @@ namespace shellanything
     /// </summary>
     /// <param name="xml">A string that contains the xml element (including child nodes) to parse.</param>
     /// <param name="error">Provides an error description in case the parsing fails.</param>
-    /// <returns>Returns a pointer to a valid Action if the parsing is succesful. Returns NULL otherwise.</returns>
-    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const = 0;
+    /// <returns>Returns a pointer to a valid IAction if the parsing is successful. Returns NULL otherwise.</returns>
+    virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const = 0;
 
   };
 

@@ -49,7 +49,7 @@ namespace shellanything
 
     virtual const std::string& GetName() const { return ActionClipboard::XML_ELEMENT_NAME; }
 
-    virtual Action* ParseFromXml(const std::string& xml, std::string& error) const
+    virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
     {
       XMLDocument doc;
       XMLError result = doc.Parse(xml.c_str());

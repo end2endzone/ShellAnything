@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_MESSAGE_H
 #define SA_ACTION_MESSAGE_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that prompts the user for a value.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionMessage : public Action
+  class SHELLANYTHING_EXPORT ActionMessage : public virtual IAction
   {
   public:
     ActionMessage();

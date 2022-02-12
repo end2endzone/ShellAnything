@@ -35,18 +35,18 @@ namespace shellanything
   {
     for(size_t i=0; i<mActions.size(); i++)
     {
-      Action * action = mActions[i];
+      IAction * action = mActions[i];
       delete action;
     }
     mActions.clear();
   }
 
-  void DefaultSettings::AddAction(Action * action)
+  void DefaultSettings::AddAction(IAction * action)
   {
     mActions.push_back(action);
   }
 
-  const Action::ActionPtrList & DefaultSettings::GetActions() const
+  const IAction::ActionPtrList & DefaultSettings::GetActions() const
   {
     return mActions;
   }

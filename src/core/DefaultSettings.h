@@ -27,7 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Action.h"
+#include "IAction.h"
 
 namespace shellanything
 {
@@ -52,15 +52,15 @@ namespace shellanything
     /// Add a new Action to the DefaultSettings. The DefaultSettings instance takes ownership of the action.
     /// </summary>
     /// <param name="action">The given action to add to the DefaultSettings instance</param>
-    void AddAction(Action * action);
+    void AddAction(IAction * action);
     
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & GetActions() const;
+    const IAction::ActionPtrList & GetActions() const;
 
   private:
-    Action::ActionPtrList mActions;
+    IAction::ActionPtrList mActions;
   };
 
 } //namespace shellanything

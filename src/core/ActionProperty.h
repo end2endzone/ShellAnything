@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_PROPERTY_H
 #define SA_ACTION_PROPERTY_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that changes the value of a property.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionProperty : public Action
+  class SHELLANYTHING_EXPORT ActionProperty : public virtual IAction
   {
   public:
     ActionProperty();

@@ -319,14 +319,14 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::Action::ActionPtrList & actions = mDefaults->GetActions();
+      const shellanything::IAction::ActionPtrList & actions = mDefaults->GetActions();
 
       //convert 'actions' to a list of <const shellanything::ActionProperty *>
       typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
       ActionPropertyPtrList properties;
       for(size_t i=0; i<actions.size(); i++)
       {
-        const shellanything::Action * abstract_action = actions[i];
+        const shellanything::IAction * abstract_action = actions[i];
         const shellanything::ActionProperty * action_property = dynamic_cast<const shellanything::ActionProperty *>(abstract_action);
         if (action_property)
           properties.push_back(action_property);

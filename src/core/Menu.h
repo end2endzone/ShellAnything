@@ -29,7 +29,7 @@
 #include "shellanything/config.h"
 #include "Icon.h"
 #include "Validator.h"
-#include "Action.h"
+#include "IAction.h"
 #include <string>
 #include <vector>
 #include <stdint.h>
@@ -238,15 +238,15 @@ namespace shellanything
     void AddVisibility(Validator * validator);
 
     /// <summary>
-    /// Add a new Action to the menu. The menu instance takes ownership of the action.
+    /// Add a new IAction to the menu. The menu instance takes ownership of the action.
     /// </summary>
     /// <param name="action">The given action to add to the menu</param>
-    void AddAction(Action * action);
+    void AddAction(IAction * action);
     
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & GetActions() const;
+    const IAction::ActionPtrList & GetActions() const;
 
     /// <summary>
     /// Add a new sub menu to the menu. The menu instance takes ownership of the sub menu.
@@ -271,7 +271,7 @@ namespace shellanything
     std::string mName;
     int mNameMaxLength;
     std::string mDescription;
-    Action::ActionPtrList mActions;
+    IAction::ActionPtrList mActions;
     MenuPtrList mSubMenus;
   };
 

@@ -24,10 +24,10 @@
 
 #include "sa_types_private.h"
 
-const shellanything::Action*  AS_CLASS_ACTION(sa_action_immutable_t*      object) { return (const shellanything::Action*)(object); }
-      shellanything::Action*  AS_CLASS_ACTION(sa_action_t*                object) { return (      shellanything::Action*)(object); }
-sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::Action* object) { sa_action_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
-sa_action_t                   AS_TYPE_ACTION(      shellanything::Action* object) { sa_action_t            my_type; my_type.opaque = (void*)(object); return my_type; }
+const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*      object) { return (const shellanything::IAction*)(object); }
+      shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                object) { return (      shellanything::IAction*)(object); }
+sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::IAction* object) { sa_action_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
+sa_action_t                   AS_TYPE_ACTION(      shellanything::IAction* object) { sa_action_t            my_type; my_type.opaque = (void*)(object); return my_type; }
 
 const shellanything::Context* AS_CLASS_CONTEXT(sa_context_immutable_t*      object) { return (const shellanything::Context*)(object); }
       shellanything::Context* AS_CLASS_CONTEXT(sa_context_t*                object) { return (      shellanything::Context*)(object); }

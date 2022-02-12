@@ -25,7 +25,7 @@
 #ifndef SA_ACTION_OPEN_H
 #define SA_ACTION_OPEN_H
 
-#include "Action.h"
+#include "IAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +34,7 @@ namespace shellanything
   /// <summary>
   /// Action class that opens a documents using default application.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionOpen : public Action
+  class SHELLANYTHING_EXPORT ActionOpen : public virtual IAction
   {
   public:
     ActionOpen();
