@@ -17,7 +17,7 @@ version: "{branch} (#{build})"
 branches:
   only:
     - master
-    - feature-issue103
+    - feature-issue50
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
