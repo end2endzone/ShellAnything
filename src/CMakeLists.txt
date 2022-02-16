@@ -37,6 +37,10 @@ add_subdirectory(core)
 add_subdirectory(shellextension)
 add_subdirectory(api)
 
+if(SHELLANYTHING_BUILD_PLUGINS)
+  add_subdirectory(plugins/sa_time_plugin)
+endif()
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
         DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )

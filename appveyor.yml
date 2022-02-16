@@ -39,7 +39,6 @@ clone_folder: c:\projects\shellanything
 
 # scripts that run after cloning repository
 install:
-- cmd: echo INSTALL!
 - cmd: git submodule update --init --recursive
 
 #---------------------------------#
@@ -71,6 +70,7 @@ before_build:
 
 build_script:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything_plugins.bat
 
 #---------------------------------#
 #       tests configuration       #

@@ -26,6 +26,7 @@
 #define SA_API_STRING_PRIVATE_H
 
 #include "shellanything/sa_error.h"
+#include "shellanything/sa_string.h"
 
 #include <string>
 

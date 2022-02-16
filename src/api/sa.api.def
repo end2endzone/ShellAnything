@@ -42,6 +42,8 @@ EXPORTS
   sa_icon_set_index
   sa_icon_set_path
   sa_icon_to_immutable
+  sa_logging_print
+  sa_logging_print_format
   sa_memory_alloc
   sa_memory_alloc
   sa_memory_free
@@ -70,6 +72,7 @@ EXPORTS
   sa_menu_set_visible
   sa_menu_to_immutable
   sa_menu_update
+  sa_plugins_register_attribute_validation
   sa_properties_clear
   sa_properties_clear
   sa_properties_delete
@@ -90,13 +93,13 @@ EXPORTS
   sa_properties_get_string
   sa_properties_set
   sa_properties_set
-  sa_string_init
   sa_string_create
   sa_string_create_from_cstr
   sa_string_create_from_str
   sa_string_destroy
   sa_string_get_length
   sa_string_get_value
+  sa_string_init
   sa_validator_get_class_buffer
   sa_validator_get_class_string
   sa_validator_get_exprtk_buffer

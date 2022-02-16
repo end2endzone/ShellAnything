@@ -22,16 +22,59 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#include "shellanything/version.h"
 #include "Plugin.h"
 #include "PropertyManager.h"
 #include "Validator.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
 #include "rapidassist/strings.h"
+#include "rapidassist/errors.h"
+#include "../api/sa_error.cpp"  // to get a local implementation for sa_error_get_error_description()
+
+#include "shellanything\sa_plugins.h"
+
+#include <Windows.h>
+
+#define xstr(a) str(a)
+#define str(a) #a
 
 namespace shellanything
 {
-  Plugin::Plugin()
+  struct Plugin::ENTRY_POINTS
   {
+    HMODULE hModule;
+    sa_plugin_initialize_func initialize_func;
+    sa_plugin_register_func register_func;
+  };
+
+  Plugin* gPluginLoadInstance = NULL;
+  Registry* gPluginLoadRegistry;
+
+  Plugin* Plugin::GetLoadingPlugin()
+  {
+    return gPluginLoadInstance;
+  }
+
+  Registry* Plugin::GetLoadingRegistry()
+  {
+    return gPluginLoadRegistry;
+  }
+
+  void Plugin::SetLoadingRegistry(Registry* registry)
+  {
+    gPluginLoadRegistry = registry;
+  }
+
+  Plugin::Plugin() :
+    mLoaded(false),
+    mEntryPoints(new Plugin::ENTRY_POINTS)
+  {
+    memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
   }
 
   Plugin::Plugin(const Plugin & p)
@@ -41,6 +84,11 @@ namespace shellanything
 
   Plugin::~Plugin()
   {
+    Unload();
+
+    if (mEntryPoints)
+      delete mEntryPoints;
+    mEntryPoints = NULL;
   }
 
   const Plugin & Plugin::operator =(const Plugin & p)
@@ -51,6 +99,10 @@ namespace shellanything
       mDescription  = p.mDescription;
       mConditions   = p.mConditions;
       mActions      = p.mActions;
+
+      // do not copy loaded properties this is instance specific.
+      // mEntryPoints skipped on purpose for hModule safety
+      mLoaded       = false;
     }
     return (*this);
   }
@@ -98,6 +150,96 @@ namespace shellanything
   bool Plugin::Validate(const Context& context) const
   {
     return true;
+  }
+
+  bool Plugin::IsLoaded() const
+  {
+    return mLoaded;
+  }
+  
+  bool Plugin::Load()
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    const std::string path = pmgr.Expand(mPath);
+
+    if (gPluginLoadRegistry == NULL)
+    {
+      LOG(ERROR) << "No Registry destination defined for plugin '" << path << "'.";
+      return false;
+    }
+
+    HMODULE hModule = LoadLibrary(path.c_str());
+    if (!hModule)
+    {
+      ra::errors::errorcode_t error_code = ra::errors::GetLastErrorCode();
+      std::string error_str = ra::errors::GetErrorCodeDescription(error_code);
+      LOG(ERROR) << "Error code " << ra::strings::Format("0x%x", error_code) << ", " << error_str;
+      return false;
+    }
+
+    //search for entry points
+    sa_plugin_initialize_func initialize_func = (sa_plugin_initialize_func)GetProcAddress(hModule, xstr(SA_PLUGIN_INITIALIZATION_FUNCTION_NAME));
+    if (initialize_func == NULL)
+    {
+      FreeLibrary(hModule);
+      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_INITIALIZATION_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      return false;
+    }
+
+    sa_plugin_register_func register_func = (sa_plugin_register_func)GetProcAddress(hModule, xstr(SA_PLUGIN_REGISTER_FUNCTION_NAME));
+    if (register_func == NULL)
+    {
+      FreeLibrary(hModule);
+      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_REGISTER_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      return false;
+    }
+
+    // remember this plugin while loading. This is required for plugins that registers features through the API.
+    gPluginLoadInstance = this; 
+
+    //initialize & register the plugin
+    sa_version_info_t version;
+    version.major = SHELLANYTHING_VERSION_MAJOR;
+    version.minor = SHELLANYTHING_VERSION_MINOR;
+    version.patch = SHELLANYTHING_VERSION_PATCH;
+    sa_error_t initialized_error = initialize_func(&version);
+    if (initialized_error != SA_ERROR_SUCCESS)
+    {
+      const char* initialized_error_str = sa_error_get_error_description(initialized_error);
+      LOG(WARNING) << "The plugin '" << path << "' has failed to initialize. Error code: " << ra::strings::Format("0x%x", initialized_error) << ", " << initialized_error_str;
+      gPluginLoadInstance = NULL;
+      return false;
+    }
+    sa_error_t register_error = mEntryPoints->register_func();
+    if (register_error != SA_ERROR_SUCCESS)
+    {
+      const char* register_error_str = sa_error_get_error_description(register_error);
+      LOG(WARNING) << "The plugin '" << path << "' has failed to register a service. Error code: " << ra::strings::Format("0x%x", register_error) << ", " << register_error_str;
+      gPluginLoadInstance = NULL;
+      return false;
+    }
+    gPluginLoadInstance = NULL;
+
+    // this plugin is valid.
+    this->mEntryPoints->hModule = hModule;
+    this->mEntryPoints->initialize_func = initialize_func;
+    this->mEntryPoints->register_func = register_func;
+    mLoaded = true;
+
+    return true;
+  }
+
+  bool Plugin::Unload()
+  {
+    if (mEntryPoints->hModule != 0)
+    {
+      FreeLibrary(mEntryPoints->hModule);
+      memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
+      mLoaded = false;
+      return true;
+    }
+
+    return false;
   }
 
   Plugin* Plugin::FindPluginByConditionName(const PluginPtrList& plugins, const std::string& name)

@@ -225,8 +225,20 @@ namespace shellanything
         Plugin* plugin = ObjectFactory::GetInstance().ParsePlugin(xml_plugin, error);
         if (plugin != NULL)
         {
-          //add the new plugin to the current configuration
-          config->AddPlugin(plugin);
+          // try to load the plugin.
+          Plugin::SetLoadingRegistry(&config->GetRegistry());
+
+          bool loaded = plugin->Load();
+          if (loaded)
+          {
+            //add the new plugin to the current configuration
+            config->AddPlugin(plugin);
+          }
+          else
+          {
+            LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin will be discarded.";
+            delete plugin;
+          }
         }
 
         //next xml_plugin node
@@ -236,6 +248,7 @@ namespace shellanything
       //next plugins node
       xml_plugins = xml_plugins->NextSiblingElement("plugins");
     }
+    Plugin::SetLoadingRegistry(NULL);
 
     //set active plugins for parsing child elements
     //notify the ObjectParser about this configuration's plugins.
@@ -392,6 +405,11 @@ namespace shellanything
   Menu::MenuPtrList Configuration::GetMenus()
   {
     return mMenus;
+  }
+
+  Registry& Configuration::GetRegistry()
+  {
+    return mRegistry;
   }
 
   void Configuration::SetDefaultSettings(DefaultSettings * defaults)

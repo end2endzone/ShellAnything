@@ -27,6 +27,27 @@
 
 using namespace shellanything;
 
+const char* sa_error_get_error_description(sa_error_t code)
+{
+  switch (code)
+  {
+  case SA_ERROR_SUCCESS            :      return "No error"; break;
+  case SA_ERROR_INVALID_ARGUMENTS  :      return "Invalid arguments"; break;
+  case SA_ERROR_BUFFER_TOO_SMALL   :      return "The given buffer is too small"; break;
+  case SA_ERROR_VALUE_OUT_OF_BOUNDS:      return "The given value is out of bounds"; break;
+  case SA_ERROR_NOT_FOUND          :      return "The specified "; break;
+  case SA_ERROR_NOT_SUPPORTED      :      return "This action is not supported"; break;
+  case SA_ERROR_NOT_IMPLEMENTED    :      return "This feature is not implemented"; break;
+  case SA_ERROR_ALREADY_EXIST      :      return "The object already exists"; break;
+  case SA_ERROR_MISSING_RESOURCE   :      return "A resource is missing to complete the operation"; break;
+  case SA_ERROR_ACCESS_DENIED      :      return "The access to object is denied"; break;
+  case SA_ERROR_BUSY               :      return "The object is busy"; break;
+  case SA_ERROR_UNKNOWN            :      return "Unknown error"; break;
+  default:
+    return "Unspecified error";
+  };
+}
+
 void sa_error_show_message(const char* title, const char* message)
 {
   std::string title_str;

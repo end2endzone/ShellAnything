@@ -28,6 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "Context.h"
+#include "Registry.h"
 #include <string>
 #include <vector>
 
@@ -44,6 +45,23 @@ namespace shellanything
     /// A list of Plugin pointer.
     /// </summary>
     typedef std::vector<Plugin*> PluginPtrList;
+
+    /// <summary>
+    /// Get the active plugin that is currently loading. See Load() method.
+    /// </summary>
+    /// <returns>Returns a Plugin pointer which is currently executing the Load() method. Returns NULL if no plugin is actually loading.</returns>
+    static Plugin* GetLoadingPlugin();
+
+    /// <summary>
+    /// Get the destination Registry class to use when loading a plugin.
+    /// </summary>
+    /// <returns>Returns a Registry class for registering instances. Returns NULL if no destination Registry is set.</returns>
+    static Registry* GetLoadingRegistry();
+
+    /// <summary>
+    /// Set the destination Registry class to use when loading a plugin.
+    /// </summary>
+    static void SetLoadingRegistry(Registry* registry);
 
     Plugin();
     Plugin(const Plugin& p);
@@ -102,6 +120,30 @@ namespace shellanything
     bool Validate(const Context& context) const;
 
     /// <summary>
+    /// Check if a plugin is loaded.
+    /// </summary>
+    /// <returns>Returns true if the plugin is loaded. Returns false otherwise.</returns>
+    bool IsLoaded() const;
+
+    /// <summary>
+    /// Load the plugin into memory.
+    /// </summary>
+    /// <returns>Returns true when the plugin load is successful. Returns false otherwise.</returns>
+    bool Load();
+
+    /// <summary>
+    /// Unload the plugin from memory.
+    /// </summary>
+    /// <returns>Returns true when the plugin load is successful. Returns false otherwise.</returns>
+    bool Unload();
+
+    /// <summary>
+    /// Get this Configuration Registry class.
+    /// </summary>
+    /// <returns></returns>
+    Registry& GetRegistry();
+
+    /// <summary>
     /// Find a plugin which has a condition field matching the given name.
     /// </summary>
     /// <param name="plugins">The list of plugins</param>
@@ -122,6 +164,10 @@ namespace shellanything
     std::string mDescription;
     std::string mConditions;
     std::string mActions;
+    bool mLoaded;
+
+    struct ENTRY_POINTS;
+    ENTRY_POINTS* mEntryPoints;
   };
 
 

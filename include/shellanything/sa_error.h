@@ -39,9 +39,17 @@ typedef enum {
   SA_ERROR_NOT_IMPLEMENTED,
   SA_ERROR_ALREADY_EXIST,
   SA_ERROR_MISSING_RESOURCE,
+  SA_ERROR_ACCESS_DENIED,
   SA_ERROR_BUSY,
   SA_ERROR_UNKNOWN = -1,
 } sa_error_t;
+
+/// <summary>
+/// Get a string description of the given error code.
+/// </summary>
+/// <param name="code">The error code</param>
+/// <returns>Returns a string description of the given error code.</returns>
+const char* sa_error_get_error_description(sa_error_t code);
 
 /// <summary>
 /// Show an error message encoded in ansi to the user.

@@ -142,6 +142,7 @@ set(LIBMAGIC_MGC_DIR "${CMAKE_SOURCE_DIR}/third_parties/libmagic/install/binary"
 # Build options
 option(SHELLANYTHING_BUILD_DOC "Build ShellAnything documentation" OFF)
 option(SHELLANYTHING_BUILD_TEST "Build all ShellAnything's unit tests" OFF)
+option(SHELLANYTHING_BUILD_PLUGINS "Build all ShellAnything's plugins" OFF)
 
 # Force a debug postfix if none specified.
 # This allows publishing both release and debug binaries to the same location

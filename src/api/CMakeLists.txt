@@ -8,6 +8,7 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_logging.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_memory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_menu.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_plugins.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_properties.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_string.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_validator.h
@@ -25,6 +26,7 @@ add_library(sa.api SHARED
   sa_logging.cpp
   sa_memory.cpp
   sa_menu.cpp
+  sa_plugins.cpp
   sa_properties.cpp
   sa_string.cpp
   sa_string_private.cpp

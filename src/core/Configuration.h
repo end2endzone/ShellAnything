@@ -117,7 +117,7 @@ namespace shellanything
     /// <summary>
     /// Add a new plugin to the Configuration. The Configuration instance takes ownership of the plugin.
     /// </summary>
-    /// <param name="plugin">The given plugin_descriptor to add to the Configuration</param>
+    /// <param name="plugin">The plugin to add to the Configuration</param>
     void AddPlugin(Plugin* plugin);
 
     /// <summary>
@@ -129,6 +129,12 @@ namespace shellanything
     /// Get the list of menu pointers handled by the configuration.
     /// </summary>
     Menu::MenuPtrList GetMenus();
+
+    /// <summary>
+    /// Get this Configuration Registry class.
+    /// </summary>
+    /// <returns></returns>
+    Registry& GetRegistry();
 
     /// <summary>
     /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
@@ -158,6 +164,7 @@ namespace shellanything
     std::string mFilePath;
     Plugin::PluginPtrList mPlugins;
     Menu::MenuPtrList mMenus;
+    Registry mRegistry;
   };
 
 } //namespace shellanything
