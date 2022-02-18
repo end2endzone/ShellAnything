@@ -52,17 +52,6 @@ namespace shellanything
     /// <returns>Returns a Plugin pointer which is currently executing the Load() method. Returns NULL if no plugin is actually loading.</returns>
     static Plugin* GetLoadingPlugin();
 
-    /// <summary>
-    /// Get the destination Registry class to use when loading a plugin.
-    /// </summary>
-    /// <returns>Returns a Registry class for registering instances. Returns NULL if no destination Registry is set.</returns>
-    static Registry* GetLoadingRegistry();
-
-    /// <summary>
-    /// Set the destination Registry class to use when loading a plugin.
-    /// </summary>
-    static void SetLoadingRegistry(Registry* registry);
-
     Plugin();
     Plugin(const Plugin& p);
     virtual ~Plugin();
@@ -113,13 +102,6 @@ namespace shellanything
     void SetActions(const std::string& actions);
 
     /// <summary>
-    /// Evaluate if a plugin condition is validated based on the given attribute values.
-    /// </summary>
-    /// <param name="context">The context used for validating.</param>
-    /// <returns>Returns true if the validation succeeds. Returns false otherwise.</returns>
-    bool Validate(const Context& context) const;
-
-    /// <summary>
     /// Check if a plugin is loaded.
     /// </summary>
     /// <returns>Returns true if the plugin is loaded. Returns false otherwise.</returns>
@@ -138,9 +120,9 @@ namespace shellanything
     bool Unload();
 
     /// <summary>
-    /// Get this Configuration Registry class.
+    /// Get this plugin Registry class.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Returns this plugin Registry class.</returns>
     Registry& GetRegistry();
 
     /// <summary>
@@ -164,10 +146,12 @@ namespace shellanything
     std::string mDescription;
     std::string mConditions;
     std::string mActions;
-    bool mLoaded;
 
+    // Plugin loaded state members
+    bool mLoaded;
     struct ENTRY_POINTS;
     ENTRY_POINTS* mEntryPoints;
+    Registry mRegistry;
   };
 
 

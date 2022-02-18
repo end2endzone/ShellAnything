@@ -29,6 +29,7 @@
 #include "shellanything/config.h"
 #include "IAction.h"
 #include "IActionFactory.h"
+#include "IAttributeValidator.h"
 #include <map>
 
 namespace shellanything
@@ -58,10 +59,23 @@ namespace shellanything
     IActionFactory* GetActionFactoryFromName(const std::string& name) const;
 
     /// <summary>
-    /// Add an IActionFactory to the registry. The registry takes ownership of the given IActionFactory.
+    /// Add an IActionFactory to the registry. The registry takes ownership of the given instance.
     /// </summary>
     /// <param name="factory">A valid IActionFactory instance</param>
     void AddActionFactory(IActionFactory* factory);
+
+    /// <summary>
+    /// Get an IAttributeValidator instance that can validate the given attribute name.
+    /// </summary>
+    /// <param name="name">The name of an attribute.</param>
+    /// <returns>Returns an IAttributeValidator instance that can validate the given attribute name. Returns NULL otherwise.</returns>
+    IAttributeValidator* GetAttributeValidatorFromName(const std::string& name) const;
+
+    /// <summary>
+    /// Add an IAttributeValidator to the registry. The registry takes ownership of the given instance.
+    /// </summary>
+    /// <param name="validator">A valid IAttributeValidator instance</param>
+    void AddAttributeValidator(IAttributeValidator* validator);
 
   private:
 
@@ -69,11 +83,13 @@ namespace shellanything
     // Typedef
     //------------------------
     typedef std::map<std::string /*name*/, IActionFactory* /*factory*/> ActionFactoryMap;
+    typedef std::map<std::string /*name*/, IAttributeValidator* /*validator*/> AttributeValidatorMap;
 
     //------------------------
     // Members
     //------------------------
     ActionFactoryMap mActionFactories;
+    AttributeValidatorMap mAttributeValidators;
   };
 
 

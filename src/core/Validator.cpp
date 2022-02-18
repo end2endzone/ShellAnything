@@ -22,6 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
+#include "shellanything/sa_plugins.h"
 #include <string>
 #include <limits>
 #include "Validator.h"
@@ -370,29 +371,85 @@ namespace shellanything
     //validate custom attributes
     if (!mCustomAttributes.IsEmpty() && !mPlugins.empty())
     {
-      //For each plugins
+      //for each plugins
       for (size_t i = 0; i < mPlugins.size(); i++)
       {
         Plugin* p = mPlugins[i];
+        Registry& registry = p->GetRegistry();
 
-        //check that all plugin's conditions have a value (or empty)
-        bool have_all_attributes = true;
-        const std::string conditions_str = pmgr.Expand(p->GetConditions());
-        ra::strings::StringVector conditions = ra::strings::Split(conditions_str, SA_CONDITIONS_ATTR_SEPARATOR_STR);
-        for (size_t j = 0; j < conditions.size() && have_all_attributes; j++)
+        //try to find a validator for each condition
+        ra::strings::StringVector plugin_conditions;
+        PropertyManager::SplitAndExpand(p->GetConditions(), SA_CONDITIONS_ATTR_SEPARATOR_STR, plugin_conditions);
+        while (!plugin_conditions.empty())
         {
-          const std::string& condition = conditions[j];
-          if (!mCustomAttributes.HasProperty(condition))
-            have_all_attributes = false;
+          const std::string first_plugin_condition = plugin_conditions[0];
+          IAttributeValidator* attr_validator = registry.GetAttributeValidatorFromName(first_plugin_condition);
+          if (attr_validator != NULL)
+          {
+            //get the conditions that must be evaluated "at the same time"
+            const IAttributeValidator::StringList& related_conditions = attr_validator->GetAttributeNames();
+
+            //remove these condition from the plugin's condition
+            for (size_t j = 0; j < related_conditions.size(); j++)
+            {
+              const std::string& related_condition = related_conditions[j];
+              plugin_conditions.erase(std::find(plugin_conditions.begin(), plugin_conditions.end(), related_condition));
+            }
+
+            //check that all attributes supported by the attr_validator are specified in the validator
+            bool have_all_attributes = mCustomAttributes.HasProperties(related_conditions);
+            if (have_all_attributes)
+            {
+              //validate!
+              IAttributeValidator::StringList values;
+              IAttributeValidator::IntList flags;
+              for (size_t j = 0; j < related_conditions.size(); j++)
+              {
+                const std::string& related_condition = related_conditions[j];
+                const std::string& condition_value = mCustomAttributes.GetProperty(related_condition);
+                int condition_flag = SA_ATTRIBUTE_FLAG_NONE;
+                if (this->IsInversed(related_condition.c_str()))
+                  condition_flag = condition_flag & SA_ATTRIBUTE_FLAG_INVERSED;
+
+                values.push_back(condition_value);
+                flags.push_back(condition_flag);
+              }
+
+              attr_validator->SetAttributeValues(values);
+              attr_validator->SetAttributeFlags(flags);
+              bool valid = attr_validator->Validate(context);
+              if (!valid)
+                return false;
+            }
+            else
+            {
+              //some attributes are missing
+              PropertyStore::PropertyList missing_properties;
+              mCustomAttributes.FindMissingProperties(related_conditions, missing_properties);
+              if (missing_properties.size() == related_conditions.size())
+              {
+                // the properties supported by the validator are not specified in the xml configuration.
+                // the user did not wanted to filter using these properties.
+              }
+              else
+              {
+                // some properties are specified as filter but not all of them.
+                // we should warn the user about this
+                std::string expected = ra::strings::Join(related_conditions, ",");
+                std::string actual   = ra::strings::Join(missing_properties, ",");
+                LOG(WARNING) << "The following conditions are missing for the validation '" << actual << "'. The plugin '" << p->GetPath() << "' is expecting '" << expected << "'. Failing the validation.";
+                return false;
+              }
+            }
+          }
+          else
+          {
+            //no validator for this condition. A warning is expected to be already printed in the logs when the plugin was loaded.
+            //forget about this condition
+            plugin_conditions.erase(plugin_conditions.begin() + 0);
+          }
         }
-        if (have_all_attributes)
-        {
-          //this validator's attributes matches this plugin's conditions.
-          //ask the plugin to validate the selection
-          bool valid = p->Validate(context);
-          if (!valid)
-            return false;
-        }
+
       }
     }
 

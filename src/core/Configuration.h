@@ -131,12 +131,6 @@ namespace shellanything
     Menu::MenuPtrList GetMenus();
 
     /// <summary>
-    /// Get this Configuration Registry class.
-    /// </summary>
-    /// <returns></returns>
-    Registry& GetRegistry();
-
-    /// <summary>
     /// Set a new DefaultSettings instance to the Configuration. The Configuration instance takes ownership of the instance.
     /// </summary>
     /// <param name="defaults">The given DefaultSettings to add to the configuration</param>
@@ -164,7 +158,6 @@ namespace shellanything
     std::string mFilePath;
     Plugin::PluginPtrList mPlugins;
     Menu::MenuPtrList mMenus;
-    Registry mRegistry;
   };
 
 } //namespace shellanything

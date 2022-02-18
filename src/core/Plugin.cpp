@@ -52,22 +52,11 @@ namespace shellanything
     sa_plugin_register_func register_func;
   };
 
-  Plugin* gPluginLoadInstance = NULL;
-  Registry* gPluginLoadRegistry;
+  Plugin* gLoadingPlugin = NULL;
 
   Plugin* Plugin::GetLoadingPlugin()
   {
-    return gPluginLoadInstance;
-  }
-
-  Registry* Plugin::GetLoadingRegistry()
-  {
-    return gPluginLoadRegistry;
-  }
-
-  void Plugin::SetLoadingRegistry(Registry* registry)
-  {
-    gPluginLoadRegistry = registry;
+    return gLoadingPlugin;
   }
 
   Plugin::Plugin() :
@@ -102,6 +91,7 @@ namespace shellanything
 
       // do not copy loaded properties this is instance specific.
       // mEntryPoints skipped on purpose for hModule safety
+      // mRegistry skipped on purpose
       mLoaded       = false;
     }
     return (*this);
@@ -147,11 +137,6 @@ namespace shellanything
     mActions = actions;
   }
 
-  bool Plugin::Validate(const Context& context) const
-  {
-    return true;
-  }
-
   bool Plugin::IsLoaded() const
   {
     return mLoaded;
@@ -161,12 +146,6 @@ namespace shellanything
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     const std::string path = pmgr.Expand(mPath);
-
-    if (gPluginLoadRegistry == NULL)
-    {
-      LOG(ERROR) << "No Registry destination defined for plugin '" << path << "'.";
-      return false;
-    }
 
     HMODULE hModule = LoadLibrary(path.c_str());
     if (!hModule)
@@ -195,7 +174,7 @@ namespace shellanything
     }
 
     // remember this plugin while loading. This is required for plugins that registers features through the API.
-    gPluginLoadInstance = this; 
+    gLoadingPlugin = this; 
 
     //initialize & register the plugin
     sa_version_info_t version;
@@ -207,7 +186,7 @@ namespace shellanything
     {
       const char* initialized_error_str = sa_error_get_error_description(initialized_error);
       LOG(WARNING) << "The plugin '" << path << "' has failed to initialize. Error code: " << ra::strings::Format("0x%x", initialized_error) << ", " << initialized_error_str;
-      gPluginLoadInstance = NULL;
+      gLoadingPlugin = NULL;
       return false;
     }
     sa_error_t register_error = mEntryPoints->register_func();
@@ -215,16 +194,29 @@ namespace shellanything
     {
       const char* register_error_str = sa_error_get_error_description(register_error);
       LOG(WARNING) << "The plugin '" << path << "' has failed to register a service. Error code: " << ra::strings::Format("0x%x", register_error) << ", " << register_error_str;
-      gPluginLoadInstance = NULL;
+      gLoadingPlugin = NULL;
       return false;
     }
-    gPluginLoadInstance = NULL;
+    gLoadingPlugin = NULL;
 
     // this plugin is valid.
     this->mEntryPoints->hModule = hModule;
     this->mEntryPoints->initialize_func = initialize_func;
     this->mEntryPoints->register_func = register_func;
     mLoaded = true;
+
+    // validate declared conditions all have an assigned validator
+    ra::strings::StringVector conditions;
+    PropertyManager::SplitAndExpand(mConditions, SA_CONDITIONS_ATTR_SEPARATOR_STR, conditions);
+    for (size_t i = 0; i < conditions.size(); i++)
+    {
+      const std::string& condition = conditions[i];
+      IAttributeValidator* validator = mRegistry.GetAttributeValidatorFromName(condition);
+      if (validator == NULL)
+      {
+        LOG(WARNING) << "The plugin '" << path << "' has is declaring condition '" << condition << "' but did not registered any validator function.";
+      }
+    }
 
     return true;
   }
@@ -240,6 +232,11 @@ namespace shellanything
     }
 
     return false;
+  }
+
+  Registry& Plugin::GetRegistry()
+  {
+    return mRegistry;
   }
 
   Plugin* Plugin::FindPluginByConditionName(const PluginPtrList& plugins, const std::string& name)

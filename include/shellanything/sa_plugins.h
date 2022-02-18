@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include "sa_error.h"
+#include "sa_context.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,7 +86,7 @@ typedef sa_error_t(*sa_plugin_register_func)();
 /// <param name="flags">The flags of the attributes. See macros that starts with SA_ATTRIBUTE_FLAG_.</param>
 /// <param name="count">Defines how many elements are in the names, values and flags arrays.</param>
 /// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef int (*sa_plugin_attribute_validate_func)(const char** /*names*/, const char** /*values*/, const int** /*flags*/, size_t /*count*/);
+typedef int (*sa_plugin_attribute_validate_func)(sa_context_immutable_t* ctx, const char** /*names*/, const char** /*values*/, const int* /*flags*/, size_t /*count*/);
 
 /// <summary>
 /// Register a custom attribute validation function for a given list of attributes.

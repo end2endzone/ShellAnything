@@ -226,8 +226,6 @@ namespace shellanything
         if (plugin != NULL)
         {
           // try to load the plugin.
-          Plugin::SetLoadingRegistry(&config->GetRegistry());
-
           bool loaded = plugin->Load();
           if (loaded)
           {
@@ -248,7 +246,6 @@ namespace shellanything
       //next plugins node
       xml_plugins = xml_plugins->NextSiblingElement("plugins");
     }
-    Plugin::SetLoadingRegistry(NULL);
 
     //set active plugins for parsing child elements
     //notify the ObjectParser about this configuration's plugins.
@@ -405,11 +402,6 @@ namespace shellanything
   Menu::MenuPtrList Configuration::GetMenus()
   {
     return mMenus;
-  }
-
-  Registry& Configuration::GetRegistry()
-  {
-    return mRegistry;
   }
 
   void Configuration::SetDefaultSettings(DefaultSettings * defaults)

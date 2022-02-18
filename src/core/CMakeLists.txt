@@ -40,6 +40,8 @@ add_library(sa.core SHARED
   FileMagicManager.cpp
   IActionFactory.h
   IActionFactory.cpp
+  IAttributeValidator.h
+  IAttributeValidator.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp

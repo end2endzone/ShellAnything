@@ -23,9 +23,16 @@
  *********************************************************************************/
 
 #include "Registry.h"
+#include <set>
+
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
 
 namespace shellanything
 {
+  typedef std::set<IAttributeValidator* /*validator*/> AttributeValidatorSet;
 
   Registry::Registry()
   {
@@ -42,6 +49,21 @@ namespace shellanything
     }
     mActionFactories.clear();
 
+    // cleanup attribute validators
+    // the same IAttributeValidator instance can be assigned to multiple names.
+    // we must first get a list of unique instances.
+    AttributeValidatorSet tmp;
+    for (AttributeValidatorMap::iterator it = mAttributeValidators.begin(); it != mAttributeValidators.end(); ++it)
+    {
+      const std::string& key = (it->first);
+      IAttributeValidator* validator = (it->second);
+      tmp.insert(validator);
+    }
+    for (AttributeValidatorSet::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+      IAttributeValidator* validator = (*it);
+      delete validator;
+    }
   }
 
   IActionFactory* Registry::GetActionFactoryFromName(const std::string& name) const
@@ -59,7 +81,40 @@ namespace shellanything
   void Registry::AddActionFactory(IActionFactory* factory)
   {
     const std::string& name = factory->GetName();
-    mActionFactories[name] = factory;
+    if (GetActionFactoryFromName(name))
+    {
+      LOG(WARNING) << "An action factory already exists for the action named '" << name << "', this factory will be ignored.";
+    }
+    else
+      mActionFactories[name] = factory;
+  }
+
+  IAttributeValidator* Registry::GetAttributeValidatorFromName(const std::string& name) const
+  {
+    AttributeValidatorMap::const_iterator it = mAttributeValidators.find(name);
+    bool found = (it != mAttributeValidators.end());
+    if (found)
+    {
+      IAttributeValidator* validator = it->second;
+      return validator;
+    }
+    return NULL;
+  }
+
+  void Registry::AddAttributeValidator(IAttributeValidator* validator)
+  {
+    // register the attribute validator to each attributes names
+    const IAttributeValidator::StringList& names = validator->GetAttributeNames();
+    for (size_t i = 0; i < names.size(); i++)
+    {
+      const std::string& name = names[i];
+      if (GetAttributeValidatorFromName(name))
+      {
+        LOG(WARNING) << "An attribute validator already exists for the attribute '" << name << "', this validator will be ignored.";
+      }
+      else
+        mAttributeValidators[name] = validator;
+    }
   }
 
 } //namespace shellanything
