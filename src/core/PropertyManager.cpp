@@ -72,6 +72,12 @@ namespace shellanything
     return found;
   }
 
+  bool PropertyManager::HasProperties(const StringList& properties_) const
+  {
+    bool found = properties.HasProperties(properties_);
+    return found;
+  }
+
   void PropertyManager::SetProperty(const std::string & name, const std::string & value)
   {
     properties.SetProperty(name, value);
@@ -81,6 +87,11 @@ namespace shellanything
   {
     const std::string& value = properties.GetProperty(name);
     return value;
+  }
+
+  void PropertyManager::FindMissingProperties(const StringList& input_names, StringList& output_names) const
+  {
+    properties.FindMissingProperties(input_names, output_names);
   }
 
   inline bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
@@ -187,6 +198,45 @@ namespace shellanything
     }
 
     return output;
+  }
+
+  void PropertyManager::SplitAndExpand(const std::string& input_value, const char* separator, StringList& output_list)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    output_list.clear();
+    if (separator == NULL)
+      return;
+
+    //Loop through each values
+    ra::strings::StringVector values = ra::strings::Split(input_value, separator);
+    for (size_t i = 0; i < values.size(); i++)
+    {
+      //Expand each value
+      const std::string& tmp = values[i];
+      const std::string expanded = pmgr.Expand(tmp);
+      output_list.push_back(tmp);
+    }
+  }
+
+  void PropertyManager::ExpandAndSplit(const std::string& input_value, const char* separator, StringList& output_list)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    output_list.clear();
+    if (separator == NULL)
+      return;
+
+    //Expand the given value
+    const std::string expanded = pmgr.Expand(input_value);
+
+    //Loop through each values
+    ra::strings::StringVector values = ra::strings::Split(expanded, separator);
+    for (size_t i = 0; i < values.size(); i++)
+    {
+      const std::string& tmp = values[i];
+      output_list.push_back(tmp);
+    }
   }
 
   void PropertyManager::RegisterEnvironmentVariables()

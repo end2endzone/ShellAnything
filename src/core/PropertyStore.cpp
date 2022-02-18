@@ -70,6 +70,17 @@ namespace shellanything
     return found;
   }
 
+  bool PropertyStore::HasProperties(const PropertyList& properties) const
+  {
+    for (size_t i = 0; i < properties.size(); i++)
+    {
+      const std::string& name = properties[i];
+      if (!HasProperty(name))
+        return false;
+    }
+    return true;
+  }
+
   void PropertyStore::SetProperty(const std::string & name, const std::string & value)
   {
     //overwrite previous property
@@ -109,6 +120,17 @@ namespace shellanything
       const std::string& key = (it->first);
       const std::string& value = (it->second);
       names.push_back(key);
+    }
+  }
+
+  void PropertyStore::FindMissingProperties(const PropertyList& input_names, PropertyList& output_names) const
+  {
+    output_names.clear();
+    for (size_t i = 0; i < input_names.size(); i++)
+    {
+      const std::string& name = input_names[i];
+      if (!HasProperty(name))
+        output_names.push_back(name);
     }
   }
 

@@ -78,6 +78,14 @@ namespace shellanything
     bool HasProperty(const std::string & name) const;
 
     /// <summary>
+    /// Check if the properties are all set.
+    /// An empty property value is defined as 'set'.
+    /// </summary>
+    /// <param name="properties">The list of properties to check.</param>
+    /// <returns>Returns true if all the properties are set. Returns false otherwise.</returns>
+    bool HasProperties(const PropertyList& properties) const;
+
+    /// <summary>
     /// Sets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to set.</param>
@@ -108,6 +116,13 @@ namespace shellanything
     /// </summary>
     /// <param name="names">The output list of properties</param>
     void GetProperties(PropertyList & names) const;
+
+    /// <summary>
+    /// Find the list of properties which are not in the store.
+    /// </summary>
+    /// <param name="input_names">The list of property names to test.</param>
+    /// <param name="output_names">The output list of property names which are not in the store.</param>
+    void FindMissingProperties(const PropertyList& input_names, PropertyList& output_names) const;
 
   private:
     PropertyMap properties;
