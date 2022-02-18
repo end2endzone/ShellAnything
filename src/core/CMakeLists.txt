@@ -63,6 +63,7 @@ add_library(sa.core SHARED
   PropertyStore.cpp
   Registry.h
   Registry.cpp
+  StringList.h
   Win32Clipboard.h
   Win32Clipboard.cpp
   Wildcard.cpp

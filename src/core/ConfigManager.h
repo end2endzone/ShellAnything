@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
 #include "Configuration.h"
 #include "Context.h"
 
@@ -49,11 +50,6 @@ namespace shellanything
   public:
 
   public:
-    /// <summary>
-    /// A list of string for holding configuration paths.
-    /// </summary>
-    typedef std::vector<std::string> PathList;
-
     static ConfigManager & GetInstance();
     
     /// <summary>
@@ -117,7 +113,7 @@ namespace shellanything
     void DeleteChild(Configuration * config);
 
     //attributes
-    PathList mPaths;
+    StringList mPaths;
     Configuration::ConfigurationPtrList mConfigurations;
   };
 

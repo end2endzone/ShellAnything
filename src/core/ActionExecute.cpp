@@ -204,7 +204,7 @@ namespace shellanything
     //If not specified try to fill basedir with the best option available
     if (basedir.empty())
     {
-      const shellanything::Context::ElementList & elements = context.GetElements();
+      const StringList& elements = context.GetElements();
       size_t num_dir    = context.GetNumDirectories();
       size_t num_files  = context.GetNumFiles();
       if (num_dir == 1 && elements.size() == 1)

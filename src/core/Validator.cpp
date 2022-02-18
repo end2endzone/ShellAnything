@@ -387,7 +387,7 @@ namespace shellanything
           if (attr_validator != NULL)
           {
             //get the conditions that must be evaluated "at the same time"
-            const IAttributeValidator::StringList& related_conditions = attr_validator->GetAttributeNames();
+            const StringList& related_conditions = attr_validator->GetAttributeNames();
 
             //remove these condition from the plugin's condition
             for (size_t j = 0; j < related_conditions.size(); j++)
@@ -401,7 +401,7 @@ namespace shellanything
             if (have_all_attributes)
             {
               //validate!
-              IAttributeValidator::StringList values;
+              StringList values;
               IAttributeValidator::IntList flags;
               for (size_t j = 0; j < related_conditions.size(); j++)
               {
@@ -424,7 +424,7 @@ namespace shellanything
             else
             {
               //some attributes are missing
-              PropertyStore::PropertyList missing_properties;
+              StringList missing_properties;
               mCustomAttributes.FindMissingProperties(related_conditions, missing_properties);
               if (missing_properties.size() == related_conditions.size())
               {
@@ -546,7 +546,7 @@ namespace shellanything
     Uppercase(accepted_file_extensions);
 
     //for each file selected
-    const Context::ElementList & context_elements = context.GetElements();
+    const StringList & context_elements = context.GetElements();
     for(size_t i=0; i<context_elements.size(); i++) 
     {
       const std::string & path = context_elements[i];
@@ -725,7 +725,7 @@ namespace shellanything
       std::string classes_str = ra::strings::Join(classes, SA_CLASS_ATTR_SEPARATOR_STR);
 
       //for each file selected
-      const Context::ElementList & context_elements = context.GetElements();
+      const StringList & context_elements = context.GetElements();
       for (size_t i = 0; i < context_elements.size(); i++)
       {
         const std::string & path = context_elements[i];
@@ -766,7 +766,7 @@ namespace shellanything
     Uppercase(patterns);
 
     //for each file selected
-    const Context::ElementList & context_elements = context.GetElements();
+    const StringList & context_elements = context.GetElements();
     for(size_t i=0; i<context_elements.size(); i++) 
     {
       const std::string & path = context_elements[i];

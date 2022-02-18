@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -42,11 +43,6 @@ namespace shellanything
     PropertyStore();
     PropertyStore(const PropertyStore& store);
     virtual ~PropertyStore();
-
-    /// <summary>
-    /// A list of property names
-    /// </summary>
-    typedef std::vector<std::string> PropertyList;
 
     /// <summary>
     /// Copy operator
@@ -83,7 +79,7 @@ namespace shellanything
     /// </summary>
     /// <param name="properties">The list of properties to check.</param>
     /// <returns>Returns true if all the properties are set. Returns false otherwise.</returns>
-    bool HasProperties(const PropertyList& properties) const;
+    bool HasProperties(const StringList& properties) const;
 
     /// <summary>
     /// Sets the value of the given property name.
@@ -115,14 +111,14 @@ namespace shellanything
     /// Get the list of properties in the store
     /// </summary>
     /// <param name="names">The output list of properties</param>
-    void GetProperties(PropertyList & names) const;
+    void GetProperties(StringList & names) const;
 
     /// <summary>
     /// Find the list of properties which are not in the store.
     /// </summary>
     /// <param name="input_names">The list of property names to test.</param>
     /// <param name="output_names">The output list of property names which are not in the store.</param>
-    void FindMissingProperties(const PropertyList& input_names, PropertyList& output_names) const;
+    void FindMissingProperties(const StringList& input_names, StringList& output_names) const;
 
   private:
     PropertyMap properties;

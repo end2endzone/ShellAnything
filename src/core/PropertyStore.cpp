@@ -70,7 +70,7 @@ namespace shellanything
     return found;
   }
 
-  bool PropertyStore::HasProperties(const PropertyList& properties) const
+  bool PropertyStore::HasProperties(const StringList& properties) const
   {
     for (size_t i = 0; i < properties.size(); i++)
     {
@@ -111,7 +111,7 @@ namespace shellanything
     return properties.empty();
   }
 
-  void PropertyStore::GetProperties(PropertyList& names) const
+  void PropertyStore::GetProperties(StringList& names) const
   {
     names.clear();
     names.reserve(properties.size());
@@ -123,7 +123,7 @@ namespace shellanything
     }
   }
 
-  void PropertyStore::FindMissingProperties(const PropertyList& input_names, PropertyList& output_names) const
+  void PropertyStore::FindMissingProperties(const StringList& input_names, StringList& output_names) const
   {
     output_names.clear();
     for (size_t i = 0; i < input_names.size(); i++)

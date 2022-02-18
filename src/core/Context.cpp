@@ -68,7 +68,7 @@ namespace shellanything
    
     FileMagicManager & fm = FileMagicManager::GetInstance();
 
-    const Context::ElementList & elements = GetElements();
+    const StringList & elements = GetElements();
  
     if (elements.empty())
       return; // Nothing to register
@@ -218,12 +218,12 @@ namespace shellanything
     pmgr.ClearProperty("selection.charset"            );
   }
  
-  const Context::ElementList & Context::GetElements() const
+  const StringList & Context::GetElements() const
   {
     return mElements;
   }
 
-  void Context::SetElements(const Context::ElementList & elements)
+  void Context::SetElements(const StringList & elements)
   {
     mElements = elements;
 

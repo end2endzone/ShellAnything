@@ -25,9 +25,10 @@
 #ifndef SA_PROPERTYMANAGER_H
 #define SA_PROPERTYMANAGER_H
 
-#include "PropertyStore.h"
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
+#include "PropertyStore.h"
 #include <string>
 #include <map>
 
@@ -49,11 +50,6 @@ namespace shellanything
     PropertyManager& operator=(const PropertyManager&);
 
   public:
-
-    /// <summary>
-    /// A list of string.
-    /// </summary>
-    typedef std::vector<std::string> StringList;
 
     /// <summary>
     /// Name of the property that defines the system true.

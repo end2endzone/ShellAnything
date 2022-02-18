@@ -104,7 +104,7 @@ namespace shellanything
   void Registry::AddAttributeValidator(IAttributeValidator* validator)
   {
     // register the attribute validator to each attributes names
-    const IAttributeValidator::StringList& names = validator->GetAttributeNames();
+    const StringList& names = validator->GetAttributeNames();
     for (size_t i = 0; i < names.size(); i++)
     {
       const std::string& name = names[i];

@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
 #include <string>
 #include <vector>
 
@@ -39,8 +40,6 @@ namespace shellanything
   class SHELLANYTHING_EXPORT Context
   {
   public:
-    typedef std::vector<std::string> ElementList;
-
     /// <summary>
     /// Name of the property that contains the separator for multi-selection separator.
     /// </summary>
@@ -73,12 +72,12 @@ namespace shellanything
     /// <summary>
     /// Get the list of elements of the Context.
     /// </summary>
-    const ElementList & GetElements() const;
+    const StringList & GetElements() const;
 
     /// <summary>
     /// Set the list of elements to the Context.
     /// </summary>
-    void SetElements(const ElementList & elements);
+    void SetElements(const StringList & elements);
 
     /// <summary>
     /// Get the number of files in the context.
@@ -91,7 +90,7 @@ namespace shellanything
     int GetNumDirectories() const;
 
   private:
-    ElementList mElements;
+    StringList mElements;
     int mNumFiles;
     int mNumDirectories;
   };
