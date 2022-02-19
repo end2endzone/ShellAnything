@@ -28,6 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "StringList.h"
+#include "IntList.h"
 #include "Context.h"
 #include <vector>
 #include <string>
@@ -45,11 +46,6 @@ namespace shellanything
     /// A list of IAttributeValidator class pointers.
     /// </summary>
     typedef std::vector<IAttributeValidator*> IAttributeValidationPtrList;
-
-    /// <summary>
-    /// A list of integer values.
-    /// </summary>
-    typedef std::vector<int> IntList;
 
     IAttributeValidator();
     virtual ~IAttributeValidator();

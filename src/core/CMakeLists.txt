@@ -45,6 +45,7 @@ add_library(sa.core SHARED
   Icon.cpp
   InputBox.h
   InputBox.cpp
+  IntList.h
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp

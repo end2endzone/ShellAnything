@@ -53,7 +53,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);
 
@@ -105,7 +105,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);
 
@@ -146,7 +146,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);
 

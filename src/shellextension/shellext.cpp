@@ -524,7 +524,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
   //Log what is selected by the user
-  const shellanything::Context::ElementList & elements = m_Context.GetElements();
+  const shellanything::StringList & elements = m_Context.GetElements();
   size_t num_selected_total = elements.size();
   int num_files       = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
@@ -747,7 +747,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
-  shellanything::Context::ElementList files;
+  shellanything::StringList files;
 
   // Cleanup
   m_Context.UnregisterProperties(); //Unregister the previous context properties

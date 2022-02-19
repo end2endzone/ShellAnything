@@ -46,7 +46,7 @@ namespace shellanything { namespace test
   Context GetContextSingleFile()
   {
     Context c;
-    Context::ElementList elements;
+    StringList elements;
 #ifdef _WIN32
     elements.push_back("C:\\Windows\\System32\\notepad.exe" );
 #else
@@ -60,7 +60,7 @@ namespace shellanything { namespace test
   Context GetContextSingleDirectory()
   {
     Context c;
-    Context::ElementList elements;
+    StringList elements;
 #ifdef _WIN32
     elements.push_back("C:\\Program Files (x86)" );
 #else

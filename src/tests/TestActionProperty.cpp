@@ -54,7 +54,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
 
@@ -82,7 +82,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
 
@@ -121,7 +121,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
 
@@ -201,7 +201,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
 

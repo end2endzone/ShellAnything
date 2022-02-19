@@ -22,22 +22,21 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_STRINGLIST_H
-#define SA_STRINGLIST_H
+#ifndef SA_INTLIST_H
+#define SA_INTLIST_H
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include <string>
 #include <vector>
 
 namespace shellanything
 {
 
   /// <summary>
-  /// A list of string values.
+  /// A list of integer values.
   /// </summary>
-  typedef std::vector<std::string> StringList;
+  typedef std::vector<int> IntList;
 
 } //namespace shellanything
 
-#endif //SA_STRINGLIST_H
+#endif //SA_INTLIST_H

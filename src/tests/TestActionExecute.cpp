@@ -71,7 +71,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -97,7 +97,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -125,7 +125,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -191,7 +191,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -265,7 +265,7 @@ namespace shellanything { namespace test
 
     //Create a valid context
     Context c;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back(home_dir);
     c.SetElements(elements);
 

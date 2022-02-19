@@ -402,7 +402,7 @@ namespace shellanything
             {
               //validate!
               StringList values;
-              IAttributeValidator::IntList flags;
+              IntList flags;
               for (size_t j = 0; j < related_conditions.size(); j++)
               {
                 const std::string& related_condition = related_conditions[j];

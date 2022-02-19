@@ -70,7 +70,7 @@ namespace shellanything { namespace test
     Context c;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\kernel32.dll");
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -93,7 +93,7 @@ namespace shellanything { namespace test
     Context c;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\kernel32.dll");
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -148,7 +148,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       context.SetElements(elements);
     }
@@ -178,7 +178,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
       context.SetElements(elements);
     }
@@ -226,7 +226,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\" );
       context.SetElements(elements);
     }
@@ -263,7 +263,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE(ra::filesystem::CreateDirectory(empty_dir.c_str()));
 
     Context context;
-    Context::ElementList elements;
+    StringList elements;
     elements.push_back(empty_dir);
     context.SetElements(elements);
  
@@ -297,7 +297,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\kernel32.dll");
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -355,7 +355,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("C:\\Windows\\System32\\kernel32.dll");
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -414,7 +414,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("c:\\windows\\system32\\kernel32.dll");
       elements.push_back("C:\\Windows\\System32\\cmd.exe"     );
       elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -450,7 +450,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back("\\\\localhost\\public\\foo.dat" );
       elements.push_back("\\\\localhost\\public\\bar.dat" );
       context.SetElements(elements);
@@ -480,7 +480,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back(ra::process::GetCurrentProcessPath());
       context.SetElements(elements);
     }
@@ -523,7 +523,7 @@ namespace shellanything { namespace test
     Context context;
 #ifdef _WIN32
     {
-      Context::ElementList elements;
+      StringList elements;
       elements.push_back(ra::process::GetCurrentProcessDir() + "\\configurations\\default.xml");
       context.SetElements(elements);
     }

@@ -157,9 +157,9 @@ public:
   }
 
 private:
-  IAttributeValidator::StringList mNames;
-  IAttributeValidator::StringList mValues;
-  IAttributeValidator::IntList mFlags;
+  StringList mNames;
+  StringList mValues;
+  IntList mFlags;
   sa_plugin_attribute_validate_func mValidationFunc;
 };
 

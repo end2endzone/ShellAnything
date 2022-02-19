@@ -48,7 +48,7 @@ void sa_context_unregister_properties(sa_context_immutable_t* ctx)
 
 void sa_context_set_elements_buffer(sa_context_t* ctx, const char** strarray, size_t count)
 {
-  shellanything::Context::ElementList elements;
+  shellanything::StringList elements;
 
   //copy to elements
   for (size_t i = 0; i < count; i++) {
@@ -61,7 +61,7 @@ void sa_context_set_elements_buffer(sa_context_t* ctx, const char** strarray, si
 
 size_t sa_context_get_element_count(sa_context_immutable_t* ctx)
 {
-  const shellanything::Context::ElementList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
   size_t count = elements.size();
   return count;
 }
@@ -70,7 +70,7 @@ sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx
 {
   if (length != NULL)
     *length = -1;
-  const shellanything::Context::ElementList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
   if (idx >= elements.size())
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
@@ -80,7 +80,7 @@ sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx
 
 sa_error_t sa_context_get_element_string(sa_context_immutable_t* ctx, size_t idx, sa_string_t* str)
 {
-  const shellanything::Context::ElementList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_CONTEXT(ctx)->GetElements();
   if (idx >= elements.size())
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
