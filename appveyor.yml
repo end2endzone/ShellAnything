@@ -70,7 +70,7 @@ before_build:
 
 build_script:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything.bat
-- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything_plugins.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_time_plugin.bat
 
 #---------------------------------#
 #       tests configuration       #

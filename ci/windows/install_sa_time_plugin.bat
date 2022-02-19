@@ -29,11 +29,6 @@ set CMAKE_PREFIX_PATH=
 set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;%PRODUCT_SOURCE_DIR%\install
 
 echo ============================================================================
-echo Building ShellAnything plugins as independent projects...
-echo ============================================================================
-echo.
-
-echo ============================================================================
 echo Generating sa_time_plugin example...
 echo ============================================================================
 cd /d "%PRODUCT_SOURCE_DIR%\src\plugins\sa_time_plugin"
