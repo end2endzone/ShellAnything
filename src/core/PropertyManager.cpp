@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "PropertyManager.h"
-
+#include "SaUtils.h"
 #include "Context.h"
 
 #include "rapidassist/environment_utf8.h"
@@ -261,9 +261,13 @@ namespace shellanything
   void PropertyManager::RegisterDefaultProperties()
   {
     //define global properties
+    std::string prop_application_path       = GetCurrentModulePathUtf8();
+    std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
     std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
     std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
+    SetProperty("application.path"     , prop_application_path     );
+    SetProperty("application.directory", prop_application_directory);
     SetProperty("path.separator"       , prop_path_separator       );
     SetProperty("line.separator"       , prop_line_separator       );
     SetProperty("newline"              , prop_line_separator       );

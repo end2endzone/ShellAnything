@@ -1325,14 +1325,10 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  //define global properties
-  std::string prop_application_path       = GetCurrentModulePathUtf8();
-  std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
   std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
 
+  //define global properties
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.SetProperty("application.path"     , prop_application_path     );
-  pmgr.SetProperty("application.directory", prop_application_directory);
   pmgr.SetProperty("log.directory"        , prop_log_directory        );
   pmgr.SetProperty("config.directory"     , config_dir                );
   pmgr.SetProperty("home.directory"       , home_dir                  );
