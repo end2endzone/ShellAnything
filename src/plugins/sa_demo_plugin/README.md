@@ -1,24 +1,22 @@
-# sa_time_plugin #
-sa_time_plugin is a plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It provides new validation attributes called `start_time`, `end_time` for showing or enabling menus based on the current system time.
+# sa_demo_plugin #
+sa_demo_plugin is a demo plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It can be used as a base code for new plugins. This demo provides new validation attributes called `demo1` and `demo2` for showing or enabling menus.
 
 
 
 # Usage #
 
-Declare the plugin in a Configuration File as the following:
+Declare the plugin as the following:
 ```xml
 <plugins>
-  <plugin path="${application.path}\sa_time_plugin.dll"
+  <plugin path="${application.path}\sa_demo_plugin.dll"
           conditions="start_time;end_time"
-          description="This plugin defines new visibility/validity attributes. The validation is based on current system time." />
+          description="This plugin defines new visibility/validity attributes." />
 </plugins>
 ```
 
-
-
 # Building #
 
-This section explains how to compile sa_time_plugin example.
+This section explains how to compile sa_demo_plugin example.
 
 To build the project, execute the following steps:
 
