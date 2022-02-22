@@ -10,7 +10,9 @@ Declare the plugin in a Configuration File as the following:
 <plugins>
   <plugin path="${application.path}\sa_time_plugin.dll"
           conditions="start_time;end_time"
-          description="This plugin defines new visibility/validity attributes. The validation is based on current system time." />
+          description="This plugin defines new visibility/validity attributes.
+                       The validation is based on current system time.
+                       Values should be specifed in hh:mm format." />
 </plugins>
 ```
 

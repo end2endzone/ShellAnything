@@ -34,6 +34,8 @@
 
 #include "rapidassist/strings.h"
 #include "rapidassist/errors.h"
+#include "rapidassist/environment.h"
+#include "rapidassist/filesystem.h"
 #include "../api/sa_error.cpp"  // to get a local implementation for sa_error_get_error_description()
 
 #include "shellanything\sa_plugins.h"
@@ -145,9 +147,26 @@ namespace shellanything
   bool Plugin::Load()
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
-    const std::string path = pmgr.Expand(mPath);
+    std::string path = pmgr.Expand(mPath);
 
+    LOG(INFO) << "Loading plugin '" << path << "'.";
     HMODULE hModule = LoadLibrary(path.c_str());
+
+    // Check for a debug plugin. This is specific to ShellAnything's plugins.
+    if (ra::environment::IsConfigurationDebug() && !hModule)
+    {
+      // try to also search for the debug plugin
+      std::string path2 = path;
+      std::string extension_before = ra::filesystem::GetFileExtention(path2);
+      std::string extension_after = extension_before;
+      extension_before.insert(0, ".");
+      extension_after.insert(0, "-d.");
+      ra::strings::Replace(path2, extension_before, extension_after);
+
+      //try to load the plugin again with the debug filename
+      hModule = LoadLibrary(path2.c_str());
+    }
+
     if (!hModule)
     {
       ra::errors::errorcode_t error_code = ra::errors::GetLastErrorCode();
@@ -189,7 +208,7 @@ namespace shellanything
       gLoadingPlugin = NULL;
       return false;
     }
-    sa_error_t register_error = mEntryPoints->register_func();
+    sa_error_t register_error = register_func();
     if (register_error != SA_ERROR_SUCCESS)
     {
       const char* register_error_str = sa_error_get_error_description(register_error);

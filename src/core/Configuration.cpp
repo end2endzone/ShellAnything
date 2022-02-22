@@ -227,16 +227,13 @@ namespace shellanything
         {
           // try to load the plugin.
           bool loaded = plugin->Load();
-          if (loaded)
+          if (!loaded)
           {
-            //add the new plugin to the current configuration
-            config->AddPlugin(plugin);
+            LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin is disabled.";
           }
-          else
-          {
-            LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin will be discarded.";
-            delete plugin;
-          }
+
+          //add the new plugin to the current configuration (even if loading failed)
+          config->AddPlugin(plugin);
         }
 
         //next xml_plugin node

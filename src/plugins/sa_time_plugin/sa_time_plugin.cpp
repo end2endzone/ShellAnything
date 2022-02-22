@@ -26,6 +26,9 @@
 #include "shellanything/sa_logging.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_plugins.h"
+#include <string>
+#include <ctime>
+#include <Windows.h>
 
 #define EXPORT_API __declspec(dllexport)
 
@@ -34,22 +37,132 @@ extern "C" {
 #endif
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_time_plugin";
+static const char* START_TIME_ATTR = "start_time";
+static const char* END_TIME_ATTR = "end_time";
+
+/// <summary>
+/// Find the value of the given attribute name from the list of names and values.
+/// </summary>
+/// <param name="name">The actual attribute name that we are searching for.</param>
+/// <param name="names">The available attribute names</param>
+/// <param name="values">The values of the attributes.</param>
+/// <returns>Returns the value of the given attribute. Return NULL if not found</returns>
+const char* find_attribute_value(const char * name, const char** names, const char** values, size_t count)
+{
+  if (name == NULL || names == NULL || values == NULL || count == 0)
+    return NULL;
+  std::string tmp = name;
+  for(size_t i=0; i<count; i++)
+  {
+    if (tmp == names[i])
+      return values[i];
+  }
+  return NULL;
+}
+
+std::tm get_current_time()
+{
+  std::time_t current_time = std::time(0);   // get time now
+  std::tm now = *std::localtime(&current_time);
+  return now;
+}
+
+bool is_digit(char c)
+{
+  if (c >= '0' && c <= '9')
+    return true;
+  return false;
+}
+
+bool is_valid_time(const std::string& value)
+{
+  if (value.size() != 5)
+    return false;
+  if (value[2] != ':')
+    return false;
+  if (
+    !is_digit(value[0]) ||
+    !is_digit(value[1]) ||
+    !is_digit(value[3]) ||
+    !is_digit(value[4]))
+    return false;
+  return true;
+}
+
+sa_error_t parse_time(const char* value, std::tm* output)
+{
+  if (value == NULL || output == NULL)
+    return SA_ERROR_INVALID_ARGUMENTS;
+  std::string input = value;
+  if (!is_valid_time(input))
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Unknown time format: '%s'.", value);
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
+
+  std::string hour_str = input.substr(0, 2);
+  std::string min_str = input.substr(3, 2);
+  int hour = atoi(hour_str.c_str());
+  int min = atoi(min_str.c_str());
+
+  output->tm_hour = hour;
+  output->tm_min = min;
+  return SA_ERROR_SUCCESS;
+}
+
+bool is_between_now(const std::tm& start_time, const std::tm& end_time)
+{
+  std::tm tmp_now = get_current_time();
+  std::tm tmp_a = start_time;
+  std::tm tmp_b = end_time;
+
+  std::time_t now = std::mktime(&tmp_now);
+  std::time_t a = std::mktime(&tmp_a);
+  std::time_t b = std::mktime(&tmp_b);
+  if (a <= now && now <= b)
+    return true;
+  return false;
+}
 
 int sa_time_plugin_validate_time_of_day(sa_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
 {
-  sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "%s(), received %z names : {", __FUNCTION__, count);
-  for (size_t i = 0; i < count; i++)
+  const char* start_time_str = find_attribute_value(START_TIME_ATTR, names, values, count);
+  const char* end_time_str = find_attribute_value(END_TIME_ATTR, names, values, count);
+  if (start_time_str == NULL)
   {
-    sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "  %s --> %s", names[i], values[i]);
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is not found.", START_TIME_ATTR);
+    return SA_ERROR_INVALID_ARGUMENTS;
   }
-  sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "}");
+  if (end_time_str == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is not found.", END_TIME_ATTR);
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
 
-  return 1; // always valid
+  //initialize both times to "now"
+  std::tm start_time = get_current_time();
+  std::tm end_time = start_time;
+
+  //apply the hour/min values
+  sa_error_t parse_result;
+  parse_result = parse_time(start_time_str, &start_time);
+  if (parse_result != SA_ERROR_SUCCESS)
+    return parse_result;
+  parse_result = parse_time(end_time_str, &end_time);
+  if (parse_result != SA_ERROR_SUCCESS)
+    return parse_result;
+
+  // compare against "now"
+  std::tm now = get_current_time();
+  bool valid = is_between_now(start_time, end_time);
+  if (valid)
+    return 1;
+  return 0;
 }
 
 EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
 {
-  if (version->major != 1)
+  if (version->major == 0 && version->minor < 8) // this plugin is designed for version 0.8.0 and over
     return SA_ERROR_NOT_SUPPORTED;
   return SA_ERROR_SUCCESS;
 }
@@ -58,8 +171,8 @@ EXPORT_API sa_error_t sa_plugin_register()
 {
   // register validation function for 'start_time' and 'end_time' custom attributes
   static const char* time_attributes[] = {
-    "start_time",
-    "end_time",
+    START_TIME_ATTR,
+    END_TIME_ATTR,
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
   sa_error_t result = sa_plugins_register_attribute_validation(time_attributes, time_attributes_count, &sa_time_plugin_validate_time_of_day);
@@ -70,6 +183,53 @@ EXPORT_API sa_error_t sa_plugin_register()
   }
 
   return SA_ERROR_SUCCESS;
+}
+
+void test()
+{
+#define ASSERT(expression) if (!(expression)) { printf("The assertion '%s' at line %d has failed.\n", #expression, __LINE__); exit(1); }
+
+  printf("%s()\n", __FUNCTION__);
+
+  //wait for a "safe" time in minutes
+  std::tm now = get_current_time();
+  while (now.tm_min <= 1 || now.tm_min >= 58)
+  {
+    Sleep(1000);
+    now = get_current_time();
+  }
+
+  std::tm a = now;
+  std::tm b = now;
+
+  // assert exactly now
+  a = now;
+  b = now;
+  ASSERT(is_between_now(a, b) == true);
+
+  // exactly in between
+  a = now;
+  b = now;
+  a.tm_min--;
+  b.tm_min++;
+  ASSERT(is_between_now(a, b) == true);
+
+  // too early
+  a = now;
+  b = now;
+  a.tm_min -= 2;
+  b.tm_min -= 1;
+  ASSERT(is_between_now(a, b) == false);
+
+  // too late
+  a = now;
+  b = now;
+  a.tm_min += 1;
+  b.tm_min += 2;
+  ASSERT(is_between_now(a, b) == false);
+
+  printf("All tests in function '%s' has passed!\n", __FUNCTION__);
+#undef ASSERT
 }
 
 #ifdef __cplusplus

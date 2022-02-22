@@ -25,14 +25,25 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseMenuMaxLength.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParsePlugins.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testTime.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
+
+if(SHELLANYTHING_BUILD_PLUGINS)
+  set(PLUGINS_TEST_FILES ""
+    TestPlugins.cpp
+    TestPlugins.h
+  )
+else()
+  set(PLUGINS_TEST_FILES "")
+endif()
 
 add_executable(sa.tests
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
+  ${PLUGINS_TEST_FILES}
   main.cpp
   ArgumentsHandler.cpp
   ArgumentsHandler.h

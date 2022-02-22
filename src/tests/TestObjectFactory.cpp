@@ -799,7 +799,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestObjectFactory, DISABLED_testParsePlugins)
+  TEST_F(TestObjectFactory, testParsePlugins)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
  

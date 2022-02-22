@@ -50,7 +50,7 @@ int sa_demo_plugin_validate_time_of_day(sa_context_immutable_t* ctx, const char*
 
 EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
 {
-  if (version->major != 1)
+  if (version->major == 0 && version->minor < 8) // this plugin is designed for version 0.8.0 and over
     return SA_ERROR_NOT_SUPPORTED;
   return SA_ERROR_SUCCESS;
 }
