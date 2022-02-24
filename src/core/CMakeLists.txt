@@ -10,7 +10,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
   ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
-  ${CMAKE_SOURCE_DIR}/src/core/Context.h
+  ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
@@ -34,7 +34,7 @@ add_library(sa.core SHARED
   ActionStop.cpp
   Configuration.cpp
   ConfigManager.cpp
-  Context.cpp
+  SelectionContext.cpp
   DefaultSettings.cpp
   FileMagicManager.h
   FileMagicManager.cpp

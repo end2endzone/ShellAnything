@@ -154,7 +154,7 @@ void sa_configuration_set_visible(sa_configuration_t* configuration, uint64_t ne
 
 void sa_configuration_update(sa_configuration_t* configuration, sa_context_immutable_t* ctx)
 {
-  AS_CLASS_CONFIGURATION(configuration)->Update(*AS_CLASS_CONTEXT(ctx));
+  AS_CLASS_CONFIGURATION(configuration)->Update(*AS_CLASS_SELECTIONCONTEXT(ctx));
 }
 
 size_t sa_configuration_get_menu_count(sa_configuration_t* configuration)

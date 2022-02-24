@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestActionProperty.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionProperty.h"
 #include "PropertyManager.h"
 
@@ -53,7 +53,7 @@ namespace shellanything { namespace test
     const std::string property_value = "bar";
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
@@ -81,7 +81,7 @@ namespace shellanything { namespace test
     const std::string property_name = "foo";
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
@@ -120,7 +120,7 @@ namespace shellanything { namespace test
     const std::string property_name = "foo";
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);
@@ -200,7 +200,7 @@ namespace shellanything { namespace test
     const std::string property_name = "foo";
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back("C:\\Windows");
     c.SetElements(elements);

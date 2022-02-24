@@ -25,7 +25,7 @@
 #include "TestPlugins.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
-#include "Context.h"
+#include "SelectionContext.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
@@ -64,6 +64,27 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   void TestPlugins::TearDown()
   {
+    //Delete the configurations which source files are deleted
+    ConfigManager& cmgr = ConfigManager::GetInstance();
+    cmgr.Refresh();
+
+    //Delete the source file of all remaining Configuration instance
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    for (size_t i = 0; i < configs.size(); i++)
+    {
+      Configuration* config = configs[i];
+      if (config)
+      {
+        const std::string& file_path = config->GetFilePath();
+        ASSERT_TRUE(ra::filesystem::DeleteFile(file_path.c_str())) << "Failed deleting file '" << file_path << "'.";
+      }
+    }
+
+    //Now that all configuration files are deleted, refresh again
+    cmgr.Refresh();
+
+    //ASSERT that no files are loaded
+    ASSERT_EQ(0, cmgr.GetConfigurations().size());
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPlugins, testTime)
@@ -112,7 +133,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE(menu2 != NULL);
 
     // Force an update to call the plugin
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;

@@ -26,7 +26,7 @@
 #define SA_API_ACTION_H
 
 #include "shellanything/sa_error.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {

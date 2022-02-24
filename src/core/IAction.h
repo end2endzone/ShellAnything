@@ -27,7 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include <vector>
 
 namespace shellanything
@@ -58,7 +58,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const = 0;
+    virtual bool Execute(const SelectionContext & context) const = 0;
   };
 
 

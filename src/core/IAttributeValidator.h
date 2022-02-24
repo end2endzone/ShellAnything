@@ -29,7 +29,7 @@
 #include "shellanything/config.h"
 #include "StringList.h"
 #include "IntList.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include <vector>
 #include <string>
 
@@ -91,7 +91,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    virtual bool Validate(const Context& context) const = 0;
+    virtual bool Validate(const SelectionContext& context) const = 0;
 
   };
 

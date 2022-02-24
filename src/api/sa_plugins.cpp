@@ -88,7 +88,7 @@ public:
     mFlags = flags;
   }
 
-  bool Validate(const Context& context) const
+  bool Validate(const SelectionContext& context) const
   {
     // check names
     if (mNames.empty())
@@ -135,7 +135,7 @@ public:
     std::vector<const char*> values;
     ToCStringArray(names, mNames);
     ToCStringArray(values, mValues);
-    sa_context_immutable_t ctx = AS_TYPE_CONTEXT(&context);
+    sa_context_immutable_t ctx = AS_TYPE_SELECTIONCONTEXT(&context);
     int valid = mValidationFunc(&ctx, &names[0], &values[0], &mFlags[0], names.size());
     if (valid)
       return true;

@@ -40,6 +40,11 @@ namespace shellanything
 
   Registry::~Registry()
   {
+    Clear();
+  }
+
+  void Registry::Clear()
+  {
     // cleanup action factories
     for (ActionFactoryMap::iterator it = mActionFactories.begin(); it != mActionFactories.end(); ++it)
     {
@@ -64,6 +69,8 @@ namespace shellanything
       IAttributeValidator* validator = (*it);
       delete validator;
     }
+    mAttributeValidators.clear();
+
   }
 
   IActionFactory* Registry::GetActionFactoryFromName(const std::string& name) const

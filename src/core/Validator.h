@@ -28,7 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "PropertyStore.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "Plugin.h"
 #include <string>
 #include <vector>
@@ -225,7 +225,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const Context & context) const;
+    bool Validate(const SelectionContext & context) const;
 
     /// <summary>
     /// Set the list of active plugins that must be used for validating.
@@ -271,17 +271,17 @@ namespace shellanything
     static bool IsFalse(const std::string & value);
 
   private:
-    bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
-    bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
-    bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
-    bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidateProperties(const SelectionContext & context, const std::string & properties, bool inversed) const;
+    bool ValidateFileExtensions(const SelectionContext & context, const std::string & file_extensions, bool inversed) const;
+    bool ValidateExists(const SelectionContext & context, const std::string & file_exists, bool inversed) const;
+    bool ValidateClass(const SelectionContext & context, const std::string & class_, bool inversed) const;
     bool ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const;
     bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
-    bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
-    bool ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const;
-    bool ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const;
-    bool ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const;
+    bool ValidatePattern(const SelectionContext & context, const std::string & pattern, bool inversed) const;
+    bool ValidateExprtk(const SelectionContext & context, const std::string & exprtk, bool inversed) const;
+    bool ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const;
+    bool ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const;
+    bool ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const;
 
   private:
     int mMaxFiles;

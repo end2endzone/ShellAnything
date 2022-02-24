@@ -61,8 +61,8 @@ add_executable(sa.tests
   TestConfigManager.h
   TestConfiguration.cpp
   TestConfiguration.h
-  TestContext.cpp
-  TestContext.h
+  TestSelectionContext.cpp
+  TestSelectionContext.h
   TestDemoSamples.cpp
   TestDemoSamples.h
   TestGlogUtils.cpp

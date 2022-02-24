@@ -262,7 +262,7 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::Validate(const Context & context) const
+  bool Validator::Validate(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
   	
@@ -496,7 +496,7 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::ValidateProperties(const Context & context, const std::string & properties, bool inversed) const
+  bool Validator::ValidateProperties(const SelectionContext & context, const std::string & properties, bool inversed) const
   {
     if (properties.empty())
       return true;
@@ -534,7 +534,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const
+  bool Validator::ValidateFileExtensions(const SelectionContext & context, const std::string & file_extensions, bool inversed) const
   {
     if (file_extensions.empty())
       return true;
@@ -563,7 +563,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const
+  bool Validator::ValidateExists(const SelectionContext & context, const std::string & file_exists, bool inversed) const
   {
     if (file_exists.empty())
       return true;
@@ -657,7 +657,7 @@ namespace shellanything
     return valid;
   }
 
-  bool Validator::ValidateClass(const Context & context, const std::string & class_, bool inversed) const
+  bool Validator::ValidateClass(const SelectionContext & context, const std::string & class_, bool inversed) const
   {
     if (class_.empty())
       return true;
@@ -754,7 +754,7 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const
+  bool Validator::ValidatePattern(const SelectionContext & context, const std::string & pattern, bool inversed) const
   {
     if (pattern.empty())
       return true;
@@ -783,7 +783,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const
+  bool Validator::ValidateExprtk(const SelectionContext & context, const std::string & exprtk, bool inversed) const
   {
     if (exprtk.empty())
       return true;
@@ -809,7 +809,7 @@ namespace shellanything
     return result;
   }
 
-  bool Validator::ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const
+  bool Validator::ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const
   {
     if (istrue.empty())
       return true;
@@ -833,7 +833,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const
+  bool Validator::ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const
   {
     if (isfalse.empty())
       return true;
@@ -857,7 +857,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const
+  bool Validator::ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 

@@ -103,7 +103,7 @@ namespace shellanything
     mValidator = NULL;
   }
 
-  bool ActionStop::Execute(const Context & context) const
+  bool ActionStop::Execute(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 

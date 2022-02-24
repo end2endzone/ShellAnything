@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "TestContext.h"
-#include "Context.h"
+#include "TestSelectionContext.h"
+#include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "rapidassist/process.h"
 #include "rapidassist/filesystem.h"
@@ -47,27 +47,27 @@ namespace shellanything { namespace test
   }
  
   //--------------------------------------------------------------------------------------------------
-  void TestContext::SetUp()
+  void TestSelectionContext::SetUp()
   {
   }
   //--------------------------------------------------------------------------------------------------
-  void TestContext::TearDown()
+  void TestSelectionContext::TearDown()
   {
     // Force default properties back to their default values.
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testDefaults)
+  TEST_F(TestSelectionContext, testDefaults)
   {
-    Context c;
+    SelectionContext c;
     ASSERT_EQ( 0, c.GetNumFiles() );
     ASSERT_EQ( 0, c.GetNumDirectories() );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testFileDirectoryAutoDetect)
+  TEST_F(TestSelectionContext, testFileDirectoryAutoDetect)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -88,9 +88,9 @@ namespace shellanything { namespace test
     ASSERT_EQ( 3, c.GetNumDirectories() );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testCopy)
+  TEST_F(TestSelectionContext, testCopy)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -111,7 +111,7 @@ namespace shellanything { namespace test
     ASSERT_EQ( 3, c.GetNumDirectories() );
 
     //operator =
-    Context c2;
+    SelectionContext c2;
     c2 = c;
 
     //assert both equals
@@ -126,7 +126,7 @@ namespace shellanything { namespace test
     }
 
     //copy constructor
-    Context c3(c);
+    SelectionContext c3(c);
 
     //assert both equals
     ASSERT_EQ( c.GetElements().size() , c3.GetElements().size() );
@@ -141,11 +141,11 @@ namespace shellanything { namespace test
 
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testRegisterUnregisterProperties)
+  TEST_F(TestSelectionContext, testRegisterUnregisterProperties)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -171,11 +171,11 @@ namespace shellanything { namespace test
     ASSERT_FALSE( pmgr.HasProperty("selection.path") );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testRegisterPropertiesSingleFile)
+  TEST_F(TestSelectionContext, testRegisterPropertiesSingleFile)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -219,11 +219,11 @@ namespace shellanything { namespace test
     context.UnregisterProperties();
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testRegisterPropertiesSingleDirectory)
+  TEST_F(TestSelectionContext, testRegisterPropertiesSingleDirectory)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -253,7 +253,7 @@ namespace shellanything { namespace test
     context.UnregisterProperties();
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testRegisterPropertiesEmptyDirectory)
+  TEST_F(TestSelectionContext, testRegisterPropertiesEmptyDirectory)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
@@ -262,7 +262,7 @@ namespace shellanything { namespace test
     std::string empty_dir = temp_dir + ra::testing::GetTestQualifiedName();
     ASSERT_TRUE(ra::filesystem::CreateDirectory(empty_dir.c_str()));
 
-    Context context;
+    SelectionContext context;
     StringList elements;
     elements.push_back(empty_dir);
     context.SetElements(elements);
@@ -289,12 +289,12 @@ namespace shellanything { namespace test
     ra::filesystem::DeleteDirectory(empty_dir.c_str());
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testRegisterPropertiesMultipleFiles)
+  TEST_F(TestSelectionContext, testRegisterPropertiesMultipleFiles)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
    
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -343,16 +343,16 @@ namespace shellanything { namespace test
     }
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testCustomMultiSelectionSeparator)
+  TEST_F(TestSelectionContext, testCustomMultiSelectionSeparator)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
    
     // Force 'selection.path' and other selection based properties to be separated by a ',' character.
     // All properties should be single-line.
-    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
+    pmgr.SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
 
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -402,16 +402,16 @@ namespace shellanything { namespace test
     ASSERT_EQ( "dll,exe,exe,msc", selection_filename_ext);
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testSelectionDrive)
+  TEST_F(TestSelectionContext, testSelectionDrive)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
    
     // Force 'selection.path' and other selection based properties to be separated by a ',' character.
     // This is easier for testing
-    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
+    pmgr.SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
 
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -438,16 +438,16 @@ namespace shellanything { namespace test
     ASSERT_EQ( "c,C,C", pmgr.GetProperty("selection.drive.letter") );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testSelectionDriveNetwork)
+  TEST_F(TestSelectionContext, testSelectionDriveNetwork)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.Clear();
    
     // Force 'selection.path' and other selection based properties to be separated by a ',' character.
     // This is easier for testing
-    pmgr.SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
+    pmgr.SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, ",");
 
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -473,11 +473,11 @@ namespace shellanything { namespace test
     ASSERT_EQ( "", pmgr.GetProperty("selection.drive.letter") );
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testFileMagicPropertiesExe)
+  TEST_F(TestSelectionContext, testFileMagicPropertiesExe)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;
@@ -516,11 +516,11 @@ namespace shellanything { namespace test
     context.UnregisterProperties();
   }
   //--------------------------------------------------------------------------------------------------
-  TEST_F(TestContext, testFileMagicPropertiesXml)
+  TEST_F(TestSelectionContext, testFileMagicPropertiesXml)
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
-    Context context;
+    SelectionContext context;
 #ifdef _WIN32
     {
       StringList elements;

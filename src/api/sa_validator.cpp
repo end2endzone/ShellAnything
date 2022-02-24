@@ -50,7 +50,7 @@ int sa_validator_validate(sa_validator_immutable_t* validator, sa_context_immuta
 {
   if (ctx == NULL)
     return 0;
-  const Context* context = AS_CLASS_CONTEXT(ctx);
+  const SelectionContext* context = AS_CLASS_SELECTIONCONTEXT(ctx);
   bool valid = AS_CLASS_VALIDATOR(validator)->Validate(*context);
   if (valid)
     return 1;

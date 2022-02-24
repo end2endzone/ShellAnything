@@ -126,7 +126,7 @@ namespace shellanything
     return (success == TRUE);
   }
 
-  bool ActionOpen::Execute(const Context & context) const
+  bool ActionOpen::Execute(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);

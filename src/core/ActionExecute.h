@@ -56,7 +56,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context& context) const;
+    virtual bool Execute(const SelectionContext& context) const;
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -105,7 +105,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const Context & context) const;
+    virtual bool ExecuteVerb(const SelectionContext & context) const;
 
     /// <summary>
     /// Execute an application with RapidAssist method.
@@ -113,7 +113,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const Context & context) const;
+    virtual bool ExecuteProcess(const SelectionContext & context) const;
 
   private:
     std::string mPath;

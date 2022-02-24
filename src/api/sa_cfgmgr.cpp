@@ -68,7 +68,7 @@ void sa_cfgmgr_refresh()
 
 void sa_cfgmgr_update(sa_context_immutable_t* ctx)
 {
-  const Context* context = AS_CLASS_CONTEXT(ctx);
+  const SelectionContext* context = AS_CLASS_SELECTIONCONTEXT(ctx);
   ConfigManager::GetInstance().Update(*context);
 }
 

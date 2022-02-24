@@ -120,7 +120,7 @@ namespace shellanything
   {
   }
 
-  bool ActionExecute::Execute(const Context& context) const
+  bool ActionExecute::Execute(const SelectionContext& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string verb = pmgr.Expand(mVerb);
@@ -132,7 +132,7 @@ namespace shellanything
       return ExecuteVerb(context);
   }
 
-  bool ActionExecute::ExecuteVerb(const Context& context) const
+  bool ActionExecute::ExecuteVerb(const SelectionContext& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path      = pmgr.Expand(mPath);
@@ -190,7 +190,7 @@ namespace shellanything
     return success;
   }
 
-  bool ActionExecute::ExecuteProcess(const Context & context) const
+  bool ActionExecute::ExecuteProcess(const SelectionContext & context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path      = pmgr.Expand(mPath);

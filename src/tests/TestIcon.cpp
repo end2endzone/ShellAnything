@@ -24,7 +24,7 @@
 
 #include "TestIcon.h"
 #include "Icon.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "GlogUtils.h"
 #include "rapidassist/filesystem.h"
@@ -85,7 +85,7 @@ namespace shellanything { namespace test
 
     //get the separator for multiple values
     shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    const std::string separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+    const std::string separator = pmgr.GetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
 
     //build a list of multiple file extensions
     std::string file_extensions;

@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestActionFile.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionFile.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
@@ -52,7 +52,7 @@ namespace shellanything { namespace test
     const std::string selected_file_path_utf8 = "C:\\TEMP\\\303\251cole"; //school in french, encoded as utf-8
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);
@@ -104,7 +104,7 @@ namespace shellanything { namespace test
     const std::string selected_file_path_utf8 = "C:\\TEMP\\\303\251cole"; //school in french, encoded as utf-8
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);
@@ -145,7 +145,7 @@ namespace shellanything { namespace test
     const std::string selected_file_path_utf8 = "C:\\TEMP\\\303\251cole"; //school in french, encoded as utf-8
 
     //Create a valid context
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back(selected_file_path_utf8);
     c.SetElements(elements);

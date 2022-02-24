@@ -25,7 +25,7 @@
 #include "TestObjectFactory.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionExecute.h"
 #include "ActionStop.h"
 #include "ActionFile.h"

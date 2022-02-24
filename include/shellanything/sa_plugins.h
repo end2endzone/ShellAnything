@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include "sa_error.h"
-#include "sa_context.h"
+#include "sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {

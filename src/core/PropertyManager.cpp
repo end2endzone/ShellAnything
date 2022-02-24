@@ -24,7 +24,7 @@
 
 #include "PropertyManager.h"
 #include "SaUtils.h"
-#include "Context.h"
+#include "SelectionContext.h"
 
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -276,7 +276,7 @@ namespace shellanything
     SetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME   , PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE  );
 
     // Set default property for multi selection. Issue #52.
-    SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, Context::DEFAULT_MULTI_SELECTION_SEPARATOR);
+    SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, SelectionContext::DEFAULT_MULTI_SELECTION_SEPARATOR);
   }
 
 } //namespace shellanything

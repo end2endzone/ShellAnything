@@ -93,7 +93,7 @@ namespace shellanything
     /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
-    void Update(const Context & context);
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Apply the configuration's default properties.

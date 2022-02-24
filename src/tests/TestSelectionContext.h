@@ -29,7 +29,7 @@
 
 namespace shellanything { namespace test
 {
-  class TestContext : public ::testing::Test
+  class TestSelectionContext : public ::testing::Test
   {
   public:
     virtual void SetUp();

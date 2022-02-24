@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_configuration.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "Configuration.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionProperty.h"
 
 #include "rapidassist/filesystem_utf8.h"
@@ -308,7 +308,7 @@ namespace shellanything
     mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const Context & context)
+  void Configuration::Update(const SelectionContext & context)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
@@ -340,7 +340,7 @@ namespace shellanything
       }
 
       //apply all ActionProperty
-      Context empty_context;
+      SelectionContext empty_context;
       for(size_t i=0; i<properties.size(); i++)
       {
         LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << properties.size() << ".";

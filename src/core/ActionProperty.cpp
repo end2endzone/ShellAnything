@@ -111,7 +111,7 @@ namespace shellanything
   {
   }
 
-  bool ActionProperty::Execute(const Context & context) const
+  bool ActionProperty::Execute(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string name = pmgr.Expand(mName);
@@ -145,7 +145,7 @@ namespace shellanything
 
     // If a user has changed property 'selection.multi.separator', the context must rebuild selection-based properties.
     // See issue #52 for details.
-    if (name == Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
+    if (name == SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME)
     {
       // Force the context to rebuild selection.* properties.
       context.RegisterProperties();

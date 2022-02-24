@@ -25,7 +25,7 @@
 #include "TestValidator.h"
 #include "Validator.h"
 #include "Menu.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/process.h"
@@ -46,7 +46,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testValidByDefault)
   {
-    Context c;
+    SelectionContext c;
     Validator v;
 
     //assert default
@@ -55,7 +55,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxFiles)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -89,7 +89,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxDirectories)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -122,7 +122,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testProperties)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -164,7 +164,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExtensions)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -210,7 +210,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExists)
   {
-    Context c;
+    SelectionContext c;
  
 #ifdef _WIN32
     const std::string file_path = "C:\\Windows\\System32\\kernel32.dll";
@@ -247,7 +247,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testClass)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -388,7 +388,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testPattern)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -434,7 +434,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testExprtk)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -599,7 +599,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxFilesInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -634,7 +634,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMaxDirectoriesInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -668,7 +668,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testPropertiesInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -734,7 +734,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExtensionsInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -788,7 +788,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testFileExistsInversed)
   {
-    Context c;
+    SelectionContext c;
  
 #ifdef _WIN32
     const std::string file_path = "C:\\Windows\\System32\\kernel32.dll";
@@ -845,7 +845,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testPatternInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -899,7 +899,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testExprtkInversed)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -990,7 +990,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testMultipleValidator)
   {
-    Context c;
+    SelectionContext c;
 #ifdef _WIN32
     {
       StringList elements;
@@ -1082,7 +1082,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsTrue)
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back( ra::process::GetCurrentProcessPath() );
     c.SetElements(elements);
@@ -1143,7 +1143,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsFalse)
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back( ra::process::GetCurrentProcessPath() );
     c.SetElements(elements);
@@ -1204,7 +1204,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsEmpty)
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back( ra::process::GetCurrentProcessPath() );
     c.SetElements(elements);
@@ -1234,7 +1234,7 @@ namespace shellanything { namespace test
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestValidator, testIsEmptyInversed)
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
     elements.push_back( ra::process::GetCurrentProcessPath() );
     c.SetElements(elements);

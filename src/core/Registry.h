@@ -52,6 +52,11 @@ namespace shellanything
   public:
 
     /// <summary>
+    /// Delete instances of the registry
+    /// </summary>
+    void Clear();
+
+    /// <summary>
     /// Get an IActionFactory instance that can parse the given xml element name.
     /// </summary>
     /// <param name="name">The name of the xml element.</param>

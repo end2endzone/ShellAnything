@@ -29,7 +29,7 @@
 #include "shellanything/config.h"
 #include "StringList.h"
 #include "Configuration.h"
-#include "Context.h"
+#include "SelectionContext.h"
 
 namespace shellanything
 {
@@ -80,7 +80,7 @@ namespace shellanything
     /// <summary>
     /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
     /// </summary>
-    void Update(const Context & context);
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id command_id.

@@ -110,7 +110,7 @@ namespace shellanything
   {
   }
 
-  bool ActionFile::Execute(const Context & context) const
+  bool ActionFile::Execute(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     const std::string path = pmgr.Expand(mPath);

@@ -27,7 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "Registry.h"
 #include <string>
 #include <vector>
@@ -116,7 +116,7 @@ namespace shellanything
     /// <summary>
     /// Unload the plugin from memory.
     /// </summary>
-    /// <returns>Returns true when the plugin load is successful. Returns false otherwise.</returns>
+    /// <returns>Returns true when the plugin unload is successful. Returns false otherwise.</returns>
     bool Unload();
 
     /// <summary>

@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef SA_SELECTION_CONTEXT_H
+#define SA_SELECTION_CONTEXT_H
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
@@ -35,9 +35,9 @@ namespace shellanything
 {
 
   /// <summary>
-  /// A Context class holds a list of files and/or directories.
+  /// A class that holds a list of selected files and/or directories.
   /// </summary>
-  class SHELLANYTHING_EXPORT Context
+  class SHELLANYTHING_EXPORT SelectionContext
   {
   public:
     /// <summary>
@@ -50,14 +50,14 @@ namespace shellanything
     /// </summary>
     static const std::string DEFAULT_MULTI_SELECTION_SEPARATOR;
 
-    Context();
-    Context(const Context & c);
-    virtual ~Context();
+    SelectionContext();
+    SelectionContext(const SelectionContext & c);
+    virtual ~SelectionContext();
 
     /// <summary>
     /// Copy operator
     /// </summary>
-    const Context & operator =(const Context & c);
+    const SelectionContext & operator =(const SelectionContext & c);
 
     /// <summary>
     /// Register a list of 'properties' based on the context elements.
@@ -70,12 +70,12 @@ namespace shellanything
     void UnregisterProperties() const;
 
     /// <summary>
-    /// Get the list of elements of the Context.
+    /// Get the list of elements of the SelectionContext.
     /// </summary>
     const StringList & GetElements() const;
 
     /// <summary>
-    /// Set the list of elements to the Context.
+    /// Set the list of elements to the SelectionContext.
     /// </summary>
     void SetElements(const StringList & elements);
 
@@ -98,4 +98,4 @@ namespace shellanything
 
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //SA_SELECTION_CONTEXT_H

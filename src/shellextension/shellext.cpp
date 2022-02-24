@@ -528,7 +528,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   size_t num_selected_total = elements.size();
   int num_files       = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
-  LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
+  LOG(INFO) << "SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   //Keep a reference the our first command id. We will need it when InvokeCommand is called.
   m_FirstCommandId = first_command_id;

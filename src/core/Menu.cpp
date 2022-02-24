@@ -167,7 +167,7 @@ namespace shellanything
     mIcon = icon;
   }
 
-  void Menu::Update(const Context & context)
+  void Menu::Update(const SelectionContext & context)
   {
     //update current menu
     bool visible = true;

@@ -25,7 +25,7 @@
 #include "TestConfigManager.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
-#include "Context.h"
+#include "SelectionContext.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
@@ -43,9 +43,9 @@ namespace shellanything { namespace test
     return "false";
   }
 
-  Context GetContextSingleFile()
+  SelectionContext GetContextSingleFile()
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
 #ifdef _WIN32
     elements.push_back("C:\\Windows\\System32\\notepad.exe" );
@@ -57,9 +57,9 @@ namespace shellanything { namespace test
     return c;
   }
 
-  Context GetContextSingleDirectory()
+  SelectionContext GetContextSingleDirectory()
   {
-    Context c;
+    SelectionContext c;
     StringList elements;
 #ifdef _WIN32
     elements.push_back("C:\\Program Files (x86)" );
@@ -431,7 +431,7 @@ namespace shellanything { namespace test
     ASSERT_TRUE( first != NULL );
 
     //Update the menus based on a context with a single file
-    Context context = GetContextSingleFile();
+    SelectionContext context = GetContextSingleFile();
     cmgr.Update(context);
 
     //ASSERT top menu is visible (default option)
@@ -507,7 +507,7 @@ namespace shellanything { namespace test
     QueryAllMenusRecursive(configs[0], menus);
 
     //Update the menus based on a context with a single file
-    Context context = GetContextSingleFile();
+    SelectionContext context = GetContextSingleFile();
     cmgr.Update(context);
 
     //Assign unique command ids

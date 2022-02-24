@@ -152,10 +152,10 @@ namespace shellanything
     void SetIcon(const Icon & icon);
 
     /// <summary>
-    /// Updates the menu and submenus 'visible' and 'enabled' properties based on the given Context.
+    /// Updates the menu and submenus 'visible' and 'enabled' properties based on the given SelectionContext.
     /// </summary>
     /// <param name="context">The context used for updating the menu.</param>
-    void Update(const Context & context);
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Searches this menu and submenus for a menu whose command id is command_id.

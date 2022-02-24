@@ -244,9 +244,12 @@ namespace shellanything
   {
     if (mEntryPoints->hModule != 0)
     {
+      mRegistry.Clear();
+
       FreeLibrary(mEntryPoints->hModule);
       memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
       mLoaded = false;
+
       return true;
     }
 
