@@ -152,9 +152,9 @@ void sa_configuration_set_visible(sa_configuration_t* configuration, uint64_t ne
   AS_CLASS_CONFIGURATION(configuration)->SetFileModifiedDate(newdate);
 }
 
-void sa_configuration_update(sa_configuration_t* configuration, sa_context_immutable_t* ctx)
+void sa_configuration_update(sa_configuration_t* configuration, sa_update_context_t* ctx)
 {
-  AS_CLASS_CONFIGURATION(configuration)->Update(*AS_CLASS_SELECTIONCONTEXT(ctx));
+  AS_CLASS_CONFIGURATION(configuration)->Update(*AS_CLASS_UPDATE_CONTEXT(ctx));
 }
 
 size_t sa_configuration_get_menu_count(sa_configuration_t* configuration)

@@ -106,9 +106,9 @@ void sa_menu_set_icon(sa_menu_t* menu, sa_icon_immutable_t* icon)
   AS_CLASS_MENU(menu)->SetIcon(*object);
 }
 
-void sa_menu_update(sa_menu_t* menu, sa_context_immutable_t* ctx)
+void sa_menu_update(sa_menu_t* menu, sa_update_context_t* ctx)
 {
-  AS_CLASS_MENU(menu)->Update(*AS_CLASS_SELECTIONCONTEXT(ctx));
+  AS_CLASS_MENU(menu)->Update(*AS_CLASS_UPDATE_CONTEXT(ctx));
 }
 
 int sa_menu_is_visible(sa_menu_immutable_t* menu)

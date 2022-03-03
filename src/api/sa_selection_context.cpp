@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED "AS_CLASS_SELECTIONCONTEXT IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS_CLASS_SELECTION_CONTEXT IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -29,24 +29,24 @@
 
 using namespace shellanything;
 
-sa_context_immutable_t sa_context_to_immutable(sa_context_t* context)
+sa_selection_context_immutable_t sa_selection_context_to_immutable(sa_selection_context_t* context)
 {
-  sa_context_immutable_t output;
+  sa_selection_context_immutable_t output;
   output.opaque = context->opaque;
   return output;
 }
 
-void sa_context_register_properties(sa_context_immutable_t* ctx)
+void sa_selection_context_register_properties(sa_selection_context_immutable_t* ctx)
 {
-  AS_CLASS_SELECTIONCONTEXT(ctx)->RegisterProperties();
+  AS_CLASS_SELECTION_CONTEXT(ctx)->RegisterProperties();
 }
 
-void sa_context_unregister_properties(sa_context_immutable_t* ctx)
+void sa_selection_context_unregister_properties(sa_selection_context_immutable_t* ctx)
 {
-  AS_CLASS_SELECTIONCONTEXT(ctx)->UnregisterProperties();
+  AS_CLASS_SELECTION_CONTEXT(ctx)->UnregisterProperties();
 }
 
-void sa_context_set_elements_buffer(sa_context_t* ctx, const char** strarray, size_t count)
+void sa_selection_context_set_elements_buffer(sa_selection_context_t* ctx, const char** strarray, size_t count)
 {
   shellanything::StringList elements;
 
@@ -56,21 +56,21 @@ void sa_context_set_elements_buffer(sa_context_t* ctx, const char** strarray, si
     elements.push_back(str);
   }
 
-  AS_CLASS_SELECTIONCONTEXT(ctx)->SetElements(elements);
+  AS_CLASS_SELECTION_CONTEXT(ctx)->SetElements(elements);
 }
 
-size_t sa_context_get_element_count(sa_context_immutable_t* ctx)
+size_t sa_selection_context_get_element_count(sa_selection_context_immutable_t* ctx)
 {
-  const shellanything::StringList& elements = AS_CLASS_SELECTIONCONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
   size_t count = elements.size();
   return count;
 }
 
-sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx, int* length, char* buffer, size_t buffer_size)
+sa_error_t sa_selection_context_get_element_buffer(sa_selection_context_immutable_t* ctx, size_t idx, int* length, char* buffer, size_t buffer_size)
 {
   if (length != NULL)
     *length = -1;
-  const shellanything::StringList& elements = AS_CLASS_SELECTIONCONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
   if (idx >= elements.size())
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
@@ -78,9 +78,9 @@ sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx
   return result;
 }
 
-sa_error_t sa_context_get_element_string(sa_context_immutable_t* ctx, size_t idx, sa_string_t* str)
+sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutable_t* ctx, size_t idx, sa_string_t* str)
 {
-  const shellanything::StringList& elements = AS_CLASS_SELECTIONCONTEXT(ctx)->GetElements();
+  const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
   if (idx >= elements.size())
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
@@ -88,12 +88,12 @@ sa_error_t sa_context_get_element_string(sa_context_immutable_t* ctx, size_t idx
   return SA_ERROR_SUCCESS;
 }
 
-int sa_context_get_num_files(sa_context_immutable_t* ctx)
+int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx)
 {
-  return AS_CLASS_SELECTIONCONTEXT(ctx)->GetNumFiles();
+  return AS_CLASS_SELECTION_CONTEXT(ctx)->GetNumFiles();
 }
 
-int sa_context_get_num_directories(sa_context_immutable_t* ctx)
+int sa_selection_context_get_num_directories(sa_selection_context_immutable_t* ctx)
 {
-  return AS_CLASS_SELECTIONCONTEXT(ctx)->GetNumDirectories();
+  return AS_CLASS_SELECTION_CONTEXT(ctx)->GetNumDirectories();
 }

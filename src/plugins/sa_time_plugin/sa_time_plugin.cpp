@@ -124,7 +124,7 @@ bool is_between_now(const std::tm& start_time, const std::tm& end_time)
   return false;
 }
 
-int sa_time_plugin_validate_time_of_day(sa_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
+int sa_time_plugin_validate_time_of_day(sa_selection_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
 {
   const char* start_time_str = find_attribute_value(START_TIME_ATTR, names, values, count);
   const char* end_time_str = find_attribute_value(END_TIME_ATTR, names, values, count);

@@ -30,6 +30,7 @@
 #include "shellanything/sa_icon.h"
 #include "shellanything/sa_action.h"
 #include "shellanything/sa_validator.h"
+#include "shellanything/sa_update_context_type.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -134,7 +135,7 @@ void sa_menu_set_icon(sa_menu_t* menu, sa_icon_immutable_t* icon);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="ctx">The context used for updating the menu.</param>
-void sa_menu_update(sa_menu_t* menu, sa_context_immutable_t* ctx);
+void sa_menu_update(sa_menu_t* menu, sa_update_context_t* ctx);
 
 /// <summary>
 /// Get the visible parameter.

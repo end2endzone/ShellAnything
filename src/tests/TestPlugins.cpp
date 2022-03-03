@@ -148,7 +148,9 @@ namespace shellanything { namespace test
     menu1->SetVisible(false);
     menu2->SetVisible(false);
 
-    config0->Update(c);
+    UpdateContext u;
+    u.SetSelection(&c);
+    config0->Update(u);
 
     //ASSERT the visibility state
     bool visible0 = menu0->IsVisible();

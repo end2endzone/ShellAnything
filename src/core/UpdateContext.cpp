@@ -22,24 +22,57 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/sa_action.h"
-#include "IAction.h"
+#include "UpdateContext.h"
 #include "SelectionContext.h"
-#include "sa_types_private.h"
+#include "Configuration.h"
+#include "Menu.h"
 
-using namespace shellanything;
-
-sa_action_immutable_t sa_action_to_immutable(sa_action_t* action)
+namespace shellanything
 {
-  sa_action_immutable_t output;
-  output.opaque = action->opaque;
-  return output;
-}
+  UpdateContext::UpdateContext()
+  {
+    Clear();
+  }
 
-sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_selection_context_immutable_t* ctx)
-{
-  bool success = AS_CLASS_ACTION(action)->Execute(*AS_CLASS_SELECTION_CONTEXT(ctx));
-  if (success)
-    return SA_ERROR_SUCCESS;
-  return SA_ERROR_UNKNOWN;
-}
+  UpdateContext::~UpdateContext()
+  {
+  }
+
+  void UpdateContext::Clear()
+  {
+    mSelection = NULL;
+    mConfiguration = NULL;
+    mMenu = NULL;
+  }
+
+  const SelectionContext* UpdateContext::GetSelection() const
+  {
+    return mSelection;
+  }
+
+  void UpdateContext::SetSelection(const SelectionContext* selection)
+  {
+    mSelection = selection;
+  }
+
+  const Configuration* UpdateContext::GetConfiguration() const
+  {
+    return mConfiguration;
+  }
+
+  void UpdateContext::SetConfiguration(const Configuration* configuration)
+  {
+    mConfiguration = configuration;
+  }
+
+  const Menu* UpdateContext::GetMenu() const
+  {
+    return mMenu;
+  }
+
+  void UpdateContext::SetMenu(const Menu* menu)
+  {
+    mMenu = menu;
+  }
+
+} //namespace shellanything

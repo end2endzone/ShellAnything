@@ -21,15 +21,15 @@ EXPORTS
   sa_configuration_set_file_path
   sa_configuration_to_immutable
   sa_configuration_update
-  sa_context_get_element_buffer
-  sa_context_get_element_count
-  sa_context_get_element_string
-  sa_context_get_num_directories
-  sa_context_get_num_files
-  sa_context_register_properties
-  sa_context_set_elements_buffer
-  sa_context_to_immutable
-  sa_context_unregister_properties
+  sa_selection_context_get_element_buffer
+  sa_selection_context_get_element_count
+  sa_selection_context_get_element_string
+  sa_selection_context_get_num_directories
+  sa_selection_context_get_num_files
+  sa_selection_context_register_properties
+  sa_selection_context_set_elements_buffer
+  sa_selection_context_to_immutable
+  sa_selection_context_unregister_properties
   sa_error_show_message
   sa_error_show_message_utf8
   sa_icon_get_file_extension_buffer

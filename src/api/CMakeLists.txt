@@ -3,6 +3,8 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_cfgmgr.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_configuration.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_selection_context.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_update_context_func.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_update_context_type.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_error.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_icon.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_logging.h
@@ -21,6 +23,7 @@ add_library(sa.api SHARED
   sa_cfgmgr.cpp
   sa_configuration.cpp
   sa_selection_context.cpp
+  sa_update_context.cpp
   sa_error.cpp
   sa_icon.cpp
   sa_logging.cpp

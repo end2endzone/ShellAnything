@@ -27,8 +27,8 @@
 
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
-
 #include <string>
+
 
 /// <summary>
 /// Copy a std::string to a sa_string_t.

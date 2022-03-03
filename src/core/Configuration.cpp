@@ -308,8 +308,11 @@ namespace shellanything
     mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const SelectionContext & context)
+  void Configuration::Update(UpdateContext & context)
   {
+    const Configuration* previous_updated_config = context.GetConfiguration();
+    context.SetConfiguration(this);
+
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
@@ -317,6 +320,9 @@ namespace shellanything
       Menu * child = children[i];
       child->Update(context);
     }
+
+    //restore updated configuration
+    context.SetConfiguration(previous_updated_config);
   }
 
   void Configuration::ApplyDefaultSettings()

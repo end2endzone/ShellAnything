@@ -26,7 +26,8 @@
 #define SA_API_VALIDATOR_H
 
 #include "shellanything/sa_error.h"
-#include "shellanything/sa_selection_context.h"
+#include "shellanything/sa_string.h"
+#include "shellanything/sa_update_context_type.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,7 +69,7 @@ int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, cons
 /// <param name="validator">The validator structure object.</param>
 /// <param name="ctx">The context used for validating.</param>
 /// <returns>Returns 1 if the given context is valid against the set of constraints. Returns 0 otherwise.</returns>
-int sa_validator_validate(sa_validator_immutable_t* validator, sa_context_immutable_t* ctx);
+int sa_validator_validate(sa_validator_immutable_t* validator, sa_update_context_t* ctx);
 
 /// <summary>
 /// Get the maxfiles parameter.

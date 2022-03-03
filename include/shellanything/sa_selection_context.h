@@ -22,8 +22,8 @@
 * SOFTWARE.
 *********************************************************************************/
 
-#ifndef SA_API_CONTEXT_H
-#define SA_API_CONTEXT_H
+#ifndef SA_API_SELECTION_CONTEXT_H
+#define SA_API_SELECTION_CONTEXT_H
 
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_error.h"
@@ -34,30 +34,30 @@ extern "C" {
 
 typedef struct {
   void* opaque;
-} sa_context_t;
+} sa_selection_context_t;
 
 typedef struct {
   void* opaque;
-} sa_context_immutable_t;
+} sa_selection_context_immutable_t;
 
 /// <summary>
 /// Converts a mutable context to an immutable context.
 /// </summary>
-/// <param name="icon">The mutable object to convert.</param>
-/// <returns>Returns an immutable icon</returns>
-sa_context_immutable_t sa_context_to_immutable(sa_context_t* context);
+/// <param name="context">The mutable object to convert.</param>
+/// <returns>Returns an immutable context</returns>
+sa_selection_context_immutable_t sa_selection_context_to_immutable(sa_selection_context_t* context);
 
 /// <summary>
 /// Registers properties associated with this context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>
-void sa_context_register_properties(sa_context_immutable_t* ctx);
+void sa_selection_context_register_properties(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Unregisters properties associated with this context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>
-void sa_context_unregister_properties(sa_context_immutable_t* ctx);
+void sa_selection_context_unregister_properties(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Set the selected elements of this context.
@@ -65,14 +65,14 @@ void sa_context_unregister_properties(sa_context_immutable_t* ctx);
 /// <param name="ctx">The context structure object.</param>
 /// <param name="strarray">An array of const char*</param>
 /// <param name="count">The number of element in the given array</param>
-void sa_context_set_elements_buffer(sa_context_t* ctx ,const char ** strarray, size_t count);
+void sa_selection_context_set_elements_buffer(sa_selection_context_t* ctx ,const char ** strarray, size_t count);
 
 /// <summary>
 /// Get how many elements are selected in the given context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>
 /// <returns>Returns how many elements are selected in the given context.</returns>
-size_t sa_context_get_element_count(sa_context_immutable_t* ctx);
+size_t sa_selection_context_get_element_count(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Get the nth string element from the context.
@@ -83,7 +83,7 @@ size_t sa_context_get_element_count(sa_context_immutable_t* ctx);
 /// <param name="buffer">The output buffer for the value.</param>
 /// <param name="buffer_size">The size of the output buffer in bytes.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx, int* length, char* buffer, size_t buffer_size);
+sa_error_t sa_selection_context_get_element_buffer(sa_selection_context_immutable_t* ctx, size_t idx, int* length, char* buffer, size_t buffer_size);
 
 /// <summary>
 /// Get the nth string element from the context.
@@ -92,24 +92,24 @@ sa_error_t sa_context_get_element_buffer(sa_context_immutable_t* ctx, size_t idx
 /// <param name="idx">The index of the element</param>
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_context_get_element_string(sa_context_immutable_t* ctx, size_t idx, sa_string_t* str);
+sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutable_t* ctx, size_t idx, sa_string_t* str);
 
 /// <summary>
 /// Get the number of files selected by the context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>
 /// <returns>Returns the number of files selected by the context.</returns>
-int sa_context_get_num_files(sa_context_immutable_t* ctx);
+int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Get the number of directories selected by the context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>
 /// <returns>Returns the number of directories selected by the context.</returns>
-int sa_context_get_num_directories(sa_context_immutable_t* ctx);
+int sa_selection_context_get_num_directories(sa_selection_context_immutable_t* ctx);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //SA_API_CONTEXT_H
+#endif //SA_API_SELECTION_CONTEXT_H

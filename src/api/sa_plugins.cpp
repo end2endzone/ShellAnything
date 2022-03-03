@@ -135,7 +135,7 @@ public:
     std::vector<const char*> values;
     ToCStringArray(names, mNames);
     ToCStringArray(values, mValues);
-    sa_context_immutable_t ctx = AS_TYPE_SELECTIONCONTEXT(&context);
+    sa_selection_context_immutable_t ctx = AS_TYPE_SELECTION_CONTEXT(&context);
     int valid = mValidationFunc(&ctx, &names[0], &values[0], &mFlags[0], names.size());
     if (valid)
       return true;

@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "UpdateContext.h"
 #include "Menu.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"
@@ -91,9 +92,10 @@ namespace shellanything
     void SetFileModifiedDate(const uint64_t & file_modified_date);
 
     /// <summary>
-    /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
+    /// Recursively update all menus of this Configuration.
     /// </summary>
-    void Update(const SelectionContext & context);
+    /// <param name="context">The update context</param>
+    void Update(UpdateContext & context);
 
     /// <summary>
     /// Apply the configuration's default properties.

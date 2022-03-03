@@ -29,6 +29,7 @@
 #include "shellanything/config.h"
 #include "Icon.h"
 #include "Validator.h"
+#include "UpdateContext.h"
 #include "IAction.h"
 #include <string>
 #include <vector>
@@ -152,10 +153,10 @@ namespace shellanything
     void SetIcon(const Icon & icon);
 
     /// <summary>
-    /// Updates the menu and submenus 'visible' and 'enabled' properties based on the given SelectionContext.
+    /// Recursively update the menu and submenus properties.
     /// </summary>
-    /// <param name="context">The context used for updating the menu.</param>
-    void Update(const SelectionContext & context);
+    /// <param name="context">The update context</param>
+    void Update(UpdateContext & context);
 
     /// <summary>
     /// Searches this menu and submenus for a menu whose command id is command_id.

@@ -30,6 +30,7 @@
 #include "StringList.h"
 #include "Configuration.h"
 #include "SelectionContext.h"
+#include "UpdateContext.h"
 
 namespace shellanything
 {
@@ -47,7 +48,6 @@ namespace shellanything
     // Disable copy constructor and copy operator
     ConfigManager(const ConfigManager&);
     ConfigManager& operator=(const ConfigManager&);
-  public:
 
   public:
     static ConfigManager & GetInstance();
@@ -78,9 +78,10 @@ namespace shellanything
     void Refresh();
 
     /// <summary>
-    /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
+    /// Recursively update all loaded configurations.
     /// </summary>
-    void Update(const SelectionContext & context);
+    /// <param name="context">The update context</param>
+    void Update(UpdateContext & context);
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id command_id.

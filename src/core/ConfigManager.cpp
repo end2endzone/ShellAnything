@@ -141,7 +141,7 @@ namespace shellanything
     }
   }
 
-  void ConfigManager::Update(const SelectionContext & context)
+  void ConfigManager::Update(UpdateContext & context)
   {
     //for each child
     Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();

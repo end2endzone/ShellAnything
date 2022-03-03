@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
-#include "shellanything/sa_selection_context.h"
+#include "shellanything/sa_update_context_type.h"
 #include "shellanything/sa_menu.h"
 
 #ifdef __cplusplus
@@ -120,7 +120,7 @@ void sa_configuration_set_file_modified_date(sa_configuration_t* configuration, 
 /// </summary>
 /// <param name="configuration">The configuration structure object.</param>
 /// <param name="ctx">The context used for updating the menu.</param>
-void sa_configuration_update(sa_configuration_t* configuration, sa_context_immutable_t* ctx);
+void sa_configuration_update(sa_configuration_t* configuration, sa_update_context_t* ctx);
 
 /// <summary>
 /// Get how many menu in the configuration.

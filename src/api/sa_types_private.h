@@ -31,6 +31,7 @@
 
 #include "IAction.h"
 #include "SelectionContext.h"
+#include "UpdateContext.h"
 #include "Icon.h"
 #include "Menu.h"
 #include "Configuration.h"
@@ -38,20 +39,26 @@
 
 #include "shellanything/sa_action.h"
 #include "shellanything/sa_selection_context.h"
+#include "shellanything/sa_update_context_type.h"
 #include "shellanything/sa_icon.h"
 #include "shellanything/sa_menu.h"
 #include "shellanything/sa_configuration.h"
 #include "shellanything/sa_validator.h"
 
-const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*      object);
-      shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                object);
-sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::IAction* object);
-sa_action_t                   AS_TYPE_ACTION(      shellanything::IAction* object);
+const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*       object);
+      shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                 object);
+sa_action_immutable_t          AS_TYPE_ACTION(const shellanything::IAction* object);
+sa_action_t                    AS_TYPE_ACTION(      shellanything::IAction* object);
 
-const shellanything::SelectionContext* AS_CLASS_SELECTIONCONTEXT(sa_context_immutable_t*      object);
-      shellanything::SelectionContext* AS_CLASS_SELECTIONCONTEXT(sa_context_t*                object);
-sa_context_immutable_t        AS_TYPE_SELECTIONCONTEXT(const shellanything::SelectionContext* object);
-sa_context_t                  AS_TYPE_SELECTIONCONTEXT(      shellanything::SelectionContext* object);
+const shellanything::SelectionContext*  AS_CLASS_SELECTION_CONTEXT(sa_selection_context_immutable_t*     object);
+      shellanything::SelectionContext*  AS_CLASS_SELECTION_CONTEXT(sa_selection_context_t*               object);
+sa_selection_context_immutable_t        AS_TYPE_SELECTION_CONTEXT(const shellanything::SelectionContext* object);
+sa_selection_context_t                  AS_TYPE_SELECTION_CONTEXT(      shellanything::SelectionContext* object);
+
+const shellanything::UpdateContext*  AS_CLASS_UPDATE_CONTEXT(sa_update_context_immutable_t*      object);
+      shellanything::UpdateContext*  AS_CLASS_UPDATE_CONTEXT(sa_update_context_t*                object);
+sa_update_context_immutable_t        AS_TYPE_UPDATE_CONTEXT(const shellanything::UpdateContext*  object);
+sa_update_context_t                  AS_TYPE_UPDATE_CONTEXT(      shellanything::UpdateContext*  object);
 
 const shellanything::Icon*  AS_CLASS_ICON(sa_icon_immutable_t*      object);
       shellanything::Icon*  AS_CLASS_ICON(sa_icon_t*                object);

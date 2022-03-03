@@ -53,6 +53,8 @@ add_library(sa.core SHARED
   Plugin.cpp
   Unicode.h
   Unicode.cpp
+  UpdateContext.h
+  UpdateContext.cpp
   Validator.cpp
   DriveClass.h
   DriveClass.cpp
