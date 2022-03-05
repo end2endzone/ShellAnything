@@ -35,7 +35,7 @@ extern "C" {
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_demo_plugin";
 
-int sa_demo_plugin_validate_time_of_day(sa_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
+int sa_demo_plugin_validate_time_of_day(sa_selection_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
 {
   sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "%s() {", __FUNCTION__);
   sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "  count = %z", count);

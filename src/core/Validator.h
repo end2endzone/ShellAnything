@@ -224,17 +224,6 @@ namespace shellanything
     bool Validate(const SelectionContext & context) const;
 
     /// <summary>
-    /// Set the list of active plugins that must be used for validating.
-    /// </summary>
-    /// <param name="plugins">The list of plugins objects.</param>
-    void SetActivePlugins(const Plugin::PluginPtrList& plugins);
-
-    /// <summary>
-    /// Clears the active plugins used for validating.
-    /// </summary>
-    void ClearActivePlugins();
-
-    /// <summary>
     /// Validates if a given string can be evaluated as logical true.
     /// </summary>
     /// <remarks>
