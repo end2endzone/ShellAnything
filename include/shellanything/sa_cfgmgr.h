@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_configuration.h"
-#include "shellanything/sa_update_context_type.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,7 +72,7 @@ void sa_cfgmgr_refresh();
 /// Updates all configuration files loaded by the manager.
 /// </summary>
 /// <param name="ctx">The context used for updating the configuration files.</param>
-void sa_cfgmgr_update(sa_update_context_t* ctx);
+void sa_cfgmgr_update(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Clears all the registered search paths

@@ -30,7 +30,6 @@
 #include "StringList.h"
 #include "Configuration.h"
 #include "SelectionContext.h"
-#include "UpdateContext.h"
 
 namespace shellanything
 {
@@ -80,8 +79,8 @@ namespace shellanything
     /// <summary>
     /// Recursively update all loaded configurations.
     /// </summary>
-    /// <param name="context">The update context</param>
-    void Update(UpdateContext & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id command_id.

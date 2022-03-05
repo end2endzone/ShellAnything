@@ -1006,11 +1006,8 @@ namespace shellanything { namespace test
 
     Menu menu;
 
-    UpdateContext update;
-    update.SetSelection(&c);
-
     //assert default
-    menu.Update(update);
+    menu.Update(c);
     ASSERT_TRUE( menu.IsVisible() );
     ASSERT_TRUE( menu.IsEnabled() );
 
@@ -1023,19 +1020,19 @@ namespace shellanything { namespace test
     //assert 'or' operator between each Validator
     v1->SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
     v2->SetFileExtensions("");
-    menu.Update(update);
+    menu.Update(c);
     ASSERT_TRUE( menu.IsVisible() );
 
     //assert 'or' operator when swapping validators
     v1->SetFileExtensions("");
     v2->SetFileExtensions("dll" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
-    menu.Update(update);
+    menu.Update(c);
     ASSERT_TRUE( menu.IsVisible() );
 
     //assert validators are not complementary
     v1->SetFileExtensions("dll");
     v2->SetFileExtensions("exe" SA_FILEEXTENSION_ATTR_SEPARATOR_STR "msc");
-    menu.Update(update);
+    menu.Update(c);
     ASSERT_FALSE( menu.IsVisible() );
   }
   //--------------------------------------------------------------------------------------------------

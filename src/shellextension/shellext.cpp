@@ -38,7 +38,6 @@
 #include "ConfigManager.h"
 #include "PropertyManager.h"
 #include "SaUtils.h"
-#include "UpdateContext.h"
 
 #include <assert.h>
 
@@ -540,9 +539,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
 
   //Update all menus with the new context
   //This will refresh the visibility flags which is required before calling ConfigManager::AssignCommandIds()
-  shellanything::UpdateContext update_context;
-  update_context.SetSelection(&m_Context);
-  cmgr.Update(update_context);
+  cmgr.Update(m_Context);
 
   //Assign unique command id to visible menus. Issue #5
   UINT next_command_id = cmgr.AssignCommandIds(first_command_id);

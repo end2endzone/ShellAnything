@@ -262,20 +262,7 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::Validate(UpdateContext& context) const
-  {
-    static const SelectionContext EMPTY;
-    const SelectionContext* selection_context = context.GetSelection();
-    if (selection_context == NULL)
-      selection_context = &EMPTY;
-    bool valid = Validate(*selection_context);
-    if (!valid)
-      return false;
-
-    return true;
-  }
-
-  bool Validator::Validate(const SelectionContext& context) const
+  bool Validator::Validate(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
   	

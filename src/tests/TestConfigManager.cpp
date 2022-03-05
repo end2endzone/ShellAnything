@@ -432,17 +432,14 @@ namespace shellanything { namespace test
 
     //Update the menus based on a context with a single file
     SelectionContext context = GetContextSingleFile();
-    UpdateContext update;
-    update.SetSelection(&context);
-    cmgr.Update(update);
+    cmgr.Update(context);
 
     //ASSERT top menu is visible (default option)
     ASSERT_TRUE( first->IsVisible() );
 
     //Update the menus based on a context with a single directory
     context = GetContextSingleDirectory();
-    update.SetSelection(&context);
-    cmgr.Update(update);
+    cmgr.Update(context);
 
     //ASSERT top menu is invisible (issue #4)
     ASSERT_FALSE( first->IsVisible() );
@@ -511,9 +508,7 @@ namespace shellanything { namespace test
 
     //Update the menus based on a context with a single file
     SelectionContext context = GetContextSingleFile();
-    UpdateContext update;
-    update.SetSelection(&context);
-    cmgr.Update(update);
+    cmgr.Update(context);
 
     //Assign unique command ids
     uint32_t nextCommandId = cmgr.AssignCommandIds(101);

@@ -29,7 +29,6 @@
 #include "shellanything/config.h"
 #include "PropertyStore.h"
 #include "SelectionContext.h"
-#include "UpdateContext.h"
 #include "Plugin.h"
 #include <string>
 #include <vector>
@@ -217,18 +216,23 @@ namespace shellanything
     bool IsInversed(const char * name) const;
 
     /// <summary>
-    /// Validate the object against a set of constraints while updating a menu.
-    /// </summary>
-    /// <param name="context">The update context used for validating.</param>
-    /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(UpdateContext & context) const;
-
-    /// <summary>
-    /// Validate against a set of constraints and the given SelectionContext.
+    /// Validate the object against a set of constraints.
+    /// Note: this function is usually used to enable or disable a menu.
     /// </summary>
     /// <param name="context">The selection context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const SelectionContext& context) const;
+    bool Validate(const SelectionContext & context) const;
+
+    /// <summary>
+    /// Set the list of active plugins that must be used for validating.
+    /// </summary>
+    /// <param name="plugins">The list of plugins objects.</param>
+    void SetActivePlugins(const Plugin::PluginPtrList& plugins);
+
+    /// <summary>
+    /// Clears the active plugins used for validating.
+    /// </summary>
+    void ClearActivePlugins();
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.

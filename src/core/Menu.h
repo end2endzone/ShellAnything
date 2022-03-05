@@ -29,7 +29,6 @@
 #include "shellanything/config.h"
 #include "Icon.h"
 #include "Validator.h"
-#include "UpdateContext.h"
 #include "IAction.h"
 #include <string>
 #include <vector>
@@ -155,8 +154,8 @@ namespace shellanything
     /// <summary>
     /// Recursively update the menu and submenus properties.
     /// </summary>
-    /// <param name="context">The update context</param>
-    void Update(UpdateContext & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Searches this menu and submenus for a menu whose command id is command_id.

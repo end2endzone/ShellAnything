@@ -27,7 +27,6 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "UpdateContext.h"
 #include "Menu.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"
@@ -94,8 +93,8 @@ namespace shellanything
     /// <summary>
     /// Recursively update all menus of this Configuration.
     /// </summary>
-    /// <param name="context">The update context</param>
-    void Update(UpdateContext & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Apply the configuration's default properties.

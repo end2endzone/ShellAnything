@@ -46,7 +46,7 @@ typedef struct sa_action_immutable_t  {
 /// <param name="action">The mutable object to convert.</param>
 /// <returns>Returns an immutable action</returns>
 sa_action_immutable_t sa_action_to_immutable(sa_action_t* action);
- 
+
 /// <summary>
 /// Execute the given action.
 /// </summary>

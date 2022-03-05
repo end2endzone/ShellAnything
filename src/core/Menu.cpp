@@ -167,11 +167,8 @@ namespace shellanything
     mIcon = icon;
   }
 
-  void Menu::Update(UpdateContext & context)
+  void Menu::Update(const SelectionContext & context)
   {
-    const Menu* previous_updated_menu = context.GetMenu();
-    context.SetMenu(this);
-
     //update current menu
     bool visible = true;
     if (!mVisibilities.empty())
@@ -225,9 +222,6 @@ namespace shellanything
       //force this node as invisible.
       SetVisible(false);
     }
-
-    //restore the currently updated menu
-    context.SetMenu(previous_updated_menu);
   }
 
   Menu * Menu::FindMenuByCommandId(const uint32_t & command_id)

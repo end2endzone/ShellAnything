@@ -34,11 +34,6 @@ const shellanything::SelectionContext*  AS_CLASS_SELECTION_CONTEXT(sa_selection_
 sa_selection_context_immutable_t        AS_TYPE_SELECTION_CONTEXT(const shellanything::SelectionContext* object) { sa_selection_context_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
 sa_selection_context_t                  AS_TYPE_SELECTION_CONTEXT(      shellanything::SelectionContext* object) { sa_selection_context_t            my_type; my_type.opaque = (void*)(object); return my_type; }
 
-const shellanything::UpdateContext*  AS_CLASS_UPDATE_CONTEXT(sa_update_context_immutable_t*     object) { return (const shellanything::UpdateContext*)(object); }
-      shellanything::UpdateContext*  AS_CLASS_UPDATE_CONTEXT(sa_update_context_t*               object) { return (      shellanything::UpdateContext*)(object); }
-sa_update_context_immutable_t        AS_TYPE_UPDATE_CONTEXT(const shellanything::UpdateContext* object) { sa_update_context_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
-sa_update_context_t                  AS_TYPE_UPDATE_CONTEXT(      shellanything::UpdateContext* object) { sa_update_context_t            my_type; my_type.opaque = (void*)(object); return my_type; }
-
 const shellanything::Icon*  AS_CLASS_ICON(sa_icon_immutable_t*      object) { return (const shellanything::Icon*)(object); }
       shellanything::Icon*  AS_CLASS_ICON(sa_icon_t*                object) { return (      shellanything::Icon*)(object); }
 sa_icon_immutable_t         AS_TYPE_ICON(const shellanything::Icon* object) { sa_icon_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
