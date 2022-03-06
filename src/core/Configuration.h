@@ -56,6 +56,18 @@ namespace shellanything
   public:
 
     /// <summary>
+    /// Get the configuration pointer that is currently updating.
+    /// </summary>
+    /// <returns>Returns the configuration pointer that is currently updating. Returns NULL if no configuration is updating.</returns>
+    static Configuration* GetUpdatingConfiguration();
+
+    /// <summary>
+    /// Set the configuration pointer that is currently updating.
+    /// </summary>
+    /// <param name="configuration">The current updating configuration</param>
+    static void SetUpdatingConfiguration(Configuration* configuration);
+
+    /// <summary>
     /// Load a configuration file.
     /// </summary>
     /// <param name="path">The file path to load</param>

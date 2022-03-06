@@ -51,6 +51,8 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
+  static Configuration* gUpdatingConfiguration = NULL;
+
   std::string GetXmlEncoding(XMLDocument & doc, std::string & error)
   {
     XMLNode * first = doc.FirstChild();
@@ -107,6 +109,16 @@ namespace shellanything
   Configuration::~Configuration()
   {
     DeleteChildren();
+  }
+
+  Configuration* Configuration::GetUpdatingConfiguration()
+  {
+    return gUpdatingConfiguration;
+  }
+
+  void Configuration::SetUpdatingConfiguration(Configuration* configuration)
+  {
+    gUpdatingConfiguration = configuration;
   }
 
   Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
@@ -310,6 +322,8 @@ namespace shellanything
 
   void Configuration::Update(const SelectionContext & context)
   {
+    SetUpdatingConfiguration(this);
+
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
@@ -317,6 +331,8 @@ namespace shellanything
       Menu * child = children[i];
       child->Update(context);
     }
+
+    SetUpdatingConfiguration(NULL);
   }
 
   void Configuration::ApplyDefaultSettings()

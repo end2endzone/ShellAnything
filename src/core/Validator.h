@@ -267,6 +267,7 @@ namespace shellanything
     bool ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const;
     bool ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const;
     bool ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const;
+    bool ValidatePlugin(const SelectionContext & context, Plugin* plugin) const;
 
   private:
     int mMaxFiles;
