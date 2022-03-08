@@ -198,6 +198,13 @@ namespace shellanything
       return NULL;
     }
 
+    const XMLElement * xml_root = XMLHandle(&doc).FirstChildElement("root").ToElement();
+    if (!xml_root)
+    {
+      error = "Node <root> not found";
+      return NULL;
+    }
+
     const XMLElement * xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
     if (!xml_shell)
     {
@@ -225,8 +232,8 @@ namespace shellanything
       xml_defaults = xml_defaults->NextSiblingElement("default");
     }
 
-    //find <plugins> nodes under <shell>
-    const XMLElement* xml_plugins = xml_shell->FirstChildElement("plugins");
+    //find <plugins> nodes under <root>
+    const XMLElement* xml_plugins = xml_root->FirstChildElement("plugins");
     while (xml_plugins)
     {
       //find <plugin> nodes under <plugins>

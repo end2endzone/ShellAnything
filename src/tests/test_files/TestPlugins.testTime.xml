@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <plugins>
+    <plugin path="${application.directory}\sa_time_plugin.dll"
+            conditions="start_time;end_time"
+            description="This plugin defines new visibility/validity attributes.
+                          The validation is based on current system time (local time zone).
+                          Values should be specifed in hh:mm format." />
+  </plugins>
   <shell>
-    <plugins>
-      <plugin path="${application.directory}\sa_time_plugin.dll"
-              conditions="start_time;end_time"
-              description="This plugin defines new visibility/validity attributes.
-                           The validation is based on current system time (local time zone).
-                           Values should be specifed in hh:mm format." />
-    </plugins>
 
     <menu name="menu00">
       <visibility start_time="00:00" end_time="23:59" />
