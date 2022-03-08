@@ -233,7 +233,7 @@ namespace shellanything
       IAttributeValidator* validator = mRegistry.GetAttributeValidatorFromName(condition);
       if (validator == NULL)
       {
-        LOG(WARNING) << "The plugin '" << path << "' has is declaring condition '" << condition << "' but did not registered any validator function.";
+        LOG(WARNING) << "The plugin '" << path << "' is declaring condition '" << condition << "' but did not registered any validator function.";
       }
     }
 

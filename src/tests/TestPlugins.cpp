@@ -124,13 +124,15 @@ namespace shellanything { namespace test
     
     //Get menus
     Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-    ASSERT_EQ(3, menus.size());
+    ASSERT_EQ(4, menus.size());
     Menu* menu0 = menus[0];
     Menu* menu1 = menus[1];
     Menu* menu2 = menus[2];
+    Menu* menu3 = menus[3];
     ASSERT_TRUE(menu0 != NULL);
     ASSERT_TRUE(menu1 != NULL);
     ASSERT_TRUE(menu2 != NULL);
+    ASSERT_TRUE(menu3 != NULL);
 
     // Force an update to call the plugin
     SelectionContext c;
@@ -147,6 +149,7 @@ namespace shellanything { namespace test
     menu0->SetVisible(false);
     menu1->SetVisible(false);
     menu2->SetVisible(false);
+    menu3->SetVisible(false);
 
     config0->Update(c);
 
@@ -154,6 +157,7 @@ namespace shellanything { namespace test
     bool visible0 = menu0->IsVisible();
     bool visible1 = menu1->IsVisible();
     bool visible2 = menu2->IsVisible();
+    bool visible3 = menu3->IsVisible();
     ASSERT_TRUE(visible0); //menu0 should always be visible.
     ASSERT_TRUE((visible1 == true && visible2 == false) ||
                 (visible1 == false && visible2 == true)); //menu1 and menu2 are mutually exclusive

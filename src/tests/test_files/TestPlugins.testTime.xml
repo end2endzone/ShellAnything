@@ -21,5 +21,10 @@
       <visibility start_time="12:00" end_time="24:00" />
     </menu>
 
+    <menu name="menu03">
+      <!-- missing end_time="" attribute -->
+      <visibility start_time="12:34"  />
+    </menu>
+
   </shell>
 </root>
