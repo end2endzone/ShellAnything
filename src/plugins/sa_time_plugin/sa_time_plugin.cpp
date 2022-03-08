@@ -89,10 +89,21 @@ bool is_valid_time(const std::string& value)
   return true;
 }
 
-sa_error_t parse_time(const char* value, std::tm* output)
+sa_error_t parse_time(const char * attribute_name, const char* value, std::tm* output)
 {
-  if (value == NULL || output == NULL)
+  if (value == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is not found.", attribute_name);
     return SA_ERROR_INVALID_ARGUMENTS;
+  }
+  else if (value[0] == '\0')
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is empty.", attribute_name);
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
+  else if (output == NULL)
+    return SA_ERROR_INVALID_ARGUMENTS;
+
   std::string input = value;
   if (!is_valid_time(input))
   {
@@ -128,16 +139,6 @@ int sa_time_plugin_validate_time_of_day(sa_selection_context_immutable_t* ctx, c
 {
   const char* start_time_str = find_attribute_value(START_TIME_ATTR, names, values, count);
   const char* end_time_str = find_attribute_value(END_TIME_ATTR, names, values, count);
-  if (start_time_str == NULL)
-  {
-    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is not found.", START_TIME_ATTR);
-    return SA_ERROR_INVALID_ARGUMENTS;
-  }
-  if (end_time_str == NULL)
-  {
-    sa_logging_print_format(SA_LOG_LEVEL_ERROR, PLUGIN_NAME_IDENTIFIER, "Attribute '%s' is not found.", END_TIME_ATTR);
-    return SA_ERROR_INVALID_ARGUMENTS;
-  }
 
   //initialize both times to "now"
   std::tm start_time = get_current_time();
@@ -145,12 +146,12 @@ int sa_time_plugin_validate_time_of_day(sa_selection_context_immutable_t* ctx, c
 
   //apply the hour/min values
   sa_error_t parse_result;
-  parse_result = parse_time(start_time_str, &start_time);
+  parse_result = parse_time(START_TIME_ATTR, start_time_str, &start_time);
   if (parse_result != SA_ERROR_SUCCESS)
-    return parse_result;
-  parse_result = parse_time(end_time_str, &end_time);
+    return 0; // parse_result
+  parse_result = parse_time(END_TIME_ATTR, end_time_str, &end_time);
   if (parse_result != SA_ERROR_SUCCESS)
-    return parse_result;
+    return 0; // parse_result
 
   // compare against "now"
   std::tm now = get_current_time();
