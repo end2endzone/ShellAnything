@@ -2,7 +2,7 @@
 /install
 /third_parties
 .vscode
-/src/plugins/sa_time_plugin/build
-/src/plugins/sa_time_plugin/install
-/src/plugins/sa_demo_plugin/build
-/src/plugins/sa_demo_plugin/install
+/src/plugins/sa_plugin_time/build
+/src/plugins/sa_plugin_time/install
+/src/plugins/sa_plugin_demo/build
+/src/plugins/sa_plugin_demo/install

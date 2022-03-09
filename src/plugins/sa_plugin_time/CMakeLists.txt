@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
-project(sa_time_plugin)
+project(sa_plugin_time)
 
 # if plugin is compiled with Shellanything's source code
 if (NOT SHELLANYTHING_BUILD_PLUGINS)
   find_package(shellanything 0.8.0 REQUIRED)
 endif()
 
-add_library(sa_time_plugin SHARED
-  sa_time_plugin.cpp
+add_library(sa_plugin_time SHARED
+  sa_plugin_time.cpp
 )
 
 # Force a debug postfix if none specified.
@@ -18,17 +18,17 @@ if(NOT CMAKE_DEBUG_POSTFIX)
 endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables and libraries
-set_target_properties(sa_time_plugin PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(sa_plugin_time PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the library.
-target_include_directories(sa_time_plugin
+target_include_directories(sa_plugin_time
   PRIVATE
     sa.api
 )
 
 # Define linking dependencies.
-add_dependencies(sa_time_plugin sa.api)
-target_link_libraries(sa_time_plugin
+add_dependencies(sa_plugin_time sa.api)
+target_link_libraries(sa_plugin_time
   PRIVATE
     sa.api
 )
@@ -37,15 +37,15 @@ target_link_libraries(sa_time_plugin
 if (SHELLANYTHING_BUILD_PLUGINS)
   # Plugin is compiled with Shellanything's source code
   # Install the plugin in the same directory as ShellAnything but as an independent export.
-  install(TARGETS sa_time_plugin
-          EXPORT sa_time_plugin-targets
+  install(TARGETS sa_plugin_time
+          EXPORT sa_plugin_time-targets
           ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
           LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
           RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
   )
 else()
-  install(TARGETS sa_time_plugin
-          EXPORT sa_time_plugin-targets
+  install(TARGETS sa_plugin_time
+          EXPORT sa_plugin_time-targets
           ARCHIVE DESTINATION "lib"
           LIBRARY DESTINATION "lib"
           RUNTIME DESTINATION "bin"

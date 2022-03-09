@@ -23,7 +23,7 @@ if "%PRODUCT_SOURCE_DIR%"=="" (
 endlocal & set PRODUCT_SOURCE_DIR=%PRODUCT_SOURCE_DIR%
 echo.
 
-set SA_PLUGIN_NAME=sa_demo_plugin
+set SA_PLUGIN_NAME=sa_plugin_demo
 
 :: Prepare CMAKE parameters
 set CMAKE_INSTALL_PREFIX=%PRODUCT_SOURCE_DIR%\src\plugins\%SA_PLUGIN_NAME%\install

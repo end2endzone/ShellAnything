@@ -1,5 +1,5 @@
-# sa_time_plugin #
-sa_time_plugin is a plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It provides new validation attributes called `start_time`, `end_time` for showing or enabling menus based on the current system time.
+# sa_plugin_time #
+_sa_plugin_time_ is a plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It provides new validation attributes called `start_time`, `end_time` for showing or enabling menus based on the current system time.
 
 
 
@@ -8,7 +8,7 @@ sa_time_plugin is a plugin library for [ShellAnything](https://github.com/end2en
 Declare the plugin in a Configuration File as the following:
 ```xml
 <plugins>
-  <plugin path="${application.path}\sa_time_plugin.dll"
+  <plugin path="${application.path}\sa_plugin_time.dll"
           conditions="start_time;end_time"
           description="This plugin defines new visibility/validity attributes.
                        The validation is based on current system time.
@@ -20,7 +20,7 @@ Declare the plugin in a Configuration File as the following:
 
 # Building #
 
-This section explains how to compile sa_time_plugin example.
+This section explains how to compile _sa_plugin_time_ example.
 
 To build the project, execute the following steps:
 
@@ -36,4 +36,4 @@ cmake --build . --config Release --target INSTALL
 cmake  ..
 ```
 
-Please refer to [install_shellanything_plugins.bat](https://github.com/end2endzone/ShellAnything/blob/master/ci/windows/install_shellanything_plugins.bat) for details about sa_time_plugin plugin.
+Please refer to [install_shellanything_plugins.bat](https://github.com/end2endzone/ShellAnything/blob/master/ci/windows/install_shellanything_plugins.bat) for details about _sa_plugin_time_ plugin.

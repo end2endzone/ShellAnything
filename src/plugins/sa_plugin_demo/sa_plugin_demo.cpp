@@ -33,9 +33,9 @@
 extern "C" {
 #endif
 
-static const char* PLUGIN_NAME_IDENTIFIER = "sa_demo_plugin";
+static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_demo";
 
-int sa_demo_plugin_validate_time_of_day(sa_selection_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
+int sa_plugin_demo_validate_time_of_day(sa_selection_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
 {
   sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "%s() {", __FUNCTION__);
   sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "  count = %z", count);
@@ -63,7 +63,7 @@ EXPORT_API sa_error_t sa_plugin_register()
     "demo2",
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
-  sa_error_t result = sa_plugins_register_attribute_validation(time_attributes, time_attributes_count, &sa_demo_plugin_validate_time_of_day);
+  sa_error_t result = sa_plugins_register_attribute_validation(time_attributes, time_attributes_count, &sa_plugin_demo_validate_time_of_day);
   if (result != SA_ERROR_SUCCESS)
   {
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed registering validation function for attributes '%s' and '%s'.", time_attributes[0], time_attributes[1]);

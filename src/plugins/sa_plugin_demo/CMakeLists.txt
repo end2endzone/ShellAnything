@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(sa_demo_plugin)
+project(sa_plugin_demo)
 
 find_package(shellanything 0.8.0 REQUIRED)
 
@@ -13,8 +13,8 @@ find_package(shellanything 0.8.0 REQUIRED)
 #message(shellanything_VERSION=      ${shellanything_VERSION})
 #message(shellanything_DIR=          ${shellanything_DIR})
 
-add_library(sa_demo_plugin SHARED
-  sa_demo_plugin.cpp
+add_library(sa_plugin_demo SHARED
+  sa_plugin_demo.cpp
 )
 
 # Force a debug postfix if none specified.
@@ -25,24 +25,24 @@ if(NOT CMAKE_DEBUG_POSTFIX)
 endif()
 
 # Force CMAKE_DEBUG_POSTFIX for executables and libraries
-set_target_properties(sa_demo_plugin PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(sa_plugin_demo PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the library.
-target_include_directories(sa_demo_plugin
+target_include_directories(sa_plugin_demo
   PRIVATE
     sa.api
 )
 
 # Define linking dependencies.
-add_dependencies(sa_demo_plugin sa.api)
-target_link_libraries(sa_demo_plugin
+add_dependencies(sa_plugin_demo sa.api)
+target_link_libraries(sa_plugin_demo
   PRIVATE
     sa.api
 )
 
 # Define files that will be part of the installation package.
-install(TARGETS sa_demo_plugin
-		EXPORT sa_demo_plugin-targets
+install(TARGETS sa_plugin_demo
+		EXPORT sa_plugin_demo-targets
 		ARCHIVE DESTINATION "lib"
 		LIBRARY DESTINATION "lib"
 		RUNTIME DESTINATION "bin"

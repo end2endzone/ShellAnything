@@ -1,5 +1,5 @@
-# sa_demo_plugin #
-sa_demo_plugin is a demo plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It can be used as a base code for new plugins. This demo provides new validation attributes called `demo1` and `demo2` for showing or enabling menus.
+# sa_plugin_demo #
+_sa_plugin_demo_ is a demo plugin library for [ShellAnything](https://github.com/end2endzone/ShellAnything). It can be used as a base code for new plugins. This demo provides new validation attributes called `demo1` and `demo2` for showing or enabling menus.
 
 
 
@@ -8,7 +8,7 @@ sa_demo_plugin is a demo plugin library for [ShellAnything](https://github.com/e
 Declare the plugin as the following:
 ```xml
 <plugins>
-  <plugin path="${application.path}\sa_demo_plugin.dll"
+  <plugin path="${application.path}\sa_plugin_demo.dll"
           conditions="start_time;end_time"
           description="This plugin defines new visibility/validity attributes." />
 </plugins>
@@ -16,7 +16,7 @@ Declare the plugin as the following:
 
 # Building #
 
-This section explains how to compile sa_demo_plugin example.
+This section explains how to compile _sa_plugin_demo_ example.
 
 To build the project, execute the following steps:
 
@@ -32,4 +32,4 @@ cmake --build . --config Release --target INSTALL
 cmake  ..
 ```
 
-Please refer to [install_shellanything_plugins.bat](https://github.com/end2endzone/ShellAnything/blob/master/ci/windows/install_shellanything_plugins.bat) for details about sa_time_plugin plugin.
+Please refer to [install_shellanything_plugins.bat](https://github.com/end2endzone/ShellAnything/blob/master/ci/windows/install_shellanything_plugins.bat) for details about _sa_time_plugin_ plugin.
