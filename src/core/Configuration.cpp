@@ -412,6 +412,7 @@ namespace shellanything
   void Configuration::AddPlugin(Plugin* plugin)
   {
     mPlugins.push_back(plugin);
+    plugin->SetParentConfiguration(this);
   }
 
   const Plugin::PluginPtrList& Configuration::GetPlugins() const
@@ -440,6 +441,7 @@ namespace shellanything
   void Configuration::AddMenu(Menu* menu)
   {
     mMenus.push_back(menu);
+    menu->SetParentConfiguration(this);
   }
 
   void Configuration::DeleteChildren()

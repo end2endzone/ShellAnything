@@ -34,6 +34,7 @@
 
 namespace shellanything
 {
+  class Configuration; // For Set/GetParentConfiguration()
 
   /// <summary>
   /// A Plugin class holds a list of plugin features.
@@ -55,6 +56,19 @@ namespace shellanything
     Plugin();
     Plugin(const Plugin& p);
     virtual ~Plugin();
+
+    /// <summary>
+    /// Get the parent configuration.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent configuration. Returns NULL if the object has no parent configuration.</returns>
+    virtual Configuration* GetParentConfiguration();
+    virtual const Configuration* GetParentConfiguration() const;
+
+    /// <summary>
+    /// Set the parent configuration.
+    /// </summary>
+    /// <param name="configuration">The parent configuration of this object</param>
+    virtual void SetParentConfiguration(Configuration* configuration);
 
     /// <summary>
     /// Copy operator
@@ -142,6 +156,8 @@ namespace shellanything
     static Plugin* FindPluginByActionName(const PluginPtrList& plugins, const std::string& name);
 
   private:
+    Configuration* mParentConfiguration;
+
     std::string mPath;
     std::string mDescription;
     std::string mConditions;

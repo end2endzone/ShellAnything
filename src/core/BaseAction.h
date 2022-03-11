@@ -22,61 +22,40 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_IACTION_H
-#define SA_IACTION_H
+#ifndef SA_BASE_ACTION_H
+#define SA_BASE_ACTION_H
 
-#include "shellanything/export.h"
-#include "shellanything/config.h"
-#include "SelectionContext.h"
-#include <vector>
+#include "IAction.h"
 
 namespace shellanything
 {
-  class Menu; // For Get/SetParentMenu()
 
   /// <summary>
-  /// Abstract action class.
+  /// Base Action class.
   /// </summary>
-  class SHELLANYTHING_EXPORT IAction
+  class SHELLANYTHING_EXPORT BaseAction : public virtual IAction
   {
   public:
-    /// <summary>
-    /// A list of IAction class pointers.
-    /// </summary>
-    typedef std::vector<IAction*> ActionPtrList;
-
-    IAction();
-    virtual ~IAction();
-
-  private:
-    // Disable copy constructor and copy operator
-    IAction(const IAction&);
-    IAction& operator=(const IAction&);
-  public:
+    BaseAction();
+    virtual ~BaseAction();
 
     /// <summary>
     /// Get the parent menu.
     /// </summary>
     /// <returns>Returns a pointer to the parent menu. Returns NULL if the object has no parent menu.</returns>
-    virtual Menu* GetParentMenu() = 0;
-    virtual const Menu* GetParentMenu() const = 0;
+    virtual Menu* GetParentMenu();
+    virtual const Menu* GetParentMenu() const;
 
     /// <summary>
     /// Set the parent menu.
     /// </summary>
     /// <param name="menu">The parent of this menu</param>
-    virtual void SetParentMenu(Menu* menu) = 0;
+    virtual void SetParentMenu(Menu* menu);
 
-    /// <summary>
-    /// Execute the action on the system.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const SelectionContext & context) const = 0;
-
+  private:
+    Menu* mParentMenu;
   };
-
 
 } //namespace shellanything
 
-#endif //SA_IACTION_H
+#endif //SA_BASE_ACTION_H

@@ -22,57 +22,33 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ACTION_CLIPBOARD_H
-#define SA_ACTION_CLIPBOARD_H
-
-#include "IAction.h"
 #include "BaseAction.h"
-#include "IActionFactory.h"
 
 namespace shellanything
 {
 
-  /// <summary>
-  /// Action class that changes the clipboard.
-  /// </summary>
-  class SHELLANYTHING_EXPORT ActionClipboard : public BaseAction
+  BaseAction::BaseAction() :
+    mParentMenu(NULL)
   {
-  public:
-    ActionClipboard();
-    virtual ~ActionClipboard();
+  }
 
-    /// <summary>
-    /// Name of the xml element for this action.
-    /// </summary>
-    static const std::string XML_ELEMENT_NAME;
+  BaseAction::~BaseAction()
+  {
+  }
 
-    /// <summary>
-    /// Instanciate an IActionFactory that is able to parse this action.
-    /// </summary>
-    /// <returns>Returns a IActionFactory to parse this action.</returns>
-    static IActionFactory* NewFactory();
+  Menu* BaseAction::GetParentMenu()
+  {
+    return mParentMenu;
+  }
 
-    /// <summary>
-    /// Change the clipboard content.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const SelectionContext & context) const;
+  const Menu* BaseAction::GetParentMenu() const
+  {
+    return mParentMenu;
+  }
 
-    /// <summary>
-    /// Getter for the 'value' parameter.
-    /// </summary>
-    const std::string & GetValue() const;
-
-    /// <summary>
-    /// Setter for the 'value' parameter.
-    /// </summary>
-    void SetValue(const std::string & value);
-
-  private:
-    std::string mValue;
-  };
+  void BaseAction::SetParentMenu(Menu* menu)
+  {
+    mParentMenu = menu;
+  }
 
 } //namespace shellanything
-
-#endif //SA_ACTION_CLIPBOARD_H

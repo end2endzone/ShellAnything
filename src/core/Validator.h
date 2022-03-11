@@ -58,6 +58,7 @@
 
 namespace shellanything
 {
+  class Menu; // For Get/SetParentMenu()
 
   class SHELLANYTHING_EXPORT Validator
   {
@@ -75,6 +76,19 @@ namespace shellanything
     Validator(const Validator&);
     Validator& operator=(const Validator&);
   public:
+
+    /// <summary>
+    /// Get the parent menu.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent menu. Returns NULL if the object has no parent menu.</returns>
+    Menu* GetParentMenu();
+    const Menu* GetParentMenu() const;
+
+    /// <summary>
+    /// Set the parent menu.
+    /// </summary>
+    /// <param name="menu">The parent of this menu</param>
+    void SetParentMenu(Menu* menu);
 
     /// <summary>
     /// Getter for the 'maxfiles' parameter.
@@ -284,6 +298,7 @@ namespace shellanything
     std::string mInverse;
     PropertyStore mCustomAttributes;
     Plugin::PluginPtrList mPlugins;
+    Menu* mParentMenu;
   };
 
 } //namespace shellanything

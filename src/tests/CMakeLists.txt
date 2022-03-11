@@ -13,6 +13,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testParentWithoutChildren.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfiguration.testLoadProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testGetParent.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionExecute.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionMessage.xml

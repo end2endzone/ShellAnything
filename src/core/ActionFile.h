@@ -26,6 +26,7 @@
 #define SA_ACTION_FILE_H
 
 #include "IAction.h"
+#include "BaseAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// Action class that opens a documents using default application.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionFile : public virtual IAction
+  class SHELLANYTHING_EXPORT ActionFile : public BaseAction
   {
   public:
     ActionFile();

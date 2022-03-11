@@ -26,6 +26,7 @@
 #define SA_ACTION_EXECUTE_H
 
 #include "IAction.h"
+#include "BaseAction.h"
 #include "IActionFactory.h"
 
 namespace shellanything
@@ -34,7 +35,7 @@ namespace shellanything
   /// <summary>
   /// Action class that executes a program.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionExecute : public virtual IAction
+  class SHELLANYTHING_EXPORT ActionExecute : public BaseAction
   {
   public:
     ActionExecute();

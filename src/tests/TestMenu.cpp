@@ -66,12 +66,16 @@ namespace shellanything { namespace test
     {
       (*deleted_flag) = true;
     }
+    virtual Menu* GetParentMenu() { return mParentMenu; }
+    virtual const Menu* GetParentMenu() const { return mParentMenu; }
+    virtual void SetParentMenu(Menu* menu) { mParentMenu = menu; }
     virtual bool Execute(const SelectionContext & context) const
     {
       (*executed_flag) = true;
       return true;
     }
   private:
+    Menu* mParentMenu;
     bool * deleted_flag;
     bool * executed_flag;
   };

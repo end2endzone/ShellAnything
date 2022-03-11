@@ -99,6 +99,21 @@ namespace shellanything
     return (*this);
   }
 
+  Configuration* Plugin::GetParentConfiguration()
+  {
+    return mParentConfiguration;
+  }
+
+  const Configuration* Plugin::GetParentConfiguration() const
+  {
+    return mParentConfiguration;
+  }
+
+  void Plugin::SetParentConfiguration(Configuration* configuration)
+  {
+    mParentConfiguration = configuration;
+  }
+
   const std::string& Plugin::GetPath() const
   {
     return mPath;

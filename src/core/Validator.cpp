@@ -75,6 +75,21 @@ namespace shellanything
   {
   }
 
+  Menu* Validator::GetParentMenu()
+  {
+    return mParentMenu;
+  }
+
+  const Menu* Validator::GetParentMenu() const
+  {
+    return mParentMenu;
+  }
+
+  void Validator::SetParentMenu(Menu* menu)
+  {
+    mParentMenu = menu;
+  }
+
   const int & Validator::GetMaxFiles() const
   {
     return mMaxFiles;

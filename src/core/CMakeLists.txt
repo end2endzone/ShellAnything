@@ -8,6 +8,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
+  ${CMAKE_SOURCE_DIR}/src/core/BaseAction.h
   ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
@@ -32,6 +33,7 @@ add_library(sa.core SHARED
   ActionPrompt.cpp
   ActionProperty.cpp
   ActionStop.cpp
+  BaseAction.cpp
   Configuration.cpp
   ConfigManager.cpp
   SelectionContext.cpp
