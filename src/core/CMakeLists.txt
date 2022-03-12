@@ -139,11 +139,6 @@ target_link_libraries(sa.core
     sa.shared
 )
 
-# 1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-# This is probably because we are not compiling libmagic (or pcre2) properly.
-# Linking with libmagic.lib and pcre2-8.lib seems to be bringing MSVCRT.lib which creates this linking warning.
-set_target_properties(sa.core PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRT")
-
 # Also add Tinyxml2 include and libraries.
 # The include/libraries are added at the end to allow supporting both static or shared libraries (the target names are different).
 # See issue #67 (https://github.com/end2endzone/ShellAnything/issues/67) for details.
