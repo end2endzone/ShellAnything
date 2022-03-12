@@ -24,10 +24,9 @@
 
 #include "SaUtils.h"
 
-#include "ErrorManager.h"
-
 #include "rapidassist/errors.h"
 #include "rapidassist/unicode.h"
+#include "rapidassist/strings.h"
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h> //for MAX_PATH
@@ -36,6 +35,11 @@
 //External declarations
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
+
+namespace shellanything
+{
+  extern void ShowErrorMessage(const std::string& title, const std::string& message);
+} //namespace shellanything
 
 std::string GetCurrentModulePath()
 {

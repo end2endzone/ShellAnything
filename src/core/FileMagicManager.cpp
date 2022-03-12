@@ -22,7 +22,10 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include <windows.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <windows.h> // for GetModuleHandleEx()
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/unicode.h"
@@ -30,6 +33,7 @@
 
 #include "FileMagicManager.h"
 #include "ErrorManager.h"
+
 
 
 std::string GetMGCPath()
