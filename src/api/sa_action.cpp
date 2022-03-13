@@ -25,7 +25,7 @@
 #include "shellanything/sa_action.h"
 #include "IAction.h"
 #include "SelectionContext.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 using namespace shellanything;
 

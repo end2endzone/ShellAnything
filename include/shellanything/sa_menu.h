@@ -25,6 +25,7 @@
 #ifndef SA_API_MENU_H
 #define SA_API_MENU_H
 
+#include "shellanything/sa_object_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_icon.h"
@@ -34,14 +35,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_menu_t  {
-  void* opaque;
-} sa_menu_t;
-
-typedef struct sa_menu_immutable_t  {
-  void* opaque;
-} sa_menu_immutable_t;
 
 /// <summary>
 /// Converts a mutable menu to an immutable menu.

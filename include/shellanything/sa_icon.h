@@ -25,20 +25,13 @@
 #ifndef SA_API_ICON_H
 #define SA_API_ICON_H
 
+#include "shellanything/sa_object_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_icon_t  {
-  void* opaque;
-} sa_icon_t;
-
-typedef struct sa_icon_immutable_t  {
-  void* opaque;
-} sa_icon_immutable_t;
 
 /// <summary>
 /// Converts a mutable icon to an immutable icon.

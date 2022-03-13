@@ -25,7 +25,7 @@
 #include "shellanything/sa_icon.h"
 #include "sa_string_private.h"
 #include "Icon.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 using namespace shellanything;
 

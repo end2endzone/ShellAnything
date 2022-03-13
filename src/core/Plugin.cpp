@@ -36,9 +36,9 @@
 #include "rapidassist/errors.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
-#include "../api/sa_error.cpp"  // to get a local implementation for sa_error_get_error_description()
 
-#include "shellanything\sa_plugins.h"
+#include "shellanything\sa_plugin_definitions.h"
+#include "../api/sa_error.cpp"  // to get a local implementation for sa_error_get_error_description()
 
 #include <Windows.h>
 

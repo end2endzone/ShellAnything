@@ -22,31 +22,34 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_API_LOGGING_H
-#define SA_API_LOGGING_H
-
-#include "shellanything/sa_enums.h"
+#ifndef SA_API_ENUMS_H
+#define SA_API_ENUMS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// <summary>
-/// Log a custom message in logs.
-/// </summary>
-/// <param name="level">The level of the log message.</param>
-/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
-/// <param name="message">The message to print in the logs.</param>
-void sa_logging_print(sa_log_level_t level, const char * source_name, const char * message);
+typedef enum {
+  SA_ERROR_SUCCESS = 0,
+  SA_ERROR_INVALID_ARGUMENTS,
+  SA_ERROR_BUFFER_TOO_SMALL,
+  SA_ERROR_VALUE_OUT_OF_BOUNDS,
+  SA_ERROR_NOT_FOUND,
+  SA_ERROR_NOT_SUPPORTED,
+  SA_ERROR_NOT_IMPLEMENTED,
+  SA_ERROR_ALREADY_EXIST,
+  SA_ERROR_MISSING_RESOURCE,
+  SA_ERROR_ACCESS_DENIED,
+  SA_ERROR_BUSY,
+  SA_ERROR_UNKNOWN = -1,
+} sa_error_t;
 
-/// <summary>
-/// Log a custom message in logs.
-/// </summary>
-/// <param name="level">The level of the log message.</param>
-/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
-/// <param name="format">The format of the </param>
-/// <param name="...">The arguments in the log to print</param>
-void sa_logging_print_format(sa_log_level_t level, const char* source_name, const char* format, ...);
+typedef enum {
+  SA_LOG_LEVEL_INFO = 0,
+  SA_LOG_LEVEL_WARNING,
+  SA_LOG_LEVEL_ERROR,
+  SA_LOG_LEVEL_FATAL,
+} sa_log_level_t;
 
 #ifdef __cplusplus
 }

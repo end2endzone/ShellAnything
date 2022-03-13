@@ -24,7 +24,7 @@
 
 #include "shellanything/sa_cfgmgr.h"
 #include "ConfigManager.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 #include "sa_string_private.h"
 
 using namespace shellanything;

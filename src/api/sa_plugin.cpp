@@ -22,10 +22,10 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/sa_plugins.h"
+#include "shellanything/sa_plugin.h"
 #include "shellanything/sa_logging.h"
 #include "sa_string_private.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 #include "IAttributeValidator.h"
 #include "Plugin.h"
 
@@ -163,7 +163,7 @@ private:
   sa_plugin_attribute_validate_func mValidationFunc;
 };
 
-sa_error_t sa_plugins_register_attribute_validation(const char* names[], size_t count, sa_plugin_attribute_validate_func func)
+sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_attribute_validate_func func)
 {
   Plugin* plugin = Plugin::GetLoadingPlugin();
   if (plugin == NULL)

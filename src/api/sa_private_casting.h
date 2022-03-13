@@ -25,7 +25,6 @@
 #ifndef SA_API_TYPES_PRIVATE_H
 #define SA_API_TYPES_PRIVATE_H
 
-#include "shellanything/sa_error.h"
 
 #include <string>
 
@@ -36,12 +35,7 @@
 #include "Configuration.h"
 #include "Validator.h"
 
-#include "shellanything/sa_action.h"
-#include "shellanything/sa_selection_context.h"
-#include "shellanything/sa_icon.h"
-#include "shellanything/sa_menu.h"
-#include "shellanything/sa_configuration.h"
-#include "shellanything/sa_validator.h"
+#include "shellanything/sa_object_types.h"
 
 const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*       object);
       shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                 object);

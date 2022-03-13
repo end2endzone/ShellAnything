@@ -72,7 +72,7 @@ EXPORTS
   sa_menu_set_visible
   sa_menu_to_immutable
   sa_menu_update
-  sa_plugins_register_attribute_validation
+  sa_plugin_register_attribute_validation
   sa_properties_clear
   sa_properties_clear
   sa_properties_delete

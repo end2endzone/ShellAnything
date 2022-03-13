@@ -25,24 +25,11 @@
 #ifndef SA_API_ERROR_MANAGER_H
 #define SA_API_ERROR_MANAGER_H
 
+#include "shellanything/sa_enums.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum {
-  SA_ERROR_SUCCESS = 0,
-  SA_ERROR_INVALID_ARGUMENTS,
-  SA_ERROR_BUFFER_TOO_SMALL,
-  SA_ERROR_VALUE_OUT_OF_BOUNDS,
-  SA_ERROR_NOT_FOUND,
-  SA_ERROR_NOT_SUPPORTED,
-  SA_ERROR_NOT_IMPLEMENTED,
-  SA_ERROR_ALREADY_EXIST,
-  SA_ERROR_MISSING_RESOURCE,
-  SA_ERROR_ACCESS_DENIED,
-  SA_ERROR_BUSY,
-  SA_ERROR_UNKNOWN = -1,
-} sa_error_t;
 
 /// <summary>
 /// Get a string description of the given error code.

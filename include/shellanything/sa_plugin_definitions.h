@@ -22,12 +22,10 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_API_PLUGINS_H
-#define SA_API_PLUGINS_H
+#ifndef SA_API_PLUGIN_DEFINITIONS_H
+#define SA_API_PLUGIN_DEFINITIONS_H
 
-#include <stdint.h>
-#include "sa_error.h"
-#include "sa_selection_context.h"
+#include "shellanything/sa_error.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,27 +76,8 @@ typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* /*version*/);
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 typedef sa_error_t(*sa_plugin_register_func)();
 
-/// <summary>
-/// Function pointer definition for validating a custom attributes.
-/// </summary>
-/// <param name="names">The names of the attributes as an array of strings.</param>
-/// <param name="values">The values of the attributes as an array of strings.</param>
-/// <param name="flags">The flags of the attributes. See macros that starts with SA_ATTRIBUTE_FLAG_.</param>
-/// <param name="count">Defines how many elements are in the names, values and flags arrays.</param>
-/// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef int (*sa_plugin_attribute_validate_func)(sa_selection_context_immutable_t* ctx, const char** /*names*/, const char** /*values*/, const int* /*flags*/, size_t /*count*/);
-
-/// <summary>
-/// Register a custom attribute validation function for a given list of attributes.
-/// </summary>
-/// <param name="names">The names of the attributes as an array of strings.</param>
-/// <param name="count">Defines how many elements are in the names array.</param>
-/// <param name="func">A function pointer which definition matches sa_plugin_attribute_validate_func.</param>
-/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_plugins_register_attribute_validation(const char* names[], size_t count, sa_plugin_attribute_validate_func func);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif //SA_API_MEMORY_H
+#endif //SA_API_PLUGIN_DEFINITIONS_H

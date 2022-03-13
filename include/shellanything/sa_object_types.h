@@ -22,34 +22,67 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_API_LOGGING_H
-#define SA_API_LOGGING_H
-
-#include "shellanything/sa_enums.h"
+#ifndef SA_API_TYPES_H
+#define SA_API_TYPES_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// <summary>
-/// Log a custom message in logs.
-/// </summary>
-/// <param name="level">The level of the log message.</param>
-/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
-/// <param name="message">The message to print in the logs.</param>
-void sa_logging_print(sa_log_level_t level, const char * source_name, const char * message);
+  typedef struct sa_action_t {
+    void* opaque;
+  } sa_action_t;
 
-/// <summary>
-/// Log a custom message in logs.
-/// </summary>
-/// <param name="level">The level of the log message.</param>
-/// <param name="source_name">The name of the source or module related to the log message. For example, the plugin name.</param>
-/// <param name="format">The format of the </param>
-/// <param name="...">The arguments in the log to print</param>
-void sa_logging_print_format(sa_log_level_t level, const char* source_name, const char* format, ...);
+  typedef struct sa_action_immutable_t {
+    void* opaque;
+  } sa_action_immutable_t;
+
+  typedef struct sa_configuration_t {
+    void* opaque;
+  } sa_configuration_t;
+
+  typedef struct sa_configuration_immutable_t {
+    void* opaque;
+  } sa_configuration_immutable_t;
+
+  typedef struct sa_icon_t {
+    void* opaque;
+  } sa_icon_t;
+
+  typedef struct sa_icon_immutable_t {
+    void* opaque;
+  } sa_icon_immutable_t;
+
+  typedef struct sa_menu_t {
+    void* opaque;
+  } sa_menu_t;
+
+  typedef struct sa_menu_immutable_t {
+    void* opaque;
+  } sa_menu_immutable_t;
+
+  typedef struct {
+    void* opaque;
+  } sa_selection_context_t;
+
+  typedef struct {
+    void* opaque;
+  } sa_selection_context_immutable_t;
+
+  typedef struct {
+    void* opaque;
+  } sa_string_t;
+
+  typedef struct sa_validator_t {
+    void* opaque;
+  } sa_validator_t;
+
+  typedef struct sa_validator_immutable_t {
+    void* opaque;
+  } sa_validator_immutable_t;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //SA_API_ERROR_MANAGER_H
+#endif //SA_API_TYPES_H

@@ -27,7 +27,7 @@
 #include "Menu.h"
 #include "Icon.h"
 #include "IAction.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 using namespace shellanything;
 

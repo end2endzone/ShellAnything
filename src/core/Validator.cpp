@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "shellanything/sa_plugins.h"
+#include "shellanything/sa_plugin_definitions.h"
 #include <string>
 #include <limits>
 #include "Validator.h"

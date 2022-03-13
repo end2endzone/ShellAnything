@@ -32,14 +32,6 @@
 extern "C" {
 #endif
 
-typedef struct sa_action_t  {
-  void* opaque;
-} sa_action_t;
-
-typedef struct sa_action_immutable_t  {
-  void* opaque;
-} sa_action_immutable_t;
-
 /// <summary>
 /// Converts a mutable action to an immutable action.
 /// </summary>

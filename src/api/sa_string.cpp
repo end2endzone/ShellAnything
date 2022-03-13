@@ -24,7 +24,7 @@
 
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_memory.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 void sa_string_init(sa_string_t* str)
 {

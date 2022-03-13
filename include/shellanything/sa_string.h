@@ -25,16 +25,12 @@
 #ifndef SA_API_STRING_H
 #define SA_API_STRING_H
 
+#include "shellanything/sa_object_types.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-typedef struct {
-  void* opaque;
-} sa_string_t;
 
 /// <summary>
 /// Initialize a string with NULL values

@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*       object) { return (const shellanything::IAction*)(object); }
       shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                 object) { return (      shellanything::IAction*)(object); }

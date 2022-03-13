@@ -25,20 +25,13 @@
 #ifndef SA_API_VALIDATOR_H
 #define SA_API_VALIDATOR_H
 
+#include "shellanything/sa_object_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_validator_t  {
-  void* opaque;
-} sa_validator_t;
-
-typedef struct sa_validator_immutable_t  {
-  void* opaque;
-} sa_validator_immutable_t;
 
 /// <summary>
 /// Converts a mutable validator to an immutable validator.

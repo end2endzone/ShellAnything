@@ -24,7 +24,7 @@
 
 #include "shellanything/sa_string.h"
 #include "sa_string_private.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 void sa_string_copy_stdstr(sa_string_t* dest_str, const std::string& src_str)
 {

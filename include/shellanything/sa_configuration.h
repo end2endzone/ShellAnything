@@ -26,6 +26,7 @@
 #define SA_API_CONFIGURATION_H
 
 #include <stdint.h>
+#include "shellanything/sa_object_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_selection_context.h"
@@ -34,14 +35,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_configuration_t  {
-  void* opaque;
-} sa_configuration_t;
-
-typedef struct sa_configuration_immutable_t  {
-  void* opaque;
-} sa_configuration_immutable_t;
 
 /// <summary>
 /// Converts a mutable configuration to an immutable configuration.
