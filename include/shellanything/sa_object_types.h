@@ -61,6 +61,14 @@ extern "C" {
     void* opaque;
   } sa_menu_immutable_t;
 
+  typedef struct sa_property_store_t {
+    void* opaque;
+  } sa_property_store_t;
+
+  typedef struct sa_property_store_immutable_t {
+    void* opaque;
+  } sa_property_store_immutable_t;
+
   typedef struct {
     void* opaque;
   } sa_selection_context_t;

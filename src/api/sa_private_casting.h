@@ -34,6 +34,7 @@
 #include "Menu.h"
 #include "Configuration.h"
 #include "Validator.h"
+#include "PropertyStore.h"
 
 #include "shellanything/sa_object_types.h"
 
@@ -66,6 +67,11 @@ const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*    
       shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t*                object);
 sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object);
 sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object);
+
+const shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_immutable_t*      object);
+      shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_t*                object);
+sa_property_store_immutable_t        AS_TYPE_PROPERTY_STORE(const shellanything::PropertyStore* object);
+sa_property_store_t                  AS_TYPE_PROPERTY_STORE(      shellanything::PropertyStore* object);
 
 //const std::string* AS_CLASS_STRING(sa_string_immutable_t*      object);
       std::string* AS_CLASS_STRING(sa_string_t*                object);

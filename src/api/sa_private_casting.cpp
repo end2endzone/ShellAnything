@@ -54,6 +54,11 @@ const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*    
 sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object) { sa_validator_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
 sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object) { sa_validator_t            my_type; my_type.opaque = (void*)(object); return my_type; }
 
+const shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_immutable_t*       object) { return (const shellanything::PropertyStore*)(object); }
+      shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_t*                 object) { return (      shellanything::PropertyStore*)(object); }
+sa_property_store_immutable_t         AS_TYPE_PROPERTY_STORE(const shellanything::PropertyStore* object) { sa_property_store_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }
+sa_property_store_t                   AS_TYPE_PROPERTY_STORE(      shellanything::PropertyStore* object) { sa_property_store_t            my_type; my_type.opaque = (void*)(object); return my_type; }
+
 //const std::string* AS_CLASS_STRING(sa_string_immutable_t*      object) { return (const std::string*)(object); }
       std::string* AS_CLASS_STRING(sa_string_t*                object) { return (      std::string*)(object); }
 //sa_string_immutable_t        AS_TYPE_STRING(const std::string* object) { sa_string_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type; }

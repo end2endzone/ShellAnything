@@ -14,6 +14,7 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_plugin.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_plugin_definitions.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_properties.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_property_store.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_string.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_validator.h
 )
@@ -34,6 +35,7 @@ add_library(sa.api SHARED
   sa_private_casting.cpp
   sa_private_casting.h
   sa_properties.cpp
+  sa_property_store.cpp
   sa_string.cpp
   sa_string_private.cpp
   sa_string_private.h
