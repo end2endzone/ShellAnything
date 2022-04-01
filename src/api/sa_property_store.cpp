@@ -74,7 +74,7 @@ void sa_property_store_set_property(sa_property_store_t* store, const char* name
   AS_CLASS_PROPERTY_STORE(store)->SetProperty(name, value);
 }
 
-sa_error_t sa_property_store_get_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size)
+sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size)
 {
   if (length)
     *length = -1;
@@ -83,7 +83,7 @@ sa_error_t sa_property_store_get_buffer(sa_property_store_immutable_t* store, co
   return result;
 }
 
-sa_error_t sa_property_store_get_string(sa_property_store_immutable_t* store, const char* name, sa_string_t* str)
+sa_error_t sa_property_store_get_property_string(sa_property_store_immutable_t* store, const char* name, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_PROPERTY_STORE(store)->GetProperty(name);
   sa_string_copy_stdstr(str, value);

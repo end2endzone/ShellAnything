@@ -92,7 +92,7 @@ void sa_property_store_set_property(sa_property_store_t* store, const char * nam
 /// <param name="buffer">The output buffer for the property value.</param>
 /// <param name="size">The size of the output buffer in bytes.</param>
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
-sa_error_t sa_property_store_get_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size);
+sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size);
 
 /// <summary>
 /// Get the value of the given property name.
@@ -101,7 +101,7 @@ sa_error_t sa_property_store_get_buffer(sa_property_store_immutable_t* store, co
 /// <param name="name">The name of the property to get.</param>
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
-sa_error_t sa_property_store_get_string(sa_property_store_immutable_t* store, const char* name, sa_string_t* str);
+sa_error_t sa_property_store_get_property_string(sa_property_store_immutable_t* store, const char* name, sa_string_t* str);
 
 /// <summary>
 /// Counts how many properties are registered in the store.
