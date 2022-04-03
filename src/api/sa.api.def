@@ -21,15 +21,6 @@ EXPORTS
   sa_configuration_set_file_path
   sa_configuration_to_immutable
   sa_configuration_update
-  sa_selection_context_get_element_buffer
-  sa_selection_context_get_element_count
-  sa_selection_context_get_element_string
-  sa_selection_context_get_num_directories
-  sa_selection_context_get_num_files
-  sa_selection_context_register_properties
-  sa_selection_context_set_elements_buffer
-  sa_selection_context_to_immutable
-  sa_selection_context_unregister_properties
   sa_error_show_message
   sa_error_show_message_utf8
   sa_icon_get_file_extension_buffer
@@ -93,6 +84,28 @@ EXPORTS
   sa_properties_get_string
   sa_properties_set
   sa_properties_set
+  sa_property_store_clear
+  sa_property_store_clear_property
+  sa_property_store_find_missing_properties
+  sa_property_store_get_properties
+  sa_property_store_get_property_buffer
+  sa_property_store_get_property_c_str
+  sa_property_store_get_property_count
+  sa_property_store_get_property_string
+  sa_property_store_has_properties
+  sa_property_store_has_property
+  sa_property_store_is_empty
+  sa_property_store_set_property
+  sa_property_store_to_immutable
+  sa_selection_context_get_element_buffer
+  sa_selection_context_get_element_count
+  sa_selection_context_get_element_string
+  sa_selection_context_get_num_directories
+  sa_selection_context_get_num_files
+  sa_selection_context_register_properties
+  sa_selection_context_set_elements_buffer
+  sa_selection_context_to_immutable
+  sa_selection_context_unregister_properties
   sa_string_create
   sa_string_create_from_cstr
   sa_string_create_from_str

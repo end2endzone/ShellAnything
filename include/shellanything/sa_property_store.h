@@ -83,6 +83,14 @@ void sa_property_store_set_property(sa_property_store_t* store, const char * nam
 /// <summary>
 /// Get the value of the given property name.
 /// </summary>
+/// <param name="store">The property store structure object.</param>
+/// <param name="name">The name of the property to get.</param>
+/// <returns>Returns the value of the given attribute. Returns NULL if the property cannot be found.</returns>
+const char* sa_property_store_get_property_c_str(sa_property_store_immutable_t* store, const char* name);
+
+/// <summary>
+/// Get the value of the given property name.
+/// </summary>
 /// <remarks>
 /// The property_length is updated even if the given buffer is too small.
 /// </remarks>
