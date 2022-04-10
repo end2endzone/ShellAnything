@@ -25,7 +25,7 @@
 #ifndef SA_API_PROPERTY_STORE_H
 #define SA_API_PROPERTY_STORE_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_error.h"
 
@@ -60,7 +60,7 @@ void sa_property_store_clear_property(sa_property_store_t* store, const char * n
 /// <param name="store">The property store structure object.</param>
 /// <param name="name">The name of the property to check.</param>
 /// <returns>Returns 1 if the property is set. Returns 0 otherwise.</returns>
-int sa_property_store_has_property(sa_property_store_immutable_t* store, const char * name);
+sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, const char * name);
 
 /// <summary>
 /// Check if the properties are all set.
@@ -70,7 +70,7 @@ int sa_property_store_has_property(sa_property_store_immutable_t* store, const c
 /// <param name="properties">The array of properties to check.</param>
 /// <param name="count">How many elements in the properties array.</param>
 /// <returns>Returns 1 if all the properties are set. Returns 0 otherwise.</returns>
-int sa_property_store_has_properties(sa_property_store_immutable_t* store, const char * properties[], size_t count);
+sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store, const char * properties[], size_t count);
 
 /// <summary>
 /// Sets the value of the given property name.
@@ -123,7 +123,7 @@ size_t sa_property_store_get_property_count(sa_property_store_immutable_t* store
 /// </summary>
 /// <param name="store">The property store structure object.</param>
 /// <returns>Returns 1 if the store is empty. Returns 0 otherwise.</returns>
-int sa_property_store_is_empty(sa_property_store_immutable_t* store);
+sa_boolean sa_property_store_is_empty(sa_property_store_immutable_t* store);
 
 /// <summary>
 /// Get the list of properties in the store

@@ -76,7 +76,7 @@ sa_error_t sa_configuration_load_file_string(const char* path, sa_string_t* erro
   return SA_ERROR_SUCCESS;
 }
 
-int sa_configuration_is_valid_config_file(const char* path)
+sa_boolean sa_configuration_is_valid_config_file(const char* path)
 {
   if (path == NULL)
     return 0;

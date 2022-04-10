@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include "shellanything/sa_error.h"
+#include "shellanything/sa_error.h"
 #include "shellanything/sa_configuration.h"
 #include "shellanything/sa_selection_context.h"
 
@@ -53,7 +54,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
 /// </summary>
 /// <param name="path">The path of a Configuration file</param>
 /// <returns>Returns 1 if the given path is a loaded configuration by the manager. Returns 0 otherwise.</returns>
-int sa_cfgmgr_is_configuration_file_loaded(const char * path);
+sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char * path);
 
 /// <summary>
 /// Clears the configuration manager of all loaded configuration

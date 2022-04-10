@@ -46,7 +46,7 @@ void sa_property_store_clear_property(sa_property_store_t* store, const char* na
   AS_CLASS_PROPERTY_STORE(store)->ClearProperty(name);
 }
 
-int sa_property_store_has_property(sa_property_store_immutable_t* store, const char* name)
+sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, const char* name)
 {
   bool found = AS_CLASS_PROPERTY_STORE(store)->HasProperty(name);
   if (found)
@@ -54,7 +54,7 @@ int sa_property_store_has_property(sa_property_store_immutable_t* store, const c
   return 0;
 }
 
-int sa_property_store_has_properties(sa_property_store_immutable_t* store, const char* properties[], size_t count)
+sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store, const char* properties[], size_t count)
 {
   StringList tmp;
   for (size_t i = 0; i < count; i++)
@@ -106,7 +106,7 @@ size_t sa_property_store_get_property_count(sa_property_store_immutable_t* store
   return count;
 }
 
-int sa_property_store_is_empty(sa_property_store_immutable_t* store)
+sa_boolean sa_property_store_is_empty(sa_property_store_immutable_t* store)
 {
   bool is_empty = AS_CLASS_PROPERTY_STORE(store)->IsEmpty();
   if (is_empty)

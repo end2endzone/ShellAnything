@@ -25,7 +25,7 @@
 #ifndef SA_API_ICON_H
 #define SA_API_ICON_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 
@@ -45,7 +45,7 @@ sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t * icon);
 /// </summary>
 /// <param name="icon">The icon structure object.</param>
 /// <returns>Returns 1 when the icon is valid. Returns 0 otherwise.</returns>
-int sa_icon_is_valid(sa_icon_immutable_t* icon);
+sa_boolean sa_icon_is_valid(sa_icon_immutable_t* icon);
 
 /// <summary>
 /// Get the file extension.

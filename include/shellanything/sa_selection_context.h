@@ -25,7 +25,7 @@
 #ifndef SA_API_SELECTION_CONTEXT_H
 #define SA_API_SELECTION_CONTEXT_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_error.h"
 

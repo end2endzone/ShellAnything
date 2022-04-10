@@ -29,6 +29,8 @@
 extern "C" {
 #endif
 
+  typedef int sa_boolean;
+
   typedef struct sa_action_t {
     void* opaque;
   } sa_action_t;

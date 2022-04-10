@@ -36,7 +36,7 @@ sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t* icon)
   return output;
 }
 
-int sa_icon_is_valid(sa_icon_immutable_t* icon)
+sa_boolean sa_icon_is_valid(sa_icon_immutable_t* icon)
 {
   bool is_valid = AS_CLASS_ICON(icon)->IsValid();
   if (is_valid)

@@ -120,7 +120,7 @@ bool is_between_now(const std::tm& start_time, const std::tm& end_time)
   return false;
 }
 
-int sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
+sa_boolean sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
 {
   const char* start_time_str = sa_property_store_get_property_c_str(store, START_TIME_ATTR);
   const char* end_time_str = sa_property_store_get_property_c_str(store, END_TIME_ATTR);
@@ -133,10 +133,10 @@ int sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, s
   sa_error_t parse_result;
   parse_result = parse_time(START_TIME_ATTR, start_time_str, &start_time);
   if (parse_result != SA_ERROR_SUCCESS)
-    return 0; // parse_result
+    return 0;
   parse_result = parse_time(END_TIME_ATTR, end_time_str, &end_time);
   if (parse_result != SA_ERROR_SUCCESS)
-    return 0; // parse_result
+    return 0;
 
   // compare against "now"
   std::tm now = get_current_time();

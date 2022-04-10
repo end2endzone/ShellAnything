@@ -50,7 +50,7 @@ void sa_properties_delete(const char* name);
 /// </summary>
 /// <param name="name">The name of the property to check.</param>
 /// <returns>Returns 1 if the property exists. Returns 0 otherwise.</returns>
-int sa_properties_exists(const char* name);
+sa_boolean sa_properties_exists(const char* name);
 
 /// <summary>
 /// Set the value of the given property name.

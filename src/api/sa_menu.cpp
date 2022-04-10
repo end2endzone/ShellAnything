@@ -46,7 +46,7 @@ int sa_menu_is_separator(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_separator(sa_menu_t* menu, int separator)
+void sa_menu_set_separator(sa_menu_t* menu, sa_boolean separator)
 {
   AS_CLASS_MENU(menu)->SetSeparator(separator != 0);
 }
@@ -111,7 +111,7 @@ void sa_menu_update(sa_menu_t* menu, sa_selection_context_immutable_t* ctx)
   AS_CLASS_MENU(menu)->Update(*AS_CLASS_SELECTION_CONTEXT(ctx));
 }
 
-int sa_menu_is_visible(sa_menu_immutable_t* menu)
+sa_boolean sa_menu_is_visible(sa_menu_immutable_t* menu)
 {
   bool value = AS_CLASS_MENU(menu)->IsVisible();
   if (value)
@@ -119,12 +119,12 @@ int sa_menu_is_visible(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_visible(sa_menu_t* menu, int visible)
+void sa_menu_set_visible(sa_menu_t* menu, sa_boolean visible)
 {
   AS_CLASS_MENU(menu)->SetVisible(visible != 0);
 }
 
-int sa_menu_is_enabled(sa_menu_immutable_t* menu)
+sa_boolean sa_menu_is_enabled(sa_menu_immutable_t* menu)
 {
   bool value = AS_CLASS_MENU(menu)->IsEnabled();
   if (value)
@@ -132,7 +132,7 @@ int sa_menu_is_enabled(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_enabled(sa_menu_t* menu, int enabled)
+void sa_menu_set_enabled(sa_menu_t* menu, sa_boolean enabled)
 {
   AS_CLASS_MENU(menu)->SetEnabled(enabled != 0);
 }

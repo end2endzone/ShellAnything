@@ -36,7 +36,7 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator)
   return output;
 }
 
-int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name)
+sa_boolean sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name)
 {
   if (name == NULL)
     return 0;
@@ -46,7 +46,7 @@ int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, cons
   return 0;
 }
 
-int sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx)
+sa_boolean sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx)
 {
   if (ctx == NULL)
     return 0;

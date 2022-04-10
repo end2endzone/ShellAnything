@@ -26,7 +26,7 @@
 #define SA_API_CONFIGURATION_H
 
 #include <stdint.h>
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_selection_context.h"
@@ -67,7 +67,7 @@ sa_error_t sa_configuration_load_file_string(const char* path, sa_string_t* erro
 /// </summary>
 /// <param name="path">The file path to load</param>
 /// <returns>Returns 1 if the file is a valid configuration file. Returns 0 otherwise.</returns>
-int sa_configuration_is_valid_config_file(const char* path);
+sa_boolean sa_configuration_is_valid_config_file(const char* path);
 
 /// <summary>
 /// Get the file path of this configuration.

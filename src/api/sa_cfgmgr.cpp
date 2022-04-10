@@ -48,7 +48,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
   return SA_ERROR_SUCCESS;
 }
 
-int sa_cfgmgr_is_configuration_file_loaded(const char* path)
+sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char* path)
 {
   bool loaded = ConfigManager::GetInstance().IsConfigFileLoaded(path);
   if (loaded)

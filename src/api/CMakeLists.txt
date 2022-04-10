@@ -10,7 +10,7 @@ set(SHELLANYTHING_API_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_logging.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_memory.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_menu.h
-  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_object_types.h
+  ${CMAKE_SOURCE_DIR}/include/shellanything/sa_types.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_plugin.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_plugin_definitions.h
   ${CMAKE_SOURCE_DIR}/include/shellanything/sa_properties.h

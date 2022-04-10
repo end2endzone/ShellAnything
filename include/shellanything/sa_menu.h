@@ -25,7 +25,7 @@
 #ifndef SA_API_MENU_H
 #define SA_API_MENU_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 #include "shellanything/sa_icon.h"
@@ -55,7 +55,7 @@ int sa_menu_is_separator(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="separator">The new separator value. Set to 1 for setting this menu as a separator. Set to 0 otherwise.</param>
-void sa_menu_set_separator(sa_menu_t* menu, int separator);
+void sa_menu_set_separator(sa_menu_t* menu, sa_boolean separator);
 
 /// <summary>
 /// Get the name of the menu.
@@ -134,28 +134,28 @@ void sa_menu_update(sa_menu_t* menu, sa_selection_context_immutable_t* ctx);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <returns>Return 1 if the menu is visible. Returns 0 otherwise.</returns>
-int sa_menu_is_visible(sa_menu_immutable_t* menu);
+sa_boolean sa_menu_is_visible(sa_menu_immutable_t* menu);
 
 /// <summary>
 /// Set the visible parameter
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="visible">The new parameter value</param>
-void sa_menu_set_visible(sa_menu_t* menu, int visible);
+void sa_menu_set_visible(sa_menu_t* menu, sa_boolean visible);
 
 /// <summary>
 /// Get the enabled parameter.
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <returns>Return 1 if the menu is enabled. Returns 0 otherwise.</returns>
-int sa_menu_is_enabled(sa_menu_immutable_t* menu);
+sa_boolean sa_menu_is_enabled(sa_menu_immutable_t* menu);
 
 /// <summary>
 /// Set the enabled parameter
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="enabled">The new parameter value</param>
-void sa_menu_set_enabled(sa_menu_t* menu, int enabled);
+void sa_menu_set_enabled(sa_menu_t* menu, sa_boolean enabled);
 
 /// <summary>
 /// Get how many actions are subscribed to the menu.

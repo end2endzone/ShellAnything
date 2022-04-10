@@ -42,7 +42,7 @@ void sa_properties_delete(const char* name)
   pmgr.ClearProperty(name);
 }
 
-int sa_properties_exists(const char* name)
+sa_boolean sa_properties_exists(const char* name)
 {
   if (name == NULL)
     return 0;

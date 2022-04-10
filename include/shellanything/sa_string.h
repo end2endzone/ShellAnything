@@ -25,7 +25,7 @@
 #ifndef SA_API_STRING_H
 #define SA_API_STRING_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

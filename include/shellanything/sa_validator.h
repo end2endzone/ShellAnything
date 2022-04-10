@@ -25,7 +25,7 @@
 #ifndef SA_API_VALIDATOR_H
 #define SA_API_VALIDATOR_H
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_selection_context.h"
 
@@ -48,7 +48,7 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator);
 /// <param name="validator">The validator structure object.</param>
 /// <param name="name">The name of the attribute. The name is case sensitive.</param>
 /// <returns>Returns 1 if the given attribute name is in the list of inversed attributes. Returns 0 otherwise.</returns>
-int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name);
+sa_boolean sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name);
 
 /// <summary>
 /// Validate the given context against a set of constraints.
@@ -61,7 +61,7 @@ int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, cons
 /// <param name="validator">The validator structure object.</param>
 /// <param name="ctx">The context used for validating.</param>
 /// <returns>Returns 1 if the given context is valid against the set of constraints. Returns 0 otherwise.</returns>
-int sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx);
+sa_boolean sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Get the maxfiles parameter.

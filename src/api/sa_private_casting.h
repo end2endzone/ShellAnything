@@ -36,7 +36,7 @@
 #include "Validator.h"
 #include "PropertyStore.h"
 
-#include "shellanything/sa_object_types.h"
+#include "shellanything/sa_types.h"
 
 const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*       object);
       shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                 object);

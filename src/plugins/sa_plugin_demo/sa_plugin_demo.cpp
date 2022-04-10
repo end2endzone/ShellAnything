@@ -37,7 +37,7 @@ extern "C" {
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_demo";
 
-int sa_plugin_demo_validate(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
+sa_boolean sa_plugin_demo_validate(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
 {
   size_t count = sa_property_store_get_property_count(store);
 
