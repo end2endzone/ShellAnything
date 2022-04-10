@@ -98,8 +98,11 @@ sa_error_t parse_time(const char * attribute_name, const char* value, std::tm* o
   int hour = atoi(hour_str.c_str());
   int min = atoi(min_str.c_str());
 
+  //we only care about hour and minute.
+  *output = get_current_time();
   output->tm_hour = hour;
   output->tm_min = min;
+
   return SA_ERROR_SUCCESS;
 }
 
