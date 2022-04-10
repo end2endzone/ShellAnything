@@ -41,6 +41,19 @@
 
 namespace shellanything
 {
+  const std::string& Validator::ATTRIBUTE_MAXFILES       = "maxfiles";
+  const std::string& Validator::ATTRIBUTE_MAXDIRECTORIES = "maxfolders";
+  const std::string& Validator::ATTRIBUTE_PROPERTIES     = "properties";
+  const std::string& Validator::ATTRIBUTE_FILEEXTENSIONS = "fileextensions";
+  const std::string& Validator::ATTRIBUTE_EXISTS         = "exists";
+  const std::string& Validator::ATTRIBUTE_CLASS          = "class";
+  const std::string& Validator::ATTRIBUTE_PATTERN        = "pattern";
+  const std::string& Validator::ATTRIBUTE_EXPRTK         = "exprtk";
+  const std::string& Validator::ATTRIBUTE_ISTRUE         = "istrue";
+  const std::string& Validator::ATTRIBUTE_ISFALSE        = "isfalse";
+  const std::string& Validator::ATTRIBUTE_ISEMPTY        = "isempty";
+  const std::string& Validator::ATTRIBUTE_INSERVE        = "inverse";
+
   bool HasValue(const ra::strings::StringVector & values, const std::string & token)
   {
     for(size_t i=0; i<values.size(); i++)
@@ -97,6 +110,8 @@ namespace shellanything
 
   void Validator::SetMaxFiles(const int & max_files)
   {
+    std::string str_value = ra::strings::ToString(max_files);
+    mAttributes.SetProperty(ATTRIBUTE_MAXFILES, str_value);
     mMaxFiles = max_files;
   }
 
@@ -107,97 +122,99 @@ namespace shellanything
 
   void Validator::SetMaxDirectories(const int & max_directories)
   {
+    std::string str_value = ra::strings::ToString(max_directories);
+    mAttributes.SetProperty(ATTRIBUTE_MAXDIRECTORIES, str_value);
     mMaxDirectories = max_directories;
   }
 
   const std::string & Validator::GetProperties() const
   {
-    return mProperties;
+    return mAttributes.GetProperty(ATTRIBUTE_PROPERTIES);
   }
 
   void Validator::SetProperties(const std::string & properties)
   {
-    mProperties = properties;
+    mAttributes.SetProperty(ATTRIBUTE_PROPERTIES, properties);
   }
 
   const std::string & Validator::GetFileExtensions() const
   {
-    return mFileExtensions;
+    return mAttributes.GetProperty(ATTRIBUTE_FILEEXTENSIONS);
   }
 
   void Validator::SetFileExtensions(const std::string & file_extensions)
   {
-    mFileExtensions = file_extensions;
+    mAttributes.SetProperty(ATTRIBUTE_FILEEXTENSIONS, file_extensions);
   }
 
   const std::string & Validator::GetFileExists() const
   {
-    return mFileExists;
+    return mAttributes.GetProperty(ATTRIBUTE_EXISTS);
   }
 
   void Validator::SetFileExists(const std::string & file_exists)
   {
-    mFileExists = file_exists;
+    mAttributes.SetProperty(ATTRIBUTE_EXISTS, file_exists);
   }
 
   const std::string & Validator::GetClass() const
   {
-    return mClass;
+    return mAttributes.GetProperty(ATTRIBUTE_CLASS);
   }
 
   void Validator::SetClass(const std::string & classes)
   {
-    mClass = classes;
+    mAttributes.SetProperty(ATTRIBUTE_CLASS, classes);
   }
 
   const std::string & Validator::GetPattern() const
   {
-    return mPattern;
+    return mAttributes.GetProperty(ATTRIBUTE_PATTERN);
   }
 
   void Validator::SetPattern(const std::string & pattern)
   {
-    mPattern = pattern;
+    mAttributes.SetProperty(ATTRIBUTE_PATTERN, pattern);
   }
 
   const std::string & Validator::GetExprtk() const
   {
-    return mExprtk;
+    return mAttributes.GetProperty(ATTRIBUTE_EXPRTK);
   }
 
   void Validator::SetExprtk(const std::string & exprtk)
   {
-    mExprtk = exprtk;
+    mAttributes.SetProperty(ATTRIBUTE_EXPRTK, exprtk);
   }
 
   const std::string & Validator::GetIsTrue() const
   {
-    return mIsTrue;
+    return mAttributes.GetProperty(ATTRIBUTE_ISTRUE);
   }
 
   void Validator::SetIsTrue(const std::string & istrue)
   {
-    mIsTrue = istrue;
+    mAttributes.SetProperty(ATTRIBUTE_ISTRUE, istrue);
   }
 
   const std::string & Validator::GetIsFalse() const
   {
-    return mIsFalse;
+    return mAttributes.GetProperty(ATTRIBUTE_ISFALSE);
   }
 
   void Validator::SetIsFalse(const std::string & isfalse)
   {
-    mIsFalse = isfalse;
+    mAttributes.SetProperty(ATTRIBUTE_ISFALSE, isfalse);
   }
 
   const std::string & Validator::GetIsEmpty() const
   {
-    return mIsEmpty;
+    return mAttributes.GetProperty(ATTRIBUTE_ISEMPTY);
   }
 
   void Validator::SetIsEmpty(const std::string & isempty)
   {
-    mIsEmpty = isempty;
+    mAttributes.SetProperty(ATTRIBUTE_ISEMPTY, isempty);
   }
 
   const PropertyStore& Validator::GetCustomAttributes() const
@@ -212,12 +229,12 @@ namespace shellanything
 
   const std::string & Validator::GetInserve() const
   {
-    return mInverse;
+    return mAttributes.GetProperty(ATTRIBUTE_INSERVE);
   }
 
   void Validator::SetInserve(const std::string & inserve)
   {
-    mInverse = inserve;
+    mAttributes.SetProperty(ATTRIBUTE_INSERVE, inserve);
   }
 
   bool Validator::IsInversed(const char * name) const
@@ -236,9 +253,11 @@ namespace shellanything
         return true;
     }
 
+    const std::string& inverse_attr = mAttributes.GetProperty(Validator::ATTRIBUTE_INSERVE);
+
     size_t name_length = tmp_name.size();
     size_t search_index = 0;
-    size_t pos = mInverse.find(name, search_index);
+    size_t pos = inverse_attr.find(name, search_index);
     while( pos != std::string::npos)
     {
       // The name of the attribute was found.
@@ -247,8 +266,8 @@ namespace shellanything
       // The end of the attribute should match the end of the mInverse string or
       // followed by a ';' character.
       char next = '\0';
-      if (pos + name_length < mInverse.size())
-        next = mInverse[pos + name_length];
+      if (pos + name_length < inverse_attr.size())
+        next = inverse_attr[pos + name_length];
 
       if (next == '\0' || next == SA_INVERSE_ATTR_SEPARATOR_CHAR)
       {
@@ -262,7 +281,7 @@ namespace shellanything
 
         char previous = SA_INVERSE_ATTR_SEPARATOR_CHAR;
         if (pos >= 1)
-          previous = mInverse[pos - 1];
+          previous = inverse_attr[pos - 1];
         
         if (previous == SA_INVERSE_ATTR_SEPARATOR_CHAR)
           return true; // We have a match!
@@ -272,7 +291,7 @@ namespace shellanything
       // Move the searched position at the next possible offset
       // and search again.
       search_index += name_length;
-      pos = mInverse.find(name, search_index);
+      pos = inverse_attr.find(name, search_index);
     }
 
     return false;
@@ -295,17 +314,17 @@ namespace shellanything
       return false; //too many directories selected
 
     //validate properties
-    const std::string properties = pmgr.Expand(mProperties);
+    const std::string properties = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_PROPERTIES));
     if (!properties.empty())
     {
-      bool inversed = IsInversed("properties");
+      bool inversed = IsInversed( "properties");
       bool valid = ValidateProperties(context, properties, inversed);
       if (!valid)
         return false;
     }
 
     //validate file extentions
-    const std::string file_extensions = pmgr.Expand(mFileExtensions);
+    const std::string file_extensions = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_FILEEXTENSIONS));
     if (!file_extensions.empty())
     {
       bool inversed = IsInversed("fileextensions");
@@ -315,7 +334,7 @@ namespace shellanything
     }
 
     //validate file/directory exists
-    const std::string file_exists = pmgr.Expand(mFileExists);
+    const std::string file_exists = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_EXISTS));
     if (!file_exists.empty())
     {
       bool inversed = IsInversed("exists");
@@ -325,7 +344,7 @@ namespace shellanything
     }
 
     //validate class
-    const std::string class_ = pmgr.Expand(mClass);
+    const std::string class_ = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_CLASS));
     if (!class_.empty())
     {
       bool inversed = IsInversed("class");
@@ -335,7 +354,7 @@ namespace shellanything
     }
 
     //validate pattern
-    const std::string pattern = pmgr.Expand(mPattern);
+    const std::string pattern = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_PATTERN));
     if (!pattern.empty())
     {
       bool inversed = IsInversed("pattern");
@@ -345,7 +364,7 @@ namespace shellanything
     }
 
     //validate exprtx
-    const std::string exprtk = pmgr.Expand(mExprtk);
+    const std::string exprtk = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_EXPRTK));
     if (!exprtk.empty())
     {
       bool inversed = IsInversed("exprtk");
@@ -355,7 +374,7 @@ namespace shellanything
     }
 
     //validate istrue
-    const std::string istrue = pmgr.Expand(mIsTrue);
+    const std::string istrue = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_ISTRUE));
     if (!istrue.empty())
     {
       bool inversed = IsInversed("istrue");
@@ -365,7 +384,7 @@ namespace shellanything
     }
 
     //validate isfalse
-    const std::string isfalse = pmgr.Expand(mIsFalse);
+    const std::string isfalse = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_ISFALSE));
     if (!isfalse.empty())
     {
       bool inversed = IsInversed("isfalse");
@@ -375,8 +394,9 @@ namespace shellanything
     }
 
     //validate isempty
-    const std::string isempty = pmgr.Expand(mIsEmpty);
-    if (!mIsEmpty.empty())  // note, testing with non-expanded value instead of expanded value
+    const std::string& isempty_attr = mAttributes.GetProperty(ATTRIBUTE_ISEMPTY);
+    const std::string isempty = pmgr.Expand(isempty_attr);
+    if (!isempty_attr.empty())  // note, testing with non-expanded value instead of expanded value
     {
       bool inversed = IsInversed("isempty");
       bool valid = ValidateIsEmpty(context, isempty, inversed);
@@ -384,31 +404,28 @@ namespace shellanything
         return false;
     }
 
-    //validate custom attributes
-    if (!mCustomAttributes.IsEmpty())
+    //validate using plugins
+    //for each plugins
+    for (size_t i = 0; i < mPlugins.size(); i++)
     {
+      Plugin* p = mPlugins[i];
+      bool valid = ValidatePlugin(context, p);
+      if (!valid)
+        return false;
+    }
+
+    //check if we are updating a Configuration.
+    Configuration* updating_config = Configuration::GetUpdatingConfiguration();
+    if (updating_config != NULL)
+    {
+      const Plugin::PluginPtrList& config_plugins = updating_config->GetPlugins();
       //for each plugins
-      for (size_t i = 0; i < mPlugins.size(); i++)
+      for (size_t i = 0; i < config_plugins.size(); i++)
       {
-        Plugin* p = mPlugins[i];
+        Plugin* p = config_plugins[i];
         bool valid = ValidatePlugin(context, p);
         if (!valid)
           return false;
-      }
-
-      //check if we are updating a Configuration.
-      Configuration* updating_config = Configuration::GetUpdatingConfiguration();
-      if (updating_config != NULL)
-      {
-        const Plugin::PluginPtrList& config_plugins = updating_config->GetPlugins();
-        //for each plugins
-        for (size_t i = 0; i < config_plugins.size(); i++)
-        {
-          Plugin* p = config_plugins[i];
-          bool valid = ValidatePlugin(context, p);
-          if (!valid)
-            return false;
-        }
       }
     }
 
@@ -829,58 +846,66 @@ namespace shellanything
     return true;
   }
 
+  bool contains(IAttributeValidator::IAttributeValidationPtrList& validators, IAttributeValidator* validator)
+  {
+    for (size_t i = 0; i < validators.size(); i++)
+    {
+      IAttributeValidator* element = validators[i];
+      if (element == validator)
+        return true;
+    }
+    return false;
+  }
+
   bool Validator::ValidatePlugin(const SelectionContext& context, Plugin* plugin) const
   {
     Registry& registry = plugin->GetRegistry();
 
-    //try to find a validator for each condition
+    //get condition attributes supported by this plugin
     ra::strings::StringVector plugin_conditions;
     PropertyManager::SplitAndExpand(plugin->GetConditions(), SA_CONDITIONS_ATTR_SEPARATOR_STR, plugin_conditions);
-    while (!plugin_conditions.empty())
+    
+    //if there is no condition, it cannot be linked to a validator.
+    if (plugin_conditions.empty())
+      return true; // no validation required
+
+    //validate if we should invoke this plugin's validation function
+    bool invoke_plugin_validator = false;
+
+    //if any of the plugin's condition is specified as an xml attribute, we must invoke this plugin's validation function
+    for (size_t i = 0; i < plugin_conditions.size(); i++)
     {
-      //find the attribute validator of the first condition name
-      IAttributeValidator* attr_validator = registry.GetAttributeValidatorFromName(plugin_conditions[0]);
-      if (attr_validator != NULL)
+      const std::string& condition = plugin_conditions[i];
+      if (this->mCustomAttributes.HasProperty(condition))
       {
-        //get the conditions that must be evaluated "at the same time"
-        const StringList& related_conditions = attr_validator->GetAttributeNames();
+        invoke_plugin_validator = true;
+        break;
+      }
+    }
 
-        //remove related conditions from remaining conditions
-        for (size_t i = 0; i < related_conditions.size(); i++)
+    if (invoke_plugin_validator)
+    {
+      //get all validators for all custom attributes of this validator
+      IAttributeValidator::IAttributeValidationPtrList validators;
+      for (size_t i = 0; i < plugin_conditions.size(); i++)
+      {
+        const std::string& condition = plugin_conditions[i];
+        IAttributeValidator* attr_validator = registry.GetAttributeValidatorFromName(condition);
+        if (attr_validator != NULL)
         {
-          const std::string& related_condition = related_conditions[i];
-          plugin_conditions.erase(std::find(plugin_conditions.begin(), plugin_conditions.end(), related_condition));
+          if (!contains(validators, attr_validator))
+            validators.push_back(attr_validator);
         }
+      }
 
-        //validate!
-        //if a condition is not specified in mCustomAttributes, it will be empty.
-        //plugins must validate if all their mandatory attributes are available.
-        //this is because plugins can declare optional attributes.
-        StringList values;
-        IntList flags;
-        for (size_t i = 0; i < related_conditions.size(); i++)
-        {
-          const std::string& related_condition = related_conditions[i];
-          const std::string& condition_value = mCustomAttributes.GetProperty(related_condition);
-          int condition_flag = SA_ATTRIBUTE_FLAG_NONE;
-          if (this->IsInversed(related_condition.c_str()))
-            condition_flag = condition_flag & SA_ATTRIBUTE_FLAG_INVERSED;
-
-          values.push_back(condition_value);
-          flags.push_back(condition_flag);
-        }
-
-        attr_validator->SetAttributeValues(values);
-        attr_validator->SetAttributeFlags(flags);
+      //validate!
+      for (size_t i = 0; i < validators.size(); i++)
+      {
+        IAttributeValidator* attr_validator = validators[i];
+        attr_validator->SetAttributes(mCustomAttributes);
         bool valid = attr_validator->Validate(context);
         if (!valid)
           return false;
-      }
-      else
-      {
-        //no validator for this condition. A warning is expected to be already printed in the logs when the plugin was loaded.
-        //remove related conditions from remaining conditions
-        plugin_conditions.erase(plugin_conditions.begin() + 0);
       }
     }
 

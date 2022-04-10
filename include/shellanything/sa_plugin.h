@@ -26,9 +26,11 @@
 #define SA_API_PLUGIN_H
 
 #include <stdint.h>
+#include "shellanything/sa_object_types.h"
 #include "shellanything/sa_plugin_definitions.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_selection_context.h"
+#include "shellanything/sa_property_store.h"
 #include "shellanything/sa_plugin_definitions.h"
 
 #ifdef __cplusplus
@@ -38,12 +40,10 @@ extern "C" {
 /// <summary>
 /// Function pointer definition for validating a custom attributes.
 /// </summary>
-/// <param name="names">The names of the attributes as an array of strings.</param>
-/// <param name="values">The values of the attributes as an array of strings.</param>
-/// <param name="flags">The flags of the attributes. See macros that starts with SA_ATTRIBUTE_FLAG_.</param>
-/// <param name="count">Defines how many elements are in the names, values and flags arrays.</param>
+/// <param name="ctx">The selection context that identifies which files and directories is selected.</param>
+/// <param name="store">The property store which contains the attributes for validation.</param>
 /// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef int (*sa_plugin_attribute_validate_func)(sa_selection_context_immutable_t* ctx, const char** /*names*/, const char** /*values*/, const int* /*flags*/, size_t /*count*/);
+typedef int (*sa_plugin_attribute_validate_func)(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store);
 
 /// <summary>
 /// Register a custom attribute validation function for a given list of attributes.

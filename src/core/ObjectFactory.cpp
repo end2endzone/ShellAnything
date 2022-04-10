@@ -180,7 +180,7 @@ namespace shellanything
 
     //parse class
     std::string class_;
-    if (ParseAttribute(element, "class", true, true, class_, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_CLASS.c_str(), true, true, class_, error))
     {
       if (!class_.empty())
       {
@@ -190,7 +190,7 @@ namespace shellanything
 
     //parse pattern
     std::string pattern;
-    if (ParseAttribute(element, "pattern", true, true, pattern, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_PATTERN.c_str(), true, true, pattern, error))
     {
       if (!pattern.empty())
       {
@@ -200,7 +200,7 @@ namespace shellanything
 
     //parse exprtk
     std::string exprtk;
-    if (ParseAttribute(element, "exprtk", true, true, exprtk, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_EXPRTK.c_str(), true, true, exprtk, error))
     {
       if (!exprtk.empty())
       {
@@ -210,21 +210,21 @@ namespace shellanything
 
     //parse maxfiles
     int maxfiles = -1;
-    if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_MAXFILES.c_str(), true, true, maxfiles, error))
     {
       validator->SetMaxFiles(maxfiles);
     }
 
     //parse maxfolders
     int maxfolders = -1;
-    if (ParseAttribute(element, "maxfolders", true, true, maxfolders, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_MAXDIRECTORIES.c_str(), true, true, maxfolders, error))
     {
       validator->SetMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
     std::string fileextensions;
-    if (ParseAttribute(element, "fileextensions", true, true, fileextensions, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_FILEEXTENSIONS.c_str(), true, true, fileextensions, error))
     {
       if (!fileextensions.empty())
       {
@@ -234,7 +234,7 @@ namespace shellanything
 
     //parse exists
     std::string exists;
-    if (ParseAttribute(element, "exists", true, true, exists, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_EXISTS.c_str(), true, true, exists, error))
     {
       if (!exists.empty())
       {
@@ -244,7 +244,7 @@ namespace shellanything
 
     //parse properties
     std::string properties;
-    if (ParseAttribute(element, "properties", true, true, properties, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_PROPERTIES.c_str(), true, true, properties, error))
     {
       if (!properties.empty())
       {
@@ -254,7 +254,7 @@ namespace shellanything
 
     //parse inverse
     std::string inverse;
-    if (ParseAttribute(element, "inverse", true, true, inverse, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_INSERVE.c_str(), true, true, inverse, error))
     {
       if (!inverse.empty())
       {
@@ -264,7 +264,7 @@ namespace shellanything
 
     //parse istrue
     std::string istrue;
-    if (ParseAttribute(element, "istrue", true, true, istrue, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISTRUE.c_str(), true, true, istrue, error))
     {
       if (!istrue.empty())
       {
@@ -274,7 +274,7 @@ namespace shellanything
 
     //parse isfalse
     std::string isfalse;
-    if (ParseAttribute(element, "isfalse", true, true, isfalse, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISFALSE.c_str(), true, true, isfalse, error))
     {
       if (!isfalse.empty())
       {
@@ -284,7 +284,7 @@ namespace shellanything
 
     //parse isempty
     std::string isempty;
-    if (ParseAttribute(element, "isempty", true, true, isempty, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISEMPTY.c_str(), true, true, isempty, error))
     {
       if (!isempty.empty())
       {

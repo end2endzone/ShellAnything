@@ -78,14 +78,9 @@ public:
     return mNames;
   }
 
-  virtual void SetAttributeValues(const StringList& values)
+  virtual void SetAttributes(const PropertyStore& store)
   {
-    mValues = values;
-  }
-
-  virtual void SetAttributeFlags(const IntList& flags)
-  {
-    mFlags = flags;
+    mAttributes = store;
   }
 
   bool Validate(const SelectionContext& context) const
@@ -97,32 +92,6 @@ public:
       return false;
     }
 
-    //check values and flags
-    for (size_t i = 0; i < mNames.size(); i++)
-    {
-      const std::string& name = mNames[i];
-      if (i >= mValues.size())
-      {
-        sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing value for attribute name '%s'.", name.c_str());
-        return false;
-      }
-      if (i >= mFlags.size())
-      {
-        sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing flag for attribute name '%s'.", name.c_str());
-        return false;
-      }
-    }
-    if (mNames.size() < mValues.size())
-    {
-      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Too many values specified for the attribute validator.");
-      return false;
-    }
-    if (mNames.size() < mFlags.size())
-    {
-      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Too many flags specified for the attribute validator.");
-      return false;
-    }
-
     // check callback
     if (mValidationFunc == NULL)
     {
@@ -131,12 +100,9 @@ public:
     }
 
     // call the validation function of the plugin
-    std::vector<const char*> names;
-    std::vector<const char*> values;
-    ToCStringArray(names, mNames);
-    ToCStringArray(values, mValues);
     sa_selection_context_immutable_t ctx = AS_TYPE_SELECTION_CONTEXT(&context);
-    int valid = mValidationFunc(&ctx, &names[0], &values[0], &mFlags[0], names.size());
+    sa_property_store_immutable_t store = AS_TYPE_PROPERTY_STORE(&mAttributes);
+    int valid = mValidationFunc(&ctx, &store);
     if (valid)
       return true;
     return false;
@@ -158,8 +124,7 @@ public:
 
 private:
   StringList mNames;
-  StringList mValues;
-  IntList mFlags;
+  PropertyStore mAttributes;
   sa_plugin_attribute_validate_func mValidationFunc;
 };
 

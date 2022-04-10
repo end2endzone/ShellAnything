@@ -28,7 +28,7 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "StringList.h"
-#include "IntList.h"
+#include "PropertyStore.h"
 #include "SelectionContext.h"
 #include <vector>
 #include <string>
@@ -70,16 +70,10 @@ namespace shellanything
     virtual const StringList& GetAttributeNames() const = 0;
 
     /// <summary>
-    /// Set the list of values for the attributes supported by this instance.
+    /// Set the PropertyStore that contains the names and values supported by this instance.
     /// </summary>
-    /// <param name="names">A list of values matching the names</param>
-    virtual void SetAttributeValues(const StringList& values) = 0;
-
-    /// <summary>
-    /// Set the list of flags for the attributes supported by this instance.
-    /// </summary>
-    /// <param name="flags">A list of flags for each attributes</param>
-    virtual void SetAttributeFlags(const IntList& flags) = 0;
+    /// <param name="store">A property store that contains the names and values for the validator</param>
+    virtual void SetAttributes(const PropertyStore& store) = 0;
 
     /// <summary>
     /// Validate the given context against a set of constraints.

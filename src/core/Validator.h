@@ -77,6 +77,19 @@ namespace shellanything
     Validator& operator=(const Validator&);
   public:
 
+    static const std::string& ATTRIBUTE_MAXFILES;
+    static const std::string& ATTRIBUTE_MAXDIRECTORIES;
+    static const std::string& ATTRIBUTE_PROPERTIES;
+    static const std::string& ATTRIBUTE_FILEEXTENSIONS;
+    static const std::string& ATTRIBUTE_EXISTS;
+    static const std::string& ATTRIBUTE_CLASS;
+    static const std::string& ATTRIBUTE_PATTERN;
+    static const std::string& ATTRIBUTE_EXPRTK;
+    static const std::string& ATTRIBUTE_ISTRUE;
+    static const std::string& ATTRIBUTE_ISFALSE;
+    static const std::string& ATTRIBUTE_ISEMPTY;
+    static const std::string& ATTRIBUTE_INSERVE;
+
     /// <summary>
     /// Get the parent menu.
     /// </summary>
@@ -286,16 +299,7 @@ namespace shellanything
   private:
     int mMaxFiles;
     int mMaxDirectories;
-    std::string mProperties;
-    std::string mFileExtensions;
-    std::string mFileExists;
-    std::string mClass;
-    std::string mPattern;
-    std::string mExprtk;
-    std::string mIsTrue;
-    std::string mIsFalse;
-    std::string mIsEmpty;
-    std::string mInverse;
+    PropertyStore mAttributes;
     PropertyStore mCustomAttributes;
     Plugin::PluginPtrList mPlugins;
     Menu* mParentMenu;

@@ -26,6 +26,7 @@
 #include "shellanything/sa_logging.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_plugin.h"
+#include "shellanything/sa_property_store.h"
 #include "shellanything/sa_selection_context.h"
 #include <string>
 #include <ctime>
@@ -40,26 +41,6 @@ extern "C" {
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_time";
 static const char* START_TIME_ATTR = "start_time";
 static const char* END_TIME_ATTR = "end_time";
-
-/// <summary>
-/// Find the value of the given attribute name from the list of names and values.
-/// </summary>
-/// <param name="name">The actual attribute name that we are searching for.</param>
-/// <param name="names">The available attribute names</param>
-/// <param name="values">The values of the attributes.</param>
-/// <returns>Returns the value of the given attribute. Return NULL if not found</returns>
-const char* find_attribute_value(const char * name, const char** names, const char** values, size_t count)
-{
-  if (name == NULL || names == NULL || values == NULL || count == 0)
-    return NULL;
-  std::string tmp = name;
-  for(size_t i=0; i<count; i++)
-  {
-    if (tmp == names[i])
-      return values[i];
-  }
-  return NULL;
-}
 
 std::tm get_current_time()
 {
@@ -136,14 +117,14 @@ bool is_between_now(const std::tm& start_time, const std::tm& end_time)
   return false;
 }
 
-int sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, const char** names, const char** values, const int* flags, size_t count)
+int sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
 {
-  const char* start_time_str = find_attribute_value(START_TIME_ATTR, names, values, count);
-  const char* end_time_str = find_attribute_value(END_TIME_ATTR, names, values, count);
+  const char* start_time_str = sa_property_store_get_property_c_str(store, START_TIME_ATTR);
+  const char* end_time_str = sa_property_store_get_property_c_str(store, END_TIME_ATTR);
 
   //initialize both times to "now"
-  std::tm start_time = get_current_time();
-  std::tm end_time = start_time;
+  std::tm start_time = { 0 };
+  std::tm end_time = { 0 };
 
   //apply the hour/min values
   sa_error_t parse_result;
@@ -177,7 +158,8 @@ EXPORT_API sa_error_t sa_plugin_register()
     END_TIME_ATTR,
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
-  sa_error_t result = sa_plugin_register_attribute_validation(time_attributes, time_attributes_count, &sa_plugin_time_validate_time_of_day);
+  sa_plugin_attribute_validate_func validate_func = &sa_plugin_time_validate_time_of_day;
+  sa_error_t result = sa_plugin_register_attribute_validation(time_attributes, time_attributes_count, validate_func);
   if (result != SA_ERROR_SUCCESS)
   {
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed registering validation function for attributes '%s' and '%s'.", time_attributes[0], time_attributes[1]);
