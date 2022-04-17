@@ -38,21 +38,31 @@ extern "C" {
 #endif
 
 /// <summary>
-/// Function pointer definition for validating a custom attributes.
+/// Function pointer definition for validating custom attributes.
 /// </summary>
-/// <param name="ctx">The selection context that identifies which files and directories is selected.</param>
-/// <param name="store">The property store which contains the attributes for validation.</param>
 /// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef sa_boolean (*sa_plugin_attribute_validate_func)(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store);
+typedef sa_boolean (*sa_plugin_validate_callback_func)();
+
+/// <summary>
+/// Get the selection context that identifies which files and directories are selected while validating.
+/// </summary>
+/// <returns>Returns a valid pointer to a sa_selection_context_immutable_t. Returns NULL otherwise.</returns>
+sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context();
+
+/// <summary>
+/// Get the property store which contains the attributes for validation.
+/// </summary>
+/// <returns>Returns a valid pointer to a sa_selection_context_immutable_t. Returns NULL otherwise.</returns>
+sa_property_store_immutable_t* sa_plugin_validation_get_property_store();
 
 /// <summary>
 /// Register a custom attribute validation function for a given list of attributes.
 /// </summary>
 /// <param name="names">The names of the attributes as an array of strings.</param>
 /// <param name="count">Defines how many elements are in the names array.</param>
-/// <param name="func">A function pointer which definition matches sa_plugin_attribute_validate_func.</param>
+/// <param name="func">A function pointer which definition matches sa_plugin_validate_callback_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_attribute_validate_func func);
+sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func);
 
 #ifdef __cplusplus
 }

@@ -37,8 +37,11 @@ extern "C" {
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_demo";
 
-sa_boolean sa_plugin_demo_validate(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
+sa_boolean sa_plugin_demo_validate()
 {
+  sa_selection_context_immutable_t* ctx = sa_plugin_validation_get_selection_context();
+  sa_property_store_immutable_t* store = sa_plugin_validation_get_property_store();
+
   size_t count = sa_property_store_get_property_count(store);
 
   sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "%s() {", __FUNCTION__);
@@ -101,7 +104,7 @@ EXPORT_API sa_error_t sa_plugin_register()
     "demo2",
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
-  sa_plugin_attribute_validate_func validate_func = &sa_plugin_demo_validate;
+  sa_plugin_validate_callback_func validate_func = &sa_plugin_demo_validate;
   sa_error_t result = sa_plugin_register_attribute_validation(time_attributes, time_attributes_count, validate_func);
   if (result != SA_ERROR_SUCCESS)
   {

@@ -902,8 +902,9 @@ namespace shellanything
       for (size_t i = 0; i < validators.size(); i++)
       {
         IAttributeValidator* attr_validator = validators[i];
-        attr_validator->SetAttributes(mCustomAttributes);
-        bool valid = attr_validator->Validate(context);
+        attr_validator->SetSelectionContext(&context);
+        attr_validator->SetCustomAttributes(&mCustomAttributes);
+        bool valid = attr_validator->Validate();
         if (!valid)
           return false;
       }

@@ -64,6 +64,8 @@ EXPORTS
   sa_menu_to_immutable
   sa_menu_update
   sa_plugin_register_attribute_validation
+  sa_plugin_validation_get_property_store
+  sa_plugin_validation_get_selection_context
   sa_properties_clear
   sa_properties_clear
   sa_properties_delete

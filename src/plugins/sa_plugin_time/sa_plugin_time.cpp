@@ -120,8 +120,11 @@ bool is_between_now(const std::tm& start_time, const std::tm& end_time)
   return false;
 }
 
-sa_boolean sa_plugin_time_validate_time_of_day(sa_selection_context_immutable_t* ctx, sa_property_store_immutable_t* store)
+sa_boolean sa_plugin_time_validate_time_of_day()
 {
+  sa_selection_context_immutable_t* ctx = sa_plugin_validation_get_selection_context();
+  sa_property_store_immutable_t* store = sa_plugin_validation_get_property_store();
+
   const char* start_time_str = sa_property_store_get_property_c_str(store, START_TIME_ATTR);
   const char* end_time_str = sa_property_store_get_property_c_str(store, END_TIME_ATTR);
 
@@ -161,7 +164,7 @@ EXPORT_API sa_error_t sa_plugin_register()
     END_TIME_ATTR,
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
-  sa_plugin_attribute_validate_func validate_func = &sa_plugin_time_validate_time_of_day;
+  sa_plugin_validate_callback_func validate_func = &sa_plugin_time_validate_time_of_day;
   sa_error_t result = sa_plugin_register_attribute_validation(time_attributes, time_attributes_count, validate_func);
   if (result != SA_ERROR_SUCCESS)
   {

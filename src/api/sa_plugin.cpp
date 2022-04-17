@@ -33,6 +33,9 @@ using namespace shellanything;
 
 #define SA_API_LOG_IDDENTIFIER "API"
 
+sa_selection_context_immutable_t g_validation_selection_context;
+sa_property_store_immutable_t g_validation_property_store;
+
 void ToCStringArray(std::vector<const char*> & destination, const std::vector<std::string>& values)
 {
   destination.clear();
@@ -47,7 +50,11 @@ void ToCStringArray(std::vector<const char*> & destination, const std::vector<st
 class PluginAttributeValidator : public virtual IAttributeValidator
 {
 public:
-  PluginAttributeValidator() : mValidationFunc(NULL) {}
+  PluginAttributeValidator() : 
+    mSelection(NULL),
+    mAttributes(NULL),
+    mValidationFunc(NULL)
+  {}
   virtual ~PluginAttributeValidator() {}
 
   virtual bool IsAttributesSupported(const StringList& names) const
@@ -78,12 +85,36 @@ public:
     return mNames;
   }
 
-  virtual void SetAttributes(const PropertyStore& store)
+  void SetAttributeNames(const char* names[], size_t count)
+  {
+    for (size_t i = 0; i < count; i++)
+    {
+      const char* name = names[i];
+      mNames.push_back(name);
+    }
+  }
+
+  virtual void SetSelectionContext(const SelectionContext* context)
+  {
+    mSelection = context;
+  }
+
+  virtual const SelectionContext* GetSelectionContext() const
+  {
+    return mSelection;
+  }
+
+  virtual void SetCustomAttributes(const PropertyStore* store)
   {
     mAttributes = store;
   }
 
-  bool Validate(const SelectionContext& context) const
+  virtual const PropertyStore* GetCustomAttributes() const
+  {
+    return mAttributes;
+  }
+
+  bool Validate() const
   {
     // check names
     if (mNames.empty())
@@ -99,36 +130,49 @@ public:
       return false;
     }
 
+    // initialize the global objects for the validation
+    memset(&g_validation_selection_context, 0, sizeof(g_validation_selection_context));
+    memset(&g_validation_property_store, 0, sizeof(g_validation_property_store));
+    if (mSelection != NULL)
+      g_validation_selection_context = AS_TYPE_SELECTION_CONTEXT(mSelection);
+    if (mAttributes != NULL)
+      g_validation_property_store = AS_TYPE_PROPERTY_STORE(mAttributes);
+
     // call the validation function of the plugin
-    sa_selection_context_immutable_t ctx = AS_TYPE_SELECTION_CONTEXT(&context);
-    sa_property_store_immutable_t store = AS_TYPE_PROPERTY_STORE(&mAttributes);
-    int valid = mValidationFunc(&ctx, &store);
+    int valid = mValidationFunc();
+
+    // invalidate global validation objects
+    memset(&g_validation_selection_context, 0, sizeof(g_validation_selection_context));
+    memset(&g_validation_property_store, 0, sizeof(g_validation_property_store));
+
     if (valid)
       return true;
     return false;
   }
 
-  void SetAttributeNames(const char* names[], size_t count)
-  {
-    for (size_t i = 0; i < count; i++)
-    {
-      const char* name = names[i];
-      mNames.push_back(name);
-    }
-  }
-
-  void SetValidationFunction(sa_plugin_attribute_validate_func func)
+  void SetValidationFunction(sa_plugin_validate_callback_func func)
   {
     mValidationFunc = func;
   }
 
 private:
   StringList mNames;
-  PropertyStore mAttributes;
-  sa_plugin_attribute_validate_func mValidationFunc;
+  const SelectionContext* mSelection;
+  const PropertyStore* mAttributes;
+  sa_plugin_validate_callback_func mValidationFunc;
 };
 
-sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_attribute_validate_func func)
+sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context()
+{
+  return &g_validation_selection_context;
+}
+
+sa_property_store_immutable_t* sa_plugin_validation_get_property_store()
+{
+  return &g_validation_property_store;
+}
+
+sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func)
 {
   Plugin* plugin = Plugin::GetLoadingPlugin();
   if (plugin == NULL)

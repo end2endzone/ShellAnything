@@ -64,28 +64,41 @@ namespace shellanything
     virtual bool IsAttributesSupported(const StringList& names) const = 0;
 
     /// <summary>
-    /// Get the list of attributes supported by this instance
+    /// Get the list of attributes supported by this instance.
     /// </summary>
     /// <returns>Returns a list of custom attributes supported by this instance</returns>
     virtual const StringList& GetAttributeNames() const = 0;
 
     /// <summary>
-    /// Set the PropertyStore that contains the names and values supported by this instance.
+    /// Set a pointer to a SelectionContext that contains the list of files and directory that are selected.
     /// </summary>
-    /// <param name="store">A property store that contains the names and values for the validator</param>
-    virtual void SetAttributes(const PropertyStore& store) = 0;
+    /// <param name="context">The selection context used for validating.</param>
+    virtual void SetSelectionContext(const SelectionContext* context) = 0;
+
+    /// <summary>
+    /// Get a pointer to a PropertyStore that contains the custom attribute names and values of the validator.
+    /// </summary>
+    /// <returns>Returns a pointer to a SelectionContext. Returns NULL if no selection context is set.</returns>
+    virtual const SelectionContext* GetSelectionContext() const = 0;
+
+    /// <summary>
+    /// Set a pointer to a PropertyStore that contains the custom attribute names and values of the validator.
+    /// </summary>
+    /// <param name="store">A property store pointer that contains the names and values for the validator</param>
+    virtual void SetCustomAttributes(const PropertyStore* store) = 0;
+
+    /// <summary>
+    /// Get a pointer to a PropertyStore that contains the custom attribute names and values of the validator.
+    /// </summary>
+    /// <returns>Returns a pointer to a PropertyStore. Returns NULL if no attributes PropertyStore is set.</returns>
+    virtual const PropertyStore* GetCustomAttributes() const = 0;
 
     /// <summary>
     /// Validate the given context against a set of constraints.
-    /// The possible constraints includes a minimum/maximum number of files/directories selected,
-    /// a list of properties that must be defined,
-    /// a list of file extensions,
-    /// ...
     /// Note: this function is used to enable or disable a menu.
     /// </summary>
-    /// <param name="context">The context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    virtual bool Validate(const SelectionContext& context) const = 0;
+    virtual bool Validate() const = 0;
 
   };
 
