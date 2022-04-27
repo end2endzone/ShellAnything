@@ -25,6 +25,7 @@
 #include "TestPlugins.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
+#include "PropertyManager.h"
 #include "SelectionContext.h"
 
 #include "rapidassist/testing.h"
@@ -85,6 +86,101 @@ namespace shellanything { namespace test
 
     //ASSERT that no files are loaded
     ASSERT_EQ(0, cmgr.GetConfigurations().size());
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPlugins, testServices)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    Configuration * config0 = cmgr.GetConfigurations()[0];
+
+    //ASSERT all plugins were loaded
+    for (size_t i = 0; i < config0->GetPlugins().size(); i++)
+    {
+      const Plugin* plugin = config0->GetPlugins()[i];
+      ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
+    }
+    
+    //Get menus
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(1, menus.size());
+    Menu* menu0 = menus[0];
+    ASSERT_TRUE(menu0 != NULL);
+
+    // Force an update to call the plugin
+    SelectionContext c;
+#ifdef _WIN32
+    {
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\cmd.exe");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    //Define the list of expected properties
+    ra::strings::StringVector expected_properties;
+    expected_properties.push_back("sa_plugin_services.WinDefend.status");
+    expected_properties.push_back("sa_plugin_services.Dhcp.status");
+    expected_properties.push_back("sa_plugin_services.Dnscache.status");
+    expected_properties.push_back("sa_plugin_services.OneDrive_Updater_Service.status");
+    expected_properties.push_back("sa_plugin_services.wuauserv.status");
+    expected_properties.push_back("sa_plugin_services.Fax.status");
+    expected_properties.push_back("sa_plugin_services.msiserver.status");
+    expected_properties.push_back("sa_plugin_services.aaaa.status");
+
+    //Clear expected properties
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    for (size_t i = 0; i < expected_properties.size(); i++)
+    {
+      const std::string& property_name = expected_properties[i];
+      pmgr.ClearProperty(property_name);
+    }
+
+    config0->Update(c);
+
+    //ASSERT the expected properties are set
+    for (size_t i = 0; i < expected_properties.size(); i++)
+    {
+      const std::string& property_name = expected_properties[i];
+      ASSERT_TRUE(pmgr.HasProperty(property_name)) << "The expected property '" << property_name << "' is not found.";
+      //const std::string& value = pmgr.GetProperty(property_name);
+      //printf("Found property '%s' with value '%s'.\n", property_name.c_str(), value.c_str());
+    }
+
+    //ASSERT expected process status
+    static const std::string& STATUS_RUNNING = "running";
+    static const std::string& STATUS_STOPPED = "stopped";
+    static const std::string& STATUS_EMPTY   = "";
+    ASSERT_EQ(STATUS_RUNNING, pmgr.GetProperty("sa_plugin_services.Dhcp.status"));
+    ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.Fax.status"));
+    ASSERT_EQ(STATUS_EMPTY  , pmgr.GetProperty("sa_plugin_services.aaaa.status"));
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPlugins, testTime)

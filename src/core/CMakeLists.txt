@@ -48,6 +48,8 @@ add_library(sa.core SHARED
   InputBox.h
   InputBox.cpp
   IntList.h
+  IUpdateCallback.h
+  IUpdateCallback.cpp
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp

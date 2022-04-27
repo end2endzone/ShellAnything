@@ -30,6 +30,7 @@
 #include "IAction.h"
 #include "IActionFactory.h"
 #include "IAttributeValidator.h"
+#include "IUpdateCallback.h"
 #include <map>
 
 namespace shellanything
@@ -82,6 +83,25 @@ namespace shellanything
     /// <param name="validator">A valid IAttributeValidator instance</param>
     void AddAttributeValidator(IAttributeValidator* validator);
 
+    /// <summary>
+    /// Get how many IUpdateCallback instances are added to the registry.
+    /// </summary>
+    /// <returns>Returns how many IUpdateCallback instances are registered in this registry.</returns>
+    size_t GetUpdateCallbackCount() const;
+
+    /// <summary>
+    /// Get an IUpdateCallback instance to update from the given index.
+    /// </summary>
+    /// <param name="index">The index of the instance to return.</param>
+    /// <returns>Returns an IUpdateCallback instance at the specified index. Returns NULL on invalid index.</returns>
+    IUpdateCallback* GetUpdateCallbackFromIndex(size_t index) const;
+
+    /// <summary>
+    /// Add an IUpdateCallback to the registry. The registry takes ownership of the given instance.
+    /// </summary>
+    /// <param name="callback">A valid IUpdateCallback instance</param>
+    void AddUpdateCallback(IUpdateCallback* callback);
+
   private:
 
     //------------------------
@@ -89,12 +109,14 @@ namespace shellanything
     //------------------------
     typedef std::map<std::string /*name*/, IActionFactory* /*factory*/> ActionFactoryMap;
     typedef std::map<std::string /*name*/, IAttributeValidator* /*validator*/> AttributeValidatorMap;
+    typedef std::vector<IUpdateCallback*> UpdateCallbackArray;
 
     //------------------------
     // Members
     //------------------------
     ActionFactoryMap mActionFactories;
     AttributeValidatorMap mAttributeValidators;
+    UpdateCallbackArray mUpdateCallbacks;
   };
 
 

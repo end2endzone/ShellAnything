@@ -27,12 +27,14 @@
 #include "sa_string_private.h"
 #include "sa_private_casting.h"
 #include "IAttributeValidator.h"
+#include "IUpdateCallback.h"
 #include "Plugin.h"
 
 using namespace shellanything;
 
 #define SA_API_LOG_IDDENTIFIER "API"
 
+sa_selection_context_immutable_t g_update_selection_context;
 sa_selection_context_immutable_t g_validation_selection_context;
 sa_property_store_immutable_t g_validation_property_store;
 
@@ -162,6 +164,56 @@ private:
   sa_plugin_validate_callback_func mValidationFunc;
 };
 
+class PluginUpdateCallback : public virtual IUpdateCallback
+{
+public:
+  PluginUpdateCallback() :
+    mSelection(NULL),
+    mValidationFunc(NULL)
+  {}
+  virtual ~PluginUpdateCallback() {}
+
+  virtual void SetSelectionContext(const SelectionContext* context)
+  {
+    mSelection = context;
+  }
+
+  virtual const SelectionContext* GetSelectionContext() const
+  {
+    return mSelection;
+  }
+
+  void OnNewSelection() const
+  {
+    // check callback
+    if (mValidationFunc == NULL)
+    {
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing update callback function.");
+      return;
+    }
+
+    // initialize the global objects for the update
+    memset(&g_update_selection_context, 0, sizeof(g_update_selection_context));
+    if (mSelection != NULL)
+      g_update_selection_context = AS_TYPE_SELECTION_CONTEXT(mSelection);
+
+    // call the update callback function of the plugin
+    mValidationFunc();
+
+    // invalidate global update objects
+    memset(&g_update_selection_context, 0, sizeof(g_update_selection_context));
+  }
+
+  void SetUpdateCallbackFunction(sa_plugin_update_callback_func func)
+  {
+    mValidationFunc = func;
+  }
+
+private:
+  const SelectionContext* mSelection;
+  sa_plugin_update_callback_func mValidationFunc;
+};
+
 sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context()
 {
   return &g_validation_selection_context;
@@ -170,6 +222,11 @@ sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context()
 sa_property_store_immutable_t* sa_plugin_validation_get_property_store()
 {
   return &g_validation_property_store;
+}
+
+sa_selection_context_immutable_t* sa_plugin_update_get_selection_context()
+{
+  return &g_update_selection_context;
 }
 
 sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func)
@@ -186,6 +243,23 @@ sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t c
   validator->SetValidationFunction(func);
 
   plugin->GetRegistry().AddAttributeValidator(validator);
+
+  return SA_ERROR_SUCCESS;
+}
+
+sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func func)
+{
+  Plugin* plugin = Plugin::GetLoadingPlugin();
+  if (plugin == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback. Current plugin is unknown.");
+    return SA_ERROR_MISSING_RESOURCE;
+  }
+
+  PluginUpdateCallback* update_callback = new PluginUpdateCallback();
+  update_callback->SetUpdateCallbackFunction(func);
+
+  plugin->GetRegistry().AddUpdateCallback(update_callback);
 
   return SA_ERROR_SUCCESS;
 }

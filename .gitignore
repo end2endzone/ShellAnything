@@ -6,3 +6,5 @@
 /src/plugins/sa_plugin_time/install
 /src/plugins/sa_plugin_demo/build
 /src/plugins/sa_plugin_demo/install
+/src/plugins/sa_plugin_services/build
+/src/plugins/sa_plugin_services/install

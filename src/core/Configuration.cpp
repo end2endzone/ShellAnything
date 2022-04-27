@@ -331,6 +331,22 @@ namespace shellanything
   {
     SetUpdatingConfiguration(this);
 
+    //run callbacks of each plugins
+    //for each plugins
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* p = mPlugins[i];
+      Registry& registry = p->GetRegistry();
+      size_t count = registry.GetUpdateCallbackCount();
+      for (size_t j = 0; j < count; j++)
+      {
+        IUpdateCallback* callback = registry.GetUpdateCallbackFromIndex(j);
+        callback->SetSelectionContext(&context);
+        callback->OnNewSelection();
+        callback->SetSelectionContext(NULL);
+      }
+    }
+    
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)

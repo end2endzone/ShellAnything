@@ -905,6 +905,8 @@ namespace shellanything
         attr_validator->SetSelectionContext(&context);
         attr_validator->SetCustomAttributes(&mCustomAttributes);
         bool valid = attr_validator->Validate();
+        attr_validator->SetSelectionContext(NULL);
+        attr_validator->SetCustomAttributes(NULL);
         if (!valid)
           return false;
       }

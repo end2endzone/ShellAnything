@@ -124,4 +124,22 @@ namespace shellanything
     }
   }
 
+  size_t Registry::GetUpdateCallbackCount() const
+  {
+    return mUpdateCallbacks.size();
+  }
+
+  IUpdateCallback* Registry::GetUpdateCallbackFromIndex(size_t index) const
+  {
+    if (index >= mUpdateCallbacks.size())
+      return NULL;
+    IUpdateCallback* callback = mUpdateCallbacks[index];
+    return callback;
+  }
+
+  void Registry::AddUpdateCallback(IUpdateCallback* callback)
+  {
+    mUpdateCallbacks.push_back(callback);
+  }
+
 } //namespace shellanything
