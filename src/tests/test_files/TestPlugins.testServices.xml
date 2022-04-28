@@ -21,6 +21,7 @@
       Fax                             Fax
       msiserver                       Windows Installer
       mpssvc                          Windows Defender Firewall
+      WebClient                       WebClient
       -->
       <property name="sa_plugin_services.names" value=""/>
       <property name="sa_plugin_services.names" value="WinDefend;${sa_plugin_services.names}"/>
@@ -31,6 +32,7 @@
       <property name="sa_plugin_services.names" value="Fax;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="msiserver;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="mpssvc;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="WebClient;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="aaaa;${sa_plugin_services.names}"/>
     </default>
 

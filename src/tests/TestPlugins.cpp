@@ -150,6 +150,7 @@ namespace shellanything { namespace test
     expected_properties.push_back("sa_plugin_services.wuauserv.status");
     expected_properties.push_back("sa_plugin_services.Fax.status");
     expected_properties.push_back("sa_plugin_services.msiserver.status");
+    expected_properties.push_back("sa_plugin_services.WebClient.status");
     expected_properties.push_back("sa_plugin_services.aaaa.status");
 
     //Clear expected properties
@@ -176,7 +177,7 @@ namespace shellanything { namespace test
     static const std::string& STATUS_STOPPED = "stopped";
     static const std::string& STATUS_EMPTY   = "";
     ASSERT_EQ(STATUS_RUNNING, pmgr.GetProperty("sa_plugin_services.Dhcp.status"));
-    ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.Fax.status"));
+    ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.WebClient.status"));
     ASSERT_EQ(STATUS_EMPTY  , pmgr.GetProperty("sa_plugin_services.aaaa.status"));
 
     //Cleanup
