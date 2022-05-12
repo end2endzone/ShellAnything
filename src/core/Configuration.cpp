@@ -462,21 +462,25 @@ namespace shellanything
 
   void Configuration::DeleteChildren()
   {
-    // delete plugins
-    for (size_t i = 0; i < mPlugins.size(); i++)
-    {
-      Plugin* plugin = mPlugins[i];
-      delete plugin;
-    }
-    mPlugins.clear();
-
-    // delete menus
+    // Delete menus
     for (size_t i = 0; i < mMenus.size(); i++)
     {
       Menu* sub = mMenus[i];
       delete sub;
     }
     mMenus.clear();
+
+    // Delete plugins
+    // Note that plugins must be deleted after everything else.
+    // This is because some object in the configuration may require code from plugins.
+    // If we delete a plugin, the module is unloaded which prevent object created by this
+    // plugin to be properly deleted resulting in an exception.
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* plugin = mPlugins[i];
+      delete plugin;
+    }
+    mPlugins.clear();
   }
 
   void Configuration::DeleteChild(Menu* menu)

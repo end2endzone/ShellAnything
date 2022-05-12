@@ -184,6 +184,135 @@ namespace shellanything { namespace test
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPlugins, testStrings)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    Configuration * config0 = cmgr.GetConfigurations()[0];
+
+    //ASSERT all plugins were loaded
+    for (size_t i = 0; i < config0->GetPlugins().size(); i++)
+    {
+      const Plugin* plugin = config0->GetPlugins()[i];
+      ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
+    }
+    
+    //Get menus
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(1, menus.size());
+    Menu* menu0 = menus[0];
+    ASSERT_TRUE(menu0 != NULL);
+
+    //ASSERT all actions were parsed
+    const IAction::ActionPtrList & actions = menu0->GetActions();
+    ASSERT_EQ(16, actions.size());
+
+    // Force an update to call the plugin
+    SelectionContext c;
+#ifdef _WIN32
+    {
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\cmd.exe");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    //Define the list of expected properties
+    ra::strings::StringVector expected_properties;
+    expected_properties.push_back("sa_plugin_strings.numbers");
+    expected_properties.push_back("sa_plugin_strings.letters");
+    expected_properties.push_back("sa_plugin_strings.strlen");
+    expected_properties.push_back("sa_plugin_strings.father");
+    expected_properties.push_back("sa_plugin_strings.uppercase");
+    expected_properties.push_back("sa_plugin_strings.lowercase");
+    expected_properties.push_back("sa_plugin_strings.roads.1");
+    expected_properties.push_back("sa_plugin_strings.roads.2");
+    expected_properties.push_back("sa_plugin_strings.roads.3");
+    expected_properties.push_back("sa_plugin_strings.demo.offset");
+    expected_properties.push_back("sa_plugin_strings.demo.lenght");
+    expected_properties.push_back("sa_plugin_strings.demo.username");
+    expected_properties.push_back("sa_plugin_strings.demo.message");
+
+    //Clear expected properties
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    for (size_t i = 0; i < expected_properties.size(); i++)
+    {
+      const std::string& property_name = expected_properties[i];
+      pmgr.ClearProperty(property_name);
+    }
+
+    // Execute menu actions
+    for (size_t i = 0; i < actions.size(); i++)
+    {
+      const shellanything::IAction* action = actions[i];
+      ASSERT_TRUE(action != NULL);
+      bool success = action->Execute(c);
+      ASSERT_EQ(true, success);
+    }
+
+    //ASSERT the expected properties are set
+    for (size_t i = 0; i < expected_properties.size(); i++)
+    {
+      const std::string& property_name = expected_properties[i];
+      ASSERT_TRUE(pmgr.HasProperty(property_name)) << "The expected property '" << property_name << "' is not found.";
+      //const std::string& value = pmgr.GetProperty(property_name);
+      //printf("Found property '%s' with value '%s'.\n", property_name.c_str(), value.c_str());
+    }
+
+    //ASSERT expected property values
+    ra::strings::StringVector expected_values;
+    expected_values.push_back("0123456789");
+    expected_values.push_back("abcdefghijklmnopqrstuvwxyz");
+    expected_values.push_back("11");
+    expected_values.push_back("George McFly");
+    expected_values.push_back("ROADS? WHERE WE'RE GOING, WE DON'T NEED ROADS.");
+    expected_values.push_back("roads? where we're going, we don't need roads.");
+    expected_values.push_back("0");
+    expected_values.push_back("40");
+    expected_values.push_back("18446744073709551615");
+    expected_values.push_back("13");
+    expected_values.push_back("6");
+    expected_values.push_back("foobar");
+    expected_values.push_back("Error: User 'mcfly.m' not found!");
+
+    //ASSERT expected process values
+    ASSERT_EQ(expected_properties.size(), expected_values.size());
+    for (size_t i = 0; i < expected_properties.size(); i++)
+    {
+      const std::string& property_name = expected_properties[i];
+      const std::string& actual_value = pmgr.GetProperty(property_name);
+      const std::string& expected_value = expected_values[i];
+      ASSERT_EQ(expected_value, actual_value) << "Test failure with 'expected_values[" << i << "]'. The property '" << property_name << "' is set to value '" << actual_value << "' but the value '" << expected_value << "' is expected.";
+    }
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestPlugins, testTime)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();

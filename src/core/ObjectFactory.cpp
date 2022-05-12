@@ -334,6 +334,19 @@ namespace shellanything
 
     //look for a factory in the registry for the element name
     IActionFactory* factory = registry.GetActionFactoryFromName(name);
+
+    //or look for a factory in plugin's registry
+    for (size_t i = 0; i < mPlugins.size() && factory == NULL; i++)
+    {
+      Plugin* p = mPlugins[i];
+      if (!p)
+        continue;
+
+      Registry& plugin_registry = p->GetRegistry();
+      factory = plugin_registry.GetActionFactoryFromName(name);
+    }
+
+    //if a factory was found
     if (factory)
     {
       //convert the xml element to a string

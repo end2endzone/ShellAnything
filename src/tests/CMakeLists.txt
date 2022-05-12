@@ -27,6 +27,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseMenuMaxLength.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParsePlugins.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testServices.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testStrings.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testTime.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
@@ -132,6 +133,7 @@ target_link_libraries(sa.tests
   PRIVATE
     sa.shared
     sa.core
+    sa.api
     sa.shellextension
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}

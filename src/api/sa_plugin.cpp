@@ -30,6 +30,8 @@
 #include "IUpdateCallback.h"
 #include "Plugin.h"
 
+#include "rapidassist/strings.h"
+
 using namespace shellanything;
 
 #define SA_API_LOG_IDDENTIFIER "API"
@@ -37,6 +39,11 @@ using namespace shellanything;
 sa_selection_context_immutable_t g_update_selection_context;
 sa_selection_context_immutable_t g_validation_selection_context;
 sa_property_store_immutable_t g_validation_property_store;
+sa_property_store_t g_action_property_store;
+sa_selection_context_immutable_t g_action_selection_context;
+const char* g_action_name;
+const char* g_action_xml;
+void** g_action_data;
 
 void ToCStringArray(std::vector<const char*> & destination, const std::vector<std::string>& values)
 {
@@ -125,10 +132,12 @@ public:
       return false;
     }
 
+    std::string names_csv = ra::strings::Join(mNames, ",").c_str();
+
     // check callback
     if (mValidationFunc == NULL)
     {
-      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing validation function for attribute '%s'.", mNames[0].c_str());
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing validation function for attributes '%s'.", names_csv.c_str());
       return false;
     }
 
@@ -141,6 +150,7 @@ public:
       g_validation_property_store = AS_TYPE_PROPERTY_STORE(mAttributes);
 
     // call the validation function of the plugin
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Processing validation of attributes '%s'.", names_csv.c_str());
     int valid = mValidationFunc();
 
     // invalidate global validation objects
@@ -214,6 +224,211 @@ private:
   sa_plugin_update_callback_func mValidationFunc;
 };
 
+class PluginAction : public virtual IAction
+{
+public:
+  PluginAction() : 
+    mMenu(NULL),
+    mStore(NULL),
+    mData(NULL),
+    mActionEventFunc(NULL)
+  {
+  }
+  virtual ~PluginAction()
+  {
+    // check callback
+    if (mActionEventFunc == NULL)
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
+
+    // initialize the global objects for the DESTROY event
+    memset(&g_action_property_store, 0, sizeof(g_action_property_store));
+    if (mStore)
+      g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
+    g_action_name = mName.c_str();
+    g_action_xml = NULL;
+    g_action_data = &mData;
+
+    // call the action event function of the plugin
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Destroying action '%s'", mName.c_str());
+    sa_action_event_t evnt = SA_ACTION_EVENT_DESTROY;
+    sa_error_t result = mActionEventFunc(evnt);
+
+    // invalidate global update objects
+    memset(&g_action_property_store, 0, sizeof(g_action_property_store));
+    g_action_name = NULL;
+    g_action_xml = NULL;
+    g_action_data = NULL;
+
+    // if a destruction has failed
+    if (result != SA_ERROR_SUCCESS)
+    {
+      const char* error = sa_error_get_error_description(result);
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed destroying action '%s': %s", mName.c_str(), error);
+    }
+
+    if (mStore)
+      delete mStore;
+  }
+
+  virtual void SetName(const char* name)
+  {
+    mName = name;
+  }
+
+  virtual void SetData(void* data)
+  {
+    mData = data;
+  }
+
+  virtual void SetPropertyStore(PropertyStore* store)
+  {
+    mStore = store;
+  }
+
+  void SetActionEventFunction(sa_plugin_action_event_func func)
+  {
+    mActionEventFunc = func;
+  }
+
+  virtual Menu* GetParentMenu()
+  {
+    return mMenu;
+  }
+
+  virtual const Menu* GetParentMenu() const
+  {
+    return mMenu;
+  }
+
+  virtual void SetParentMenu(Menu* menu)
+  {
+    mMenu = menu;
+  }
+
+  virtual bool Execute(const SelectionContext& context) const
+  {
+    // check callback
+    if (mActionEventFunc == NULL)
+    {
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
+      return false;
+    }
+
+    // initialize the global objects for the EXECUTE event
+    memset(&g_action_property_store, 0, sizeof(g_action_property_store));
+    if (mStore)
+      g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
+    g_action_name = mName.c_str();
+    g_action_xml = NULL;
+    g_action_data = &mData;
+
+    // call the action event function of the plugin
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Executing action '%s'", mName.c_str());
+    sa_action_event_t evnt = SA_ACTION_EVENT_EXECUTE;
+    sa_error_t result = mActionEventFunc(evnt);
+
+    // invalidate global update objects
+    memset(&g_action_property_store, 0, sizeof(g_action_property_store));
+    g_action_name = NULL;
+    g_action_xml = NULL;
+    g_action_data = NULL;
+
+    // if a execute failed
+    if (result != SA_ERROR_SUCCESS)
+    {
+      const char* error = sa_error_get_error_description(result);
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed executing action '%s'", mName.c_str());
+      return false;
+    }
+
+    return true;
+  }
+
+private:
+  Menu* mMenu;
+  PropertyStore* mStore;
+  std::string mName;
+  mutable void* mData;
+  sa_plugin_action_event_func mActionEventFunc;
+};
+
+class PluginActionFactory : public virtual IActionFactory
+{
+public:
+  PluginActionFactory() :
+    mActionEventFunc(NULL)
+  {}
+  virtual ~PluginActionFactory() {}
+
+  virtual void SetName(const char* name)
+  {
+    mName = name;
+  }
+
+  virtual const std::string& GetName() const
+  {
+    return mName;
+  }
+
+  void SetActionEventFunction(sa_plugin_action_event_func func)
+  {
+    mActionEventFunc = func;
+  }
+
+  virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
+  {
+    // check callback
+    if (mActionEventFunc == NULL)
+    {
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
+      return NULL;
+    }
+
+    void* data = NULL;
+    PropertyStore* store = new PropertyStore();
+
+    // initialize the global objects for the CREATE event
+    g_action_property_store = AS_TYPE_PROPERTY_STORE(store);
+    g_action_name = mName.c_str();
+    g_action_xml = xml.c_str();
+    g_action_data = &data;
+
+    // call the action event function of the plugin
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Parsing action '%s'", mName.c_str());
+    sa_action_event_t evnt = SA_ACTION_EVENT_CREATE;
+    sa_error_t result = mActionEventFunc(evnt);
+
+    // invalidate global update objects
+    memset(&g_action_property_store, 0, sizeof(g_action_property_store));
+    g_action_name = NULL;
+    g_action_xml = NULL;
+    g_action_data = NULL;
+
+    // if a parsing is succesful
+    if (result == SA_ERROR_SUCCESS)
+    {
+      PluginAction* action = new PluginAction();
+      action->SetName(mName.c_str());
+      action->SetData(data);
+      action->SetPropertyStore(store);
+      action->SetActionEventFunction(mActionEventFunc);
+      return action;
+    }
+    else
+    {
+      // a parsing error occured
+      delete store;
+      error = sa_error_get_error_description(result);
+      return NULL;
+    }
+  }
+
+private:
+  std::string mName;
+  sa_plugin_action_event_func mActionEventFunc;
+};
+
+
 sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context()
 {
   return &g_validation_selection_context;
@@ -227,6 +442,26 @@ sa_property_store_immutable_t* sa_plugin_validation_get_property_store()
 sa_selection_context_immutable_t* sa_plugin_update_get_selection_context()
 {
   return &g_update_selection_context;
+}
+
+const char* sa_plugin_action_get_name()
+{
+  return g_action_name;
+}
+
+const char* sa_plugin_action_get_xml()
+{
+  return g_action_xml;
+}
+
+void** sa_plugin_action_get_data()
+{
+  return g_action_data;
+}
+
+sa_property_store_t* sa_plugin_action_get_property_store()
+{
+  return &g_action_property_store;
 }
 
 sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func)
@@ -260,6 +495,24 @@ sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func fun
   update_callback->SetUpdateCallbackFunction(func);
 
   plugin->GetRegistry().AddUpdateCallback(update_callback);
+
+  return SA_ERROR_SUCCESS;
+}
+
+sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_event_func func)
+{
+  Plugin* plugin = Plugin::GetLoadingPlugin();
+  if (plugin == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an action event function. Current plugin is unknown.");
+    return SA_ERROR_MISSING_RESOURCE;
+  }
+
+  PluginActionFactory* factory = new PluginActionFactory();
+  factory->SetName(name);
+  factory->SetActionEventFunction(func);
+
+  plugin->GetRegistry().AddActionFactory(factory);
 
   return SA_ERROR_SUCCESS;
 }

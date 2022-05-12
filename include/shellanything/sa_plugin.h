@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include "shellanything/sa_types.h"
+#include "shellanything/sa_enums.h"
 #include "shellanything/sa_plugin_definitions.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_selection_context.h"
@@ -50,6 +51,15 @@ typedef sa_boolean (*sa_plugin_validate_callback_func)();
 typedef void (*sa_plugin_update_callback_func)();
 
 /// <summary>
+/// Function pointer definition to process an action event.
+/// Basic events include creating, executing and destroying and action.
+/// While processing an event, see functions that begins with sa_plugin_action_* for more informations.
+/// </summary>
+/// <param name="evnt">An event of type sa_action_event_t. See sa_enums.h for details.</param>
+/// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
+typedef sa_error_t(*sa_plugin_action_event_func)(sa_action_event_t evnt);
+
+/// <summary>
 /// Get the selection context that identifies which files and directories are selected while validating.
 /// </summary>
 /// <returns>Returns a valid pointer to a sa_selection_context_immutable_t. Returns NULL otherwise.</returns>
@@ -68,6 +78,30 @@ sa_property_store_immutable_t* sa_plugin_validation_get_property_store();
 sa_selection_context_immutable_t* sa_plugin_update_get_selection_context();
 
 /// <summary>
+/// Get the name of a custom action.
+/// </summary>
+/// <returns>Returns the action name. Returns NULL if no action name is defined.</returns>
+const char* sa_plugin_action_get_name();
+
+/// <summary>
+/// Get the xml definition of an action in a Configuration of a custom action.
+/// </summary>
+/// <returns>Returns the xml definition of an action. Returns NULL if no xml is defined.</returns>
+const char* sa_plugin_action_get_xml();
+
+/// <summary>
+/// Get a pointer to store the action properties and settings. This same pointer is used while creating, executing and destroying the action.
+/// </summary>
+/// <returns>Returns the xml definition of an action. Returns NULL if no xml is defined.</returns>
+void ** sa_plugin_action_get_data();
+
+/// <summary>
+/// Get the property store which can store the attributes and settings for the action.
+/// </summary>
+/// <returns>Returns a valid pointer to a sa_selection_context_t. Returns NULL otherwise.</returns>
+sa_property_store_t* sa_plugin_action_get_property_store();
+
+/// <summary>
 /// Register a custom attribute validation function for a given list of attributes.
 /// </summary>
 /// <param name="names">The names of the attributes as an array of strings.</param>
@@ -82,6 +116,13 @@ sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t c
 /// <param name="func">A function pointer which definition matches sa_plugin_update_callback_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func func);
+
+/// <summary>
+/// Register a custom action factory function.
+/// </summary>
+/// <param name="func">A function pointer which definition matches sa_plugin_action_factory_func.</param>
+/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
+sa_error_t sa_plugin_register_action_event(const char * name, sa_plugin_action_event_func func);
 
 #ifdef __cplusplus
 }

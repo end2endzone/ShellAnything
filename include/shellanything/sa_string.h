@@ -39,6 +39,12 @@ extern "C" {
 void sa_string_init(sa_string_t* str);
 
 /// <summary>
+/// Validate a sa_string_t structure
+/// </summary>
+/// <param name="str">A pointer to a string</param>
+sa_boolean sa_string_valid(sa_string_t* str);
+
+/// <summary>
 /// Create a new string.
 /// </summary>
 /// <param name="str">A pointer to a string</param>

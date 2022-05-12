@@ -51,6 +51,12 @@ typedef enum {
   SA_LOG_LEVEL_FATAL,
 } sa_log_level_t;
 
+typedef enum {
+  SA_ACTION_EVENT_CREATE = 0,
+  SA_ACTION_EVENT_DESTROY,
+  SA_ACTION_EVENT_EXECUTE,
+} sa_action_event_t;
+
 #ifdef __cplusplus
 }
 #endif
