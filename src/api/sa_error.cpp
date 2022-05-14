@@ -31,17 +31,24 @@ const char* sa_error_get_error_description(sa_error_t code)
 {
   switch (code)
   {
-  case SA_ERROR_SUCCESS            :      return "No error"; break;
+  case SA_ERROR_SUCCESS            :      return "No error. The operation completed successfully"; break;
   case SA_ERROR_INVALID_ARGUMENTS  :      return "Invalid arguments"; break;
   case SA_ERROR_BUFFER_TOO_SMALL   :      return "The given buffer is too small"; break;
   case SA_ERROR_VALUE_OUT_OF_BOUNDS:      return "The given value is out of bounds"; break;
-  case SA_ERROR_NOT_FOUND          :      return "The specified "; break;
-  case SA_ERROR_NOT_SUPPORTED      :      return "This action is not supported"; break;
-  case SA_ERROR_NOT_IMPLEMENTED    :      return "This feature is not implemented"; break;
-  case SA_ERROR_ALREADY_EXIST      :      return "The object already exists"; break;
+  case SA_ERROR_NOT_FOUND          :      return "The specified resource is not found"; break;
+  case SA_ERROR_NOT_SUPPORTED      :      return "This operation is not supported"; break;
+  case SA_ERROR_NOT_IMPLEMENTED    :      return "This operation is not implemented"; break;
+  case SA_ERROR_ALREADY_EXIST      :      return "The object or resource already exists"; break;
   case SA_ERROR_MISSING_RESOURCE   :      return "A resource is missing to complete the operation"; break;
-  case SA_ERROR_ACCESS_DENIED      :      return "The access to object is denied"; break;
+  case SA_ERROR_ACCESS_DENIED      :      return "The access to object or resource is denied"; break;
   case SA_ERROR_BUSY               :      return "The object is busy"; break;
+  case SA_ERROR_TIME_OUT           :      return "The operation has timed out"; break;
+  case SA_ERROR_CANT_READ          :      return "Can not read from the resource."; break;
+  case SA_ERROR_CANT_WRITE         :      return "Can not write to the resource."; break;
+  case SA_ERROR_INVALID_RESOURCE   :      return "The resource is invalid."; break;
+  case SA_ERROR_ALREADY_RUNNING    :      return "The resource is already running."; break;
+  case SA_ERROR_ABORTED            :      return "The operation was aborted"; break;
+  case SA_ERROR_CANCELLED          :      return "The operation was cancelled"; break;
   case SA_ERROR_UNKNOWN            :      return "Unknown error"; break;
   default:
     return "Unspecified error";
