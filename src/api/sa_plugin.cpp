@@ -337,7 +337,7 @@ public:
     if (result != SA_ERROR_SUCCESS)
     {
       const char* error = sa_error_get_error_description(result);
-      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed executing action '%s'", mName.c_str());
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed executing action '%s': %s.", mName.c_str(), error);
       return false;
     }
 
