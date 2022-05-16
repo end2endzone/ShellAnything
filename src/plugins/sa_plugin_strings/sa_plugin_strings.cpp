@@ -43,9 +43,9 @@ extern "C" {
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_strings";
 static const sa_boolean ATTR_OPTINAL = 0;
 static const sa_boolean ATTR_MANDATORY = 1;
-static const sa_string_t INVALID_STRING = { 0 };
+static const sa_string_t INVALID_SA_STRING = { 0 };
 
-struct ATTR_DECLARATION
+struct XML_ATTR
 {
   const char* name;
   sa_boolean mandatory;
@@ -55,61 +55,61 @@ struct ATTR_DECLARATION
 
 // Declare attributes for substr command
 // <substr offset="7" count="4" value="Behind Blue Eyes" property="color" />
-ATTR_DECLARATION SUBSTR_ATTRIBUTES[] =
+XML_ATTR SUBSTR_ATTRIBUTES[] =
 {
-  {"count",       ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"value",       ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",    ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"offset",      ATTR_OPTINAL,   NULL, INVALID_STRING},
+  {"count",       ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"value",       ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",    ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"offset",      ATTR_OPTINAL,   NULL, INVALID_SA_STRING},
 };
 size_t SUBSTR_ATTRIBUTES_COUNT = sizeof(SUBSTR_ATTRIBUTES) / sizeof(SUBSTR_ATTRIBUTES[0]);
 
 // Declare attributes for strlen command
 // <strlen value="${foobar}" property="foobar.length" />
-ATTR_DECLARATION STRLEN_ATTRIBUTES[] =
+XML_ATTR STRLEN_ATTRIBUTES[] =
 {
-  {"value",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",  ATTR_MANDATORY, NULL, INVALID_STRING},
+  {"value",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",  ATTR_MANDATORY, NULL, INVALID_SA_STRING},
 };
 size_t STRLEN_ATTRIBUTES_COUNT = sizeof(STRLEN_ATTRIBUTES) / sizeof(STRLEN_ATTRIBUTES[0]);
 
 // Declare attributes for strreplace command
 // <strreplace text="Everything is in the right place" token="right" value="wrong" property="inverse" />
-ATTR_DECLARATION STRREPLACE_ATTRIBUTES[] =
+XML_ATTR STRREPLACE_ATTRIBUTES[] =
 {
-  {"text",      ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"token",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"value",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",  ATTR_MANDATORY, NULL, INVALID_STRING},
+  {"text",      ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"token",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"value",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",  ATTR_MANDATORY, NULL, INVALID_SA_STRING},
 };
 size_t STRREPLACE_ATTRIBUTES_COUNT = sizeof(STRREPLACE_ATTRIBUTES) / sizeof(STRREPLACE_ATTRIBUTES[0]);
 
 // Declare attributes for strreplace command
 // <struppercase value="${foobar}" property="foobar" />
-ATTR_DECLARATION STRUPPERCASE_ATTRIBUTES[] =
+XML_ATTR STRUPPERCASE_ATTRIBUTES[] =
 {
-  {"value",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",  ATTR_MANDATORY, NULL, INVALID_STRING},
+  {"value",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",  ATTR_MANDATORY, NULL, INVALID_SA_STRING},
 };
 size_t STRUPPERCASE_ATTRIBUTES_COUNT = sizeof(STRUPPERCASE_ATTRIBUTES) / sizeof(STRUPPERCASE_ATTRIBUTES[0]);
 
 // Declare attributes for strreplace command
 // <strlowercase value="${foobar}" property="foobar" />
-ATTR_DECLARATION STRLOWERCASE_ATTRIBUTES[] =
+XML_ATTR STRLOWERCASE_ATTRIBUTES[] =
 {
-  {"value",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",  ATTR_MANDATORY, NULL, INVALID_STRING},
+  {"value",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",  ATTR_MANDATORY, NULL, INVALID_SA_STRING},
 };
 size_t STRLOWERCASE_ATTRIBUTES_COUNT = sizeof(STRLOWERCASE_ATTRIBUTES) / sizeof(STRLOWERCASE_ATTRIBUTES[0]);
 
 // Declare attributes for strreplace command
 // <strfind text="You shall not pass!" value="!" property="exclamation.offset" />
-ATTR_DECLARATION STRFIND_ATTRIBUTES[] =
+XML_ATTR STRFIND_ATTRIBUTES[] =
 {
-  {"text",      ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"value",     ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"property",  ATTR_MANDATORY, NULL, INVALID_STRING},
-  {"offset",    ATTR_OPTINAL,   NULL, INVALID_STRING},
+  {"text",      ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"value",     ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"property",  ATTR_MANDATORY, NULL, INVALID_SA_STRING},
+  {"offset",    ATTR_OPTINAL,   NULL, INVALID_SA_STRING},
 };
 size_t STRFIND_ATTRIBUTES_COUNT = sizeof(STRFIND_ATTRIBUTES) / sizeof(STRFIND_ATTRIBUTES[0]);
 
@@ -195,7 +195,7 @@ void replace_entities(std::string& str)
   }
 }
 
-sa_error_t parse_attribute_in_xml(sa_boolean log_errors, const char* xml, const char* action_name, ATTR_DECLARATION * attr, sa_property_store_t* store)
+sa_error_t parse_attribute_in_xml(sa_boolean log_errors, const char* xml, const char* action_name, XML_ATTR * attr, sa_property_store_t* store)
 {
   std::string strxml = xml;
 
@@ -228,7 +228,7 @@ sa_error_t parse_attribute_in_xml(sa_boolean log_errors, const char* xml, const 
   return SA_ERROR_SUCCESS;
 }
 
-sa_error_t read_attributes(const char* action_name, const char* xml, sa_property_store_t* store, size_t count, ATTR_DECLARATION* attributes)
+sa_error_t read_attributes(const char* action_name, const char* xml, sa_property_store_t* store, size_t count, XML_ATTR* attributes)
 {
   if (action_name == NULL)
   {
@@ -251,7 +251,7 @@ sa_error_t read_attributes(const char* action_name, const char* xml, sa_property
   // For each attributes
   for (size_t i = 0; i < count; i++)
   {
-    ATTR_DECLARATION& attr = attributes[i];
+    XML_ATTR& attr = attributes[i];
     
     if (attr.mandatory)
     {
@@ -271,7 +271,7 @@ sa_error_t read_attributes(const char* action_name, const char* xml, sa_property
   return SA_ERROR_SUCCESS;
 }
 
-sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store, size_t count, ATTR_DECLARATION* attributes)
+sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store, size_t count, XML_ATTR* attributes)
 {
   if (action_name == NULL)
   {
@@ -290,7 +290,7 @@ sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store
   // Check mandatory attributes
   for (size_t i = 0; i < count; i++)
   {
-    ATTR_DECLARATION& attr = attributes[i];
+    XML_ATTR& attr = attributes[i];
     if (attr.mandatory)
     {
       if (!sa_property_store_has_property(&store_immutable, attr.name))
@@ -304,7 +304,7 @@ sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store
   // Expand all attributes
   for (size_t i = 0; i < count; i++)
   {
-    ATTR_DECLARATION& attr = attributes[i];
+    XML_ATTR& attr = attributes[i];
 
     // Get the value of the attribute
     // Note that attr.value can be NULL if not specified in the xml configuration
@@ -313,7 +313,7 @@ sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store
     if (attr.value != NULL)
     {
       // Expand the attribute
-      attr.str = INVALID_STRING;
+      attr.str = INVALID_SA_STRING;
       sa_string_create(&attr.str);
       result = sa_properties_expand_string(attr.value, &attr.str);
       if (result != SA_ERROR_SUCCESS)
@@ -333,15 +333,15 @@ sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store
   return SA_ERROR_SUCCESS;
 }
 
-void cleanup_attributes(const char* action_name, sa_property_store_t* store, size_t count, ATTR_DECLARATION* attributes)
+void cleanup_attributes(const char* action_name, sa_property_store_t* store, size_t count, XML_ATTR* attributes)
 {
   // Expand all attributes
   for (size_t i = 0; i < count; i++)
   {
-    ATTR_DECLARATION& attr = attributes[i];
+    XML_ATTR& attr = attributes[i];
     if (sa_string_valid(&attr.str))
       sa_string_destroy(&attr.str);
-    attr.str = INVALID_STRING;
+    attr.str = INVALID_SA_STRING;
     attr.value = NULL;
   }
 }

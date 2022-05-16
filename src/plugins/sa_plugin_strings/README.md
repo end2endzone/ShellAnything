@@ -16,7 +16,7 @@ Declare the plugin in a Configuration File as the following:
                          It defines the following actions :
                            * `substr` which compute the substring of a string,
                            * `strreplace`, which replaces a value by another in a string,
-                           * `strlen`, which compute the length in byte of a value,
+                           * `strlen`, which compute the length of a value in bytes,
                            * `struppercase`, which uppercase a value,
                            * `strlowercase`, which lowercase a value,
                            * `strfind`, which searches for a value" />
