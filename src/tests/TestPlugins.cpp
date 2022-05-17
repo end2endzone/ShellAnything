@@ -32,6 +32,7 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/timing.h"
+#include "rapidassist/process.h"
 
 namespace shellanything { namespace test
 {
@@ -86,6 +87,152 @@ namespace shellanything { namespace test
 
     //ASSERT that no files are loaded
     ASSERT_EQ(0, cmgr.GetConfigurations().size());
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPlugins, testProcess)
+  {
+    ConfigManager& cmgr = ConfigManager::GetInstance();
+
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ(1, configs.size());
+
+    Configuration* config0 = cmgr.GetConfigurations()[0];
+
+    //ASSERT all plugins were loaded
+    for (size_t i = 0; i < config0->GetPlugins().size(); i++)
+    {
+      const Plugin* plugin = config0->GetPlugins()[i];
+      ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
+    }
+
+    //Get menus
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(4, menus.size());
+    Menu* menu0 = menus[0];
+    Menu* menu1 = menus[1];
+    Menu* menu2 = menus[2];
+    Menu* menu3 = menus[3];
+    ASSERT_TRUE(menu0 != NULL);
+    ASSERT_TRUE(menu1 != NULL);
+    ASSERT_TRUE(menu2 != NULL);
+    ASSERT_TRUE(menu3 != NULL);
+
+    //ASSERT all expected content is parsed
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+
+      //ASSERT menus have a visibility statement parsed.
+      ASSERT_EQ(0, menu->GetValidityCount());
+      ASSERT_EQ(1, menu->GetVisibilityCount());
+
+      //ASSERT menus have an action
+      const IAction::ActionPtrList& actions = menu->GetActions();
+      ASSERT_EQ(1, actions.size());
+    }
+
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    
+    //Disable process id property
+    pmgr.SetProperty("sa_plugin_process.pid", "");
+    
+    //Kill all instances of notepad.exe
+    printf("Killing notepad.exe processes...\n");
+    system("taskkill /F /IM notepad.exe");
+    printf("done.\n");
+
+    //Set all menus visible
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+      menu->SetVisible(true);
+    }
+
+    //Force an update to call the plugin
+    SelectionContext c;
+#ifdef _WIN32
+    {
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\cmd.exe");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+    config0->Update(c);
+
+    //ASSERT all menus are now invisible
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+      ASSERT_FALSE(menu->IsVisible()) << "menu[" << i << "] named '" << menu->GetName() << "' should be invisible";
+    }
+
+    //Start notepad
+    printf("Starting notepad.exe...\n");
+    ra::process::processid_t notepad_pid = ra::process::StartProcess("C:\\Windows\\System32\\notepad.exe");
+    ra::timing::Millisleep(2000);
+    ASSERT_NE(0, notepad_pid);
+    printf("done.\n");
+
+    //Set all menus visible
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+      menu->SetVisible(true);
+    }
+
+    //Update menus again
+    config0->Update(c);
+
+    //ASSERT that half of menus are now invisible
+    ASSERT_TRUE (menu0->IsVisible()) << "Menu named '" << menu0->GetName() << "' should be visible";
+    ASSERT_FALSE(menu1->IsVisible()) << "Menu named '" << menu1->GetName() << "' should be invisible";
+    ASSERT_TRUE (menu2->IsVisible()) << "Menu named '" << menu2->GetName() << "' should be visible";
+    ASSERT_FALSE(menu3->IsVisible()) << "Menu named '" << menu3->GetName() << "' should be invisible";
+
+    //Set all menus invisible
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+      menu->SetVisible(false);
+    }
+
+    std::string notepad_pid_str = ra::strings::ToString(notepad_pid);
+    pmgr.SetProperty("sa_plugin_process.pid", notepad_pid_str);
+
+    //Update menus again
+    config0->Update(c);
+
+    //ASSERT all menus are now visible
+    for (size_t i = 0; i < menus.size(); i++)
+    {
+      Menu* menu = menus[i];
+      ASSERT_TRUE(menu->IsVisible()) << "menu[" << i << "] named '" << menu->GetName() << "' should be visible";
+    }
+
+    //Cleanup
+    ra::process::Kill(notepad_pid);
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
   TEST_F(TestPlugins, testServices)

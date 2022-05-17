@@ -71,6 +71,7 @@ before_build:
 
 build_script:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_process.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_services.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_strings.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_time.bat

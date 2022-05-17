@@ -38,6 +38,7 @@ add_subdirectory(shellextension)
 add_subdirectory(api)
 
 if(SHELLANYTHING_BUILD_PLUGINS)
+  add_subdirectory(plugins/sa_plugin_process)
   add_subdirectory(plugins/sa_plugin_services)
   add_subdirectory(plugins/sa_plugin_strings)
   add_subdirectory(plugins/sa_plugin_time)

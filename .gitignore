@@ -10,3 +10,5 @@
 /src/plugins/sa_plugin_services/install
 /src/plugins/sa_plugin_strings/build
 /src/plugins/sa_plugin_strings/install
+/src/plugins/sa_plugin_process/install
+/src/plugins/sa_plugin_process/build

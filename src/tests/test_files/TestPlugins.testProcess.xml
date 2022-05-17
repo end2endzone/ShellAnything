@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <plugins>
+    <plugin path="${application.directory}\sa_plugin_process.dll"
+            actions="terminateprocess,killprocess"
+            conditions="process_filename;process_pid"
+            description="This plugin declares actions and validation to interact with external processes.
+                         It defines the following actions :
+                           * `terminateprocess` which ask an application to exit gracefully,
+                           * `killprocess`, which force stop an application.
+                         and defines the following conditons:
+                           * `process_filename`, to validate a menu if a running process filename matches the value,
+                           * `process_pid`, to validate a menu if a running process id (pid) matches the value" />
+  </plugins>
+  <shell>
+
+    <menu name="Terminate Notepad (by filename)">
+      <visibility process_filename="notepad.exe" />
+      <actions>
+        <terminateprocess filename="notepad.exe" />
+      </actions>
+    </menu>
+
+    <menu name="Terminate Notepad (by pid)">
+      <visibility process_pid="${sa_plugin_process.pid}" />
+      <actions>
+        <terminateprocess pid="${sa_plugin_process.pid}" />
+      </actions>
+    </menu>
+
+    <menu name="Kill Notepad (by filename)">
+      <visibility process_filename="notepad.exe" />
+      <actions>
+        <killprocess filename="notepad.exe" />
+      </actions>
+    </menu>
+
+    <menu name="Kill Notepad (by pid)">
+      <visibility process_pid="${sa_plugin_process.pid}" />
+      <actions>
+        <killprocess pid="${sa_plugin_process.pid}" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>
