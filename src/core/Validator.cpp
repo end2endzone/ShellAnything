@@ -846,6 +846,19 @@ namespace shellanything
     return true;
   }
 
+  bool has_all_elements(const ra::strings::StringVector& all_elements, const ra::strings::StringVector& mandatory_elements)
+  {
+    for (size_t i = 0; i < mandatory_elements.size(); i++)
+    {
+      const std::string& mandatory_element = mandatory_elements[i];
+      ra::strings::StringVector::const_iterator it = std::find(all_elements.begin(), all_elements.end(), mandatory_element);
+      bool found = (it != all_elements.end());
+      if (!found)
+        return false;
+    }
+    return true;
+  }
+
   bool contains(IAttributeValidator::IAttributeValidationPtrList& validators, IAttributeValidator* validator)
   {
     for (size_t i = 0; i < validators.size(); i++)
@@ -869,48 +882,52 @@ namespace shellanything
     if (plugin_conditions.empty())
       return true; // no validation required
 
-    //validate if we should invoke this plugin's validation function
-    bool invoke_plugin_validator = false;
-
-    //if any of the plugin's condition is specified as an xml attribute, we must invoke this plugin's validation function
+    //Find which of this plugin's attributes match the one specified in the xml validator.
+    //This is required if a plugin specify multiple optional attributes.
+    //We should only remember the one that were specified in the xml.
+    ra::strings::StringVector matching_conditions;
     for (size_t i = 0; i < plugin_conditions.size(); i++)
     {
       const std::string& condition = plugin_conditions[i];
       if (this->mCustomAttributes.HasProperty(condition))
       {
-        invoke_plugin_validator = true;
-        break;
+        matching_conditions.push_back(condition);
       }
     }
 
-    if (invoke_plugin_validator)
+    //if there is no matching condition, there is no need to link conditions to a validator.
+    if (matching_conditions.empty())
+      return true; // no validation required
+
+    //find attribute validators that support these matching conditions
+    IAttributeValidator::IAttributeValidationPtrList validators;
+    for (size_t i = 0; i < matching_conditions.size(); i++)
     {
-      //get all validators for all custom attributes of this validator
-      IAttributeValidator::IAttributeValidationPtrList validators;
-      for (size_t i = 0; i < plugin_conditions.size(); i++)
+      const std::string& condition = matching_conditions[i];
+      IAttributeValidator* attr_validator = registry.GetAttributeValidatorFromName(condition);
+      if (attr_validator != NULL)
       {
-        const std::string& condition = plugin_conditions[i];
-        IAttributeValidator* attr_validator = registry.GetAttributeValidatorFromName(condition);
-        if (attr_validator != NULL)
+        //if we did not already add this validator
+        if (!contains(validators, attr_validator))
         {
-          if (!contains(validators, attr_validator))
-            validators.push_back(attr_validator);
+          validators.push_back(attr_validator);
         }
       }
-
-      //validate!
-      for (size_t i = 0; i < validators.size(); i++)
-      {
-        IAttributeValidator* attr_validator = validators[i];
-        attr_validator->SetSelectionContext(&context);
-        attr_validator->SetCustomAttributes(&mCustomAttributes);
-        bool valid = attr_validator->Validate();
-        attr_validator->SetSelectionContext(NULL);
-        attr_validator->SetCustomAttributes(NULL);
-        if (!valid)
-          return false;
-      }
     }
+
+    //validate!
+    for (size_t i = 0; i < validators.size(); i++)
+    {
+      IAttributeValidator* attr_validator = validators[i];
+      attr_validator->SetSelectionContext(&context);
+      attr_validator->SetCustomAttributes(&mCustomAttributes);
+      bool valid = attr_validator->Validate();
+      attr_validator->SetSelectionContext(NULL);
+      attr_validator->SetCustomAttributes(NULL);
+      if (!valid)
+        return false;
+    }
+
 
     return true;
   }
