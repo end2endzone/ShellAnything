@@ -11,7 +11,7 @@ Declare the plugin in a Configuration File as the following:
 <root>
   <plugins>
     <plugin path="${application.directory}\sa_plugin_strings.dll"
-            actions="substr,strreplace,strlen,struppercase,strlowercase,strfind"
+            actions="substr;strreplace;strlen;struppercase;strlowercase;strfind"
             description="This plugin provide string manipulation actions.
                          It defines the following actions :
                            * `substr` which compute the substring of a string,

@@ -2,7 +2,7 @@
 <root>
   <plugins>
     <plugin path="${application.directory}\sa_plugin_process.dll"
-            actions="terminateprocess,killprocess"
+            actions="terminateprocess;killprocess"
             conditions="process_filename;process_pid"
             description="This plugin declares actions and validation to interact with external processes.
                          It defines the following actions :

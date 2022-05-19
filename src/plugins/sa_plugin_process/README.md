@@ -10,8 +10,8 @@ Declare the plugin in a Configuration File as the following:
 <root>
   <plugins>
     <plugin path="${application.directory}\sa_plugin_process.dll"
-            actions="terminateprocess,killprocess"
-            conditions="process_filename,process_pid"
+            actions="terminateprocess;killprocess"
+            conditions="process_filename;process_pid"
             description="This plugin declares actions and validation to interract with external processes.
                          It defines the following actions :
                            * `terminateprocess` which ask an application to exit gracefully,

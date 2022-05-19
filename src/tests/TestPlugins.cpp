@@ -83,6 +83,7 @@ namespace shellanything { namespace test
     }
 
     //Now that all configuration files are deleted, refresh again
+    cmgr.ClearSearchPath();
     cmgr.Refresh();
 
     //ASSERT that no files are loaded
