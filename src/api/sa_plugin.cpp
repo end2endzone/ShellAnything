@@ -466,11 +466,28 @@ sa_property_store_t* sa_plugin_action_get_property_store()
 
 sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func)
 {
+  if (names == NULL || func == NULL || count == 0)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator. Unknown attribute names or function.");
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
+
   Plugin* plugin = Plugin::GetLoadingPlugin();
   if (plugin == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator for attribute '%s'. Current plugin is unknown.", names[0]);
     return SA_ERROR_MISSING_RESOURCE;
+  }
+
+  // Check if all regitering conditions are declared by the plugin xml
+  for (size_t i = 0; i < count; i++)
+  {
+    const char* name = names[i];
+    if (!plugin->SupportCondition(name))
+    {
+      sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator for attribute '%s'. The plugin '%s' does not report this condition.", name, plugin->GetPath().c_str());
+      return SA_ERROR_NOT_SUPPORTED;
+    }
   }
 
   PluginAttributeValidator* validator = new PluginAttributeValidator();
@@ -484,10 +501,16 @@ sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t c
 
 sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func func)
 {
+  if (func == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback function. Unknown function.");
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
+
   Plugin* plugin = Plugin::GetLoadingPlugin();
   if (plugin == NULL)
   {
-    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback. Current plugin is unknown.");
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback function. Current plugin is unknown.");
     return SA_ERROR_MISSING_RESOURCE;
   }
 
@@ -501,11 +524,24 @@ sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func fun
 
 sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_event_func func)
 {
+  if (name == NULL || func == NULL)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action event function. Unknown action name or function.");
+    return SA_ERROR_INVALID_ARGUMENTS;
+  }
+
   Plugin* plugin = Plugin::GetLoadingPlugin();
   if (plugin == NULL)
   {
-    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an action event function. Current plugin is unknown.");
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. Current plugin is unknown.", name);
     return SA_ERROR_MISSING_RESOURCE;
+  }
+
+  // Check if the regitering action is declared by the plugin xml
+  if (!plugin->SupportAction(name))
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. The plugin '%s' does not report this condition.", name, plugin->GetPath().c_str());
+    return SA_ERROR_NOT_SUPPORTED;
   }
 
   PluginActionFactory* factory = new PluginActionFactory();

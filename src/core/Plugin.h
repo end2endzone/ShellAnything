@@ -116,6 +116,20 @@ namespace shellanything
     void SetActions(const std::string& actions);
 
     /// <summary>
+    /// Check if this plugin supports the given condition.
+    /// </summary>
+    /// <param name="name">The name of the condition to check</param>
+    /// <returns>Returns true if this plugin supports the given condition. Returns false otherwise.</returns>
+    bool SupportCondition(const std::string& name);
+
+    /// <summary>
+    /// Check if this plugin supports the given condition.
+    /// </summary>
+    /// <param name="name">The name of the condition to check</param>
+    /// <returns>Returns true if this plugin supports the given condition. Returns false otherwise.</returns>
+    bool SupportAction(const std::string& name);
+
+    /// <summary>
     /// Check if a plugin is loaded.
     /// </summary>
     /// <returns>Returns true if the plugin is loaded. Returns false otherwise.</returns>

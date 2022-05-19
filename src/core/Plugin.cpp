@@ -62,6 +62,7 @@ namespace shellanything
   }
 
   Plugin::Plugin() :
+    mParentConfiguration(NULL),
     mLoaded(false),
     mEntryPoints(new Plugin::ENTRY_POINTS)
   {
@@ -152,6 +153,22 @@ namespace shellanything
   void Plugin::SetActions(const std::string& actions)
   {
     mActions = actions;
+  }
+
+  bool Plugin::SupportCondition(const std::string& name)
+  {
+    PluginPtrList tmp;
+    tmp.push_back(this);
+    bool support = (Plugin::FindPluginByConditionName(tmp, name) == this);
+    return support;
+  }
+
+  bool Plugin::SupportAction(const std::string& name)
+  {
+    PluginPtrList tmp;
+    tmp.push_back(this);
+    bool support = (Plugin::FindPluginByActionName(tmp, name) == this);
+    return support;
   }
 
   bool Plugin::IsLoaded() const
