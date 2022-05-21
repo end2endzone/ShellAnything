@@ -172,3 +172,13 @@ EXPORTS
   sa_validator_set_properties
   sa_validator_to_immutable
   sa_validator_validate
+  sa_xml_attr_list_cleanup
+  sa_xml_attr_list_init
+  sa_xml_attr_list_update
+  sa_xml_parse_attr_alloc
+  sa_xml_parse_attr_buffer
+  sa_xml_parse_attr_list_store
+  sa_xml_parse_attr_list_store
+  sa_xml_parse_attr_store
+  sa_xml_parse_attr_store
+  sa_xml_parse_attr_string
