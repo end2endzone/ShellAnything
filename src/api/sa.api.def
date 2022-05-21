@@ -172,6 +172,7 @@ EXPORTS
   sa_validator_set_properties
   sa_validator_to_immutable
   sa_validator_validate
+  sa_xml_attr_group_is_mutually_exclusive
   sa_xml_attr_list_cleanup
   sa_xml_attr_list_init
   sa_xml_attr_list_update

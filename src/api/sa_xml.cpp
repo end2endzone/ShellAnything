@@ -210,11 +210,11 @@ void sa_xml_attr_list_cleanup(XML_ATTR* attrs, size_t count)
   }
 }
 
-void sa_xml_attr_list_update(XML_ATTR* attrs, size_t count, sa_property_store_t* store)
+void sa_xml_attr_list_update(XML_ATTR* attrs, size_t count, sa_property_store_immutable_t* store)
 {
   sa_xml_attr_list_cleanup(attrs, count);
 
-  PropertyStore* psptr = AS_CLASS_PROPERTY_STORE(store);
+  const PropertyStore* psptr = AS_CLASS_PROPERTY_STORE(store);
 
   for (size_t i = 0; i < count; i++)
   {
@@ -230,4 +230,60 @@ void sa_xml_attr_list_update(XML_ATTR* attrs, size_t count, sa_property_store_t*
       attr.tmp_value = sa_properties_expand_alloc(attr.tmp_value);
     }
   }
+}
+
+sa_error_t sa_xml_attr_group_is_mutually_exclusive(XML_ATTR* attrs, size_t count, int group, sa_property_store_immutable_t* store)
+{
+  // Build attribute names in group
+  std::string all_names_in_group;
+  for (size_t i = 0; i < count; i++)
+  {
+    XML_ATTR& attr = attrs[i];
+    if (attr.group == group)
+    {
+      if (!all_names_in_group.empty())
+        all_names_in_group.append(",");
+      all_names_in_group.append(attr.name);
+    }
+  }
+
+  // Check if group is found
+  if (all_names_in_group.empty())
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Fail to identify an attribute in group %d.", group);
+    return SA_ERROR_NOT_FOUND;
+  }
+
+  // Count how many attributes are specified in group
+  size_t num_specified = 0;
+  std::string specified_names_in_group;
+  for (size_t i = 0; i < count; i++)
+  {
+    XML_ATTR& attr = attrs[i];
+    if (attr.group == group)
+    {
+      // Check if this attribute was specified (is available in the store)
+      if (sa_property_store_has_property(store, attr.name))
+      {
+        num_specified++;
+        if (!specified_names_in_group.empty())
+          specified_names_in_group.append(",");
+        specified_names_in_group.append(attr.name);
+      }
+    }
+  }
+
+  // Assert
+  if (num_specified == 0)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "One attributes of group %d must be specified: %s.", group, all_names_in_group.c_str());
+    return SA_ERROR_VALUE_OUT_OF_BOUNDS;
+  }
+  else if (num_specified > 1)
+  {
+    sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "One attributes of group %d must be specified but the following attributes was specified: %s.", group, specified_names_in_group.c_str());
+    return SA_ERROR_VALUE_OUT_OF_BOUNDS;
+  }
+
+  return SA_ERROR_SUCCESS;
 }
