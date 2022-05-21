@@ -33,6 +33,7 @@
 #include <ctime>
 #include <algorithm>
 #include <map>
+#include <ctype.h>
 
 #define EXPORT_API __declspec(dllexport)
 
@@ -308,7 +309,7 @@ sa_error_t expand_attributes(const char* action_name, sa_property_store_t* store
 
     // Get the value of the attribute
     // Note that attr.value can be NULL if not specified in the xml configuration
-    attr.value = sa_property_store_get_property_c_str(&store_immutable, attr.name);
+    attr.value = sa_property_store_get_property_cstr(&store_immutable, attr.name);
 
     if (attr.value != NULL)
     {
@@ -603,7 +604,7 @@ sa_error_t struppercase_event_execute(sa_action_event_t evnt)
   // <struppercase value="${foobar}" property="foobar" />
   std::string output;
   output = attr_value;
-  std::transform(output.begin(), output.end(), output.begin(), std::toupper);
+  std::transform(output.begin(), output.end(), output.begin(), toupper);
 
   sa_properties_set(attr_property, output.c_str());
 
@@ -671,7 +672,7 @@ sa_error_t strlowercase_event_execute(sa_action_event_t evnt)
   // <strlowercase value="${foobar}" property="foobar" />
   std::string output;
   output = attr_value;
-  std::transform(output.begin(), output.end(), output.begin(), std::tolower);
+  std::transform(output.begin(), output.end(), output.begin(), tolower);
 
   sa_properties_set(attr_property, output.c_str());
 
