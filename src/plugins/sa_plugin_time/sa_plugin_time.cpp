@@ -125,8 +125,8 @@ sa_boolean sa_plugin_time_validate_time_of_day()
   sa_selection_context_immutable_t* ctx = sa_plugin_validation_get_selection_context();
   sa_property_store_immutable_t* store = sa_plugin_validation_get_property_store();
 
-  const char* start_time_str = sa_property_store_get_property_c_str(store, START_TIME_ATTR);
-  const char* end_time_str = sa_property_store_get_property_c_str(store, END_TIME_ATTR);
+  const char* start_time_str = sa_property_store_get_property_cstr(store, START_TIME_ATTR);
+  const char* end_time_str = sa_property_store_get_property_cstr(store, END_TIME_ATTR);
 
   //initialize both times to "now"
   std::tm start_time = { 0 };
