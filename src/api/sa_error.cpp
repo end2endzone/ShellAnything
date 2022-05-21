@@ -38,6 +38,7 @@ const char* sa_error_get_error_description(sa_error_t code)
   case SA_ERROR_NOT_FOUND          :      return "The specified resource is not found"; break;
   case SA_ERROR_NOT_SUPPORTED      :      return "This operation is not supported"; break;
   case SA_ERROR_NOT_IMPLEMENTED    :      return "This operation is not implemented"; break;
+  case SA_ERROR_EMPTY              :      return "A list or collection is empty."; break;
   case SA_ERROR_ALREADY_EXIST      :      return "The object or resource already exists"; break;
   case SA_ERROR_MISSING_RESOURCE   :      return "A resource is missing to complete the operation"; break;
   case SA_ERROR_ACCESS_DENIED      :      return "The access to object or resource is denied"; break;
