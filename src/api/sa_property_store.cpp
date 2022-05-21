@@ -74,7 +74,7 @@ void sa_property_store_set_property(sa_property_store_t* store, const char* name
   AS_CLASS_PROPERTY_STORE(store)->SetProperty(name, value);
 }
 
-const char* sa_property_store_get_property_c_str(sa_property_store_immutable_t* store, const char* name)
+const char* sa_property_store_get_property_cstr(sa_property_store_immutable_t* store, const char* name)
 {
   const shellanything::PropertyStore* store_class = AS_CLASS_PROPERTY_STORE(store);
   bool found = store_class->HasProperty(name);
@@ -82,6 +82,17 @@ const char* sa_property_store_get_property_c_str(sa_property_store_immutable_t* 
     return NULL;
   const std::string& value = store_class->GetProperty(name);
   return value.c_str();
+}
+
+const char* sa_property_store_get_property_alloc(sa_property_store_immutable_t* store, const char* name)
+{
+  const shellanything::PropertyStore* store_class = AS_CLASS_PROPERTY_STORE(store);
+  bool found = store_class->HasProperty(name);
+  if (!found)
+    return NULL;
+  const std::string& value = store_class->GetProperty(name);
+  const char* output = value.c_str();
+  return strdup(output);
 }
 
 sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size)

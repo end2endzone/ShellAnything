@@ -95,6 +95,20 @@ sa_error_t sa_validator_get_properties_string(sa_validator_immutable_t* validato
   return SA_ERROR_SUCCESS;
 }
 
+const char* sa_validator_get_properties_cstr(sa_validator_immutable_t* validator)
+{
+  const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
+  const char* output = properties.c_str();
+  return output;
+}
+
+const char* sa_validator_get_properties_alloc(sa_validator_immutable_t* validator)
+{
+  const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
+  const char* output = properties.c_str();
+  return strdup(output);
+}
+
 void sa_validator_set_properties(sa_validator_t* validator, const char* value)
 {
   AS_CLASS_VALIDATOR(validator)->SetProperties(value);

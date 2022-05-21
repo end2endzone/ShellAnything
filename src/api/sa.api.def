@@ -24,7 +24,9 @@ EXPORTS
   sa_error_get_error_description
   sa_error_show_message
   sa_error_show_message_utf8
+  sa_icon_get_file_extension_alloc
   sa_icon_get_file_extension_buffer
+  sa_icon_get_file_extension_cstr
   sa_icon_get_file_extension_string
   sa_icon_get_index
   sa_icon_get_path_buffer
@@ -43,9 +45,12 @@ EXPORTS
   sa_menu_get_action_count
   sa_menu_get_action_element
   sa_menu_get_description_buffer
+  sa_menu_get_description_cstr
   sa_menu_get_description_string
   sa_menu_get_icon
+  sa_menu_get_name_alloc
   sa_menu_get_name_buffer
+  sa_menu_get_name_cstr
   sa_menu_get_name_string
   sa_menu_get_sub_menu_count
   sa_menu_get_sub_menu_element
@@ -80,16 +85,20 @@ EXPORTS
   sa_properties_delete
   sa_properties_exists
   sa_properties_exists
+  sa_properties_expand_alloc
   sa_properties_expand_buffer
   sa_properties_expand_buffer
+  sa_properties_expand_once_alloc
   sa_properties_expand_once_buffer
   sa_properties_expand_once_buffer
   sa_properties_expand_once_string
   sa_properties_expand_once_string
   sa_properties_expand_string
   sa_properties_expand_string
+  sa_properties_get_alloc
   sa_properties_get_buffer
   sa_properties_get_buffer
+  sa_properties_get_cstr
   sa_properties_get_string
   sa_properties_get_string
   sa_properties_set
@@ -101,14 +110,17 @@ EXPORTS
   sa_property_store_get_property_buffer
   sa_property_store_get_property_c_str
   sa_property_store_get_property_count
+  sa_property_store_get_property_cstr
   sa_property_store_get_property_string
   sa_property_store_has_properties
   sa_property_store_has_property
   sa_property_store_is_empty
   sa_property_store_set_property
   sa_property_store_to_immutable
+  sa_selection_context_get_element_alloc
   sa_selection_context_get_element_buffer
   sa_selection_context_get_element_count
+  sa_selection_context_get_element_cstr
   sa_selection_context_get_element_string
   sa_selection_context_get_num_directories
   sa_selection_context_get_num_files
@@ -142,7 +154,9 @@ EXPORTS
   sa_validator_get_max_files
   sa_validator_get_pattern_buffer
   sa_validator_get_pattern_string
+  sa_validator_get_properties_alloc
   sa_validator_get_properties_buffer
+  sa_validator_get_properties_cstr
   sa_validator_get_properties_string
   sa_validator_is_attribute_inversed
   sa_validator_set_class

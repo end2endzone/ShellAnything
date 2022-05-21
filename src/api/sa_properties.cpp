@@ -86,6 +86,30 @@ sa_error_t sa_properties_get_string(const char* name, sa_string_t* str)
   return SA_ERROR_SUCCESS;
 }
 
+const char* sa_properties_get_cstr(const char* name)
+{
+  if (name == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  if (!pmgr.HasProperty(name))
+    return NULL;
+  const std::string& property_value = pmgr.GetProperty(name);
+  const char* output = property_value.c_str();
+  return output;
+}
+
+const char* sa_properties_get_alloc(const char* name)
+{
+  if (name == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  if (!pmgr.HasProperty(name))
+    return NULL;
+  const std::string& property_value = pmgr.GetProperty(name);
+  const char* output = property_value.c_str();
+  return strdup(output);
+}
+
 sa_error_t sa_properties_expand_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
 {
   if (expanded_length)
@@ -108,6 +132,16 @@ sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str)
   return SA_ERROR_SUCCESS;
 }
 
+const char* sa_properties_expand_alloc(const char* value)
+{
+  if (value == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  std::string expanded_value = pmgr.Expand(value);
+  const char* output = expanded_value.c_str();
+  return strdup(output);
+}
+
 sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
 {
   if (expanded_length)
@@ -128,4 +162,14 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
   std::string expanded_value = pmgr.ExpandOnce(value);
   sa_string_copy_stdstr(str, expanded_value);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_properties_expand_once_alloc(const char* value)
+{
+  if (value == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  std::string expanded_value = pmgr.ExpandOnce(value);
+  const char* output = expanded_value.c_str();
+  return strdup(output);
 }

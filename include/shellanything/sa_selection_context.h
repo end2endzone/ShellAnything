@@ -88,6 +88,22 @@ sa_error_t sa_selection_context_get_element_buffer(sa_selection_context_immutabl
 sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutable_t* ctx, size_t idx, sa_string_t* str);
 
 /// <summary>
+/// Get the nth string element from the context.
+/// </summary>
+/// <param name="ctx">The context structure object.</param>
+/// <param name="idx">The index of the element</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_selection_context_get_element_cstr(sa_selection_context_immutable_t* ctx, size_t idx);
+
+/// <summary>
+/// Get the nth string element from the context.
+/// </summary>
+/// <param name="ctx">The context structure object.</param>
+/// <param name="idx">The index of the element</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_selection_context_get_element_alloc(sa_selection_context_immutable_t* ctx, size_t idx);
+
+/// <summary>
 /// Get the number of files selected by the context.
 /// </summary>
 /// <param name="ctx">The context structure object.</param>

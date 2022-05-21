@@ -110,6 +110,20 @@ sa_error_t sa_validator_get_properties_buffer(sa_validator_immutable_t* validato
 sa_error_t sa_validator_get_properties_string(sa_validator_immutable_t* validator, sa_string_t* str);
 
 /// <summary>
+/// Get the properties parameter.
+/// </summary>
+/// <param name="validator">The validator structure object.</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_validator_get_properties_cstr(sa_validator_immutable_t* validator);
+
+/// <summary>
+/// Get the properties parameter.
+/// </summary>
+/// <param name="validator">The validator structure object.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_validator_get_properties_alloc(sa_validator_immutable_t* validator);
+
+/// <summary>
 /// Set the properties parameter.
 /// </summary>
 /// <param name="validator">The validator structure object.</param>

@@ -34,7 +34,7 @@
 
 using namespace shellanything;
 
-#define SA_API_LOG_IDDENTIFIER "API"
+#define SA_API_LOG_IDDENTIFIER "PLUGIN API"
 
 sa_selection_context_immutable_t g_update_selection_context;
 sa_selection_context_immutable_t g_validation_selection_context;

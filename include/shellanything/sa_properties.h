@@ -81,6 +81,20 @@ sa_error_t sa_properties_get_buffer(const char* name, int* property_length, char
 sa_error_t sa_properties_get_string(const char* name, sa_string_t* str);
 
 /// <summary>
+/// Get the value of the given property name.
+/// </summary>
+/// <param name="name">The name of the property to get.</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_properties_get_cstr(const char* name);
+
+/// <summary>
+/// Get a copy of the file extension.
+/// </summary>
+/// <param name="name">The name of the property to get.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_properties_get_alloc(const char* name);
+
+/// <summary>
 /// Expand the given string by replacing property variable reference by the actual variable's value.
 /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
 /// </summary>
@@ -112,6 +126,17 @@ sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str);
 /// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
 /// </summary>
 /// <remarks>
+/// The string is expanded until there are no change in the given string.
+/// </remarks>
+/// <param name="value">The given value to expand.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_properties_expand_alloc(const char* value);
+
+/// <summary>
+/// Expand the given string by replacing property variable reference by the actual variable's value.
+/// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
+/// </summary>
+/// <remarks>
 /// The string is expanded in a single pass. Some property reference may not be expanded after the first pass.
 /// The expanded_length is updated even if the given buffer is too small.
 /// </remarks>
@@ -133,6 +158,17 @@ sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_len
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
 sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str);
+
+/// <summary>
+/// Expand the given string by replacing property variable reference by the actual variable's value.
+/// The syntax of a property variable reference is the following: `${variable-name}` where `variable-name` is the name of a variable.
+/// </summary>
+/// <remarks>
+/// The string is expanded in a single pass. Some property reference may not be expanded after the first pass.
+/// </remarks>
+/// <param name="value">The given value to expand.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_properties_expand_once_alloc(const char* value);
 
 #ifdef __cplusplus
 }

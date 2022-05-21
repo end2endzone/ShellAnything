@@ -83,14 +83,6 @@ void sa_property_store_set_property(sa_property_store_t* store, const char * nam
 /// <summary>
 /// Get the value of the given property name.
 /// </summary>
-/// <param name="store">The property store structure object.</param>
-/// <param name="name">The name of the property to get.</param>
-/// <returns>Returns the value of the given attribute. Returns NULL if the property cannot be found.</returns>
-const char* sa_property_store_get_property_c_str(sa_property_store_immutable_t* store, const char* name);
-
-/// <summary>
-/// Get the value of the given property name.
-/// </summary>
 /// <remarks>
 /// The property_length is updated even if the given buffer is too small.
 /// </remarks>
@@ -110,6 +102,22 @@ sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* 
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
 sa_error_t sa_property_store_get_property_string(sa_property_store_immutable_t* store, const char* name, sa_string_t* str);
+
+/// <summary>
+/// Get the value of the given property name.
+/// </summary>
+/// <param name="store">The property store structure object.</param>
+/// <param name="name">The name of the property to get.</param>
+/// <returns>Returns the value of the given attribute. Returns NULL if the property cannot be found.</returns>
+const char* sa_property_store_get_property_cstr(sa_property_store_immutable_t* store, const char* name);
+
+/// <summary>
+/// Get the value of the given property name.
+/// </summary>
+/// <param name="store">The property store structure object.</param>
+/// <param name="name">The name of the property to get.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_property_store_get_property_alloc(sa_property_store_immutable_t* store, const char* name);
 
 /// <summary>
 /// Counts how many properties are registered in the store.

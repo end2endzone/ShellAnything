@@ -76,6 +76,21 @@ sa_error_t sa_menu_get_name_buffer(sa_menu_immutable_t* menu, int* length, char*
 sa_error_t sa_menu_get_name_string(sa_menu_immutable_t* menu, sa_string_t* str);
 
 /// <summary>
+/// Get the name of the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <returns>Returns the name of the menu. Returns NULL if no value is defined.</returns>
+const char* sa_menu_get_name_cstr(sa_menu_immutable_t* menu);
+
+/// <summary>
+/// Get the name of the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
+/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
+const char* sa_menu_get_name_alloc(sa_menu_immutable_t* menu);
+
+/// <summary>
 /// Set the name of the menu.
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
@@ -99,6 +114,20 @@ sa_error_t sa_menu_get_description_buffer(sa_menu_immutable_t* menu, int* length
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_description_string(sa_menu_immutable_t* menu, sa_string_t* str);
+
+/// <summary>
+/// Get the description of the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_menu_get_description_cstr(sa_menu_immutable_t* menu);
+
+/// <summary>
+/// Get the description of the menu.
+/// </summary>
+/// <param name="menu">The menu structure object.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_menu_get_description_alloc(sa_menu_immutable_t* menu);
 
 /// <summary>
 /// Set the description of the menu.

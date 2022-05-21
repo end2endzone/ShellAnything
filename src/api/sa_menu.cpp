@@ -67,6 +67,20 @@ sa_error_t sa_menu_get_name_string(sa_menu_immutable_t* menu, sa_string_t* str)
   return SA_ERROR_SUCCESS;
 }
 
+const char* sa_menu_get_name_cstr(sa_menu_immutable_t* menu)
+{
+  const std::string& name = AS_CLASS_MENU(menu)->GetName();
+  const char* output = name.c_str();
+  return output;
+}
+
+const char* sa_menu_get_name_alloc(sa_menu_immutable_t* menu)
+{
+  const std::string& name = AS_CLASS_MENU(menu)->GetName();
+  const char* output = name.c_str();
+  return strdup(output);
+}
+
 void sa_menu_set_name(sa_menu_t* menu, const char* name)
 {
   AS_CLASS_MENU(menu)->SetName(name);

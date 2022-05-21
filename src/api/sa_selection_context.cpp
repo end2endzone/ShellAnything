@@ -88,6 +88,26 @@ sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutabl
   return SA_ERROR_SUCCESS;
 }
 
+const char* sa_selection_context_get_element_cstr(sa_selection_context_immutable_t* ctx, size_t idx)
+{
+  const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
+  if (idx >= elements.size())
+    return NULL;
+  const std::string& element = elements[idx];
+  const char* output = element.c_str();
+  return output;
+}
+
+const char* sa_selection_context_get_element_alloc(sa_selection_context_immutable_t* ctx, size_t idx)
+{
+  const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
+  if (idx >= elements.size())
+    return NULL;
+  const std::string& element = elements[idx];
+  const char* output = element.c_str();
+  return strdup(output);
+}
+
 int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx)
 {
   return AS_CLASS_SELECTION_CONTEXT(ctx)->GetNumFiles();
