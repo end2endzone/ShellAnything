@@ -105,7 +105,7 @@ const char* sa_selection_context_get_element_alloc(sa_selection_context_immutabl
     return NULL;
   const std::string& element = elements[idx];
   const char* output = element.c_str();
-  return strdup(output);
+  return _strdup(output);
 }
 
 int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx)

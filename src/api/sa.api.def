@@ -108,7 +108,7 @@ EXPORTS
   sa_property_store_find_missing_properties
   sa_property_store_get_properties
   sa_property_store_get_property_buffer
-  sa_property_store_get_property_c_str
+  sa_property_store_get_property_cstr
   sa_property_store_get_property_count
   sa_property_store_get_property_cstr
   sa_property_store_get_property_string

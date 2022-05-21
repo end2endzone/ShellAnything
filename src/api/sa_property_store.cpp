@@ -92,7 +92,7 @@ const char* sa_property_store_get_property_alloc(sa_property_store_immutable_t* 
     return NULL;
   const std::string& value = store_class->GetProperty(name);
   const char* output = value.c_str();
-  return strdup(output);
+  return _strdup(output);
 }
 
 sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size)

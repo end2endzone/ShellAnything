@@ -107,7 +107,7 @@ const char* sa_properties_get_alloc(const char* name)
     return NULL;
   const std::string& property_value = pmgr.GetProperty(name);
   const char* output = property_value.c_str();
-  return strdup(output);
+  return _strdup(output);
 }
 
 sa_error_t sa_properties_expand_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
@@ -139,7 +139,7 @@ const char* sa_properties_expand_alloc(const char* value)
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
   const char* output = expanded_value.c_str();
-  return strdup(output);
+  return _strdup(output);
 }
 
 sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
@@ -171,5 +171,5 @@ const char* sa_properties_expand_once_alloc(const char* value)
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);
   const char* output = expanded_value.c_str();
-  return strdup(output);
+  return _strdup(output);
 }
