@@ -29,6 +29,7 @@ set SA_PLUGIN_NAME=sa_plugin_process
 set CMAKE_INSTALL_PREFIX=%PRODUCT_SOURCE_DIR%\src\plugins\%SA_PLUGIN_NAME%\install
 set CMAKE_PREFIX_PATH=
 set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;%PRODUCT_SOURCE_DIR%\install
+set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;%PRODUCT_SOURCE_DIR%\third_parties\RapidAssist\install
 
 echo ============================================================================
 echo Generating %SA_PLUGIN_NAME% example...
