@@ -75,7 +75,7 @@ sa_boolean sa_plugin_demo_validate()
   for (size_t i = 0; i < count; i++)
   {
     const char* property_name = names[i];
-    const char * property_value = sa_property_store_get_property_c_str(store, property_name);
+    const char * property_value = sa_property_store_get_property_cstr(store, property_name);
 
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "  %s = %s", property_name, property_value);
   }
