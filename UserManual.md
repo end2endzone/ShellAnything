@@ -46,14 +46,14 @@ This manual includes a description of the system functionalities and capabilitie
   * [Default properties](#default-properties)
 * [Plugin support](#plugin-support)
   * [Plugin overview](#plugin-overview)
-  * [C API](#c-api-support)
+  * [C API](#c-api)
   * [Creating a new plugin](#creating-a-new-plugin)
     * [Register a function callback when the selection changes](#register-a-function-callback-when-the-selection-changes)
     * [Register additional validation attributes](#register-additional-validation-attributes)
     * [Register new custom actions](#register-new-custom-actions)
   * [Plugin declaration](#plugin-declaration)
-    * [Plugins](#plugins)
-    * [Plugin](#plugin)
+    * [&lt;plugins&gt; element](#plugins-element)
+    * [&lt;plugin&gt; element](#plugin-element)
   * [Plugin definition examples](#plugin-definition-examples)
   * [Official plugins](#official-plugins)
     * [sa_plugin_process.dll](#sa_plugin_processdll)
@@ -1369,7 +1369,7 @@ Plugin must be manually declared in a _Configuration File_. See the section [Plu
 
 
 
-## C API support ##
+## C API ##
 
 Plugins can communicate with ShellAnything using a C API. The API is implemented in a DLL called `sa.api.dll`. The include files are located in `[installation directory]\include\shellanything`. The files are prefixed with `sa_`.
 
@@ -1383,7 +1383,7 @@ The API is not designed to program your own Windows Shell Extensions. The goal o
 
 ## Creating a new plugin ##
 
-All plugins are designed to have a two generic entry points. The name of these entry point are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api-support).
+All plugins are designed to have a two generic entry points. The name of these entry point are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api).
 
 The implementation of `sa_plugin_register()` must register one or mutiple services using the API:
 
@@ -1435,7 +1435,7 @@ This section explains how to declare a plugin in a _Configuration File_.
 
 
 
-### Plugins ###
+### &lt;plugins&gt; element ###
 
 The &lt;plugins&gt; element contains the list of plugin declarations. The specific definition of each plugin must be inserted as children of the &lt;plugins&gt; element.
 
@@ -1445,7 +1445,7 @@ The &lt;plugins&gt; elements does not support any attributes.
 
 
 
-### Plugin ###
+### &lt;plugin&gt; element ###
 
 The &lt;plugin&gt; element defines a plugin and its features.
 
