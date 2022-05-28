@@ -42,17 +42,17 @@ extern "C" {
 /// Function pointer definition for validating custom attributes.
 /// </summary>
 /// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef sa_boolean (*sa_plugin_validate_callback_func)();
+typedef sa_boolean (*sa_plugin_validation_attributes_func)();
 
 /// <summary>
 /// Function pointer definition for an update callback function.
 /// An update callback is called on a new selection.
 /// </summary>
-typedef void (*sa_plugin_update_callback_func)();
+typedef void (*sa_plugin_config_update_func)();
 
 /// <summary>
 /// Function pointer definition to process an action event.
-/// Basic events include creating, executing and destroying and action.
+/// Basic events are creating, executing and destroying and action.
 /// While processing an event, see functions that begins with sa_plugin_action_* for more informations.
 /// </summary>
 /// <param name="evnt">An event of type sa_action_event_t. See sa_enums.h for details.</param>
@@ -72,10 +72,10 @@ sa_selection_context_immutable_t* sa_plugin_validation_get_selection_context();
 sa_property_store_immutable_t* sa_plugin_validation_get_property_store();
 
 /// <summary>
-/// Get the selection context that identifies which files and directories are selected while updating.
+/// Get the selection context that identifies which files and directories are selected while a Configuration is updated.
 /// </summary>
 /// <returns>Returns a valid pointer to a sa_selection_context_immutable_t. Returns NULL otherwise.</returns>
-sa_selection_context_immutable_t* sa_plugin_update_get_selection_context();
+sa_selection_context_immutable_t* sa_plugin_config_update_get_selection_context();
 
 /// <summary>
 /// Get the name of a custom action.
@@ -102,20 +102,20 @@ void ** sa_plugin_action_get_data();
 sa_property_store_t* sa_plugin_action_get_property_store();
 
 /// <summary>
-/// Register a custom attribute validation function for a given list of attributes.
+/// Register a validation function for for a given list of validation attributes.
 /// </summary>
 /// <param name="names">The names of the attributes as an array of strings.</param>
 /// <param name="count">Defines how many elements are in the names array.</param>
-/// <param name="func">A function pointer which definition matches sa_plugin_validate_callback_func.</param>
+/// <param name="func">A function pointer which definition matches sa_plugin_validation_attributes_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func);
+sa_error_t sa_plugin_register_validation_attributes(const char* names[], size_t count, sa_plugin_validation_attributes_func func);
 
 /// <summary>
-/// Register a custom update callback function on a new selection.
+/// Register a function call when a Configuration is updated with a new selection.
 /// </summary>
-/// <param name="func">A function pointer which definition matches sa_plugin_update_callback_func.</param>
+/// <param name="func">A function pointer which definition matches sa_plugin_config_update_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func func);
+sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func);
 
 /// <summary>
 /// Register a custom action factory function.

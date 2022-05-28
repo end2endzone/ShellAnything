@@ -194,8 +194,8 @@ EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
 EXPORT_API sa_error_t sa_plugin_register()
 {
   // register update callback function.
-  sa_plugin_update_callback_func update_func = &sa_plugin_services_update_callback;
-  sa_error_t result = sa_plugin_register_update_callback(update_func);
+  sa_plugin_config_update_func update_func = &sa_plugin_services_update_callback;
+  sa_error_t result = sa_plugin_register_config_update(update_func);
   if (result != SA_ERROR_SUCCESS)
   {
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed registering update callback function.");

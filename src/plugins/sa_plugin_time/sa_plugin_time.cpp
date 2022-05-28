@@ -164,8 +164,8 @@ EXPORT_API sa_error_t sa_plugin_register()
     END_TIME_ATTR,
   };
   static const size_t time_attributes_count = sizeof(time_attributes) / sizeof(time_attributes[0]);
-  sa_plugin_validate_callback_func validate_func = &sa_plugin_time_validate_time_of_day;
-  sa_error_t result = sa_plugin_register_attribute_validation(time_attributes, time_attributes_count, validate_func);
+  sa_plugin_validation_attributes_func validate_func = &sa_plugin_time_validate_time_of_day;
+  sa_error_t result = sa_plugin_register_validation_attributes(time_attributes, time_attributes_count, validate_func);
   if (result != SA_ERROR_SUCCESS)
   {
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed registering validation function for attributes '%s' and '%s'.", time_attributes[0], time_attributes[1]);

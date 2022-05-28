@@ -464,8 +464,8 @@ EXPORT_API sa_error_t sa_plugin_register()
 #define PLUGIN_REGISTER_VALIDATION(attributes, event_func) \
   { \
     static const size_t count = sizeof(attributes) / sizeof(attributes[0]); \
-    sa_plugin_validate_callback_func validate_func = &event_func; \
-    result = sa_plugin_register_attribute_validation(attributes, count, validate_func); \
+    sa_plugin_validation_attributes_func validate_func = &event_func; \
+    result = sa_plugin_register_validation_attributes(attributes, count, validate_func); \
     if (result != SA_ERROR_SUCCESS) \
     { \
       sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed registering validation function for attribute '%s'.", attributes[0]); \

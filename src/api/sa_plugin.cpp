@@ -162,7 +162,7 @@ public:
     return false;
   }
 
-  void SetValidationFunction(sa_plugin_validate_callback_func func)
+  void SetValidationFunction(sa_plugin_validation_attributes_func func)
   {
     mValidationFunc = func;
   }
@@ -171,7 +171,7 @@ private:
   StringList mNames;
   const SelectionContext* mSelection;
   const PropertyStore* mAttributes;
-  sa_plugin_validate_callback_func mValidationFunc;
+  sa_plugin_validation_attributes_func mValidationFunc;
 };
 
 class PluginUpdateCallback : public virtual IUpdateCallback
@@ -214,14 +214,14 @@ public:
     memset(&g_update_selection_context, 0, sizeof(g_update_selection_context));
   }
 
-  void SetUpdateCallbackFunction(sa_plugin_update_callback_func func)
+  void SetUpdateCallbackFunction(sa_plugin_config_update_func func)
   {
     mValidationFunc = func;
   }
 
 private:
   const SelectionContext* mSelection;
-  sa_plugin_update_callback_func mValidationFunc;
+  sa_plugin_config_update_func mValidationFunc;
 };
 
 class PluginAction : public virtual IAction
@@ -439,7 +439,7 @@ sa_property_store_immutable_t* sa_plugin_validation_get_property_store()
   return &g_validation_property_store;
 }
 
-sa_selection_context_immutable_t* sa_plugin_update_get_selection_context()
+sa_selection_context_immutable_t* sa_plugin_config_update_get_selection_context()
 {
   return &g_update_selection_context;
 }
@@ -464,7 +464,7 @@ sa_property_store_t* sa_plugin_action_get_property_store()
   return &g_action_property_store;
 }
 
-sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t count, sa_plugin_validate_callback_func func)
+sa_error_t sa_plugin_register_validation_attributes(const char* names[], size_t count, sa_plugin_validation_attributes_func func)
 {
   if (names == NULL || func == NULL || count == 0)
   {
@@ -499,7 +499,7 @@ sa_error_t sa_plugin_register_attribute_validation(const char* names[], size_t c
   return SA_ERROR_SUCCESS;
 }
 
-sa_error_t sa_plugin_register_update_callback(sa_plugin_update_callback_func func)
+sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func)
 {
   if (func == NULL)
   {

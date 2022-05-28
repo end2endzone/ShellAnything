@@ -74,9 +74,9 @@ EXPORTS
   sa_plugin_action_get_property_store
   sa_plugin_action_get_xml
   sa_plugin_register_action_event
-  sa_plugin_register_attribute_validation
-  sa_plugin_register_update_callback
-  sa_plugin_update_get_selection_context
+  sa_plugin_register_validation_attributes
+  sa_plugin_register_config_update
+  sa_plugin_config_update_get_selection_context
   sa_plugin_validation_get_property_store
   sa_plugin_validation_get_selection_context
   sa_properties_clear
