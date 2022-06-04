@@ -213,6 +213,30 @@ if (SHELLANYTHING_BUILD_DOC)
 endif()
 
 ##############################################################################################################################################
+# Package sa_plugin_demo files into a zip
+##############################################################################################################################################
+
+function(create_zip target_name output_file input_files working_dir)
+  add_custom_command(
+    # COMMAND ${CMAKE_COMMAND} -E echo create_zip && exit 42
+    COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${output_file}" --format=zip -- ${input_files}
+    WORKING_DIRECTORY "${working_dir}"
+    OUTPUT  "${output_file}"
+    DEPENDS ${input_files}
+    COMMENT "Creating zip archive: ${output_file}."
+  )
+  add_custom_target(${target_name} DEPENDS "${output_file}")
+endfunction()
+
+# Find all files in sa_plugin_demo directory
+set(PLUGIN_DEMO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/sa_plugin_demo")
+file(GLOB PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/*")
+list(REMOVE_ITEM PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/build")
+list(REMOVE_ITEM PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/install")
+#MESSAGE( STATUS "Found sa_plugin_demo files:"  "${PLUGIN_DEMO_FILES}" )
+create_zip(PACKAGE_sa_plugin_demo "${CMAKE_CURRENT_BINARY_DIR}/sa_plugin_demo.zip" "${PLUGIN_DEMO_FILES}" "${PLUGIN_DEMO_DIR}")
+
+##############################################################################################################################################
 # Convert markdown/text files to html/txt for publishing with installers.
 ##############################################################################################################################################
 
@@ -298,6 +322,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
               ${CMAKE_SOURCE_DIR}/docs/screenshot_folder.png
               ${CMAKE_SOURCE_DIR}/docs/ShellAnything-splashscreen.jpg
               ${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico
+              ${CMAKE_CURRENT_BINARY_DIR}/sa_plugin_demo.zip
               DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR})
 
 install(FILES ${CMAKE_SOURCE_DIR}/README.md
@@ -310,6 +335,10 @@ install(FILES ${CMAKE_SOURCE_DIR}/README.md
               ${CMAKE_BINARY_DIR}/${CHANGES_FILENAME}
               ${CMAKE_BINARY_DIR}/${LICENSE_FILENAME}
               DESTINATION ${SHELLANYTHING_INSTALL_ROOT_DIR})
+
+if (SHELLANYTHING_BUILD_DOC AND DOXYGEN_FOUND)
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen_out/html DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR}/api)
+endif()
 
 ##############################################################################################################################################
 # Packaging
