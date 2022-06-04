@@ -225,7 +225,7 @@ function(create_zip target_name output_file input_files working_dir)
     DEPENDS ${input_files}
     COMMENT "Creating zip archive: ${output_file}."
   )
-  add_custom_target(${target_name} DEPENDS "${output_file}")
+  add_custom_target(${target_name} ALL DEPENDS "${output_file}")
 endfunction()
 
 # Find all files in sa_plugin_demo directory
@@ -233,7 +233,7 @@ set(PLUGIN_DEMO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/sa_plugin_demo")
 file(GLOB PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/*")
 list(REMOVE_ITEM PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/build")
 list(REMOVE_ITEM PLUGIN_DEMO_FILES "${PLUGIN_DEMO_DIR}/install")
-#MESSAGE( STATUS "Found sa_plugin_demo files:"  "${PLUGIN_DEMO_FILES}" )
+MESSAGE("Found sa_plugin_demo files: ${PLUGIN_DEMO_FILES}" )
 create_zip(PACKAGE_sa_plugin_demo "${CMAKE_CURRENT_BINARY_DIR}/sa_plugin_demo.zip" "${PLUGIN_DEMO_FILES}" "${PLUGIN_DEMO_DIR}")
 
 ##############################################################################################################################################
