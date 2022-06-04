@@ -86,7 +86,6 @@ const char* sa_menu_get_name_cstr(sa_menu_immutable_t* menu);
 /// Get the name of the menu.
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
-/// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 const char* sa_menu_get_name_alloc(sa_menu_immutable_t* menu);
 
@@ -133,7 +132,7 @@ const char* sa_menu_get_description_alloc(sa_menu_immutable_t* menu);
 /// Set the description of the menu.
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
-/// <param name="name">The new description for the menu.</param>
+/// <param name="description">The new description for the menu.</param>
 void sa_menu_set_description(sa_menu_t* menu, const char * description);
 
 /// <summary>
@@ -148,7 +147,6 @@ sa_icon_immutable_t sa_menu_get_icon(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="icon">The new icon object.</param>
-/// <returns>Returns the menu's icon</returns>
 void sa_menu_set_icon(sa_menu_t* menu, sa_icon_immutable_t* icon);
 
 /// <summary>
@@ -198,7 +196,7 @@ size_t sa_menu_get_action_count(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="index">The action index</param>
-/// <param name="submenu">The output action structure object</param>
+/// <param name="action">The output action structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_action_element(sa_menu_t* menu, size_t index, sa_action_t* action);
 
@@ -214,7 +212,7 @@ size_t sa_menu_get_visibility_count(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="index">The validator index</param>
-/// <param name="submenu">The output validator structure object</param>
+/// <param name="validator">The output validator structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_visibility_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator);
 
@@ -230,7 +228,7 @@ size_t sa_menu_get_validity_count(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="index">The validator index</param>
-/// <param name="submenu">The output validator structure object</param>
+/// <param name="validator">The output validator structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_validity_element(sa_menu_immutable_t* menu, size_t index, sa_validator_immutable_t* validator);
 

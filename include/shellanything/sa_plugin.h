@@ -120,6 +120,7 @@ sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func);
 /// <summary>
 /// Register a custom action factory function.
 /// </summary>
+/// <param name="name">The name of the custom action.</param>
 /// <param name="func">A function pointer which definition matches sa_plugin_action_factory_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_plugin_register_action_event(const char * name, sa_plugin_action_event_func func);

@@ -42,7 +42,7 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator);
 
 /// <summary>
 /// Returns 1 if the given attribute name is in the list of inversed attributes.
-/// The accepted attribute names matches the list of attributes of <validity> or <visibility> elements in a Configuration File.
+/// The accepted attribute names matches the list of attributes of 'validity' or 'visibility' elements in a Configuration File.
 /// See the 'User Manual' for details.
 /// </summary>
 /// <param name="validator">The validator structure object.</param>

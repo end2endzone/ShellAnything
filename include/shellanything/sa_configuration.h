@@ -39,7 +39,7 @@ extern "C" {
 /// <summary>
 /// Converts a mutable configuration to an immutable configuration.
 /// </summary>
-/// <param name="icon">The mutable object to convert.</param>
+/// <param name="context">The mutable object to convert.</param>
 /// <returns>Returns an immutable configuration</returns>
 sa_configuration_immutable_t sa_configuration_to_immutable(sa_configuration_t* context);
 
@@ -91,7 +91,7 @@ sa_error_t sa_configuration_get_file_path_string(sa_configuration_immutable_t* c
 /// Set the file path of this configuration.
 /// </summary>
 /// <param name="configuration">The configuration structure object.</param>
-/// <param name="name">The file path for the configuration.</param>
+/// <param name="path">The path for the configuration file.</param>
 void sa_configuration_set_file_path(sa_configuration_t* configuration, const char* path);
 
 /// <summary>

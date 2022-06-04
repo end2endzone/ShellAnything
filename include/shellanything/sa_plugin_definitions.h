@@ -63,7 +63,7 @@ typedef struct {
 /// </remarks>
 /// <param name="version">The version of the application.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* /*version*/);
+typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* version);
 
 /// <summary>
 /// Function pointer definition for plugins registration function.

@@ -82,7 +82,7 @@ const char* sa_icon_get_file_extension_alloc(sa_icon_immutable_t* icon);
 /// <summary>
 /// Set the file extension.
 /// </summary>
-/// <param name="menu">The menu structure object.</param>
+/// <param name="icon">The icon structure object.</param>
 /// <param name="fileextension">The new fileextension.</param>
 void sa_icon_set_file_extension(sa_icon_t* icon, const char* fileextension);
 
