@@ -21,9 +21,17 @@ echo 7zip found.
 echo.
 
 :: Download installer
-echo Downloading...
-REM powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'
-powershell -nologo -executionpolicy bypass -command "(New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
+echo Downloading %DOXYGEN_URL%...
+
+REM Note:
+REM Running `powershell -nologo -executionpolicy bypass -command "(New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"`
+REM result in the following exception on AppVeyor:
+REM   Exception calling "DownloadFile" with "2" argument(s): "The request was 
+REM   aborted: Could not create SSL/TLS secure channel."
+REM The solution is explained here: https://stackoverflow.com/questions/41618766/powershell-invoke-webrequest-fails-with-ssl-tls-secure-channel
+
+REM OLD COMMAND: powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'
+powershell -nologo -executionpolicy bypass -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; (New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
 if errorlevel 1 (
   echo Command failed. Unable to download doxygen binaries.
   exit /B %errorlevel%
