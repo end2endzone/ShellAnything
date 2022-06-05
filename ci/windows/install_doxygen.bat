@@ -22,16 +22,16 @@ echo.
 
 :: Download installer
 echo Downloading...
-REM REM powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'
-REM powershell -nologo -executionpolicy bypass -command "(New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
-REM if errorlevel 1 (
-REM   echo Command failed. Unable to download doxygen binaries.
-REM   exit /B %errorlevel%
-REM )
-REM if NOT EXIST "%DOXYGEN_FILE%" (
-REM   echo Download failed. The file '%DOXYGEN_FILE%' is not found.
-REM   exit /B %errorlevel%
-REM )
+REM powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'
+powershell -nologo -executionpolicy bypass -command "(New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
+if errorlevel 1 (
+  echo Command failed. Unable to download doxygen binaries.
+  exit /B %errorlevel%
+)
+if NOT EXIST "%DOXYGEN_FILE%" (
+  echo Download failed. The file '%DOXYGEN_FILE%' is not found.
+  exit /B %errorlevel%
+)
 echo done.
 echo.
 
