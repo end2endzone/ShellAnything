@@ -9,6 +9,22 @@ set DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.4.windows.x64.bin.zip
 set DOXYGEN_FILE=%TEMP%\doxygen.zip
 set DOXYGEN_INSTALL_DIR=%TEMP%\doxygen
 
+:: Validate if python launcher is installed
+where py.exe >NUL 2>NUL
+if errorlevel 1 (
+  echo Command failed. Please install python and python launcher to continue.
+  exit /B %errorlevel%
+)
+echo Found python interpreter
+python --version
+
+:: Validate if pip is installed
+where pip.exe >NUL 2>NUL
+if errorlevel 1 (
+  echo Command failed. Please install pip ^(Package Installer Python^) to continue.
+  exit /B %errorlevel%
+)
+
 :: Check that 7zip is installed
 echo Searching for 7zip executable...
 set PATH=C:\Program Files\7-Zip;%PATH%
