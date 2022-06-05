@@ -4,7 +4,7 @@
 :: https://github.com/doxygen/doxygen
 :: https://www.doxygen.nl/download.html
 
-echo Installing doxygen...
+echo Installing Doxygen...
 set DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.4.windows.x64.bin.zip
 set DOXYGEN_FILE=%TEMP%\doxygen.zip
 set DOXYGEN_INSTALL_DIR=%TEMP%\doxygen
@@ -30,8 +30,9 @@ REM   Exception calling "DownloadFile" with "2" argument(s): "The request was
 REM   aborted: Could not create SSL/TLS secure channel."
 REM The solution is explained here: https://stackoverflow.com/questions/41618766/powershell-invoke-webrequest-fails-with-ssl-tls-secure-channel
 
-REM OLD COMMAND: powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'
-powershell -nologo -executionpolicy bypass -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; (New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
+REM powershell -nologo -executionpolicy bypass -command "wget '%DOXYGEN_URL%' -outfile '%DOXYGEN_FILE%'"
+REM powershell -nologo -executionpolicy bypass -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; (New-Object System.Net.WebClient).DownloadFile('%DOXYGEN_URL%', '%DOXYGEN_FILE%')"
+powershell -nologo -executionpolicy bypass -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest -Uri '%DOXYGEN_URL%' -OutFile '%DOXYGEN_FILE%' -UseDefaultCredentials"
 if errorlevel 1 (
   echo Command failed. Unable to download doxygen binaries.
   exit /B %errorlevel%
@@ -65,5 +66,5 @@ if errorlevel 1 (
 echo Doxygen found.
 echo.
 
-echo doxygen was installed on the system without error.
+echo Doxygen was installed on the system without error.
 echo.
