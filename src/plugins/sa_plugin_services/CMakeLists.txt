@@ -6,6 +6,12 @@ if (NOT SHELLANYTHING_BUILD_PLUGINS)
   find_package(shellanything 0.8.0 REQUIRED)
 endif()
 
+# Prevents annoying warnings on MSVC
+if (WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+endif()
+
 add_library(sa_plugin_services SHARED
   sa_plugin_services.cpp
 )
