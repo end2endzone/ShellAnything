@@ -44,7 +44,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
-* [Plugin support](#plugin-support)
+* [Plugins](#plugins)
   * [Plugin overview](#plugin-overview)
   * [C API](#c-api)
   * [Creating a new plugin](#creating-a-new-plugin)
@@ -1354,36 +1354,36 @@ For example, the following would define `services.wce.command.start` and `servic
 
 
 
-# Plugin support #
+# Plugins #
 
 
 ## Plugin overview ##
 
-ShellAnything support plugins which can be used to extend ShellAnything with more features. The support for plugins is in beta and support is limitted.
+ShellAnything supports plugins which can be used to extend ShellAnything with more functionality. The support for plugins is in beta and support is limitted.
 
-ShellAnything does not implement a plugin detection system. It can not automatically detect and load plugin files.
- 
-Plugins do not expose multiple interfaces that can be loaded and called by ShellAnything. The application does not poll plugins for features. The design is the other way around. Plugins must register their features to the system. This design is more tolerant to API changes.
+ShellAnything does not implement a plugin detection system. It cannot automatically detect and load plugin files. The reason is explained below.
 
-Plugin must be manually declared in a _Configuration File_. See the section [Plugin Declaration](#plugin-declaration) for details. As a general idea, a plugin that is declared in a _Configuration File_ only impact the current _Configuration_. A configuration cannot refer or use the features a plugin that is declared in another configuration. To share features of a plugin in multiple configurations, the plugin must be declared in each configuration. This is a limitation but it guarantees the proper functioning of the system since _configurations_ can be unloaded or modified at any time while the application is running.
+Plugins do not expose multiple interfaces that can be loaded and called by ShellAnything. The application does not query plugins for features. The design is the other way around. Plugins must register their features to the system. This design is more tolerant to API changes.
+
+The plugin must be declared manually in a _Configuration file_. See the [Plugin declaration](#plugin-declaration) section for more details. As a general rule, a plugin declared in a _Configuration file_ only impacts the current _configuration_. A configuration cannot reference or use the functionality of a plugin declared in another configuration. To share the functionalities of a plugin in several configurations, the plugin must be declared in each configuration. This is a limitation but it keeps each _configuration_ independent from each other and guarantees the correct functioning of the system since the _configurations_ can be unloaded or modified at any time while the application is running.
 
 
 
 ## C API ##
 
-Plugins can communicate with ShellAnything using a C API. The API is implemented in a DLL called `sa.api.dll`. The include files are located in `[installation directory]\include\shellanything`. The files are prefixed with `sa_`.
+Plugins can communicate with ShellAnything using a C API. The API is implemented in a DLL called `sa.api.dll`. The include files are located in `[installation directory]\include\shellanything`. Files are prefixed with `sa_`.
 
-The API is in C programming language. It provides a safe [Application Binary Interface (ABI)](https://en.wikipedia.org/wiki/Application_binary_interface) between plugins and ShellAnything. Implementing a C++ plugin framework with a safe ABI is more complicated in open source application since all compiling environment are different. For such reason, a C interface with the system was considered.
+The API is in C programming language. It provides a safe [Application Binary Interface (ABI)](https://en.wikipedia.org/wiki/Application_binary_interface) between plugins and ShellAnything. Implementing a C++ plugin framework with a safe ABI is more complicated in an open source application because all build environment are different. For such reason, a C interface with the system was considered.
 
-Most C++ classes of the core application are mapped to a header file in the API. For example, the include file [sa_selection_context.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/include/shellanything/sa_selection_context.h) in the API is providing the same feature as [SelectionContext.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/src/core/SelectionContext.h) from the core. The file `sa_properties.h` provides getters and setters to manipulate [properties](#properties) of the system.
+Most C++ classes of the core application are mapped to a header file in the API. For example, the include file [sa_selection_context.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/include/shellanything/sa_selection_context.h) in the API provides the same functionality as [SelectionContext.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/src/core/SelectionContext.h) from the core. The file `sa_properties.h` provides getters and setters to manipulate the [properties](#properties) of the system.
 
-The API is not designed to program your own Windows Shell Extensions. The goal of the API is to allow plugin to interract with ShellAnything.
+The API is not designed for programming your own Windows Shell extensions. The purpose of the API is to allow the plugin to interact with ShellAnything.
 
 
 
 ## Creating a new plugin ##
 
-All plugins are designed to have a two generic entry points. The name of these entry point are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api).
+All plugins are designed to have a two generic entry points. The name of these entry points are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api).
 
 The implementation of `sa_plugin_register()` must register one or mutiple services using the API:
 
@@ -1391,18 +1391,17 @@ The implementation of `sa_plugin_register()` must register one or mutiple servic
 
 ### Register a function callback when the selection changes ###
 
+The function `sa_plugin_register_config_update()` allow a plugin to register an update callback function. The given function is called by ShellAnything when a _Configuration_ is updated with a new selection.
 
-The function `sa_plugin_register_config_update()` allow a plugin to register an update callback function. The function is called by ShellAnything when a _Configuration_ is updated with a new selection.
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_config_update_get_selection_context()`.
 
-Plugins can get the selection context object that identifies which files and directories are selected by calling `sa_plugin_config_update_get_selection_context()`.
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
 
-Properties can be read and modified with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
-
-After the callback function is executed, ShellAnything proceed with normal menu validation. All menu visibility and validity is updated. Windows File explorer context menu is displayed.
+After the callback function is executed, ShellAnything proceeds with normal menu validation. All menu &lt;visibility&gt; and &lt;validity&gt; elements are updated. The Windows File Explorer context menu is displayed.
 
 Typical usage for such a plugin includes the following examples:
-  * Set a property that reflect's a resource availability. Use the property as criteria in &lt;visibility&gt; and &lt;validity&gt; elements to act as filters for menus.
-  * Set a _property_ that is used in the `path` attribute of an &lt;icon&gt; element. This method allow defining a menu icon that changes based on the selection.
+  * Set a property that reflects the availability of a resource. Use property as criteria in &lt;visibility&gt; and &lt;validity&gt; items to act as filters for menus.
+  * Set a _property_ used in the `path` attribute of an &lt;icon&gt; element. This method allows you to define a menu icon that changes depending on the selection.
 
 
 
@@ -1410,11 +1409,11 @@ Typical usage for such a plugin includes the following examples:
 
 The &lt;visibility&gt; and &lt;validity&gt; elements supports a [wide list of attributes](#visibility--validity) to use as filters. If the existing attributes is not enough, a plugin can register its own list of visibility and validity attributes.
 
-The function `sa_plugin_register_validation_attributes()` allow a plugin to register a set of custom validation attributes. The function is invoked by ShellAnything when a _Menu_ is updated with a new selection.
+The function `sa_plugin_register_validation_attributes()` allows a plugin to register a set of custom validation attributes. The function is called by ShellAnything when a _Menu_ is updated with a new selection.
 
-Plugins can get the selection context object that identifies which files and directories are selected by calling `sa_plugin_validation_get_selection_context()`.
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_validation_get_selection_context()`.
 
-Properties can be read and modified with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
 
 
 
@@ -1422,17 +1421,17 @@ Properties can be read and modified with `sa_properties_get_cstr()` or `sa_prope
 
 The list of native actions supported by ShellAnything is defined in the [Actions](#actions) section. If one needs more latitude than supported actions, a plugin can register a custom action.
 
-The function `sa_plugin_register_action_event()` allow a plugin to register a set of custom validation attributes. The function is invoked by ShellAnything when a _Menu_ actions are created, executed or destroyed.
+The function `sa_plugin_register_action_event()` allows a plugin to register an action event callback function. The function is called when ShellAnything create, execute or destroy this custom _Menu_ action.
 
-Plugins can get the selection context object that identifies which files and directories are selected by calling `sa_plugin_validation_get_selection_context()`.
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_validation_get_selection_context()`.
 
-Properties can be read and modified with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+
 
 
 ## Plugin declaration ##
 
 This section explains how to declare a plugin in a _Configuration File_.
-
 
 
 ### &lt;plugins&gt; element ###
