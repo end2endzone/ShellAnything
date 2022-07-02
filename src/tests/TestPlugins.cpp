@@ -27,6 +27,7 @@
 #include "ConfigManager.h"
 #include "PropertyManager.h"
 #include "SelectionContext.h"
+#include "SelectionContext.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
@@ -535,6 +536,148 @@ namespace shellanything { namespace test
     ASSERT_TRUE(visible0); //menu0 should always be visible.
     ASSERT_TRUE((visible1 == true && visible2 == false) ||
                 (visible1 == false && visible2 == true)); //menu1 and menu2 are mutually exclusive
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestPlugins, testPluginActionGetData)
+  {
+    ConfigManager& cmgr = ConfigManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    static const size_t ACTION_COUNT = 4;
+
+    //clear previous counter properties
+    for (size_t i = 0; i < ACTION_COUNT; i++)
+    {
+      std::string name;
+      name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".count";
+      pmgr.ClearProperty(name);
+      name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".address";
+      pmgr.ClearProperty(name);
+      name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".destroy";
+      pmgr.ClearProperty(name);
+    }
+
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ(1, configs.size());
+
+    Configuration* config0 = cmgr.GetConfigurations()[0];
+
+    //ASSERT all plugins were loaded
+    for (size_t i = 0; i < config0->GetPlugins().size(); i++)
+    {
+      const Plugin* plugin = config0->GetPlugins()[i];
+      ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
+    }
+
+    //Get menus
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(1, menus.size());
+    Menu* menu0 = menus[0];
+    ASSERT_TRUE(menu0 != NULL);
+
+    //ASSERT all expected content is parsed
+    const IAction::ActionPtrList& actions = menu0->GetActions();
+    ASSERT_EQ(ACTION_COUNT, actions.size());
+
+    //assert that all actions were "created"
+    for (size_t i = 0; i < ACTION_COUNT; i++)
+    {
+      std::string name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".address";
+      ASSERT_TRUE(pmgr.HasProperty(name)) << "Property '" << name << "' not found.";
+      std::string value = pmgr.GetProperty(name);
+      printf("%s=%s\n", name.c_str(), value.c_str());
+    }
+
+    //Force an update to execute the actions
+    SelectionContext c;
+#ifdef _WIN32
+    {
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\cmd.exe");
+      c.SetElements(elements);
+    }
+#else
+    //TODO: complete with known path to files
+#endif
+
+    printf("------------------------------------------------\n");
+
+    //execute actions (twice)
+    static size_t EXEC_COUNT = 4;
+    for (size_t count = 0; count < EXEC_COUNT; count++)
+    {
+      for (size_t i = 0; i < actions.size(); i++)
+      {
+        const shellanything::IAction * action = actions[i];
+        ASSERT_TRUE(action != NULL);
+        ASSERT_TRUE(action->Execute(c)) << "The action[" << i << "] has failed.";
+      }
+      //print new addresses
+      for (size_t i = 0; i < ACTION_COUNT; i++)
+      {
+        std::string name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".address";
+        ASSERT_TRUE(pmgr.HasProperty(name)) << "Property '" << name << "' not found.";
+        std::string value = pmgr.GetProperty(name);
+        printf("%s=%s\n", name.c_str(), value.c_str());
+      }
+      printf("------------------------------------------------\n");
+    }
+
+    //assert that all actions were "executed" EXEC_COUNT times
+    for (size_t i = 0; i < ACTION_COUNT; i++)
+    {
+      std::string name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".count";
+      ASSERT_TRUE(pmgr.HasProperty(name)) << "Property '" << name << "' not found.";
+      std::string value = pmgr.GetProperty(name);
+      printf("%s=%s\n", name.c_str(), value.c_str());
+      ASSERT_TRUE(value == ra::strings::ToString(EXEC_COUNT));
+    }
+
+    //force the actions to be destroyed by deleting the configuration file and then refreshing.
+    ASSERT_TRUE(ra::filesystem::DeleteFile(config0->GetFilePath().c_str())) << "Failed to delete configuration file '" << config0->GetFilePath() << "'.";
+    cmgr.Refresh();
+
+    //assert the configuration is unloaded
+    configs = cmgr.GetConfigurations();
+    ASSERT_EQ(0, configs.size());
+
+    //assert that all actions were "destroyed"
+    for (size_t i = 0; i < ACTION_COUNT; i++)
+    {
+      std::string destroy_name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".destroy";
+      ASSERT_TRUE(pmgr.HasProperty(destroy_name)) << "Property '" << destroy_name << "' not found.";
+      std::string destroy_value = pmgr.GetProperty(destroy_name);
+      printf("%s=%s\n", destroy_name.c_str(), destroy_value.c_str());
+
+      //assert destroyed address is the same as the my_data adddress
+      std::string address_name = "sa_plugin_test_data." + ra::strings::ToString(i + 1) + ".address";
+      ASSERT_TRUE(pmgr.HasProperty(address_name)) << "Property '" << address_name << "' not found.";
+      std::string address_value = pmgr.GetProperty(address_name);
+
+      ASSERT_TRUE(destroy_value == address_value);
+    }
 
     //Cleanup
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

@@ -26,6 +26,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseMenuMaxLength.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParsePlugins.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testPluginActionGetData.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testProcess.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testServices.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testStrings.xml
