@@ -90,10 +90,16 @@ const char* sa_plugin_action_get_name();
 const char* sa_plugin_action_get_xml();
 
 /// <summary>
-/// Get a pointer to store the action properties and settings. This same pointer is used while creating, executing and destroying the action.
+/// Get a custom data pointer from the action. This same pointer is used while creating, executing and destroying the action.
 /// </summary>
 /// <returns>Returns the xml definition of an action. Returns NULL if no xml is defined.</returns>
-void ** sa_plugin_action_get_data();
+void * sa_plugin_action_get_data();
+
+/// <summary>
+/// Set a custom data pointer to the action. This same pointer is used while creating, executing and destroying the action.
+/// </summary>
+/// <param name="data">A pointer that points to custom data to keep action.</param>
+void sa_plugin_action_set_data(void * data);
 
 /// <summary>
 /// Get the property store which can store the attributes and settings for the action.

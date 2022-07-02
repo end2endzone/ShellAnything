@@ -70,6 +70,7 @@ EXPORTS
   sa_menu_to_immutable
   sa_menu_update
   sa_plugin_action_get_data
+  sa_plugin_action_set_data
   sa_plugin_action_get_name
   sa_plugin_action_get_property_store
   sa_plugin_action_get_xml

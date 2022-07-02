@@ -43,7 +43,7 @@ sa_property_store_t g_action_property_store;
 sa_selection_context_immutable_t g_action_selection_context;
 const char* g_action_name;
 const char* g_action_xml;
-void** g_action_data;
+void* g_action_data;
 
 void ToCStringArray(std::vector<const char*> & destination, const std::vector<std::string>& values)
 {
@@ -246,7 +246,7 @@ public:
       g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
     g_action_name = mName.c_str();
     g_action_xml = NULL;
-    g_action_data = &mData;
+    g_action_data = mData;
 
     // call the action event function of the plugin
     sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Destroying action '%s'", mName.c_str());
@@ -320,12 +320,14 @@ public:
       g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
     g_action_name = mName.c_str();
     g_action_xml = NULL;
-    g_action_data = &mData;
+    g_action_data = mData;
 
     // call the action event function of the plugin
     sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Executing action '%s'", mName.c_str());
     sa_action_event_t evnt = SA_ACTION_EVENT_EXECUTE;
     sa_error_t result = mActionEventFunc(evnt);
+
+    mData = g_action_data;
 
     // invalidate global update objects
     memset(&g_action_property_store, 0, sizeof(g_action_property_store));
@@ -391,12 +393,14 @@ public:
     g_action_property_store = AS_TYPE_PROPERTY_STORE(store);
     g_action_name = mName.c_str();
     g_action_xml = xml.c_str();
-    g_action_data = &data;
+    g_action_data = data;
 
     // call the action event function of the plugin
     sa_logging_print_format(SA_LOG_LEVEL_INFO, SA_API_LOG_IDDENTIFIER, "Parsing action '%s'", mName.c_str());
     sa_action_event_t evnt = SA_ACTION_EVENT_CREATE;
     sa_error_t result = mActionEventFunc(evnt);
+
+    data = g_action_data;
 
     // invalidate global update objects
     memset(&g_action_property_store, 0, sizeof(g_action_property_store));
@@ -454,9 +458,14 @@ const char* sa_plugin_action_get_xml()
   return g_action_xml;
 }
 
-void** sa_plugin_action_get_data()
+void* sa_plugin_action_get_data()
 {
   return g_action_data;
+}
+
+void sa_plugin_action_set_data(void * data)
+{
+  g_action_data = data;
 }
 
 sa_property_store_t* sa_plugin_action_get_property_store()
