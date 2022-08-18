@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "Icon.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "Win32Registry.h"
 
@@ -80,7 +80,7 @@ namespace shellanything
     if (!file_extension.empty())
     {
       //check for multiple values. keep the first value, forget about other selected file extensions.
-      const std::string separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+      const std::string separator = pmgr.GetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
       if (file_extension.find(separator) != std::string::npos)
       {
         //multiple values detected.

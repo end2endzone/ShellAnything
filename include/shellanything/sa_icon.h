@@ -25,20 +25,13 @@
 #ifndef SA_API_ICON_H
 #define SA_API_ICON_H
 
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_icon_t  {
-  void* opaque;
-} sa_icon_t;
-
-typedef struct sa_icon_immutable_t  {
-  void* opaque;
-} sa_icon_immutable_t;
 
 /// <summary>
 /// Converts a mutable icon to an immutable icon.
@@ -52,7 +45,7 @@ sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t * icon);
 /// </summary>
 /// <param name="icon">The icon structure object.</param>
 /// <returns>Returns 1 when the icon is valid. Returns 0 otherwise.</returns>
-int sa_icon_is_valid(sa_icon_immutable_t* icon);
+sa_boolean sa_icon_is_valid(sa_icon_immutable_t* icon);
 
 /// <summary>
 /// Get the file extension.
@@ -73,9 +66,23 @@ sa_error_t sa_icon_get_file_extension_buffer(sa_icon_immutable_t* icon, int* len
 sa_error_t sa_icon_get_file_extension_string(sa_icon_immutable_t* icon, sa_string_t* str);
 
 /// <summary>
+/// Get the file extension.
+/// </summary>
+/// <param name="icon">The icon structure object.</param>
+/// <returns>Returns the file extension. Returns NULL if no value is defined.</returns>
+const char * sa_icon_get_file_extension_cstr(sa_icon_immutable_t* icon);
+
+/// <summary>
+/// Get a copy of the file extension.
+/// </summary>
+/// <param name="icon">The icon structure object.</param>
+/// <returns>Returns the file extension. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_icon_get_file_extension_alloc(sa_icon_immutable_t* icon);
+
+/// <summary>
 /// Set the file extension.
 /// </summary>
-/// <param name="menu">The menu structure object.</param>
+/// <param name="icon">The icon structure object.</param>
 /// <param name="fileextension">The new fileextension.</param>
 void sa_icon_set_file_extension(sa_icon_t* icon, const char* fileextension);
 
@@ -96,6 +103,20 @@ sa_error_t sa_icon_get_path_buffer(sa_icon_immutable_t* icon, int* length, char*
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_icon_get_path_string(sa_icon_immutable_t* icon, sa_string_t* str);
+
+/// <summary>
+/// Get the path.
+/// </summary>
+/// <param name="icon">The icon structure object.</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_icon_get_path_cstr(sa_icon_immutable_t* icon);
+
+/// <summary>
+/// Get the path.
+/// </summary>
+/// <param name="icon">The icon structure object.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_icon_get_path_alloc(sa_icon_immutable_t* icon);
 
 /// <summary>
 /// Set the path.

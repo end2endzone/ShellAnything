@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestActionStop.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionStop.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
@@ -47,8 +47,8 @@ namespace shellanything { namespace test
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 

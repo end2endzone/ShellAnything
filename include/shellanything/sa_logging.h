@@ -25,16 +25,11 @@
 #ifndef SA_API_LOGGING_H
 #define SA_API_LOGGING_H
 
+#include "shellanything/sa_enums.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum {
-  SA_LOG_LEVEL_INFO = 0,
-  SA_LOG_LEVEL_WARNING,
-  SA_LOG_LEVEL_ERROR,
-  SA_LOG_LEVEL_FATAL,
-} sa_log_level_t;
 
 /// <summary>
 /// Log a custom message in logs.

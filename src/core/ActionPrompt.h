@@ -25,7 +25,9 @@
 #ifndef SA_ACTION_PROMPT_H
 #define SA_ACTION_PROMPT_H
 
-#include "Action.h"
+#include "IAction.h"
+#include "BaseAction.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
@@ -33,11 +35,22 @@ namespace shellanything
   /// <summary>
   /// Action class that prompts the user for a value.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionPrompt : public Action
+  class SHELLANYTHING_EXPORT ActionPrompt : public BaseAction
   {
   public:
     ActionPrompt();
     virtual ~ActionPrompt();
+
+    /// <summary>
+    /// Name of the xml element for this action.
+    /// </summary>
+    static const std::string XML_ELEMENT_NAME;
+
+    /// <summary>
+    /// Instanciate an IActionFactory that is able to parse this action.
+    /// </summary>
+    /// <returns>Returns a IActionFactory to parse this action.</returns>
+    static IActionFactory* NewFactory();
 
     /// <summary>
     /// Returns true if the ActionPrompt is configued as a Yes/No question.
@@ -56,7 +69,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const;
+    virtual bool Execute(const SelectionContext & context) const;
 
     /// <summary>
     /// Getter for the 'name' parameter.

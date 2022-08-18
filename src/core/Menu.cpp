@@ -31,6 +31,8 @@ namespace shellanything
   const int Menu::DEFAULT_NAME_MAX_LENGTH = 250;
 
   Menu::Menu() :
+    mParentMenu(NULL),
+    mParentConfiguration(NULL),
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mColumnSeparator(false),
@@ -61,7 +63,7 @@ namespace shellanything
     // delete actions
     for(size_t i=0; i<mActions.size(); i++)
     {
-      Action * action = mActions[i];
+      IAction * action = mActions[i];
       delete action;
     }
     mActions.clear();
@@ -73,6 +75,36 @@ namespace shellanything
       delete sub;
     }
     mSubMenus.clear();
+  }
+
+  Menu* Menu::GetParentMenu()
+  {
+    return mParentMenu;
+  }
+
+  const Menu* Menu::GetParentMenu() const
+  {
+    return mParentMenu;
+  }
+
+  void Menu::SetParentMenu(Menu* menu)
+  {
+    mParentMenu = menu;
+  }
+
+  Configuration* Menu::GetParentConfiguration()
+  {
+    return mParentConfiguration;
+  }
+
+  const Configuration* Menu::GetParentConfiguration() const
+  {
+    return mParentConfiguration;
+  }
+
+  void Menu::SetParentConfiguration(Configuration* configuration)
+  {
+    mParentConfiguration = configuration;
   }
 
   bool Menu::IsSeparator() const
@@ -167,7 +199,7 @@ namespace shellanything
     mIcon = icon;
   }
 
-  void Menu::Update(const Context & context)
+  void Menu::Update(const SelectionContext & context)
   {
     //update current menu
     bool visible = true;
@@ -319,8 +351,8 @@ namespace shellanything
 
   void Menu::AddValidity(Validator * validator)
   {
-    if (validator)
-      mValidities.push_back(validator);
+    mValidities.push_back(validator);
+    validator->SetParentMenu(this);
   }
 
   size_t Menu::GetVisibilityCount() const
@@ -339,8 +371,8 @@ namespace shellanything
 
   void Menu::AddVisibility(Validator * validator)
   {
-    if (validator)
-      mVisibilities.push_back(validator);
+    mVisibilities.push_back(validator);
+    validator->SetParentMenu(this);
   }
 
   Menu::MenuPtrList Menu::GetSubMenus()
@@ -351,14 +383,16 @@ namespace shellanything
   void Menu::AddMenu(Menu* menu)
   {
     mSubMenus.push_back(menu);
+    menu->SetParentMenu(this);
   }
 
-  void Menu::AddAction(Action * action)
+  void Menu::AddAction(IAction * action)
   {
     mActions.push_back(action);
+    action->SetParentMenu(this);
   }
 
-  const Action::ActionPtrList & Menu::GetActions() const
+  const IAction::ActionPtrList & Menu::GetActions() const
   {
     return mActions;
   }

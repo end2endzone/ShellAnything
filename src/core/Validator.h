@@ -27,7 +27,9 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include "Context.h"
+#include "PropertyStore.h"
+#include "SelectionContext.h"
+#include "Plugin.h"
 #include <string>
 #include <vector>
 
@@ -49,9 +51,14 @@
 #define SA_ISTRUE_ATTR_SEPARATOR_STR          SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_ISFALSE_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
 #define SA_ISFALSE_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_CONDITIONS_ATTR_SEPARATOR_CHAR     SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_CONDITIONS_ATTR_SEPARATOR_STR      SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_ACTIONS_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_ACTIONS_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 
 namespace shellanything
 {
+  class Menu; // For Get/SetParentMenu()
 
   class SHELLANYTHING_EXPORT Validator
   {
@@ -69,6 +76,32 @@ namespace shellanything
     Validator(const Validator&);
     Validator& operator=(const Validator&);
   public:
+
+    static const std::string& ATTRIBUTE_MAXFILES;
+    static const std::string& ATTRIBUTE_MAXDIRECTORIES;
+    static const std::string& ATTRIBUTE_PROPERTIES;
+    static const std::string& ATTRIBUTE_FILEEXTENSIONS;
+    static const std::string& ATTRIBUTE_EXISTS;
+    static const std::string& ATTRIBUTE_CLASS;
+    static const std::string& ATTRIBUTE_PATTERN;
+    static const std::string& ATTRIBUTE_EXPRTK;
+    static const std::string& ATTRIBUTE_ISTRUE;
+    static const std::string& ATTRIBUTE_ISFALSE;
+    static const std::string& ATTRIBUTE_ISEMPTY;
+    static const std::string& ATTRIBUTE_INSERVE;
+
+    /// <summary>
+    /// Get the parent menu.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent menu. Returns NULL if the object has no parent menu.</returns>
+    Menu* GetParentMenu();
+    const Menu* GetParentMenu() const;
+
+    /// <summary>
+    /// Set the parent menu.
+    /// </summary>
+    /// <param name="menu">The parent of this menu</param>
+    void SetParentMenu(Menu* menu);
 
     /// <summary>
     /// Getter for the 'maxfiles' parameter.
@@ -181,6 +214,16 @@ namespace shellanything
     void SetIsEmpty(const std::string & isempty);
 
     /// <summary>
+    /// Get the custom attributes (key and values) defined by plugins.
+    /// </summary>
+    const PropertyStore & GetCustomAttributes() const;
+
+    /// <summary>
+    /// Set the custom attributes (key and values).
+    /// </summary>
+    void SetCustomAttributes(const PropertyStore& attributes);
+
+    /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
     const std::string & GetInserve() const;
@@ -200,16 +243,12 @@ namespace shellanything
     bool IsInversed(const char * name) const;
 
     /// <summary>
-    /// Validate the given context against a set of constraints.
-    /// The possible constraints includes a minimum/maximum number of files/directories selected,
-    /// a list of properties that must be defined,
-    /// a list of file extensions,
-    /// ...
-    /// Note: this function is used to enable or disable a menu.
+    /// Validate the object against a set of constraints.
+    /// Note: this function is usually used to enable or disable a menu.
     /// </summary>
-    /// <param name="context">The context used for validating.</param>
+    /// <param name="context">The selection context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const Context & context) const;
+    bool Validate(const SelectionContext & context) const;
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
@@ -244,31 +283,26 @@ namespace shellanything
     static bool IsFalse(const std::string & value);
 
   private:
-    bool ValidateProperties(const Context & context, const std::string & properties, bool inversed) const;
-    bool ValidateFileExtensions(const Context & context, const std::string & file_extensions, bool inversed) const;
-    bool ValidateExists(const Context & context, const std::string & file_exists, bool inversed) const;
-    bool ValidateClass(const Context & context, const std::string & class_, bool inversed) const;
+    bool ValidateProperties(const SelectionContext & context, const std::string & properties, bool inversed) const;
+    bool ValidateFileExtensions(const SelectionContext & context, const std::string & file_extensions, bool inversed) const;
+    bool ValidateExists(const SelectionContext & context, const std::string & file_exists, bool inversed) const;
+    bool ValidateClass(const SelectionContext & context, const std::string & class_, bool inversed) const;
     bool ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const;
     bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidatePattern(const Context & context, const std::string & pattern, bool inversed) const;
-    bool ValidateExprtk(const Context & context, const std::string & exprtk, bool inversed) const;
-    bool ValidateIsTrue(const Context & context, const std::string & istrue, bool inversed) const;
-    bool ValidateIsFalse(const Context & context, const std::string & isfalse, bool inversed) const;
-    bool ValidateIsEmpty(const Context & context, const std::string & isempty, bool inversed) const;
+    bool ValidatePattern(const SelectionContext & context, const std::string & pattern, bool inversed) const;
+    bool ValidateExprtk(const SelectionContext & context, const std::string & exprtk, bool inversed) const;
+    bool ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const;
+    bool ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const;
+    bool ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const;
+    bool ValidatePlugin(const SelectionContext & context, Plugin* plugin) const;
 
   private:
     int mMaxFiles;
     int mMaxDirectories;
-    std::string mProperties;
-    std::string mFileExtensions;
-    std::string mFileExists;
-    std::string mClass;
-    std::string mPattern;
-    std::string mExprtk;
-    std::string mIsTrue;
-    std::string mIsFalse;
-    std::string mIsEmpty;
-    std::string mInverse;
+    PropertyStore mAttributes;
+    PropertyStore mCustomAttributes;
+    Plugin::PluginPtrList mPlugins;
+    Menu* mParentMenu;
   };
 
 } //namespace shellanything

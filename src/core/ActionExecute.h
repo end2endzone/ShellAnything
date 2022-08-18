@@ -25,7 +25,9 @@
 #ifndef SA_ACTION_EXECUTE_H
 #define SA_ACTION_EXECUTE_H
 
-#include "Action.h"
+#include "IAction.h"
+#include "BaseAction.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
@@ -33,18 +35,29 @@ namespace shellanything
   /// <summary>
   /// Action class that executes a program.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionExecute : public Action
+  class SHELLANYTHING_EXPORT ActionExecute : public BaseAction
   {
   public:
     ActionExecute();
     virtual ~ActionExecute();
 
     /// <summary>
+    /// Name of the xml element for this action.
+    /// </summary>
+    static const std::string XML_ELEMENT_NAME;
+
+    /// <summary>
+    /// Instanciate an IActionFactory that is able to parse this action.
+    /// </summary>
+    /// <returns>Returns a IActionFactory to parse this action.</returns>
+    static IActionFactory* NewFactory();
+
+    /// <summary>
     /// Execute an application.
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context& context) const;
+    virtual bool Execute(const SelectionContext& context) const;
 
     /// <summary>
     /// Getter for the 'path' parameter.
@@ -93,7 +106,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const Context & context) const;
+    virtual bool ExecuteVerb(const SelectionContext & context) const;
 
     /// <summary>
     /// Execute an application with RapidAssist method.
@@ -101,7 +114,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const Context & context) const;
+    virtual bool ExecuteProcess(const SelectionContext & context) const;
 
   private:
     std::string mPath;

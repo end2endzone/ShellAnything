@@ -524,11 +524,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
   //Log what is selected by the user
-  const shellanything::Context::ElementList & elements = m_Context.GetElements();
+  const shellanything::StringList & elements = m_Context.GetElements();
   size_t num_selected_total = elements.size();
   int num_files       = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
-  LOG(INFO) << "Context have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
+  LOG(INFO) << "SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   //Keep a reference the our first command id. We will need it when InvokeCommand is called.
   m_FirstCommandId = first_command_id;
@@ -617,11 +617,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::Action::ActionPtrList & actions = menu->GetActions();
+  const shellanything::IAction::ActionPtrList & actions = menu->GetActions();
   for(size_t i=0; i<actions.size(); i++)
   {
     LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
-    const shellanything::Action * action = actions[i];
+    const shellanything::IAction * action = actions[i];
     if (action)
     {
       ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
@@ -747,7 +747,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
 
-  shellanything::Context::ElementList files;
+  shellanything::StringList files;
 
   // Cleanup
   m_Context.UnregisterProperties(); //Unregister the previous context properties
@@ -1325,14 +1325,10 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  //define global properties
-  std::string prop_application_path       = GetCurrentModulePathUtf8();
-  std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
   std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
 
+  //define global properties
   shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.SetProperty("application.path"     , prop_application_path     );
-  pmgr.SetProperty("application.directory", prop_application_directory);
   pmgr.SetProperty("log.directory"        , prop_log_directory        );
   pmgr.SetProperty("config.directory"     , config_dir                );
   pmgr.SetProperty("home.directory"       , home_dir                  );

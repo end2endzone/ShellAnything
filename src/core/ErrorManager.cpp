@@ -28,16 +28,10 @@
 
 #include "rapidassist/unicode.h"
 
-#ifdef WIN32
-//#   ifndef WIN32_LEAN_AND_MEAN
-//#   define WIN32_LEAN_AND_MEAN 1
-//#   endif
-#   include <windows.h> // for GetModuleHandleEx()
-#   include <Shlobj.h>
-#   include <ShellAPI.h>
-#   include <psapi.h>
-#   pragma comment( lib, "psapi.lib" )
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
 #endif
+#include <windows.h> // for GetModuleHandleEx()
 
 namespace shellanything
 {

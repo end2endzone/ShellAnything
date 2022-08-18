@@ -26,6 +26,7 @@
 #define SA_API_STRING_PRIVATE_H
 
 #include "shellanything/sa_error.h"
+#include "shellanything/sa_string.h"
 
 #include <string>
 
@@ -34,7 +35,7 @@
 /// </summary>
 /// <param name="dest_str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <param name="src_str">The source string to copy from</param>
-void sa_cstr_copy_string(sa_string_t* dest_str, const std::string& src_str);
+void sa_string_copy_stdstr(sa_string_t* dest_str, const std::string& src_str);
 
 /// <summary>
 /// Copy a std::string to a buffer.

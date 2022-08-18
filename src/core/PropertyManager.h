@@ -27,6 +27,8 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
+#include "PropertyStore.h"
 #include <string>
 #include <map>
 
@@ -71,11 +73,6 @@ namespace shellanything
 
   public:
 
-    //------------------------
-    // Typedef
-    //------------------------
-    typedef std::map<std::string /*name*/, std::string /*value*/> PropertyMap;
-
     /// <summary>
     /// Clears all the registered properties.
     /// Note that environement variable properties are still registered to the manager.
@@ -97,6 +94,14 @@ namespace shellanything
     bool HasProperty(const std::string & name) const;
 
     /// <summary>
+    /// Check if the properties are all set.
+    /// An empty property value is defined as 'set'.
+    /// </summary>
+    /// <param name="properties">The list of properties to check.</param>
+    /// <returns>Returns true if all the properties are set. Returns false otherwise.</returns>
+    bool HasProperties(const StringList& properties) const;
+
+    /// <summary>
     /// Sets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to set.</param>
@@ -109,6 +114,13 @@ namespace shellanything
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
     const std::string & GetProperty(const std::string & name) const;
+
+    /// <summary>
+    /// Find the list of properties which are not in the store.
+    /// </summary>
+    /// <param name="input_names">The list of property names to test.</param>
+    /// <param name="output_names">The output list of property names which are not in the store.</param>
+    void FindMissingProperties(const StringList& input_names, StringList& output_names) const;
 
     /// <summary>
     /// Expands the given string by replacing property variable reference by the actual variable's value.
@@ -132,11 +144,27 @@ namespace shellanything
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
     std::string ExpandOnce(const std::string & value) const;
 
+    /// <summary>
+    /// Split a given string that contains multiple joined values and then expand each values individually.
+    /// </summary>
+    /// <param name="value">The given joined value</param>
+    /// <param name="split_string">The separator string</param>
+    /// <param name="output_list">The list of expanded values</param>
+    static void SplitAndExpand(const std::string& value, const char* separator, StringList& output_list);
+
+    /// <summary>
+    /// Expand the given value and then split as multiple values.
+    /// </summary>
+    /// <param name="value">The given joined value</param>
+    /// <param name="split_string">The separator string</param>
+    /// <param name="output_list">The list of expanded values</param>
+    static void ExpandAndSplit(const std::string& value, const char* separator, StringList& output_list);
+
   private:
 
     void RegisterEnvironmentVariables();
     void RegisterDefaultProperties();
-    PropertyMap properties;
+    PropertyStore properties;
   };
 
 } //namespace shellanything

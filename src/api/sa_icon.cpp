@@ -25,7 +25,7 @@
 #include "shellanything/sa_icon.h"
 #include "sa_string_private.h"
 #include "Icon.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 
 using namespace shellanything;
 
@@ -36,7 +36,7 @@ sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t* icon)
   return output;
 }
 
-int sa_icon_is_valid(sa_icon_immutable_t* icon)
+sa_boolean sa_icon_is_valid(sa_icon_immutable_t* icon)
 {
   bool is_valid = AS_CLASS_ICON(icon)->IsValid();
   if (is_valid)
@@ -56,8 +56,22 @@ sa_error_t sa_icon_get_file_extension_buffer(sa_icon_immutable_t* icon, int* len
 sa_error_t sa_icon_get_file_extension_string(sa_icon_immutable_t* icon, sa_string_t* str)
 {
   const std::string& fileextension = AS_CLASS_ICON(icon)->GetFileExtension();
-  sa_cstr_copy_string(str, fileextension);
+  sa_string_copy_stdstr(str, fileextension);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_icon_get_file_extension_cstr(sa_icon_immutable_t* icon)
+{
+  const std::string& fileextension = AS_CLASS_ICON(icon)->GetFileExtension();
+  const char* output = fileextension.c_str();
+  return output;
+}
+
+const char* sa_icon_get_file_extension_alloc(sa_icon_immutable_t* icon)
+{
+  const std::string& fileextension = AS_CLASS_ICON(icon)->GetFileExtension();
+  const char* output = _strdup(fileextension.c_str());
+  return output;
 }
 
 void sa_icon_set_file_extension(sa_icon_t* icon, const char* fileextension)
@@ -82,8 +96,22 @@ sa_error_t sa_icon_get_path_buffer(sa_icon_immutable_t* icon, int* length, char*
 sa_error_t sa_icon_get_path_string(sa_icon_immutable_t* icon, sa_string_t* str)
 {
   const std::string& path = AS_CLASS_ICON(icon)->GetPath();
-  sa_cstr_copy_string(str, path);
+  sa_string_copy_stdstr(str, path);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_icon_get_path_cstr(sa_icon_immutable_t* icon)
+{
+  const std::string& path = AS_CLASS_ICON(icon)->GetPath();
+  const char* output = path.c_str();
+  return output;
+}
+
+const char* sa_icon_get_path_alloc(sa_icon_immutable_t* icon)
+{
+  const std::string& path = AS_CLASS_ICON(icon)->GetPath();
+  const char* output = _strdup(path.c_str());
+  return output;
 }
 
 void sa_icon_set_path(sa_icon_t* icon, const char* path)

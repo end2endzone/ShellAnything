@@ -24,7 +24,7 @@
 
 #include "shellanything/sa_cfgmgr.h"
 #include "ConfigManager.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 #include "sa_string_private.h"
 
 using namespace shellanything;
@@ -48,7 +48,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
   return SA_ERROR_SUCCESS;
 }
 
-int sa_cfgmgr_is_configuration_file_loaded(const char* path)
+sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char* path)
 {
   bool loaded = ConfigManager::GetInstance().IsConfigFileLoaded(path);
   if (loaded)
@@ -66,9 +66,9 @@ void sa_cfgmgr_refresh()
   ConfigManager::GetInstance().Refresh();
 }
 
-void sa_cfgmgr_update(sa_context_immutable_t* ctx)
+void sa_cfgmgr_update(sa_selection_context_immutable_t* ctx)
 {
-  const Context* context = AS_CLASS_CONTEXT(ctx);
+  const SelectionContext* context = AS_CLASS_SELECTION_CONTEXT(ctx);
   ConfigManager::GetInstance().Update(*context);
 }
 

@@ -27,8 +27,9 @@
 
 #include <stdint.h>
 #include "shellanything/sa_error.h"
+#include "shellanything/sa_error.h"
 #include "shellanything/sa_configuration.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +54,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
 /// </summary>
 /// <param name="path">The path of a Configuration file</param>
 /// <returns>Returns 1 if the given path is a loaded configuration by the manager. Returns 0 otherwise.</returns>
-int sa_cfgmgr_is_configuration_file_loaded(const char * path);
+sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char * path);
 
 /// <summary>
 /// Clears the configuration manager of all loaded configuration
@@ -72,7 +73,7 @@ void sa_cfgmgr_refresh();
 /// Updates all configuration files loaded by the manager.
 /// </summary>
 /// <param name="ctx">The context used for updating the configuration files.</param>
-void sa_cfgmgr_update(sa_context_immutable_t* ctx);
+void sa_cfgmgr_update(sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Clears all the registered search paths

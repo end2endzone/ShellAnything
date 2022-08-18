@@ -26,27 +26,20 @@
 #define SA_API_CONFIGURATION_H
 
 #include <stdint.h>
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
 #include "shellanything/sa_string.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 #include "shellanything/sa_menu.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct sa_configuration_t  {
-  void* opaque;
-} sa_configuration_t;
-
-typedef struct sa_configuration_immutable_t  {
-  void* opaque;
-} sa_configuration_immutable_t;
-
 /// <summary>
 /// Converts a mutable configuration to an immutable configuration.
 /// </summary>
-/// <param name="icon">The mutable object to convert.</param>
+/// <param name="context">The mutable object to convert.</param>
 /// <returns>Returns an immutable configuration</returns>
 sa_configuration_immutable_t sa_configuration_to_immutable(sa_configuration_t* context);
 
@@ -74,7 +67,7 @@ sa_error_t sa_configuration_load_file_string(const char* path, sa_string_t* erro
 /// </summary>
 /// <param name="path">The file path to load</param>
 /// <returns>Returns 1 if the file is a valid configuration file. Returns 0 otherwise.</returns>
-int sa_configuration_is_valid_config_file(const char* path);
+sa_boolean sa_configuration_is_valid_config_file(const char* path);
 
 /// <summary>
 /// Get the file path of this configuration.
@@ -98,7 +91,7 @@ sa_error_t sa_configuration_get_file_path_string(sa_configuration_immutable_t* c
 /// Set the file path of this configuration.
 /// </summary>
 /// <param name="configuration">The configuration structure object.</param>
-/// <param name="name">The file path for the configuration.</param>
+/// <param name="path">The path for the configuration file.</param>
 void sa_configuration_set_file_path(sa_configuration_t* configuration, const char* path);
 
 /// <summary>
@@ -120,7 +113,7 @@ void sa_configuration_set_file_modified_date(sa_configuration_t* configuration, 
 /// </summary>
 /// <param name="configuration">The configuration structure object.</param>
 /// <param name="ctx">The context used for updating the menu.</param>
-void sa_configuration_update(sa_configuration_t* configuration, sa_context_immutable_t* ctx);
+void sa_configuration_update(sa_configuration_t* configuration, sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Get how many menu in the configuration.

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <plugins>
+    <plugin path="${application.directory}\sa_plugin_services.dll"
+            description="This plugin allow to query the status of a service.
+                         The plugin requires a mandatory property named 'sa_plugin_services.names' to be set.
+                         For example, to get the service status of 'Microsoft Defender Antivirus Network Inspection Service',
+                         the property 'sa_plugin_service.names' should be set to 'WdNisSvc'.
+                         If the service name is found, the property 'sa_plugin_services.WdNisSvc.status' is set to the service status.
+                         The status values are: unknown, continuing, pausing, paused, running, starting, stopping and stopped.
+                         Multiple service names can be specified with the ';' character." />
+  </plugins>
+  <shell>
+    <default>
+      <!-- defines the names of multiple windows services :
+      WinDefend                       Microsoft Defender Antivirus Service
+      Dhcp                            DHCP Client
+      Dnscache                        DNS Client
+      OneDrive Updater Service        OneDrive Updater Service
+      wuauserv                        Windows Update
+      Fax                             Fax
+      msiserver                       Windows Installer
+      mpssvc                          Windows Defender Firewall
+      WebClient                       WebClient
+      -->
+      <property name="sa_plugin_services.names" value=""/>
+      <property name="sa_plugin_services.names" value="WinDefend;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Dhcp;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Dnscache;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="OneDrive Updater Service;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="wuauserv;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Fax;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="msiserver;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="mpssvc;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="WebClient;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="aaaa;${sa_plugin_services.names}"/>
+    </default>
+
+    <menu name="menu00">
+      <actions>
+        <message caption="sa_plugin_services" title="Hello world from sa_plugin_services!" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

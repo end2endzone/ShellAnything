@@ -85,8 +85,11 @@ The main features of ShellAnything are:
   * Change the clipboard.
   * and many more.
 * Powerful property-based system for rich dynamic content and filters.
+* Extendable with a custum plugin system.
 * Easily integrate any third party application with custom menus.
 * Supports windows [keyboard mnemonics](https://en.wikipedia.org/wiki/Mnemonics_(keyboard)).
+
+For more details about ShellAnything features, please refer to the [User Manual](UserManual.md).
 
 
 
@@ -94,7 +97,7 @@ The main features of ShellAnything are:
 
 For instructions on how to use ShellAnything, please refer to the [User Manual](UserManual.md).
 
-The User Manual also features *Use Case* with the following examples:
+The *User Manual* also features *Use Case* with the following examples:
 
 * [Integrate a third party application](UserManual.md#integrate-a-third-party-application).
 * [Run an application with parameters](UserManual.md#run-an-application-with-parameters).

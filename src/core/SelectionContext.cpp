@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "FileMagicManager.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "Validator.h"
 #include "PropertyManager.h"
 #include "DriveClass.h"
@@ -33,25 +33,25 @@
 
 namespace shellanything
 {
-  const std::string Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME = "selection.multi.separator";
-  const std::string Context::DEFAULT_MULTI_SELECTION_SEPARATOR = ra::environment::GetLineSeparator();
+  const std::string SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME = "selection.multi.separator";
+  const std::string SelectionContext::DEFAULT_MULTI_SELECTION_SEPARATOR = ra::environment::GetLineSeparator();
 
-  Context::Context() :
+  SelectionContext::SelectionContext() :
     mNumFiles(0),
     mNumDirectories(0)
   {
   }
 
-  Context::Context(const Context & c)
+  SelectionContext::SelectionContext(const SelectionContext & c)
   {
     (*this) = c;
   }
 
-  Context::~Context()
+  SelectionContext::~SelectionContext()
   {
   }
 
-  const Context & Context::operator =(const Context & c)
+  const SelectionContext & SelectionContext::operator =(const SelectionContext & c)
   {
     if (this != &c)
     {
@@ -62,13 +62,13 @@ namespace shellanything
     return (*this);
   }
 
-  void Context::RegisterProperties() const
+  void SelectionContext::RegisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
    
     FileMagicManager & fm = FileMagicManager::GetInstance();
 
-    const Context::ElementList & elements = GetElements();
+    const StringList & elements = GetElements();
  
     if (elements.empty())
       return; // Nothing to register
@@ -93,7 +93,7 @@ namespace shellanything
     std::string selection_charset        ;
 
     // Get the separator string for multiple selection 
-    const std::string & selection_multi_separator = pmgr.GetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
+    const std::string & selection_multi_separator = pmgr.GetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
 
     // For each element
     for(size_t i=0; i<elements.size(); i++)
@@ -200,7 +200,7 @@ namespace shellanything
     pmgr.SetProperty("selection.directories.count" , selection_directories_count);
   }
  
-  void Context::UnregisterProperties() const
+  void SelectionContext::UnregisterProperties() const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     pmgr.ClearProperty("selection.path"               );
@@ -218,12 +218,12 @@ namespace shellanything
     pmgr.ClearProperty("selection.charset"            );
   }
  
-  const Context::ElementList & Context::GetElements() const
+  const StringList & SelectionContext::GetElements() const
   {
     return mElements;
   }
 
-  void Context::SetElements(const Context::ElementList & elements)
+  void SelectionContext::SetElements(const StringList & elements)
   {
     mElements = elements;
 
@@ -243,12 +243,12 @@ namespace shellanything
     }
   }
 
-  int Context::GetNumFiles() const
+  int SelectionContext::GetNumFiles() const
   {
     return mNumFiles;
   }
 
-  int Context::GetNumDirectories() const
+  int SelectionContext::GetNumDirectories() const
   {
     return mNumDirectories;
   }

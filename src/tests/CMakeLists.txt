@@ -13,6 +13,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testParentWithoutChildren.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfiguration.testLoadProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testGetParent.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionExecute.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionMessage.xml
@@ -24,14 +25,30 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseDefaults.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseIcon.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseMenuMaxLength.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParsePlugins.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testPluginActionGetData.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testProcess.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testServices.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testStrings.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testTime.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
+
+if(SHELLANYTHING_BUILD_PLUGINS)
+  set(PLUGINS_TEST_FILES ""
+    TestPlugins.cpp
+    TestPlugins.h
+  )
+else()
+  set(PLUGINS_TEST_FILES "")
+endif()
 
 add_executable(sa.tests
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
+  ${PLUGINS_TEST_FILES}
   main.cpp
   ArgumentsHandler.cpp
   ArgumentsHandler.h
@@ -49,8 +66,8 @@ add_executable(sa.tests
   TestConfigManager.h
   TestConfiguration.cpp
   TestConfiguration.h
-  TestContext.cpp
-  TestContext.h
+  TestSelectionContext.cpp
+  TestSelectionContext.h
   TestDemoSamples.cpp
   TestDemoSamples.h
   TestGlogUtils.cpp
@@ -118,6 +135,7 @@ target_link_libraries(sa.tests
   PRIVATE
     sa.shared
     sa.core
+    sa.api
     sa.shellextension
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}

@@ -24,7 +24,7 @@
 
 #include "shellanything/sa_validator.h"
 #include "Validator.h"
-#include "sa_types_private.h"
+#include "sa_private_casting.h"
 #include "sa_string_private.h"
 
 using namespace shellanything;
@@ -36,7 +36,7 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator)
   return output;
 }
 
-int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name)
+sa_boolean sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name)
 {
   if (name == NULL)
     return 0;
@@ -46,11 +46,11 @@ int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, cons
   return 0;
 }
 
-int sa_validator_validate(sa_validator_immutable_t* validator, sa_context_immutable_t* ctx)
+sa_boolean sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx)
 {
   if (ctx == NULL)
     return 0;
-  const Context* context = AS_CLASS_CONTEXT(ctx);
+  const SelectionContext* context = AS_CLASS_SELECTION_CONTEXT(ctx);
   bool valid = AS_CLASS_VALIDATOR(validator)->Validate(*context);
   if (valid)
     return 1;
@@ -91,8 +91,22 @@ sa_error_t sa_validator_get_properties_buffer(sa_validator_immutable_t* validato
 sa_error_t sa_validator_get_properties_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
-  sa_cstr_copy_string(str, properties);
+  sa_string_copy_stdstr(str, properties);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_validator_get_properties_cstr(sa_validator_immutable_t* validator)
+{
+  const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
+  const char* output = properties.c_str();
+  return output;
+}
+
+const char* sa_validator_get_properties_alloc(sa_validator_immutable_t* validator)
+{
+  const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
+  const char* output = properties.c_str();
+  return _strdup(output);
 }
 
 void sa_validator_set_properties(sa_validator_t* validator, const char* value)
@@ -112,7 +126,7 @@ sa_error_t sa_validator_get_file_extensions_buffer(sa_validator_immutable_t* val
 sa_error_t sa_validator_get_file_extensions_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& file_extensions = AS_CLASS_VALIDATOR(validator)->GetFileExtensions();
-  sa_cstr_copy_string(str, file_extensions);
+  sa_string_copy_stdstr(str, file_extensions);
   return SA_ERROR_SUCCESS;
 }
 
@@ -133,7 +147,7 @@ sa_error_t sa_validator_get_file_exists_buffer(sa_validator_immutable_t* validat
 sa_error_t sa_validator_get_file_exists_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& file_exists = AS_CLASS_VALIDATOR(validator)->GetFileExists();
-  sa_cstr_copy_string(str, file_exists);
+  sa_string_copy_stdstr(str, file_exists);
   return SA_ERROR_SUCCESS;
 }
 
@@ -154,7 +168,7 @@ sa_error_t sa_validator_get_class_buffer(sa_validator_immutable_t* validator, in
 sa_error_t sa_validator_get_class_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetClass();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -175,7 +189,7 @@ sa_error_t sa_validator_get_pattern_buffer(sa_validator_immutable_t* validator, 
 sa_error_t sa_validator_get_pattern_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetPattern();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -196,7 +210,7 @@ sa_error_t sa_validator_get_exprtk_buffer(sa_validator_immutable_t* validator, i
 sa_error_t sa_validator_get_exprtk_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetExprtk();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -217,7 +231,7 @@ sa_error_t sa_validator_get_istrue_buffer(sa_validator_immutable_t* validator, i
 sa_error_t sa_validator_get_istrue_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetIsTrue();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -238,7 +252,7 @@ sa_error_t sa_validator_get_isfalse_buffer(sa_validator_immutable_t* validator, 
 sa_error_t sa_validator_get_isfalse_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetIsFalse();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 
@@ -259,7 +273,7 @@ sa_error_t sa_validator_get_inverse_buffer(sa_validator_immutable_t* validator, 
 sa_error_t sa_validator_get_inverse_string(sa_validator_immutable_t* validator, sa_string_t* str)
 {
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetInserve();
-  sa_cstr_copy_string(str, value);
+  sa_string_copy_stdstr(str, value);
   return SA_ERROR_SUCCESS;
 }
 

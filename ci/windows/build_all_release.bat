@@ -42,5 +42,10 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 call %PRODUCT_SOURCE_DIR%\ci\windows\install_shellanything.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+call %PRODUCT_SOURCE_DIR%\ci\windows\install_sa_plugin_time.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
+call %PRODUCT_SOURCE_DIR%\ci\windows\install_sa_plugin_demo.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 :: Press a key to continue
 pause

@@ -25,20 +25,13 @@
 #ifndef SA_API_VALIDATOR_H
 #define SA_API_VALIDATOR_H
 
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_error.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_validator_t  {
-  void* opaque;
-} sa_validator_t;
-
-typedef struct sa_validator_immutable_t  {
-  void* opaque;
-} sa_validator_immutable_t;
 
 /// <summary>
 /// Converts a mutable validator to an immutable validator.
@@ -49,13 +42,13 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator);
 
 /// <summary>
 /// Returns 1 if the given attribute name is in the list of inversed attributes.
-/// The accepted attribute names matches the list of attributes of <validity> or <visibility> elements in a Configuration File.
+/// The accepted attribute names matches the list of attributes of 'validity' or 'visibility' elements in a Configuration File.
 /// See the 'User Manual' for details.
 /// </summary>
 /// <param name="validator">The validator structure object.</param>
 /// <param name="name">The name of the attribute. The name is case sensitive.</param>
 /// <returns>Returns 1 if the given attribute name is in the list of inversed attributes. Returns 0 otherwise.</returns>
-int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name);
+sa_boolean sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name);
 
 /// <summary>
 /// Validate the given context against a set of constraints.
@@ -68,7 +61,7 @@ int sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, cons
 /// <param name="validator">The validator structure object.</param>
 /// <param name="ctx">The context used for validating.</param>
 /// <returns>Returns 1 if the given context is valid against the set of constraints. Returns 0 otherwise.</returns>
-int sa_validator_validate(sa_validator_immutable_t* validator, sa_context_immutable_t* ctx);
+sa_boolean sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx);
 
 /// <summary>
 /// Get the maxfiles parameter.
@@ -115,6 +108,20 @@ sa_error_t sa_validator_get_properties_buffer(sa_validator_immutable_t* validato
 /// <param name="str">The output string allocated by the function. The string must be freed with sa_string_free() to prevent leaks.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_validator_get_properties_string(sa_validator_immutable_t* validator, sa_string_t* str);
+
+/// <summary>
+/// Get the properties parameter.
+/// </summary>
+/// <param name="validator">The validator structure object.</param>
+/// <returns>Returns a valid string value. Returns NULL if no value is defined.</returns>
+const char* sa_validator_get_properties_cstr(sa_validator_immutable_t* validator);
+
+/// <summary>
+/// Get the properties parameter.
+/// </summary>
+/// <param name="validator">The validator structure object.</param>
+/// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
+const char* sa_validator_get_properties_alloc(sa_validator_immutable_t* validator);
 
 /// <summary>
 /// Set the properties parameter.

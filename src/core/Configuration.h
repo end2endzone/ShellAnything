@@ -29,6 +29,7 @@
 #include "shellanything/config.h"
 #include "Menu.h"
 #include "DefaultSettings.h"
+#include "Plugin.h"
 #include <stdint.h>
 
 namespace shellanything
@@ -53,6 +54,18 @@ namespace shellanything
     Configuration(const Configuration&);
     Configuration& operator=(const Configuration&);
   public:
+
+    /// <summary>
+    /// Get the configuration pointer that is currently updating.
+    /// </summary>
+    /// <returns>Returns the configuration pointer that is currently updating. Returns NULL if no configuration is updating.</returns>
+    static Configuration* GetUpdatingConfiguration();
+
+    /// <summary>
+    /// Set the configuration pointer that is currently updating.
+    /// </summary>
+    /// <param name="configuration">The current updating configuration</param>
+    static void SetUpdatingConfiguration(Configuration* configuration);
 
     /// <summary>
     /// Load a configuration file.
@@ -90,9 +103,10 @@ namespace shellanything
     void SetFileModifiedDate(const uint64_t & file_modified_date);
 
     /// <summary>
-    /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
+    /// Recursively update all menus of this Configuration.
     /// </summary>
-    void Update(const Context & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Apply the configuration's default properties.
@@ -112,6 +126,17 @@ namespace shellanything
     /// <param name="first_command_id">The first command id available.</param>
     /// <returns>Returns the next available command id. Returns first_command_id if it failed assigning a command id.</returns>
     uint32_t AssignCommandIds(const uint32_t & first_command_id);
+
+    /// <summary>
+    /// Add a new plugin to the Configuration. The Configuration instance takes ownership of the plugin.
+    /// </summary>
+    /// <param name="plugin">The plugin to add to the Configuration</param>
+    void AddPlugin(Plugin* plugin);
+
+    /// <summary>
+    /// Get the list of plugin of the Configuration.
+    /// </summary>
+    const Plugin::PluginPtrList& GetPlugins() const;
 
     /// <summary>
     /// Get the list of menu pointers handled by the configuration.
@@ -144,6 +169,7 @@ namespace shellanything
     DefaultSettings * mDefaults;
     uint64_t mFileModifiedDate;
     std::string mFilePath;
+    Plugin::PluginPtrList mPlugins;
     Menu::MenuPtrList mMenus;
   };
 

@@ -22,16 +22,16 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "Action.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
 
-  Action::Action()
+  IActionFactory::IActionFactory()
   {
   }
 
-  Action::~Action()
+  IActionFactory::~IActionFactory()
   {
   }
 

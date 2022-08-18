@@ -26,8 +26,8 @@
 #include "sa_string_private.h"
 #include "Menu.h"
 #include "Icon.h"
-#include "Action.h"
-#include "sa_types_private.h"
+#include "IAction.h"
+#include "sa_private_casting.h"
 
 using namespace shellanything;
 
@@ -46,7 +46,7 @@ int sa_menu_is_separator(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_separator(sa_menu_t* menu, int separator)
+void sa_menu_set_separator(sa_menu_t* menu, sa_boolean separator)
 {
   AS_CLASS_MENU(menu)->SetSeparator(separator != 0);
 }
@@ -63,8 +63,22 @@ sa_error_t sa_menu_get_name_buffer(sa_menu_immutable_t* menu, int* length, char*
 sa_error_t sa_menu_get_name_string(sa_menu_immutable_t* menu, sa_string_t* str)
 {
   const std::string& name = AS_CLASS_MENU(menu)->GetName();
-  sa_cstr_copy_string(str, name);
+  sa_string_copy_stdstr(str, name);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_menu_get_name_cstr(sa_menu_immutable_t* menu)
+{
+  const std::string& name = AS_CLASS_MENU(menu)->GetName();
+  const char* output = name.c_str();
+  return output;
+}
+
+const char* sa_menu_get_name_alloc(sa_menu_immutable_t* menu)
+{
+  const std::string& name = AS_CLASS_MENU(menu)->GetName();
+  const char* output = name.c_str();
+  return _strdup(output);
 }
 
 void sa_menu_set_name(sa_menu_t* menu, const char* name)
@@ -84,8 +98,22 @@ sa_error_t sa_menu_get_description_buffer(sa_menu_immutable_t* menu, int* length
 sa_error_t sa_menu_get_description_string(sa_menu_immutable_t* menu, sa_string_t* str)
 {
   const std::string& description = AS_CLASS_MENU(menu)->GetDescription();
-  sa_cstr_copy_string(str, description);
+  sa_string_copy_stdstr(str, description);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_menu_get_description_cstr(sa_menu_immutable_t* menu)
+{
+  const std::string& description = AS_CLASS_MENU(menu)->GetDescription();
+  const char* output = description.c_str();
+  return output;
+}
+
+const char* sa_menu_get_description_alloc(sa_menu_immutable_t* menu)
+{
+  const std::string& description = AS_CLASS_MENU(menu)->GetDescription();
+  const char* output = description.c_str();
+  return _strdup(output);
 }
 
 void sa_menu_set_description(sa_menu_t* menu, const char* description)
@@ -106,12 +134,12 @@ void sa_menu_set_icon(sa_menu_t* menu, sa_icon_immutable_t* icon)
   AS_CLASS_MENU(menu)->SetIcon(*object);
 }
 
-void sa_menu_update(sa_menu_t* menu, sa_context_immutable_t* ctx)
+void sa_menu_update(sa_menu_t* menu, sa_selection_context_immutable_t* ctx)
 {
-  AS_CLASS_MENU(menu)->Update(*AS_CLASS_CONTEXT(ctx));
+  AS_CLASS_MENU(menu)->Update(*AS_CLASS_SELECTION_CONTEXT(ctx));
 }
 
-int sa_menu_is_visible(sa_menu_immutable_t* menu)
+sa_boolean sa_menu_is_visible(sa_menu_immutable_t* menu)
 {
   bool value = AS_CLASS_MENU(menu)->IsVisible();
   if (value)
@@ -119,12 +147,12 @@ int sa_menu_is_visible(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_visible(sa_menu_t* menu, int visible)
+void sa_menu_set_visible(sa_menu_t* menu, sa_boolean visible)
 {
   AS_CLASS_MENU(menu)->SetVisible(visible != 0);
 }
 
-int sa_menu_is_enabled(sa_menu_immutable_t* menu)
+sa_boolean sa_menu_is_enabled(sa_menu_immutable_t* menu)
 {
   bool value = AS_CLASS_MENU(menu)->IsEnabled();
   if (value)
@@ -132,14 +160,14 @@ int sa_menu_is_enabled(sa_menu_immutable_t* menu)
   return 0;
 }
 
-void sa_menu_set_enabled(sa_menu_t* menu, int enabled)
+void sa_menu_set_enabled(sa_menu_t* menu, sa_boolean enabled)
 {
   AS_CLASS_MENU(menu)->SetEnabled(enabled != 0);
 }
 
 size_t sa_menu_get_action_count(sa_menu_immutable_t* menu)
 {
-  shellanything::Action::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
+  shellanything::IAction::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
   size_t count = actions.size();
   return count;
 }
@@ -148,10 +176,10 @@ sa_error_t sa_menu_get_action_element(sa_menu_t* menu, size_t index, sa_action_t
 {
   if (action == NULL)
     return SA_ERROR_INVALID_ARGUMENTS;
-  shellanything::Action::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
+  shellanything::IAction::ActionPtrList actions = AS_CLASS_MENU(menu)->GetActions();
   if (actions.empty() || index > (actions.size() - 1))
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
-  shellanything::Action* action_element = actions[index];
+  shellanything::IAction* action_element = actions[index];
   *action = AS_TYPE_ACTION(action_element);
   return SA_ERROR_SUCCESS;
 }

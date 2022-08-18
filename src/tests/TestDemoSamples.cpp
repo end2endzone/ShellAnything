@@ -46,7 +46,7 @@ namespace shellanything { namespace test
     prompt.SetTitle("What is your name?");
     prompt.SetDefault("Isabelle Ringing");
 
-    Context c;
+    SelectionContext c;
 
     bool result = prompt.Execute(c);
     
@@ -63,7 +63,7 @@ namespace shellanything { namespace test
     prompt.SetName("myproperty");
     prompt.SetTitle("Are you afraid of the dark?");
     
-    Context c;
+    SelectionContext c;
 
     bool result = prompt.Execute(c);
     
@@ -83,7 +83,7 @@ namespace shellanything { namespace test
     prompt.SetName("myproperty");
     prompt.SetTitle("Wait for the system to load and press OK button.");
    
-    Context c;
+    SelectionContext c;
  
     bool result = prompt.Execute(c);
    

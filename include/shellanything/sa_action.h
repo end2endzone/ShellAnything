@@ -26,19 +26,11 @@
 #define SA_API_ACTION_H
 
 #include "shellanything/sa_error.h"
-#include "shellanything/sa_context.h"
+#include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct sa_action_t  {
-  void* opaque;
-} sa_action_t;
-
-typedef struct sa_action_immutable_t  {
-  void* opaque;
-} sa_action_immutable_t;
 
 /// <summary>
 /// Converts a mutable action to an immutable action.
@@ -52,7 +44,7 @@ sa_action_immutable_t sa_action_to_immutable(sa_action_t* action);
 /// </summary>
 /// <param name="action">The action structure object.</param>
 /// <param name="ctx">The context for executing the action.</param>
-sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_context_immutable_t* ctx);
+sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_selection_context_immutable_t* ctx);
 
 #ifdef __cplusplus
 }

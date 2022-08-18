@@ -25,31 +25,28 @@
 #ifndef SA_API_TYPES_PRIVATE_H
 #define SA_API_TYPES_PRIVATE_H
 
-#include "shellanything/sa_error.h"
 
-#include "Action.h"
-#include "Context.h"
+#include <string>
+
+#include "IAction.h"
+#include "SelectionContext.h"
 #include "Icon.h"
 #include "Menu.h"
 #include "Configuration.h"
 #include "Validator.h"
+#include "PropertyStore.h"
 
-#include "shellanything/sa_action.h"
-#include "shellanything/sa_context.h"
-#include "shellanything/sa_icon.h"
-#include "shellanything/sa_menu.h"
-#include "shellanything/sa_configuration.h"
-#include "shellanything/sa_validator.h"
+#include "shellanything/sa_types.h"
 
-const shellanything::Action*  AS_CLASS_ACTION(sa_action_immutable_t*      object);
-      shellanything::Action*  AS_CLASS_ACTION(sa_action_t*                object);
-sa_action_immutable_t         AS_TYPE_ACTION(const shellanything::Action* object);
-sa_action_t                   AS_TYPE_ACTION(      shellanything::Action* object);
+const shellanything::IAction*  AS_CLASS_ACTION(sa_action_immutable_t*       object);
+      shellanything::IAction*  AS_CLASS_ACTION(sa_action_t*                 object);
+sa_action_immutable_t          AS_TYPE_ACTION(const shellanything::IAction* object);
+sa_action_t                    AS_TYPE_ACTION(      shellanything::IAction* object);
 
-const shellanything::Context* AS_CLASS_CONTEXT(sa_context_immutable_t*      object);
-      shellanything::Context* AS_CLASS_CONTEXT(sa_context_t*                object);
-sa_context_immutable_t        AS_TYPE_CONTEXT(const shellanything::Context* object);
-sa_context_t                  AS_TYPE_CONTEXT(      shellanything::Context* object);
+const shellanything::SelectionContext*  AS_CLASS_SELECTION_CONTEXT(sa_selection_context_immutable_t*     object);
+      shellanything::SelectionContext*  AS_CLASS_SELECTION_CONTEXT(sa_selection_context_t*               object);
+sa_selection_context_immutable_t        AS_TYPE_SELECTION_CONTEXT(const shellanything::SelectionContext* object);
+sa_selection_context_t                  AS_TYPE_SELECTION_CONTEXT(      shellanything::SelectionContext* object);
 
 const shellanything::Icon*  AS_CLASS_ICON(sa_icon_immutable_t*      object);
       shellanything::Icon*  AS_CLASS_ICON(sa_icon_t*                object);
@@ -70,6 +67,16 @@ const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t*    
       shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t*                object);
 sa_validator_immutable_t        AS_TYPE_VALIDATOR(const shellanything::Validator* object);
 sa_validator_t                  AS_TYPE_VALIDATOR(      shellanything::Validator* object);
+
+const shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_immutable_t*      object);
+      shellanything::PropertyStore* AS_CLASS_PROPERTY_STORE(sa_property_store_t*                object);
+sa_property_store_immutable_t        AS_TYPE_PROPERTY_STORE(const shellanything::PropertyStore* object);
+sa_property_store_t                  AS_TYPE_PROPERTY_STORE(      shellanything::PropertyStore* object);
+
+//const std::string* AS_CLASS_STRING(sa_string_immutable_t*      object);
+      std::string* AS_CLASS_STRING(sa_string_t*                object);
+//sa_string_immutable_t        AS_TYPE_STRING(const std::string* object);
+sa_string_t                  AS_TYPE_STRING(      std::string* object);
 
 
 #endif //SA_API_STRING_PRIVATE_H

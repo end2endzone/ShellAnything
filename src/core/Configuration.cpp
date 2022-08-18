@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "Configuration.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionProperty.h"
 
 #include "rapidassist/filesystem_utf8.h"
@@ -51,6 +51,8 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
+  static Configuration* gUpdatingConfiguration = NULL;
+
   std::string GetXmlEncoding(XMLDocument & doc, std::string & error)
   {
     XMLNode * first = doc.FirstChild();
@@ -107,6 +109,16 @@ namespace shellanything
   Configuration::~Configuration()
   {
     DeleteChildren();
+  }
+
+  Configuration* Configuration::GetUpdatingConfiguration()
+  {
+    return gUpdatingConfiguration;
+  }
+
+  void Configuration::SetUpdatingConfiguration(Configuration* configuration)
+  {
+    gUpdatingConfiguration = configuration;
   }
 
   Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
@@ -186,6 +198,13 @@ namespace shellanything
       return NULL;
     }
 
+    const XMLElement * xml_root = XMLHandle(&doc).FirstChildElement("root").ToElement();
+    if (!xml_root)
+    {
+      error = "Node <root> not found";
+      return NULL;
+    }
+
     const XMLElement * xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
     if (!xml_shell)
     {
@@ -201,7 +220,7 @@ namespace shellanything
     const XMLElement* xml_defaults = xml_shell->FirstChildElement("default");
     while (xml_defaults)
     {
-      //found a new menu node
+      //found a new defaults node
       DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
@@ -213,6 +232,42 @@ namespace shellanything
       xml_defaults = xml_defaults->NextSiblingElement("default");
     }
 
+    //find <plugins> nodes under <root>
+    const XMLElement* xml_plugins = xml_root->FirstChildElement("plugins");
+    while (xml_plugins)
+    {
+      //find <plugin> nodes under <plugins>
+      const XMLElement* xml_plugin = xml_plugins->FirstChildElement("plugin");
+      while (xml_plugin)
+      {
+        //found a new plugin node
+        Plugin* plugin = ObjectFactory::GetInstance().ParsePlugin(xml_plugin, error);
+        if (plugin != NULL)
+        {
+          // try to load the plugin.
+          bool loaded = plugin->Load();
+          if (!loaded)
+          {
+            LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin is disabled.";
+          }
+
+          //add the new plugin to the current configuration (even if loading failed)
+          config->AddPlugin(plugin);
+        }
+
+        //next xml_plugin node
+        xml_plugin = xml_plugin->NextSiblingElement("plugin");
+      }
+
+      //next plugins node
+      xml_plugins = xml_plugins->NextSiblingElement("plugins");
+    }
+
+    //set active plugins for parsing child elements
+    //notify the ObjectParser about this configuration's plugins.
+    const Plugin::PluginPtrList & active_plugins = config->GetPlugins();
+    ObjectFactory::GetInstance().SetActivePlugins(active_plugins);
+    
     //find <menu> nodes under <shell>
     const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
     while (xml_menu)
@@ -222,6 +277,7 @@ namespace shellanything
       if (menu == NULL)
       {
         delete config;
+        ObjectFactory::GetInstance().ClearActivePlugins();
         return NULL;
       }
 
@@ -231,6 +287,9 @@ namespace shellanything
       //next menu node
       xml_menu = xml_menu->NextSiblingElement("menu");
     }
+
+    //cleanup ObjectFactory plugins.
+    ObjectFactory::GetInstance().ClearActivePlugins();
 
     return config;
   }
@@ -268,8 +327,26 @@ namespace shellanything
     mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const Context & context)
+  void Configuration::Update(const SelectionContext & context)
   {
+    SetUpdatingConfiguration(this);
+
+    //run callbacks of each plugins
+    //for each plugins
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* p = mPlugins[i];
+      Registry& registry = p->GetRegistry();
+      size_t count = registry.GetUpdateCallbackCount();
+      for (size_t j = 0; j < count; j++)
+      {
+        IUpdateCallback* callback = registry.GetUpdateCallbackFromIndex(j);
+        callback->SetSelectionContext(&context);
+        callback->OnNewSelection();
+        callback->SetSelectionContext(NULL);
+      }
+    }
+    
     //for each child
     Menu::MenuPtrList children = GetMenus();
     for(size_t i=0; i<children.size(); i++)
@@ -277,6 +354,8 @@ namespace shellanything
       Menu * child = children[i];
       child->Update(context);
     }
+
+    SetUpdatingConfiguration(NULL);
   }
 
   void Configuration::ApplyDefaultSettings()
@@ -286,21 +365,21 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::Action::ActionPtrList & actions = mDefaults->GetActions();
+      const shellanything::IAction::ActionPtrList & actions = mDefaults->GetActions();
 
       //convert 'actions' to a list of <const shellanything::ActionProperty *>
       typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
       ActionPropertyPtrList properties;
       for(size_t i=0; i<actions.size(); i++)
       {
-        const shellanything::Action * abstract_action = actions[i];
+        const shellanything::IAction * abstract_action = actions[i];
         const shellanything::ActionProperty * action_property = dynamic_cast<const shellanything::ActionProperty *>(abstract_action);
         if (action_property)
           properties.push_back(action_property);
       }
 
       //apply all ActionProperty
-      Context empty_context;
+      SelectionContext empty_context;
       for(size_t i=0; i<properties.size(); i++)
       {
         LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << properties.size() << ".";
@@ -346,6 +425,17 @@ namespace shellanything
     return nextCommandId;
   }
  
+  void Configuration::AddPlugin(Plugin* plugin)
+  {
+    mPlugins.push_back(plugin);
+    plugin->SetParentConfiguration(this);
+  }
+
+  const Plugin::PluginPtrList& Configuration::GetPlugins() const
+  {
+    return mPlugins;
+  }
+
   Menu::MenuPtrList Configuration::GetMenus()
   {
     return mMenus;
@@ -367,17 +457,30 @@ namespace shellanything
   void Configuration::AddMenu(Menu* menu)
   {
     mMenus.push_back(menu);
+    menu->SetParentConfiguration(this);
   }
 
   void Configuration::DeleteChildren()
   {
-    // delete menus
+    // Delete menus
     for (size_t i = 0; i < mMenus.size(); i++)
     {
       Menu* sub = mMenus[i];
       delete sub;
     }
     mMenus.clear();
+
+    // Delete plugins
+    // Note that plugins must be deleted after everything else.
+    // This is because some object in the configuration may require code from plugins.
+    // If we delete a plugin, the module is unloaded which prevent object created by this
+    // plugin to be properly deleted resulting in an exception.
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* plugin = mPlugins[i];
+      delete plugin;
+    }
+    mPlugins.clear();
   }
 
   void Configuration::DeleteChild(Menu* menu)

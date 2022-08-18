@@ -21,18 +21,12 @@ EXPORTS
   sa_configuration_set_file_path
   sa_configuration_to_immutable
   sa_configuration_update
-  sa_context_get_element_buffer
-  sa_context_get_element_count
-  sa_context_get_element_string
-  sa_context_get_num_directories
-  sa_context_get_num_files
-  sa_context_register_properties
-  sa_context_set_elements_buffer
-  sa_context_to_immutable
-  sa_context_unregister_properties
+  sa_error_get_error_description
   sa_error_show_message
   sa_error_show_message_utf8
+  sa_icon_get_file_extension_alloc
   sa_icon_get_file_extension_buffer
+  sa_icon_get_file_extension_cstr
   sa_icon_get_file_extension_string
   sa_icon_get_index
   sa_icon_get_path_buffer
@@ -42,6 +36,8 @@ EXPORTS
   sa_icon_set_index
   sa_icon_set_path
   sa_icon_to_immutable
+  sa_logging_print
+  sa_logging_print_format
   sa_memory_alloc
   sa_memory_alloc
   sa_memory_free
@@ -49,9 +45,12 @@ EXPORTS
   sa_menu_get_action_count
   sa_menu_get_action_element
   sa_menu_get_description_buffer
+  sa_menu_get_description_cstr
   sa_menu_get_description_string
   sa_menu_get_icon
+  sa_menu_get_name_alloc
   sa_menu_get_name_buffer
+  sa_menu_get_name_cstr
   sa_menu_get_name_string
   sa_menu_get_sub_menu_count
   sa_menu_get_sub_menu_element
@@ -70,28 +69,72 @@ EXPORTS
   sa_menu_set_visible
   sa_menu_to_immutable
   sa_menu_update
+  sa_plugin_action_get_data
+  sa_plugin_action_set_data
+  sa_plugin_action_get_name
+  sa_plugin_action_get_property_store
+  sa_plugin_action_get_xml
+  sa_plugin_register_action_event
+  sa_plugin_register_validation_attributes
+  sa_plugin_register_config_update
+  sa_plugin_config_update_get_selection_context
+  sa_plugin_validation_get_property_store
+  sa_plugin_validation_get_selection_context
   sa_properties_clear
   sa_properties_clear
   sa_properties_delete
   sa_properties_delete
   sa_properties_exists
   sa_properties_exists
+  sa_properties_expand_alloc
   sa_properties_expand_buffer
   sa_properties_expand_buffer
+  sa_properties_expand_once_alloc
   sa_properties_expand_once_buffer
   sa_properties_expand_once_buffer
   sa_properties_expand_once_string
   sa_properties_expand_once_string
   sa_properties_expand_string
   sa_properties_expand_string
+  sa_properties_get_alloc
   sa_properties_get_buffer
   sa_properties_get_buffer
+  sa_properties_get_cstr
   sa_properties_get_string
   sa_properties_get_string
   sa_properties_set
   sa_properties_set
-  sa_string_alloc
-  sa_string_free
+  sa_property_store_clear
+  sa_property_store_clear_property
+  sa_property_store_find_missing_properties
+  sa_property_store_get_properties
+  sa_property_store_get_property_buffer
+  sa_property_store_get_property_cstr
+  sa_property_store_get_property_count
+  sa_property_store_get_property_cstr
+  sa_property_store_get_property_string
+  sa_property_store_has_properties
+  sa_property_store_has_property
+  sa_property_store_is_empty
+  sa_property_store_set_property
+  sa_property_store_to_immutable
+  sa_selection_context_get_element_alloc
+  sa_selection_context_get_element_buffer
+  sa_selection_context_get_element_count
+  sa_selection_context_get_element_cstr
+  sa_selection_context_get_element_string
+  sa_selection_context_get_num_directories
+  sa_selection_context_get_num_files
+  sa_selection_context_register_properties
+  sa_selection_context_set_elements_buffer
+  sa_selection_context_to_immutable
+  sa_selection_context_unregister_properties
+  sa_string_create
+  sa_string_create_from_cstr
+  sa_string_create_from_str
+  sa_string_destroy
+  sa_string_get_length
+  sa_string_get_value
   sa_string_init
   sa_string_valid
   sa_validator_get_class_buffer
@@ -112,7 +155,9 @@ EXPORTS
   sa_validator_get_max_files
   sa_validator_get_pattern_buffer
   sa_validator_get_pattern_string
+  sa_validator_get_properties_alloc
   sa_validator_get_properties_buffer
+  sa_validator_get_properties_cstr
   sa_validator_get_properties_string
   sa_validator_is_attribute_inversed
   sa_validator_set_class
@@ -128,3 +173,14 @@ EXPORTS
   sa_validator_set_properties
   sa_validator_to_immutable
   sa_validator_validate
+  sa_xml_attr_group_is_mutually_exclusive
+  sa_xml_attr_list_cleanup
+  sa_xml_attr_list_init
+  sa_xml_attr_list_update
+  sa_xml_parse_attr_alloc
+  sa_xml_parse_attr_buffer
+  sa_xml_parse_attr_list_store
+  sa_xml_parse_attr_list_store
+  sa_xml_parse_attr_store
+  sa_xml_parse_attr_store
+  sa_xml_parse_attr_string

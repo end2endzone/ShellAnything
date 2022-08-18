@@ -10,6 +10,8 @@ if errorlevel 1 (
   echo Command failed. Please install python and python launcher to continue.
   exit /B %errorlevel%
 )
+echo Found python interpreter
+python --version
 
 :: Validate if pip is installed
 where pip.exe >NUL 2>NUL

@@ -27,6 +27,7 @@
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/unicode.h"
 #include "PropertyManager.h"
+#include "ObjectFactory.h"
 
 #pragma warning( push )
 #pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
@@ -37,10 +38,62 @@
 #include <Windows.h>
 #include "rapidassist/undef_windows_macros.h"
 
+#include "tinyxml2.h"
+using namespace tinyxml2;
+
 #pragma comment(lib, "Urlmon.lib") //for IsValidURL()
 
 namespace shellanything
 {
+  const std::string ActionOpen::XML_ELEMENT_NAME = "open";
+
+  class ActionOpenFactory : public virtual IActionFactory
+  {
+  public:
+    ActionOpenFactory() {}
+    virtual ~ActionOpenFactory() {}
+
+    virtual const std::string& GetName() const { return ActionOpen::XML_ELEMENT_NAME; }
+
+    virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
+    {
+      tinyxml2::XMLDocument doc;
+      XMLError result = doc.Parse(xml.c_str());
+      if (result != XML_SUCCESS)
+      {
+        if (doc.ErrorStr())
+        {
+          error = doc.ErrorStr();
+          return NULL;
+        }
+        else
+        {
+          error = "Unknown error reported by XML library.";
+          return NULL;
+        }
+      }
+      XMLElement* element = doc.FirstChildElement(GetName().c_str());
+
+      ActionOpen* action = new ActionOpen();
+      std::string tmp_str;
+
+      //parse path
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "path", false, true, tmp_str, error))
+      {
+        action->SetPath(tmp_str);
+      }
+
+      //done parsing
+      return action;
+    }
+
+  };
+
+  IActionFactory* ActionOpen::NewFactory()
+  {
+    return new ActionOpenFactory();
+  }
 
   ActionOpen::ActionOpen()
   {
@@ -73,7 +126,7 @@ namespace shellanything
     return (success == TRUE);
   }
 
-  bool ActionOpen::Execute(const Context & context) const
+  bool ActionOpen::Execute(const SelectionContext & context) const
   {
     PropertyManager & pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);

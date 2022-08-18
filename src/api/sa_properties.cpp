@@ -42,7 +42,7 @@ void sa_properties_delete(const char* name)
   pmgr.ClearProperty(name);
 }
 
-int sa_properties_exists(const char* name)
+sa_boolean sa_properties_exists(const char* name)
 {
   if (name == NULL)
     return 0;
@@ -82,8 +82,32 @@ sa_error_t sa_properties_get_string(const char* name, sa_string_t* str)
   if (!sa_properties_exists(name))
     return SA_ERROR_NOT_FOUND;
   const std::string& property_value = pmgr.GetProperty(name);
-  sa_cstr_copy_string(str, property_value);
+  sa_string_copy_stdstr(str, property_value);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_properties_get_cstr(const char* name)
+{
+  if (name == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  if (!pmgr.HasProperty(name))
+    return NULL;
+  const std::string& property_value = pmgr.GetProperty(name);
+  const char* output = property_value.c_str();
+  return output;
+}
+
+const char* sa_properties_get_alloc(const char* name)
+{
+  if (name == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  if (!pmgr.HasProperty(name))
+    return NULL;
+  const std::string& property_value = pmgr.GetProperty(name);
+  const char* output = property_value.c_str();
+  return _strdup(output);
 }
 
 sa_error_t sa_properties_expand_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
@@ -104,8 +128,18 @@ sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str)
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
-  sa_cstr_copy_string(str, expanded_value);
+  sa_string_copy_stdstr(str, expanded_value);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_properties_expand_alloc(const char* value)
+{
+  if (value == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  std::string expanded_value = pmgr.Expand(value);
+  const char* output = expanded_value.c_str();
+  return _strdup(output);
 }
 
 sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
@@ -126,6 +160,16 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);
-  sa_cstr_copy_string(str, expanded_value);
+  sa_string_copy_stdstr(str, expanded_value);
   return SA_ERROR_SUCCESS;
+}
+
+const char* sa_properties_expand_once_alloc(const char* value)
+{
+  if (value == NULL)
+    return NULL;
+  PropertyManager& pmgr = PropertyManager::GetInstance();
+  std::string expanded_value = pmgr.ExpandOnce(value);
+  const char* output = expanded_value.c_str();
+  return _strdup(output);
 }

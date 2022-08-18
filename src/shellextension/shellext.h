@@ -29,7 +29,7 @@
 #include "shellanything/config.h"
 
 #include "BitmapCache.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "Menu.h"
 #include "Icon.h"
 
@@ -96,7 +96,7 @@ protected:
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
   shellanything::BitmapCache  m_BitmapCache;
   IconMap                     m_FileExtensionCache;
-  shellanything::Context      m_Context;
+  shellanything::SelectionContext      m_Context;
   
   static HMENU m_previousMenu;
 

@@ -36,9 +36,13 @@
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/cli.h"
+#include "rapidassist/filesystem.h"
+#include "rapidassist/unicode.h"
 
 #include "ArgumentsHandler.h"
 #include "GlogUtils.h"
+#include "SaUtils.h"
+#include "PropertyManager.h"
 
 using namespace ra;
 
@@ -58,6 +62,16 @@ int main(int argc, char **argv)
   //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
   std::string log_dir = fLS::FLAGS_log_dir;
   printf("Using log directory: '%s'.\n", log_dir.c_str());
+
+  //define global properties
+  std::string prop_application_path = GetCurrentModulePathUtf8();
+  std::string prop_application_directory = ra::filesystem::GetParentPath(prop_application_path);
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+  pmgr.SetProperty("application.path", prop_application_path);
+  pmgr.SetProperty("application.directory", prop_application_directory);
+  pmgr.SetProperty("log.directory", prop_log_directory);
 
   LOG(INFO) << "Starting unit tests";
   LOG(INFO) << __FUNCTION__ << "() - BEGIN";

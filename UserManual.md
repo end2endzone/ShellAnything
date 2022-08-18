@@ -44,6 +44,23 @@ This manual includes a description of the system functionalities and capabilitie
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
+* [Plugins](#plugins)
+  * [Plugin overview](#plugin-overview)
+  * [C API](#c-api)
+  * [Creating a new plugin](#creating-a-new-plugin)
+    * [Register a function callback when the selection changes](#register-a-function-callback-when-the-selection-changes)
+    * [Register additional validation attributes](#register-additional-validation-attributes)
+    * [Register new custom actions](#register-new-custom-actions)
+    * [Plugin example](#plugin_example])
+  * [Plugin declaration](#plugin-declaration)
+    * [&lt;plugins&gt; element](#plugins-element)
+    * [&lt;plugin&gt; element](#plugin-element)
+  * [Plugin definition examples](#plugin-definition-examples)
+  * [Official plugins](#official-plugins)
+    * [sa_plugin_process.dll](#sa_plugin_processdll)
+    * [sa_plugin_services.dll](#sa_plugin_servicesdll)
+    * [sa_plugin_strings.dll](#sa_plugin_stringsdll)
+    * [sa_plugin_time.dll](#sa_plugin_timedll)
 * [Use Cases](#use-cases)
   * [Integrate a third party application](#integrate-a-third-party-application)
   * [Run an application with parameters](#run-an-application-with-parameters)
@@ -1338,6 +1355,547 @@ For example, the following would define `services.wce.command.start` and `servic
 
 
 
+# Plugins #
+
+
+## Plugin overview ##
+
+ShellAnything supports plugins which can be used to extend ShellAnything with more functionality. **The support for plugins is in beta and features are limitted**.
+
+ShellAnything does not implement a plugin detection system. It cannot automatically detect and load plugin files. The reason is explained below.
+
+Plugins do not expose multiple interfaces that can be loaded and called by ShellAnything. The application does not query plugins for features. The design is the other way around. Plugins must register their features to the system. This design is more tolerant to API changes.
+
+Plugins must be declared manually in a _Configuration file_. See the [Plugin declaration](#plugin-declaration) section for more details. As a general rule, a plugin declared in a _Configuration file_ only impacts the current _configuration_. A configuration cannot reference or use the functionality of a plugin declared in another configuration. To share the functionalities of a plugin in several configurations, the plugin must be declared in each configuration. This is a limitation but it keeps each _configuration_ independent from each other and guarantees the correct functioning of the system since the _configurations_ can be unloaded or modified at any time while the application is running.
+
+
+
+## C API ##
+
+Plugins can communicate with ShellAnything using a C API. The API is implemented in a DLL called `sa.api.dll`. The include files are located in `[installation directory]\include\shellanything`. Files are prefixed with `sa_`.
+
+The API is written in C programming language. It provides a safe [Application Binary Interface (ABI)](https://en.wikipedia.org/wiki/Application_binary_interface) between plugins and ShellAnything. Implementing a C++ plugin framework with a safe ABI is more complicated in an open source application because all build environment are different. For such reason, a C interface with the system was considered.
+
+Most C++ classes of the core application are mapped to a header file in the API. For example, the include file [sa_selection_context.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/include/shellanything/sa_selection_context.h) in the API provides the same functionality as [SelectionContext.h](https://github.com/end2endzone/ShellAnything/blob/c9b62a9d9e60fe5e7d0d7bb793e427494bea425a/src/core/SelectionContext.h) from the core. The header file `sa_properties.h` provides getters and setters to manipulate [properties](#properties) of the system.
+
+The API is not designed for programming your own Windows Shell extensions. An external executable or module that calls the API will not be able to communicate with ShellAnything. The purpose of the API is to allow plugins to interact with ShellAnything.
+
+
+
+## Creating a new plugin ##
+
+All plugins are designed to have a two generic entry points. The name of these entry points are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api).
+
+The implementation of `sa_plugin_register()` must register one or mutiple services using the API:
+
+
+
+### Register a function callback when the selection changes ###
+
+The function `sa_plugin_register_config_update()` allow a plugin to register an update callback function. The given function is called by ShellAnything when a _Configuration_ is updated with a new selection.
+
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_config_update_get_selection_context()`.
+
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+
+After the callback function is executed, ShellAnything proceeds with normal menu validation. All menu &lt;visibility&gt; and &lt;validity&gt; elements are updated. The Windows File Explorer context menu is displayed.
+
+Typical usage for such a plugin includes the following examples:
+  * Set a property that reflects the availability of a resource. Use property as criteria in &lt;visibility&gt; and &lt;validity&gt; items to act as filters for menus.
+  * Set a _property_ used in the `path` attribute of an &lt;icon&gt; element. This method allows you to define a menu icon that changes depending on the selection.
+
+
+
+### Register additional validation attributes ###
+
+The &lt;visibility&gt; and &lt;validity&gt; elements supports a [wide list of attributes](#visibility--validity) to use as filters. If the existing attributes is not enough, a plugin can register its own list of visibility and validity attributes.
+
+The function `sa_plugin_register_validation_attributes()` allows a plugin to register a set of custom validation attributes. The function is called by ShellAnything when a _Menu_ is updated with a new selection.
+
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_validation_get_selection_context()`.
+
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+
+
+
+### Register new custom actions ###
+
+The list of native actions supported by ShellAnything is defined in the [Actions](#actions) section. If one needs more latitude than supported actions, a plugin can register a custom action.
+
+The function `sa_plugin_register_action_event()` allows a plugin to register an action event callback function. The function is called when ShellAnything create, execute or destroy this custom _Menu_ action.
+
+Plugins can get the selection context object that identifies selected files and directories by calling `sa_plugin_validation_get_selection_context()`.
+
+Properties can be read and set with `sa_properties_get_cstr()` or `sa_properties_set()` to get the desired effect.
+
+For example, assume a plugin that sends emails. The _email_ action could be defined as the following:
+```xml
+<menu name="Send by email">
+  <visibility maxfiles="1" maxfolders="0" />
+  <actions>
+    <email recipients="foobar@my_company.com" subject="${selection.filename}">
+      <body>Hi! ${env.USERNAME} has sent you the file ${selection.filename}.
+      This email was automatically generated by ShellAnything.
+      </body>
+      <attachments>
+        <attachment path="${selection.path}" />
+      </attachments>
+    </email>
+  </actions>
+</menu>
+```
+
+When an instance of the action is created, the plugin must call `sa_plugin_action_get_xml()` to get the action raw xml definition as it appears in the Configuration File.
+
+The plugin must parse the xml and save the parsing results to be referenced later when the action is executed or destroyed. ShellAnything provides functions in the API to help parsing xml content. See functions in `sa_xml.h`.
+
+To save the parsed values, a plugin can :
+
+1. Persist values in a _Property Store_.
+
+The plugin can call `sa_plugin_action_get_property_store()` which returns a unique _Property Store_ for each action instance. A property store is a structure which stores key-value pairs. For this example the store could save the following keys (and their corresponding values) : `recipients`, `subject`, `body`, `attachments.count`, `attachment.1.path`.
+
+See functions in `sa_property_store.h` to know how to use a _Property Store_.
+
+2. Persist values in a custom structure.
+
+Plugins can also save the result of the parsed xml in a custom structure such as this:
+
+```cpp
+struct email_attachment_t {
+  std::string path;
+};
+struct email_t
+{
+  std::string recipients;
+  std::string subject;
+  std::string body;
+  std::vector<email_attachment_t> attachments;
+};
+```
+
+The plugin must allocate an instance of this structure and fill it with the parsed values. To persist the structure instance, the plugin can call `sa_plugin_action_set_data()` which assign a custom data pointer to the action. This custom pointer can be get by calling function `sa_plugin_action_get_data()` while creating, executing and destroying the action.
+
+
+
+### Plugin example ###
+
+The documentation contains a sample plugin example called `sa_plugin_demo` to help with the developpement of a new plugin. The sample files are located in `[installation directory]\bin\docs\sa_plugin_demo.zip`.
+
+The *sa_plugin_demo* example only have a single source file: `sa_plugin_demo.cpp`.
+
+If [CMake](http://www.cmake.org/) is installed on the system, you can execute `sa_plugin_demo.bat` to build and install the plugin example. The plugin builds in temporary directory `%USERPROFILE%\Documents\sa_plugin_demo_build` and installs in directory `%USERPROFILE%\ShellAnything\plugins\sa_plugin_demo`.
+
+If CMake is not available, you need to create a project in your favorite IDE and add the single source file `sa_plugin_demo.cpp` to the project. Make sure your project is linking with ShellAnything's libraries and include directory.
+
+
+
+## Plugin declaration ##
+
+This section explains how to declare a plugin in a _Configuration File_.
+
+
+### &lt;plugins&gt; element ###
+
+The &lt;plugins&gt; element contains the list of plugin declarations. The specific definition of each plugin must be inserted as children of the &lt;plugins&gt; element.
+
+The &lt;plugins&gt; element must be added under a &lt;root&gt; element.
+
+The &lt;plugins&gt; elements does not support any attributes.
+
+For example, see the [Plugin definition examples](#plugin-definition-examples) section.
+
+
+
+### &lt;plugin&gt; element ###
+
+The &lt;plugin&gt; element defines a plugin and its features.
+
+The &lt;plugin&gt; element must be added under a &lt;plugins&gt; element.
+
+The &lt;plugin&gt; element supports the following attributes:
+
+
+
+### path attribute: ###
+
+The `path` attribute defines the file path of a plugin. The path must be defined in absolute form. The `path` attribute supports property expansion.
+
+For example, the following defines a plugin located in the user's configuration directory :
+```xml
+<plugin path="${config.directory}\my_plugin.dll" ... />
+```
+
+
+
+### description attribute: ###
+
+The `description` attribute defines the description a plugin. The description is mainly for keeping track of how the plugin use in a configuration and its capabilities. The attribute is optional.
+
+
+
+### actions attribute: ###
+
+The `actions` attribute defines the list of custom action registered by the plugin. The `actions` attribute does not support property expansion. The attribute is optional.
+
+To specify multiple custom actions, one must separate each action name with the `;` character.
+
+If a plugin registers one or multiple actions, all actions must be declared in this attribute. Any registered action that is not declared will be rejected.
+
+For example, the following defines a plugin that registers the &lt;email&gt;, &lt;wavfile&gt; and &lt;logout&gt; actions  :
+```xml
+<plugin path="${config.directory}\my_plugin.dll" actions="email;wavfile;logout" />
+```
+
+
+
+### conditions attribute: ###
+
+The `conditions` attribute defines the list of custom validation attributes registered by the plugin. The `conditions` attribute does not support property expansion. The attribute is optional.
+
+To specify multiple conditions, one must separate each condition name with the `;` character.
+
+If a plugin registers one or multiple conditions, all conditions must be declared in this attribute. Any registered condition that is not declared will be rejected.
+
+For example, the following defines a plugin that registers the `weather`, `time` and `address` validation attributes :
+```xml
+<plugin path="${config.directory}\my_plugin.dll" conditions="weather;time;address" />
+```
+
+
+
+## Plugin definition examples ##
+
+The following section show plugin definition examples. Note these definitions are for example purpose only. There is no real implementation of these plugins.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <plugins>
+    <!-- Conditions plugins -->
+    <plugin path="${config.directory}\equals.dll"
+            conditions="equals1;equals2"
+            description="This plugin allow validating a menu if the validation attributes `equals1` and `equals2` have the same value." />
+    
+    <plugin path="${config.directory}\foobar_login_check.dll"
+            conditions="foobar_login_check"
+            description="This plugin allow validating a menu if current user is logged in to `foobar` network application.
+                         It does not requires any special value. However, we need a way to link visibility and validity elements to this plugin.
+                         To link an element with this plugin, the plugin's file name can be used as an attribute." />
+    
+    <plugin path="${config.directory}\more_independent_conditions.dll"
+            conditions="weather;weekday;"
+            description="This plugin defines new visibility/validity attributes.
+                         This plugin allow validating multiple independent conditions. All the conditions are optional.
+                         Zero, one, or all conditions can be specified in visibility and validity elements." />
+
+    <!-- Configuration update plugins -->
+    <plugin path="${config.directory}\calendar.dll"
+            description="This plugin registers new properties when a user makes a new selection.
+                         The following properties are defined:
+                           calendar.year,
+                           calendar.month,
+                           calendar.day,
+                           calendar.hour,
+                           calendar.minute,
+                           calendar.second,
+                           calendar.weekday" />
+
+    <plugin path="${config.directory}\weather.dll"
+            description="This plugin registers new properties about the local weather.
+                         This weather information is provided by weather.com.
+                         The plugin requires the mandatory properties 'weather.location.latitude' and 'weather.location.longitude' to be set.
+                         For example, to get the weather for Toronto, Ontario, Canada, the properties should be set to the following:
+                           weather.location.latitude=43.6532
+                           weather.location.longitude-79.3832
+                         The plugin will then parse the result of https://weather.com/weather/today/l/43.6532,-79.3832 and define the following properties :
+                           weather.location.name,
+                           weather.temperature.value,
+                           weather.temperature.units,
+                           weather.temperature.description" />
+
+    <!-- Actions plugins -->
+    <plugin path="${config.directory}\email_action.dll"
+            actions="email"
+            description="This plugin defines an `email` action.
+                         The action supports the following attributes :
+                           `address` which contains the destination email address,
+                           `subject` which contains the email's suject,
+                         The action is expecting to have a `body` child element which is the actual email content." />
+
+    <plugin path="${config.directory}\mp3_action.dll"
+            actions="mp3playback"
+            description="This plugin implement mp3 file playback as a menu action.
+                         The action supports the following attributes :
+                           `path` which is the path to a mp3 file." />
+  </plugins>
+  <shell>
+    <menu name="Log off foobar">
+      <visibility foobar_login_check="" />
+    </menu>
+
+    <menu name="Play party music">
+      <visibility weather="sunny" />
+      <actions>
+        <mp3playback path="C:\Users\${env.USERNAME}\Music\party.mp3" />
+      </actions>
+    </menu>
+
+    <menu name="Launch Monday applications">
+      <visibility equals1="${calendar.weekday}" equals2="monday" />
+    </menu>
+  </shell>
+</root>
+```
+
+
+
+## Official plugins ##
+
+This section explains the official plugins that are released with ShellAnything.
+
+
+
+### sa_plugin_process.dll ###
+
+This plugin declares _custom actions_ and _validation attributes_ to interact with external processes.
+
+The plugin can be declared with the following:
+```xml
+<plugin path="${application.directory}\sa_plugin_process.dll"
+        actions="terminateprocess;killprocess"
+        conditions="process_filename;process_pid" />
+```
+
+***terminateprocess* action**
+
+This action ask an application to exit gracefully.
+
+The action has the following attributes:
+* `pid`, to identify a process with a _Process Id_. This attribute is optional.
+* `filename`, to identify a process with an _Executable Filename_. This attribute is optional.
+
+One of the `pid` and `filename` attributes must be specified for the action to be valid.
+
+For example, the following ask _Notepad_ to exit:
+```xml
+<terminateprocess filename="notepad.exe" />
+```
+
+***killprocess* action**
+
+This action force stop an application.
+
+The action has the following attributes:
+* `pid`, to identify a process with a _Process Identifier (pid)_. This attribute is optional.
+* `filename`, to identify a process with an _Executable Filename_. This attribute is optional.
+
+One of the `pid` and `filename` attributes must be specified for the action to be valid.
+
+For example, the following kill _Notepad_:
+```xml
+<killprocess filename="notepad.exe" />
+```
+
+***process_filename* condition**
+
+This condition validates a menu if the given value matches the _Executable Filename_ of a running process.
+
+The condition does not support multiple values.
+
+For example, the following set a menu visible if _Notepad_ is running:
+```xml
+<visibility process_filename="notepad.exe" />
+```
+
+***process_pid* condition**
+
+This condition validates a menu if the given value matches the _Process Identifier (pid)_ of a running process.
+
+The condition does not support multiple values.
+
+For example, the following set a menu visible if a process with pid _7016_ is running:
+```xml
+<visibility process_pid="7016" />
+```
+
+
+
+### sa_plugin_services.dll ###
+
+This plugin allow to query the status of a _Windows Service_. The plugin requires the mandatory property `sa_plugin_services.names` to be set.
+
+For example, to get the service status of _Microsoft Defender Antivirus Network Inspection Service_, the property `sa_plugin_service.names` should be set to `WdNisSvc`. 
+
+If the service name is found, the property `sa_plugin_services.WdNisSvc.status` is set to the service status. The status values are: `unknown`, `continuing`, `pausing`, `paused`, `running`, `starting`, `stopping` and `stopped`.
+
+To specify multiple service names, one must separate each value with the `;` character.
+
+The plugin can be declared with the following:
+```xml
+  <plugins>
+    <plugin path="${application.directory}\sa_plugin_services.dll" />
+  </plugins>
+  <shell>
+    <default>
+      <!-- define the names of multiple windows services :
+      WinDefend                       Microsoft Defender Antivirus Service
+      Dhcp                            DHCP Client
+      Dnscache                        DNS Client
+      OneDrive Updater Service        OneDrive Updater Service
+      wuauserv                        Windows Update
+      Fax                             Fax
+      msiserver                       Windows Installer
+      mpssvc                          Windows Defender Firewall
+      WebClient                       WebClient
+      -->
+      <property name="sa_plugin_services.names" value=""/>
+      <property name="sa_plugin_services.names" value="WinDefend;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Dhcp;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Dnscache;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="OneDrive Updater Service;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="wuauserv;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="Fax;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="msiserver;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="mpssvc;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="WebClient;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="aaaa;${sa_plugin_services.names}"/>
+    </default>
+```
+
+
+
+### sa_plugin_strings.dll ###
+
+This plugin provide string manipulation actions.
+
+The plugin can be declared with the following:
+```xml
+<plugin path="${application.directory}\sa_plugin_strings.dll"
+        actions="substr;strreplace;strlen;struppercase;strlowercase;strfind" />
+```
+
+***substr* action**
+
+This action compute the substring of a string.
+
+The action has the following attributes:
+* `count`, matches the length in bytes of the substring.
+* `value`, matches the input value of the action.
+* `property`, matches the output property of the action.
+* `offset`, matches the starting offset in bytes within the value. Default to 0. This attribute is optional.
+
+For example, the following compute the substring from alphabetical characters to get all numbers:
+```xml
+<substr offset="26" count="10" value="abcdefghijklmnopqrstuvwxyz0123456789" property="numbers" />
+```
+
+***strreplace* action**
+
+This action replaces a value by another in a string.
+
+The action has the following attributes:
+* `text`, matches the input value of the action.
+* `token`, matches the value to replace.
+* `value`, matches the replace value.
+* `property`, matches the output property of the action.
+
+For example, the following replaces Marty by George in the given text:
+```xml
+<strreplace text="Marty McFly" token="Marty" value="George" property="father" />
+```
+
+***strlen* action**
+
+This action compute the length of a string in bytes.
+
+The action has the following attributes:
+* `value`, matches the input value of the action.
+* `property`, matches the output property of the action.
+
+For example, the following compute the length of the given string:
+```xml
+<strlen value="Marty McFly" property="name.strlen" />
+```
+
+***struppercase* action**
+
+This action compute the uppercase of a string.
+
+The action has the following attributes:
+* `value`, matches the input value of the action.
+* `property`, matches the output property of the action.
+
+For example, the following compute the uppercase of the given name:
+```xml
+<struppercase value="George McFly" property="name.uppercase" />
+```
+
+***struppercase* action**
+
+This action compute the uppercase of a string.
+
+The action has the following attributes:
+* `value`, matches the input value of the action.
+* `property`, matches the output property of the action.
+
+For example, the following compute the uppercase of the given name:
+```xml
+<struppercase value="G.McFly" property="username.uppercase" />
+```
+
+***strlowercase* action**
+
+This action compute the lowercase of a string.
+
+The action has the following attributes:
+* `value`, matches the input value of the action.
+* `property`, matches the output property of the action.
+
+For example, the following compute the lowercase of the given name:
+```xml
+<strlowercase value="G.McFly" property="username.lowercase" />
+```
+
+***strfind* action**
+
+This action finds a string within another string.
+
+The action has the following attributes:
+* `text`, matches the input value of the action.
+* `value`, matches the value to find.
+* `property`, matches the output property of the action.
+* `offset`, matches the starting offset in bytes within the text. Default to 0. This attribute is optional.
+
+For example, the following searches for the second word `Roads` in the given text:
+```xml
+<strfind text="Roads? Where We're Going, We Don't Need Roads." value="Roads" offset="10" property="word.position" />
+```
+
+
+
+
+### sa_plugin_time.dll ###
+
+This plugin declares _validation attributes_ to validate a menu based on the current system time (local time zone).
+All conditions must be specified
+
+***start_time* and *end_time* conditions**
+
+Theses conditions validate a menu if current time is between *start_time* and *end_time*.
+The values should be specifed in `hh:mm` format.
+
+Both conditions must be specified for the validation to be succesful.
+These conditions does not support multiple values.
+
+For example, the following set a menu visible between working hours:
+```xml
+<visibility start_time="08:00" end_time="17:00" />
+```
+
+
+
+
 # Use Cases #
 
 
@@ -1570,6 +2128,13 @@ Because the `&` character is a special character in menu names, it must be escap
 
 Refer to the [keyboard mnemonics](#mnemonics--keyboard-shortcuts) section for details.
 
+
+
+## Deleting plugins ##
+
+When a plugin is loaded by ShellAnything, the dll file cannot be modified, moved or deleted. If you are a plugin developper, this can be annoying. To force ShellAnything to release its hook on the file, you must unload all *Configuration Files* that use the plugin.
+
+A quick way to do this is to temporary change the *Configuration Files* to another file extension (for example `.tmp`) and then force ShellAnything to update by right-clicking on any file or directory. 
 
 
 ## Reporting bugs ##

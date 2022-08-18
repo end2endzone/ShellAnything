@@ -25,8 +25,10 @@
 #ifndef SA_ACTION_STOP_H
 #define SA_ACTION_STOP_H
 
-#include "Action.h"
+#include "IAction.h"
+#include "BaseAction.h"
 #include "Validator.h"
+#include "IActionFactory.h"
 
 namespace shellanything
 {
@@ -34,18 +36,29 @@ namespace shellanything
   /// <summary>
   /// Action class that fails as a validator.
   /// </summary>
-  class SHELLANYTHING_EXPORT ActionStop : public Action
+  class SHELLANYTHING_EXPORT ActionStop : public BaseAction
   {
   public:
     ActionStop();
     virtual ~ActionStop();
 
     /// <summary>
+    /// Name of the xml element for this action.
+    /// </summary>
+    static const std::string XML_ELEMENT_NAME;
+
+    /// <summary>
+    /// Instanciate an IActionFactory that is able to parse this action.
+    /// </summary>
+    /// <returns>Returns a IActionFactory to parse this action.</returns>
+    static IActionFactory* NewFactory();
+
+    /// <summary>
     /// Prompts the user for a value.
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const Context & context) const;
+    virtual bool Execute(const SelectionContext & context) const;
 
     /// <summary>
     /// Getter for the 'validator' parameter.

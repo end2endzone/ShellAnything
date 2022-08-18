@@ -24,6 +24,7 @@
 
 #include "ObjectFactory.h"
 
+#include "PropertyManager.h"
 #include "Configuration.h"
 #include "Menu.h"
 #include "Validator.h"
@@ -48,17 +49,21 @@ namespace shellanything
   static const std::string NODE_VALIDITY = "validity";
   static const std::string NODE_VISIBILITY = "visibility";
   static const std::string NODE_DEFAULTSETTINGS = "default";
-  static const std::string NODE_ACTION_CLIPBOARD = "clipboard";
-  static const std::string NODE_ACTION_EXEC = "exec";
-  static const std::string NODE_ACTION_STOP = "stop";
-  static const std::string NODE_ACTION_FILE = "file";
-  static const std::string NODE_ACTION_PROMPT = "prompt";
-  static const std::string NODE_ACTION_PROPERTY = "property";
-  static const std::string NODE_ACTION_OPEN = "open";
-  static const std::string NODE_ACTION_MESSAGE = "message";
+  static const std::string& NODE_ACTION_STOP = ActionStop::XML_ELEMENT_NAME;
+  static const std::string& NODE_ACTION_PROPERTY = ActionProperty::XML_ELEMENT_NAME;
+  static const std::string NODE_PLUGIN = "plugin";
 
   ObjectFactory::ObjectFactory()
   {
+    // Add IAction factories for native actions.
+    registry.AddActionFactory(ActionClipboard::NewFactory());
+    registry.AddActionFactory(ActionExecute::NewFactory());
+    registry.AddActionFactory(ActionFile::NewFactory());
+    registry.AddActionFactory(ActionMessage::NewFactory());
+    registry.AddActionFactory(ActionOpen::NewFactory());
+    registry.AddActionFactory(ActionPrompt::NewFactory());
+    registry.AddActionFactory(ActionProperty::NewFactory());
+    registry.AddActionFactory(ActionStop::NewFactory());
   }
 
   ObjectFactory::~ObjectFactory()
@@ -92,7 +97,7 @@ namespace shellanything
     return elements;
   }
 
-  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
+  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
   {
     if (element == NULL)
     {
@@ -125,7 +130,7 @@ namespace shellanything
     return true;
   }
 
-  bool ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
+  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
   {
     std::string str_value;    
     if (!ParseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
@@ -145,6 +150,16 @@ namespace shellanything
     return true;
   }
 
+  void ObjectFactory::SetActivePlugins(const Plugin::PluginPtrList& plugins)
+  {
+    mPlugins = plugins;
+  }
+
+  void ObjectFactory::ClearActivePlugins()
+  {
+    mPlugins.clear();
+  }
+
   Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, std::string & error)
   {
     if (element == NULL)
@@ -161,9 +176,11 @@ namespace shellanything
 
     Validator * validator = new Validator();
 
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
     //parse class
     std::string class_;
-    if (ParseAttribute(element, "class", true, true, class_, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_CLASS.c_str(), true, true, class_, error))
     {
       if (!class_.empty())
       {
@@ -173,7 +190,7 @@ namespace shellanything
 
     //parse pattern
     std::string pattern;
-    if (ParseAttribute(element, "pattern", true, true, pattern, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_PATTERN.c_str(), true, true, pattern, error))
     {
       if (!pattern.empty())
       {
@@ -183,7 +200,7 @@ namespace shellanything
 
     //parse exprtk
     std::string exprtk;
-    if (ParseAttribute(element, "exprtk", true, true, exprtk, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_EXPRTK.c_str(), true, true, exprtk, error))
     {
       if (!exprtk.empty())
       {
@@ -193,21 +210,21 @@ namespace shellanything
 
     //parse maxfiles
     int maxfiles = -1;
-    if (ParseAttribute(element, "maxfiles", true, true, maxfiles, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_MAXFILES.c_str(), true, true, maxfiles, error))
     {
       validator->SetMaxFiles(maxfiles);
     }
 
     //parse maxfolders
     int maxfolders = -1;
-    if (ParseAttribute(element, "maxfolders", true, true, maxfolders, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_MAXDIRECTORIES.c_str(), true, true, maxfolders, error))
     {
       validator->SetMaxDirectories(maxfolders);
     }
 
     //parse fileextensions
     std::string fileextensions;
-    if (ParseAttribute(element, "fileextensions", true, true, fileextensions, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_FILEEXTENSIONS.c_str(), true, true, fileextensions, error))
     {
       if (!fileextensions.empty())
       {
@@ -217,7 +234,7 @@ namespace shellanything
 
     //parse exists
     std::string exists;
-    if (ParseAttribute(element, "exists", true, true, exists, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_EXISTS.c_str(), true, true, exists, error))
     {
       if (!exists.empty())
       {
@@ -227,7 +244,7 @@ namespace shellanything
 
     //parse properties
     std::string properties;
-    if (ParseAttribute(element, "properties", true, true, properties, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_PROPERTIES.c_str(), true, true, properties, error))
     {
       if (!properties.empty())
       {
@@ -237,7 +254,7 @@ namespace shellanything
 
     //parse inverse
     std::string inverse;
-    if (ParseAttribute(element, "inverse", true, true, inverse, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_INSERVE.c_str(), true, true, inverse, error))
     {
       if (!inverse.empty())
       {
@@ -247,7 +264,7 @@ namespace shellanything
 
     //parse istrue
     std::string istrue;
-    if (ParseAttribute(element, "istrue", true, true, istrue, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISTRUE.c_str(), true, true, istrue, error))
     {
       if (!istrue.empty())
       {
@@ -257,7 +274,7 @@ namespace shellanything
 
     //parse isfalse
     std::string isfalse;
-    if (ParseAttribute(element, "isfalse", true, true, isfalse, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISFALSE.c_str(), true, true, isfalse, error))
     {
       if (!isfalse.empty())
       {
@@ -267,7 +284,7 @@ namespace shellanything
 
     //parse isempty
     std::string isempty;
-    if (ParseAttribute(element, "isempty", true, true, isempty, error))
+    if (ParseAttribute(element, Validator::ATTRIBUTE_ISEMPTY.c_str(), true, true, isempty, error))
     {
       if (!isempty.empty())
       {
@@ -275,11 +292,37 @@ namespace shellanything
       }
     }
 
+    //parse plugin's custom conditions attributes
+    PropertyStore customs_attributes;
+    for (size_t i = 0; i < mPlugins.size(); i++)
+    {
+      Plugin* p = mPlugins[i];
+      if (!p)
+        continue;
+
+      //for each condition
+      const std::string conditions_str = pmgr.Expand(p->GetConditions());
+      ra::strings::StringVector conditions = ra::strings::Split(conditions_str, SA_CONDITIONS_ATTR_SEPARATOR_STR);
+      for (size_t j = 0; j < conditions.size(); j++)
+      {
+        const std::string& condition = conditions[j];
+
+        //try to parse this condition
+        std::string value;
+        bool hasCondition = ParseAttribute(element, condition.c_str(), true, true, value, error);
+        if (hasCondition)
+        {
+          customs_attributes.SetProperty(condition, value);
+        }
+      }
+    }
+    validator->SetCustomAttributes(customs_attributes);
+
     //success
     return validator;
   }
 
-  Action * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
+  IAction * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
   {
     if (element == NULL)
     {
@@ -287,250 +330,37 @@ namespace shellanything
       return NULL;
     }
 
-    //temporary parsed attribute values
-    std::string tmp_str;
-    int tmp_int = -1;
+    std::string name = element->Name();
 
-    if (NODE_ACTION_CLIPBOARD == element->Name())
+    //look for a factory in the registry for the element name
+    IActionFactory* factory = registry.GetActionFactoryFromName(name);
+
+    //or look for a factory in plugin's registry
+    for (size_t i = 0; i < mPlugins.size() && factory == NULL; i++)
     {
-      ActionClipboard * action = new ActionClipboard();
+      Plugin* p = mPlugins[i];
+      if (!p)
+        continue;
 
-      //parse value
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "value", false, true, tmp_str, error))
-      {
-        action->SetValue(tmp_str);
-      }
-
-      //done parsing
-      return action;
+      Registry& plugin_registry = p->GetRegistry();
+      factory = plugin_registry.GetActionFactoryFromName(name);
     }
-    else if (NODE_ACTION_EXEC == element->Name())
+
+    //if a factory was found
+    if (factory)
     {
-      ActionExecute * action = new ActionExecute();
+      //convert the xml element to a string
+      XMLPrinter printer;
+      element->Accept(&printer);
+      std::string text = printer.CStr();
 
-      //parse path
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "path", false, true, tmp_str, error))
-      {
-        action->SetPath(tmp_str);
-      }
-
-      //parse arguments
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "arguments", true, true, tmp_str, error))
-      {
-        action->SetArguments(tmp_str);
-      }
-
-      //parse basedir
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "basedir", true, true, tmp_str, error))
-      {
-        action->SetBaseDir(tmp_str);
-      }
-
-      //parse verb
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "verb", true, true, tmp_str, error))
-      {
-        action->SetVerb(tmp_str);
-      }
-
-      //done parsing
+      //try to parse an IAction from the string
+      IAction* action = factory->ParseFromXml(text, error);
       return action;
-    }
-    else if (NODE_ACTION_STOP == element->Name())
-    {
-      ActionStop* action = new ActionStop();
-
-      //parse like a Validator
-      Validator* validator = ObjectFactory::GetInstance().ParseValidator(element, error);
-      if (validator == NULL)
-      {
-        delete action;
-        return NULL;
-      }
-
-      action->SetValidator(validator);
-
-      //done parsing
-      return action;
-    }
-    else if (NODE_ACTION_FILE == element->Name())
-    {
-      ActionFile * action = new ActionFile();
-
-      //parse path
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "path", false, true, tmp_str, error))
-      {
-        action->SetPath(tmp_str);
-      }
-
-      //parse text
-      const char * text = element->GetText();
-      if (text)
-      {
-        action->SetText(text);
-      }
-
-      //parse encoding
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "encoding", true, true, tmp_str, error))
-      {
-        action->SetEncoding(tmp_str);
-      }
-
-      //done parsing
-      return action;
-    }
-    else if (NODE_ACTION_PROMPT == element->Name())
-    {
-      ActionPrompt * action = new ActionPrompt();
-
-      //parse name
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "name", false, true, tmp_str, error))
-      {
-        action->SetName(tmp_str);
-      }
-
-      //parse title
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "title", false, true, tmp_str, error))
-      {
-        action->SetTitle(tmp_str);
-      }
-
-      //parse default
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "default", true, true, tmp_str, error))
-      {
-        action->SetDefault(tmp_str);
-      }
-
-      //parse type
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "type", true, true, tmp_str, error))
-      {
-        action->SetType(tmp_str);
-      }
-
-      //parse valueyes
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "valueyes", true, true, tmp_str, error))
-      {
-        action->SetValueYes(tmp_str);
-      }
-
-      //parse valueno
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "valueno", true, true, tmp_str, error))
-      {
-        action->SetValueNo(tmp_str);
-      }
-
-      //done parsing
-      return action;
-    }
-    else if (NODE_ACTION_PROPERTY == element->Name())
-    {
-      ActionProperty * action = new ActionProperty();
-
-      //parse name
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "name", false, true, tmp_str, error))
-      {
-        action->SetName(tmp_str);
-      }
-
-      //parse value
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "value", true, true, tmp_str, error))
-      {
-        action->SetValue(tmp_str);
-      }
-
-      //parse exprtk
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "exprtk", true, true, tmp_str, error))
-      {
-        action->SetExprtk(tmp_str);
-      }
-
-      //done parsing
-      return action;
-    }
-    else if (NODE_ACTION_OPEN == element->Name())
-    {
-      ActionOpen * action = new ActionOpen();
-
-      //parse path
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "path", false, true, tmp_str, error))
-      {
-        action->SetPath(tmp_str);
-      }
-
-      //done parsing
-      return action;
-    }
-    else if (NODE_ACTION_MESSAGE == element->Name())
-    {
-      ActionMessage * action = new ActionMessage();
-
-      //parse title
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "title", false, true, tmp_str, error))
-      {
-        action->SetTitle(tmp_str);
-      }
-
-      //parse caption
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "caption", false, true, tmp_str, error))
-      {
-        action->SetCaption(tmp_str);
-      }
-
-      //parse icon
-      tmp_str = "";
-      tmp_int = -1;
-      if (ParseAttribute(element, "icon", true, true, tmp_str, error))
-      {
-        action->SetIcon(tmp_str);
-      }
-
-      //done parsing
-      return action;
-    }
-    else
-    {
-      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
-      return NULL;
     }
 
     //invalid
+    error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
     return NULL;
   }
 
@@ -660,7 +490,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        Action * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
+        IAction * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
         if (action == NULL)
         {
           delete menu;
@@ -778,7 +608,7 @@ namespace shellanything
       const tinyxml2::XMLElement * element = elements[i];
 
       //found a new action node
-      Action * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
+      IAction * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
       if (abstract_action)
       {
         //filter out all type of actions except ActionProperty actions
@@ -803,6 +633,55 @@ namespace shellanything
     }
 
     return defaults;
+  }
+
+  Plugin* ObjectFactory::ParsePlugin(const tinyxml2::XMLElement* element, std::string& error)
+  {
+    if (element == NULL)
+    {
+      error = "XMLElement is NULL";
+      return false;
+    }
+
+    std::string xml_name = element->Name();
+    if (xml_name != NODE_PLUGIN)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+      return NULL;
+    }
+
+    //parse path
+    std::string path;
+    bool hasPath = ParseAttribute(element, "path", true, true, path, error);
+    if (!hasPath)
+    {
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing a path attribute.";
+      return NULL;
+    }
+
+    //parse description
+    std::string description;
+    bool hasDescription = ParseAttribute(element, "description", true, true, description, error);
+
+    //parse conditions
+    std::string conditions;
+    bool hasConditions = ParseAttribute(element, "conditions", true, true, conditions, error);
+
+    //parse actions
+    std::string actions;
+    bool hasActions = ParseAttribute(element, "actions", true, true, actions, error);
+
+    Plugin* plugin = new Plugin();
+    plugin->SetPath(path);
+    if (hasDescription)
+      plugin->SetDescription(description);
+    if (hasConditions)
+      plugin->SetConditions(conditions);
+    if (hasActions)
+      plugin->SetActions(actions);
+
+    //success
+    return plugin;
   }
 
 } //namespace shellanything

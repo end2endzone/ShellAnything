@@ -25,7 +25,7 @@
 #include "TestObjectFactory.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionExecute.h"
 #include "ActionStop.h"
 #include "ActionFile.h"
@@ -43,15 +43,37 @@ namespace shellanything { namespace test
   static const Configuration * INVALID_CONFIGURATION = NULL;
  
   //--------------------------------------------------------------------------------------------------
+  Menu* GetSafeSubMenu(Menu* menu, size_t index)
+  {
+    if (menu == NULL)
+      return NULL;
+    Menu::MenuPtrList submenus = menu->GetSubMenus();
+    if (index >= submenus.size())
+      return NULL;
+    Menu* child = submenus[index];
+    return child;
+  }
+  //--------------------------------------------------------------------------------------------------
+  IAction* GetSafeAction(Menu* menu, size_t index)
+  {
+    if (menu == NULL)
+      return NULL;
+    IAction::ActionPtrList actions = menu->GetActions();
+    if (index >= actions.size())
+      return NULL;
+    IAction* action = actions[index];
+    return action;
+  }
+  //--------------------------------------------------------------------------------------------------
   ActionPrompt * GetFirstActionPrompt(Menu * m)
   {
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionPrompt * action_prompt = dynamic_cast<ActionPrompt *>(action);
       if (action_prompt)
         return action_prompt;
@@ -65,10 +87,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionProperty * action_property = dynamic_cast<ActionProperty *>(action);
       if (action_property)
         return action_property;
@@ -82,10 +104,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionMessage * action_message = dynamic_cast<ActionMessage *>(action);
       if (action_message)
         return action_message;
@@ -99,10 +121,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionExecute * action_execute = dynamic_cast<ActionExecute *>(action);
       if (action_execute)
         return action_execute;
@@ -116,10 +138,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionStop * action_fail = dynamic_cast<ActionStop*>(action);
       if (action_fail)
         return action_fail;
@@ -133,10 +155,10 @@ namespace shellanything { namespace test
     if (!m)
       return NULL;
  
-    Action::ActionPtrList actions = m->GetActions();
+    IAction::ActionPtrList actions = m->GetActions();
     for(size_t i=0; i<actions.size(); i++)
     {
-      Action * action = actions[i];
+      IAction * action = actions[i];
       ActionFile * action_file = dynamic_cast<ActionFile *>(action);
       if (action_file)
         return action_file;
@@ -799,6 +821,71 @@ namespace shellanything { namespace test
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
   }
   //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testParsePlugins)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT 2 plugins parsed
+    const Plugin::PluginPtrList & plugins = cmgr.GetConfigurations()[0]->GetPlugins();
+    ASSERT_EQ(3, plugins.size());
+
+    const Plugin* plugin1 = plugins[0];
+    const Plugin* plugin2 = plugins[1];
+    const Plugin* plugin3 = plugins[2];
+    ASSERT_TRUE( plugin1 != NULL );
+    ASSERT_TRUE( plugin2 != NULL );
+    ASSERT_TRUE( plugin3 != NULL );
+
+    ASSERT_EQ( std::string("C:\\foo\\bar\\time.dll"),           plugin1->GetPath());
+    ASSERT_EQ( std::string("C:\\myapp\\running.dll" ),          plugin2->GetPath());
+    ASSERT_EQ( std::string("${config.directory}\\email.dll" ),  plugin3->GetPath());
+
+    ASSERT_EQ( std::string("start_time;end_time"),  plugin1->GetConditions());
+    ASSERT_EQ( std::string("running" ),             plugin2->GetConditions());
+
+    ASSERT_EQ( std::string("email" ),               plugin3->GetActions());
+
+    //Get first visibility.
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(1, menus.size());
+    Menu* menu0 = menus[0];
+    ASSERT_TRUE(menu0 != NULL);
+    ASSERT_EQ(1, menu0->GetVisibilityCount());
+    const Validator* visibility0 = menu0->GetVisibility(0);
+    ASSERT_TRUE(visibility0 != NULL);
+
+    //ASSERT custom attributes
+    const PropertyStore& attr = visibility0->GetCustomAttributes();
+    ASSERT_EQ(std::string("08:00"), attr.GetProperty("start_time"));
+    ASSERT_EQ(std::string("16:00"), attr.GetProperty("end_time"));
+    ASSERT_EQ(std::string("notepad.exe"), attr.GetProperty("running"));
+    
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
   TEST_F(TestObjectFactory, testParseSeparator)
   {
     ConfigManager & cmgr = ConfigManager::GetInstance();
@@ -844,6 +931,84 @@ namespace shellanything { namespace test
     ASSERT_TRUE (menus[3]->IsColumnSeparator());  // <menu separator="column" />
     ASSERT_TRUE (menus[4]->IsColumnSeparator());  // <menu separator="vertical" />
     ASSERT_FALSE(menus[5]->IsColumnSeparator());  // <menu name="menu05" />
+
+    //Cleanup
+    ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+  }
+  //--------------------------------------------------------------------------------------------------
+  TEST_F(TestObjectFactory, testGetParent)
+  {
+    ConfigManager & cmgr = ConfigManager::GetInstance();
+ 
+    //Creating a temporary workspace for the test execution.
+    Workspace workspace;
+    ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+    //Import the required files into the workspace
+    static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+    std::string test_name = ra::testing::GetTestQualifiedName();
+    std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+    ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+    
+    //Wait to make sure that the next file copy/modification will not have the same timestamp
+    ra::timing::Millisleep(1500);
+ 
+    //Setup ConfigManager to read files from workspace
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(workspace.GetBaseDirectory());
+    cmgr.Refresh();
+ 
+    //ASSERT the file is loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ASSERT_EQ( 1, configs.size() );
+ 
+    //ASSERT a root menus are available
+    Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+    ASSERT_EQ(2, menus.size());
+
+    Menu* menu_opt1 = menus[0];
+    Menu* menu_opt2 = menus[1];
+
+    ASSERT_TRUE(menu_opt1 != NULL);
+    ASSERT_TRUE(menu_opt2 != NULL);
+
+    ASSERT_EQ(std::string("option 1"), menu_opt1->GetName());
+    ASSERT_EQ(std::string("option 2"), menu_opt2->GetName());
+
+    Menu* menu_opt1_2 = GetSafeSubMenu(menu_opt1, 1);
+    Menu* menu_opt1_2_1 = GetSafeSubMenu(menu_opt1_2, 0);
+    Menu* menu_opt1_2_1_1 = GetSafeSubMenu(menu_opt1_2_1, 0);
+
+    ASSERT_TRUE(menu_opt1_2_1_1 != NULL);
+    ASSERT_EQ(std::string("option 1.2.1.1"), menu_opt1_2_1_1->GetName());
+
+    const Validator* validity0 = menu_opt1_2_1_1->GetValidity(0);
+    const Validator* validity1 = menu_opt1_2_1_1->GetValidity(1);
+    const Validator* visibility0 = menu_opt1_2_1_1->GetVisibility(0);
+    const Validator* visibility1 = menu_opt1_2_1_1->GetVisibility(1);
+
+    IAction* action0 = GetSafeAction(menu_opt1_2_1_1, 0);
+    IAction* action1 = GetSafeAction(menu_opt1_2_1_1, 1);
+
+    ASSERT_TRUE(validity0   != NULL);
+    ASSERT_TRUE(validity1   != NULL);
+    ASSERT_TRUE(visibility0 != NULL);
+    ASSERT_TRUE(visibility1 != NULL);
+    ASSERT_TRUE(action0     != NULL);
+    ASSERT_TRUE(action1     != NULL);
+
+    //ASSERT expected parent objects
+    ASSERT_EQ(NULL,           menu_opt1_2_1_1->GetParentConfiguration());
+    ASSERT_EQ(menu_opt1_2_1,  menu_opt1_2_1_1->GetParentMenu());
+    ASSERT_EQ(NULL,           menu_opt1_2_1->GetParentConfiguration());
+    ASSERT_EQ(menu_opt1_2,    menu_opt1_2_1->GetParentMenu());
+
+    ASSERT_EQ(menu_opt1_2_1_1, validity0  ->GetParentMenu());
+    ASSERT_EQ(menu_opt1_2_1_1, validity1  ->GetParentMenu());
+    ASSERT_EQ(menu_opt1_2_1_1, visibility0->GetParentMenu());
+    ASSERT_EQ(menu_opt1_2_1_1, visibility1->GetParentMenu());
+    ASSERT_EQ(menu_opt1_2_1_1, action0    ->GetParentMenu());
+    ASSERT_EQ(menu_opt1_2_1_1, action1    ->GetParentMenu());
 
     //Cleanup
     ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

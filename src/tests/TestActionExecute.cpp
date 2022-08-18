@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "TestActionExecute.h"
-#include "Context.h"
+#include "SelectionContext.h"
 #include "ActionExecute.h"
 #include "PropertyManager.h"
 #include "rapidassist/testing.h"
@@ -70,8 +70,8 @@ namespace shellanything { namespace test
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -96,8 +96,8 @@ namespace shellanything { namespace test
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -124,8 +124,8 @@ namespace shellanything { namespace test
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -190,8 +190,8 @@ namespace shellanything { namespace test
     PropertyManager & pmgr = PropertyManager::GetInstance();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back("C:\\Windows\\System32\\calc.exe");
     c.SetElements(elements);
 
@@ -264,8 +264,8 @@ namespace shellanything { namespace test
     std::string home_dir = ra::user::GetHomeDirectory();
 
     //Create a valid context
-    Context c;
-    Context::ElementList elements;
+    SelectionContext c;
+    StringList elements;
     elements.push_back(home_dir);
     c.SetElements(elements);
 

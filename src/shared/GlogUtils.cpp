@@ -1,5 +1,4 @@
 #include "GlogUtils.h"
-#include "ErrorManager.h"
 #include "SaUtils.h"
 
 #include "rapidassist/strings.h"
@@ -15,6 +14,8 @@ char *    g_argv[] = {g_Path, ""};  // For google::InitGoogleLogging(g_argv[0])
 
 namespace shellanything
 {
+  extern void ShowErrorMessage(const std::string& title, const std::string& message);
+
   int DateTimeToSeconds(const GLOG_DATETIME & dt)
   {
     int total_seconds = 0;
@@ -340,7 +341,7 @@ namespace shellanything
         //Show an error message
         const std::string title = "ShellAnything init";
         const std::string message = ra::strings::Format("Failed creating log directory '%s'", log_dir.c_str());
-        ShowErrorMessage(title, message);
+        shellanything::ShowErrorMessage(title, message);
       }
     }
 

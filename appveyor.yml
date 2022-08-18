@@ -17,7 +17,7 @@ version: "{branch} (#{build})"
 branches:
   only:
     - master
-    - feature-issue103
+    - feature-issue50
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -27,7 +27,7 @@ skip_tags: true
 #---------------------------------#
 
 # Build worker image (VM template)
-image: Visual Studio 2015
+image: Visual Studio 2019
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -39,7 +39,6 @@ clone_folder: c:\projects\shellanything
 
 # scripts that run after cloning repository
 install:
-- cmd: echo INSTALL!
 - cmd: git submodule update --init --recursive
 
 #---------------------------------#
@@ -47,7 +46,7 @@ install:
 #---------------------------------#
 
 environment:
-  PlatformToolset: v140
+  PlatformToolset: v142
   
 # build platform, i.e. x86, x64, Any CPU. This setting is optional.
 platform:
@@ -61,6 +60,8 @@ matrix:
   fast_finish: true
 
 before_build:
+#- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\list_services_status.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_doxygen.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_googletest.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_tinyxml2.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_rapidassist.bat
@@ -71,6 +72,11 @@ before_build:
 
 build_script:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_process.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_services.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_strings.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_time.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_demo.bat
 
 #---------------------------------#
 #       tests configuration       #

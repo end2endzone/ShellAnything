@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <plugins>
+    <plugin path="C:\foo\bar\time.dll"            conditions="start_time;end_time" description="This plugin defines new visibility/validity attributes. The validation is based on current system time." />
+    <plugin path="C:\myapp\running.dll"           conditions="running" description="This plugin defines the 'running' visibility/validity attribute. This attribute validates a menu if the given process name is running on the system." />
+    <plugin path="${config.directory}\email.dll"  actions="email" desription="This plugin defines the &lt;email&gt; action." />
+  </plugins>
+  <shell>
+    <menu name="menu00">
+      <visibility start_time="08:00" end_time="16:00" running="notepad.exe" />
+      <icon path="C:\Windows\System32\shell32.dll" index="42" />
+      <actions>
+        <property name="foo" value="true" />
+      </actions>
+    </menu>
+  </shell>
+</root>

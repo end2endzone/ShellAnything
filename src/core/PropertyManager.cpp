@@ -23,8 +23,8 @@
  *********************************************************************************/
 
 #include "PropertyManager.h"
-
-#include "Context.h"
+#include "SaUtils.h"
+#include "SelectionContext.h"
 
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -56,46 +56,42 @@ namespace shellanything
 
   void PropertyManager::Clear()
   {
-    properties.clear();
+    properties.Clear();
     RegisterEnvironmentVariables();
     RegisterDefaultProperties();
   }
 
   void PropertyManager::ClearProperty(const std::string & name)
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
-    if (found)
-    {
-      properties.erase(propertyIt);
-    }
+    properties.ClearProperty(name);
   }
 
   bool PropertyManager::HasProperty(const std::string & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
+    bool found = properties.HasProperty(name);
+    return found;
+  }
+
+  bool PropertyManager::HasProperties(const StringList& properties_) const
+  {
+    bool found = properties.HasProperties(properties_);
     return found;
   }
 
   void PropertyManager::SetProperty(const std::string & name, const std::string & value)
   {
-    //overwrite previous property
-    properties[name] = value;
+    properties.SetProperty(name, value);
   }
 
   const std::string & PropertyManager::GetProperty(const std::string & name) const
   {
-    PropertyMap::const_iterator propertyIt = properties.find(name);
-    bool found = (propertyIt != properties.end());
-    if (found)
-    {
-      const std::string & value = propertyIt->second;
-      return value;
-    }
+    const std::string& value = properties.GetProperty(name);
+    return value;
+  }
 
-    static std::string EMPTY_VALUE;
-    return EMPTY_VALUE;
+  void PropertyManager::FindMissingProperties(const StringList& input_names, StringList& output_names) const
+  {
+    properties.FindMissingProperties(input_names, output_names);
   }
 
   inline bool IsPropertyReference(const std::string & token_open, const std::string & token_close, const std::string & value, size_t offset, std::string & name)
@@ -204,6 +200,45 @@ namespace shellanything
     return output;
   }
 
+  void PropertyManager::SplitAndExpand(const std::string& input_value, const char* separator, StringList& output_list)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    output_list.clear();
+    if (separator == NULL)
+      return;
+
+    //Loop through each values
+    ra::strings::StringVector values = ra::strings::Split(input_value, separator);
+    for (size_t i = 0; i < values.size(); i++)
+    {
+      //Expand each value
+      const std::string& tmp = values[i];
+      const std::string expanded = pmgr.Expand(tmp);
+      output_list.push_back(tmp);
+    }
+  }
+
+  void PropertyManager::ExpandAndSplit(const std::string& input_value, const char* separator, StringList& output_list)
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    output_list.clear();
+    if (separator == NULL)
+      return;
+
+    //Expand the given value
+    const std::string expanded = pmgr.Expand(input_value);
+
+    //Loop through each values
+    ra::strings::StringVector values = ra::strings::Split(expanded, separator);
+    for (size_t i = 0; i < values.size(); i++)
+    {
+      const std::string& tmp = values[i];
+      output_list.push_back(tmp);
+    }
+  }
+
   void PropertyManager::RegisterEnvironmentVariables()
   {
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
@@ -226,9 +261,13 @@ namespace shellanything
   void PropertyManager::RegisterDefaultProperties()
   {
     //define global properties
+    std::string prop_application_path       = GetCurrentModulePathUtf8();
+    std::string prop_application_directory  = ra::filesystem::GetParentPath(prop_application_path);
     std::string prop_path_separator         = ra::filesystem::GetPathSeparatorStr();
     std::string prop_line_separator         = ra::environment::GetLineSeparator();
 
+    SetProperty("application.path"     , prop_application_path     );
+    SetProperty("application.directory", prop_application_directory);
     SetProperty("path.separator"       , prop_path_separator       );
     SetProperty("line.separator"       , prop_line_separator       );
     SetProperty("newline"              , prop_line_separator       );
@@ -237,7 +276,7 @@ namespace shellanything
     SetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME   , PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE  );
 
     // Set default property for multi selection. Issue #52.
-    SetProperty(Context::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, Context::DEFAULT_MULTI_SELECTION_SEPARATOR);
+    SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, SelectionContext::DEFAULT_MULTI_SELECTION_SEPARATOR);
   }
 
 } //namespace shellanything

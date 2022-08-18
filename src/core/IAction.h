@@ -22,81 +22,61 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_CONTEXT_H
-#define SA_CONTEXT_H
+#ifndef SA_IACTION_H
+#define SA_IACTION_H
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
-#include <string>
+#include "SelectionContext.h"
 #include <vector>
 
 namespace shellanything
 {
+  class Menu; // For Get/SetParentMenu()
 
   /// <summary>
-  /// A Context class holds a list of files and/or directories.
+  /// Abstract action class.
   /// </summary>
-  class SHELLANYTHING_EXPORT Context
+  class SHELLANYTHING_EXPORT IAction
   {
   public:
-    typedef std::vector<std::string> ElementList;
-
     /// <summary>
-    /// Name of the property that contains the separator for multi-selection separator.
+    /// A list of IAction class pointers.
     /// </summary>
-    static const std::string MULTI_SELECTION_SEPARATOR_PROPERTY_NAME;
+    typedef std::vector<IAction*> ActionPtrList;
 
-    /// <summary>
-    /// Default value for the property 'MULTI_SELECTION_SEPARATOR_PROPERTY_NAME'.
-    /// </summary>
-    static const std::string DEFAULT_MULTI_SELECTION_SEPARATOR;
-
-    Context();
-    Context(const Context & c);
-    virtual ~Context();
-
-    /// <summary>
-    /// Copy operator
-    /// </summary>
-    const Context & operator =(const Context & c);
-
-    /// <summary>
-    /// Register a list of 'properties' based on the context elements.
-    /// </summary>
-    void RegisterProperties() const;
-
-    /// <summary>
-    /// Unregister the list of 'properties' created by RegisterProperties().
-    /// </summary>
-    void UnregisterProperties() const;
-
-    /// <summary>
-    /// Get the list of elements of the Context.
-    /// </summary>
-    const ElementList & GetElements() const;
-
-    /// <summary>
-    /// Set the list of elements to the Context.
-    /// </summary>
-    void SetElements(const ElementList & elements);
-
-    /// <summary>
-    /// Get the number of files in the context.
-    /// </summary>
-    int GetNumFiles() const;
-
-    /// <summary>
-    /// Get the number of directories in the context.
-    /// </summary>
-    int GetNumDirectories() const;
+    IAction();
+    virtual ~IAction();
 
   private:
-    ElementList mElements;
-    int mNumFiles;
-    int mNumDirectories;
+    // Disable copy constructor and copy operator
+    IAction(const IAction&);
+    IAction& operator=(const IAction&);
+  public:
+
+    /// <summary>
+    /// Get the parent menu.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent menu. Returns NULL if the object has no parent menu.</returns>
+    virtual Menu* GetParentMenu() = 0;
+    virtual const Menu* GetParentMenu() const = 0;
+
+    /// <summary>
+    /// Set the parent menu.
+    /// </summary>
+    /// <param name="menu">The parent of this menu</param>
+    virtual void SetParentMenu(Menu* menu) = 0;
+
+    /// <summary>
+    /// Execute the action on the system.
+    /// </summary>
+    /// <param name="context">The current context of execution.</param>
+    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
+    virtual bool Execute(const SelectionContext & context) const = 0;
+
   };
 
 
 } //namespace shellanything
 
-#endif //SA_CONTEXT_H
+#endif //SA_IACTION_H

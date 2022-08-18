@@ -27,8 +27,9 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "StringList.h"
 #include "Configuration.h"
-#include "Context.h"
+#include "SelectionContext.h"
 
 namespace shellanything
 {
@@ -46,14 +47,8 @@ namespace shellanything
     // Disable copy constructor and copy operator
     ConfigManager(const ConfigManager&);
     ConfigManager& operator=(const ConfigManager&);
-  public:
 
   public:
-    /// <summary>
-    /// A list of string for holding configuration paths.
-    /// </summary>
-    typedef std::vector<std::string> PathList;
-
     static ConfigManager & GetInstance();
     
     /// <summary>
@@ -82,9 +77,10 @@ namespace shellanything
     void Refresh();
 
     /// <summary>
-    /// Recursively calls Menu::update() on all menus loaded by the configuration manager.
+    /// Recursively update all loaded configurations.
     /// </summary>
-    void Update(const Context & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Finds a loaded Menu pointer that is assigned the command id command_id.
@@ -117,7 +113,7 @@ namespace shellanything
     void DeleteChild(Configuration * config);
 
     //attributes
-    PathList mPaths;
+    StringList mPaths;
     Configuration::ConfigurationPtrList mConfigurations;
   };
 

@@ -29,13 +29,14 @@
 #include "shellanything/config.h"
 #include "Icon.h"
 #include "Validator.h"
-#include "Action.h"
+#include "IAction.h"
 #include <string>
 #include <vector>
 #include <stdint.h>
 
 namespace shellanything
 {
+  class Configuration; // For Set/GetParentConfiguration()
 
   /// <summary>
   /// The Menu class defines a displayed menu option.
@@ -67,6 +68,32 @@ namespace shellanything
     Menu(const Menu&);
     Menu& operator=(const Menu&);
   public:
+
+    /// <summary>
+    /// Get the parent menu.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent menu. Returns NULL if the object has no parent menu.</returns>
+    Menu* GetParentMenu();
+    const Menu* GetParentMenu() const;
+
+    /// <summary>
+    /// Set the parent menu.
+    /// </summary>
+    /// <param name="menu">The parent of this menu</param>
+    void SetParentMenu(Menu* menu);
+
+    /// <summary>
+    /// Get the parent configuration.
+    /// </summary>
+    /// <returns>Returns a pointer to the parent configuration. Returns NULL if the object has no parent configuration.</returns>
+    Configuration* GetParentConfiguration();
+    const Configuration* GetParentConfiguration() const;
+
+    /// <summary>
+    /// Set the parent configuration.
+    /// </summary>
+    /// <param name="configuration">The parent of this menu</param>
+    void SetParentConfiguration(Configuration* configuration);
 
     /// <summary>
     /// Returns true of the menu is a separator.
@@ -152,10 +179,10 @@ namespace shellanything
     void SetIcon(const Icon & icon);
 
     /// <summary>
-    /// Updates the menu and submenus 'visible' and 'enabled' properties based on the given Context.
+    /// Recursively update the menu and submenus properties.
     /// </summary>
-    /// <param name="context">The context used for updating the menu.</param>
-    void Update(const Context & context);
+    /// <param name="context">The selection context</param>
+    void Update(const SelectionContext & context);
 
     /// <summary>
     /// Searches this menu and submenus for a menu whose command id is command_id.
@@ -238,15 +265,15 @@ namespace shellanything
     void AddVisibility(Validator * validator);
 
     /// <summary>
-    /// Add a new Action to the menu. The menu instance takes ownership of the action.
+    /// Add a new IAction to the menu. The menu instance takes ownership of the action.
     /// </summary>
     /// <param name="action">The given action to add to the menu</param>
-    void AddAction(Action * action);
+    void AddAction(IAction * action);
     
     /// <summary>
     /// Get the list of action of the menu.
     /// </summary>
-    const Action::ActionPtrList & GetActions() const;
+    const IAction::ActionPtrList & GetActions() const;
 
     /// <summary>
     /// Add a new sub menu to the menu. The menu instance takes ownership of the sub menu.
@@ -260,6 +287,8 @@ namespace shellanything
     MenuPtrList GetSubMenus();
 
   private:
+    Menu* mParentMenu;
+    Configuration* mParentConfiguration;
     Icon mIcon;
     Validator::ValidatorPtrList mValidities;
     Validator::ValidatorPtrList mVisibilities;
@@ -271,7 +300,7 @@ namespace shellanything
     std::string mName;
     int mNameMaxLength;
     std::string mDescription;
-    Action::ActionPtrList mActions;
+    IAction::ActionPtrList mActions;
     MenuPtrList mSubMenus;
   };
 

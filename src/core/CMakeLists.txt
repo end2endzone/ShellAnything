@@ -1,5 +1,5 @@
 set(SHELLANYTHING_CORE_HEADER_FILES ""
-  ${CMAKE_SOURCE_DIR}/src/core/Action.h
+  ${CMAKE_SOURCE_DIR}/src/core/IAction.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionClipboard.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionExecute.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionFile.h
@@ -8,9 +8,10 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
+  ${CMAKE_SOURCE_DIR}/src/core/BaseAction.h
   ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
-  ${CMAKE_SOURCE_DIR}/src/core/Context.h
+  ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
@@ -23,7 +24,7 @@ add_library(sa.core SHARED
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_DEFAULT_FILES}
   ${SHELLANYTHING_CORE_HEADER_FILES}
-  Action.cpp
+  IAction.cpp
   ActionClipboard.cpp
   ActionExecute.cpp
   ActionFile.cpp
@@ -32,18 +33,28 @@ add_library(sa.core SHARED
   ActionPrompt.cpp
   ActionProperty.cpp
   ActionStop.cpp
+  BaseAction.cpp
   Configuration.cpp
   ConfigManager.cpp
-  Context.cpp
+  SelectionContext.cpp
   DefaultSettings.cpp
   FileMagicManager.h
   FileMagicManager.cpp
+  IActionFactory.h
+  IActionFactory.cpp
+  IAttributeValidator.h
+  IAttributeValidator.cpp
   Icon.cpp
   InputBox.h
   InputBox.cpp
+  IntList.h
+  IUpdateCallback.h
+  IUpdateCallback.cpp
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp
+  Plugin.h
+  Plugin.cpp
   Unicode.h
   Unicode.cpp
   Validator.cpp
@@ -53,6 +64,11 @@ add_library(sa.core SHARED
   ErrorManager.cpp
   PropertyManager.h
   PropertyManager.cpp
+  PropertyStore.h
+  PropertyStore.cpp
+  Registry.h
+  Registry.cpp
+  StringList.h
   Win32Clipboard.h
   Win32Clipboard.cpp
   Wildcard.cpp
@@ -106,7 +122,6 @@ target_include_directories(sa.core
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
-    ${GTEST_INCLUDE_DIR}
     rapidassist
     glog::glog
     libexprtk
@@ -119,8 +134,6 @@ target_include_directories(sa.core
 add_dependencies(sa.core libexprtk sa.shared)
 target_link_libraries(sa.core
   PRIVATE
-    ${PTHREAD_LIBRARIES}
-    ${GTEST_LIBRARIES}
     rapidassist
     glog::glog
     libexprtk

@@ -2,3 +2,13 @@
 /install
 /third_parties
 .vscode
+/src/plugins/sa_plugin_time/build
+/src/plugins/sa_plugin_time/install
+/src/plugins/sa_plugin_demo/build
+/src/plugins/sa_plugin_demo/install
+/src/plugins/sa_plugin_services/build
+/src/plugins/sa_plugin_services/install
+/src/plugins/sa_plugin_strings/build
+/src/plugins/sa_plugin_strings/install
+/src/plugins/sa_plugin_process/install
+/src/plugins/sa_plugin_process/build

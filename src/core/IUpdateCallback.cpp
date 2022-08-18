@@ -22,21 +22,17 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef TEST_SA_CONTEXT_H
-#define TEST_SA_CONTEXT_H
+#include "IUpdateCallback.h"
 
-#include <gtest/gtest.h>
-
-namespace shellanything { namespace test
+namespace shellanything
 {
-  class TestContext : public ::testing::Test
+
+  IUpdateCallback::IUpdateCallback()
   {
-  public:
-    virtual void SetUp();
-    virtual void TearDown();
-  };
+  }
 
-} //namespace test
+  IUpdateCallback::~IUpdateCallback()
+  {
+  }
+
 } //namespace shellanything
-
-#endif //TEST_SA_CONTEXT_H

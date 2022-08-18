@@ -37,6 +37,14 @@ add_subdirectory(core)
 add_subdirectory(shellextension)
 add_subdirectory(api)
 
+if(SHELLANYTHING_BUILD_PLUGINS)
+  add_subdirectory(plugins/sa_plugin_process)
+  add_subdirectory(plugins/sa_plugin_services)
+  add_subdirectory(plugins/sa_plugin_strings)
+  add_subdirectory(plugins/sa_plugin_time)
+endif()
+add_subdirectory(tests/sa_plugin_test_data)
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
         DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
