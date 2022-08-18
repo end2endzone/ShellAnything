@@ -51,6 +51,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [Register a function callback when the selection changes](#register-a-function-callback-when-the-selection-changes)
     * [Register additional validation attributes](#register-additional-validation-attributes)
     * [Register new custom actions](#register-new-custom-actions)
+    * [Plugin example](#plugin_example])
   * [Plugin declaration](#plugin-declaration)
     * [&lt;plugins&gt; element](#plugins-element)
     * [&lt;plugin&gt; element](#plugin-element)
@@ -1359,7 +1360,7 @@ For example, the following would define `services.wce.command.start` and `servic
 
 ## Plugin overview ##
 
-ShellAnything supports plugins which can be used to extend ShellAnything with more functionality. The support for plugins is in beta and support is limitted.
+ShellAnything supports plugins which can be used to extend ShellAnything with more functionality. **The support for plugins is in beta and features are limitted**.
 
 ShellAnything does not implement a plugin detection system. It cannot automatically detect and load plugin files. The reason is explained below.
 
@@ -1474,7 +1475,19 @@ struct email_t
 ```
 
 The plugin must allocate an instance of this structure and fill it with the parsed values. To persist the structure instance, the plugin can call `sa_plugin_action_set_data()` which assign a custom data pointer to the action. This custom pointer can be get by calling function `sa_plugin_action_get_data()` while creating, executing and destroying the action.
-  
+
+
+
+### Plugin example ###
+
+The documentation contains a sample plugin example called `sa_plugin_demo` to help with the developpement of a new plugin. The sample files are located in `[installation directory]\bin\docs\sa_plugin_demo.zip`.
+
+The *sa_plugin_demo* example only have a single source file: `sa_plugin_demo.cpp`.
+
+If [CMake](http://www.cmake.org/) is installed on the system, you can execute `sa_plugin_demo.bat` to build and install the plugin example. The plugin builds in temporary directory `%USERPROFILE%\Documents\sa_plugin_demo_build` and installs in directory `%USERPROFILE%\ShellAnything\plugins\sa_plugin_demo`.
+
+If CMake is not available, you need to create a project in your favorite IDE and add the single source file `sa_plugin_demo.cpp` to the project. Make sure your project is linking with ShellAnything's libraries and include directory.
+
 
 
 ## Plugin declaration ##
