@@ -85,7 +85,7 @@ The main features of ShellAnything are:
   * Change the clipboard.
   * and many more.
 * Powerful property-based system for rich dynamic content and filters.
-* Extendable with a custum plugin system.
+* Extendable with a custom plugin system.
 * Easily integrate any third party application with custom menus.
 * Supports windows [keyboard mnemonics](https://en.wikipedia.org/wiki/Mnemonics_(keyboard)).
 
