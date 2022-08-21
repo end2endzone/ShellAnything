@@ -157,6 +157,30 @@ if (WIN32)
   add_definitions(-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
 endif()
 
+# .editorconfig support on Windows
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+	# Unfortunately CMake doesn't allow us to add solution items directly, so
+	# instead we abuse that it doesn't validate the TYPE parameter and instead
+	# passes it straight through into the .sln file.
+  # In other words, we inject the following into the solution :
+  #   Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A63B4829-6639-4213-A13B-6AD6104D0BC8}"
+  #   	ProjectSection(SolutionItems) = preProject
+  #   		..\.editorconfig = ..\.editorconfig
+  #   	EndProjectSection
+  #   EndProject
+
+  set(VS_SolutionFolder_TYPE_GUID "2150E333-8FDC-42A3-9474-1A3956D46DE8")
+  set(my_SolutionItems_GUID "A63B4829-6639-4213-A13B-6AD6104D0BC8")
+  set(EDITORCONFIG_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.editorconfig")
+  set(MSVC_SLN_INJECTION_CODE "${VS_SolutionFolder_TYPE_GUID}}\") = \"Solution Items\", \"Solution Items\", \"{${my_SolutionItems_GUID}}\"\n 	ProjectSection(SolutionItems) = preProject\n		${EDITORCONFIG_FILE_PATH} = ${EDITORCONFIG_FILE_PATH}\n	EndProjectSection\nEndProject\nProject(\"{")
+    
+  include_external_msproject(
+    "Solution Items (dummy)" "Solution Items (dummy)"
+    TYPE "${MSVC_SLN_INJECTION_CODE}${VS_SolutionFolder_TYPE_GUID}"
+  )
+endif()
+
+
 # Define include directories for source code.
 # The specified values will not be exported.
 set( SHELLANYTHING_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include )

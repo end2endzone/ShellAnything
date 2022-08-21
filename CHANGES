@@ -8,6 +8,7 @@ Changes for 0.8.0
 * Fixed issue  #50: Multi-select filename handling and complex visibility judgment.
 * Fixed issue  #89: Show a confirmation prompt as an action before proceeding.
 * Fixed issue #103: ShellAnything API in C.
+* Fixed issue #105: Support for .editorconfig as a coding standard.
 
 
 Changes for 0.7.0
