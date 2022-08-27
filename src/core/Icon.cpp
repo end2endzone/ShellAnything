@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,7 +43,7 @@ namespace shellanything
   {
   }
 
-  Icon::Icon(const Icon & icon)
+  Icon::Icon(const Icon& icon)
   {
     (*this) = icon;
   }
@@ -52,13 +52,13 @@ namespace shellanything
   {
   }
 
-  const Icon & Icon::operator =(const Icon & icon)
+  const Icon& Icon::operator =(const Icon& icon)
   {
     if (this != &icon)
     {
-      mFileExtension  = icon.mFileExtension ;
-      mPath           = icon.mPath ;
-      mIndex          = icon.mIndex;
+      mFileExtension = icon.mFileExtension;
+      mPath = icon.mPath;
+      mIndex = icon.mIndex;
     }
     return (*this);
   }
@@ -75,7 +75,7 @@ namespace shellanything
   void Icon::ResolveFileExtensionIcon()
   {
     //is this menu have a file extension ?
-    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
+    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
     std::string file_extension = pmgr.Expand(mFileExtension);
     if (!file_extension.empty())
     {
@@ -114,7 +114,7 @@ namespace shellanything
         if (!is_already_in_log)
         {
           LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
-          
+
           //remember this failure.
           mUnresolvedFileExtensions.insert(file_extension);
         }
@@ -122,32 +122,32 @@ namespace shellanything
     }
   }
 
-  const std::string & Icon::GetFileExtension() const
+  const std::string& Icon::GetFileExtension() const
   {
     return mFileExtension;
   }
 
-  void Icon::SetFileExtension(const std::string & file_extension)
+  void Icon::SetFileExtension(const std::string& file_extension)
   {
     mFileExtension = file_extension;
   }
 
-  const std::string & Icon::GetPath() const
+  const std::string& Icon::GetPath() const
   {
     return mPath;
   }
 
-  void Icon::SetPath(const std::string & path)
+  void Icon::SetPath(const std::string& path)
   {
     mPath = path;
   }
 
-  const int & Icon::GetIndex() const
+  const int& Icon::GetIndex() const
   {
     return mIndex;
   }
 
-  void Icon::SetIndex(const int & index)
+  void Icon::SetIndex(const int& index)
   {
     mIndex = index;
   }

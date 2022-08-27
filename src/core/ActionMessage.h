@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -57,37 +57,37 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const SelectionContext & context) const;
+    virtual bool Execute(const SelectionContext& context) const;
 
     /// <summary>
     /// Getter for the 'title' parameter.
     /// </summary>
-    const std::string & GetTitle() const;
+    const std::string& GetTitle() const;
 
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & title);
+    void SetTitle(const std::string& title);
 
     /// <summary>
     /// Getter for the 'caption' parameter.
     /// </summary>
-    const std::string & GetCaption() const;
+    const std::string& GetCaption() const;
 
     /// <summary>
     /// Setter for the 'caption' parameter.
     /// </summary>
-    void SetCaption(const std::string & caption);
+    void SetCaption(const std::string& caption);
 
     /// <summary>
     /// Getter for the 'icon' parameter.
     /// </summary>
-    const std::string & GetIcon() const;
+    const std::string& GetIcon() const;
 
     /// <summary>
     /// Setter for the 'icon' parameter.
     /// </summary>
-    void SetIcon(const std::string & icon);
+    void SetIcon(const std::string& icon);
 
   private:
     std::string mTitle;

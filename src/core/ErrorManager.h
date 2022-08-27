@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,14 +37,14 @@ namespace shellanything
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  SHELLANYTHING_EXPORT void ShowErrorMessage(const std::string & title, const std::string & message);
+  SHELLANYTHING_EXPORT void ShowErrorMessage(const std::string& title, const std::string& message);
 
   /// <summary>
   /// Show an error message encoded in utf8 to the user.
   /// </summary>
   /// <param name="title">The caption title of the window.</param>
   /// <param name="message">The message to display to the user.</param>
-  SHELLANYTHING_EXPORT void ShowErrorMessageUtf8(const std::string & title, const std::string & message);
+  SHELLANYTHING_EXPORT void ShowErrorMessageUtf8(const std::string& title, const std::string& message);
 
 } //namespace shellanything
 

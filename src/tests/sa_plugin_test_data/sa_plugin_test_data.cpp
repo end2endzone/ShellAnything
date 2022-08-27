@@ -42,10 +42,15 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_test_data";
 static const char* ATTR_ID = "id";
 
-const char * to_hex_string(void* address, char * buffer, size_t size)
+const char* to_hex_string(void* address, char* buffer, size_t size)
 {
   if (size == 0)
     return NULL;
@@ -54,7 +59,7 @@ const char * to_hex_string(void* address, char * buffer, size_t size)
   std::string output;
   char hex_str[64];
   size_t value = (size_t)address;
-  for(int i=0; i<sizeof(value); i++)
+  for (int i = 0; i < sizeof(value); i++)
   {
     uint8_t low = value & 0xFF;
     sprintf(hex_str, "%02x", low);
@@ -62,7 +67,7 @@ const char * to_hex_string(void* address, char * buffer, size_t size)
     value = value >> 8;
   }
   output.insert(0, "0x");
-  
+
   //copy to output
   if (output.size() <= size)
     memcpy(buffer, output.c_str(), output.size() + 1);
@@ -83,7 +88,7 @@ struct MY_TEST_DATA_STRUCT
   int exec_count;
 };
 
-const char * get_property_name_prefix(MY_TEST_DATA_STRUCT * my_data, char * buffer, size_t size)
+const char* get_property_name_prefix(MY_TEST_DATA_STRUCT* my_data, char* buffer, size_t size)
 {
   if (size == 0)
     return NULL;
@@ -99,7 +104,7 @@ const char * get_property_name_prefix(MY_TEST_DATA_STRUCT * my_data, char * buff
   return buffer;
 }
 
-sa_error_t data_register(MY_TEST_DATA_STRUCT * my_data)
+sa_error_t data_register(MY_TEST_DATA_STRUCT* my_data)
 {
   sa_plugin_action_set_data(my_data);
   if (sa_plugin_action_get_data() != my_data)
@@ -111,7 +116,7 @@ sa_error_t data_register(MY_TEST_DATA_STRUCT * my_data)
   address_property += get_property_name_prefix(my_data, buffer, sizeof(buffer));
   address_property += ".address";
 
-  const char * address_value = to_hex_string(my_data, buffer, sizeof(buffer));
+  const char* address_value = to_hex_string(my_data, buffer, sizeof(buffer));
 
   //set a property to "remember" this structure
   sa_properties_set(address_property.c_str(), address_value);
@@ -121,7 +126,7 @@ sa_error_t data_register(MY_TEST_DATA_STRUCT * my_data)
 
 sa_error_t data_validate()
 {
-  MY_TEST_DATA_STRUCT * my_data = (MY_TEST_DATA_STRUCT *)sa_plugin_action_get_data();
+  MY_TEST_DATA_STRUCT* my_data = (MY_TEST_DATA_STRUCT*)sa_plugin_action_get_data();
   if (my_data == NULL)
     return SA_ERROR_ABORTED;
 
@@ -142,10 +147,10 @@ sa_error_t data_validate()
   return SA_ERROR_SUCCESS;
 }
 
-MY_TEST_DATA_STRUCT * data_new_copy(MY_TEST_DATA_STRUCT ** my_data)
+MY_TEST_DATA_STRUCT* data_new_copy(MY_TEST_DATA_STRUCT** my_data)
 {
   //create a new instance
-  MY_TEST_DATA_STRUCT * my_data2 = (MY_TEST_DATA_STRUCT *)malloc(sizeof(MY_TEST_DATA_STRUCT));
+  MY_TEST_DATA_STRUCT* my_data2 = (MY_TEST_DATA_STRUCT*)malloc(sizeof(MY_TEST_DATA_STRUCT));
 
   //copy properties
   (*my_data2) = (**my_data);
@@ -164,11 +169,11 @@ sa_error_t sa_plugin_test_data_event_create(sa_action_event_t evnt)
   const char* xml = sa_plugin_action_get_xml();
 
   // assert data from a previous parse should not be available.
-  void * previous_data = sa_plugin_action_get_data();
+  void* previous_data = sa_plugin_action_get_data();
   if (previous_data != NULL)
     return SA_ERROR_ABORTED;
 
-  XML_ATTR * id_attr = &SA_PLUGIN_TEST_DATA_ATTRIBUTES[0];
+  XML_ATTR* id_attr = &SA_PLUGIN_TEST_DATA_ATTRIBUTES[0];
 
   //find the id attribute
   char id_str[128];
@@ -184,14 +189,14 @@ sa_error_t sa_plugin_test_data_event_create(sa_action_event_t evnt)
     return SA_ERROR_INVALID_ARGUMENTS;
 
   //allocate a data structure
-  MY_TEST_DATA_STRUCT * my_data = (MY_TEST_DATA_STRUCT *)malloc(sizeof(MY_TEST_DATA_STRUCT));
+  MY_TEST_DATA_STRUCT* my_data = (MY_TEST_DATA_STRUCT*)malloc(sizeof(MY_TEST_DATA_STRUCT));
   if (my_data == NULL)
     return SA_ERROR_NOT_SUPPORTED;
 
   //initialize the instance
   my_data->id = value;
   my_data->exec_count = 0;
-  
+
   //remember this instance!
   result = data_register(my_data);
   if (result != SA_ERROR_SUCCESS)
@@ -213,10 +218,10 @@ sa_error_t sa_plugin_test_data_event_execute(sa_action_event_t evnt)
   sa_error_t result = data_validate();
   if (result != SA_ERROR_SUCCESS)
     return result;
-  
+
   //create a new duplicate copy of my_data
-  MY_TEST_DATA_STRUCT * my_data = (MY_TEST_DATA_STRUCT *)sa_plugin_action_get_data();
-  MY_TEST_DATA_STRUCT * my_data2 = data_new_copy(&my_data);
+  MY_TEST_DATA_STRUCT* my_data = (MY_TEST_DATA_STRUCT*)sa_plugin_action_get_data();
+  MY_TEST_DATA_STRUCT* my_data2 = data_new_copy(&my_data);
   if (my_data2 == NULL)
     return SA_ERROR_ABORTED;
 
@@ -256,7 +261,7 @@ sa_error_t sa_plugin_test_data_event_destroy(sa_action_event_t evnt)
   if (result != SA_ERROR_SUCCESS)
     return result;
 
-  MY_TEST_DATA_STRUCT * my_data = (MY_TEST_DATA_STRUCT *)sa_plugin_action_get_data();
+  MY_TEST_DATA_STRUCT* my_data = (MY_TEST_DATA_STRUCT*)sa_plugin_action_get_data();
 
   //define a destroyed flag
   char tmp[256];
@@ -264,7 +269,7 @@ sa_error_t sa_plugin_test_data_event_destroy(sa_action_event_t evnt)
   destroy_property += get_property_name_prefix(my_data, tmp, sizeof(tmp));
   destroy_property += ".destroy";
 
-  const char * address_value = to_hex_string(my_data, tmp, sizeof(tmp));
+  const char* address_value = to_hex_string(my_data, tmp, sizeof(tmp));
 
   sa_properties_set(destroy_property.c_str(), address_value);
 
@@ -319,6 +324,11 @@ EXPORT_API sa_error_t sa_plugin_register()
 
   return SA_ERROR_SUCCESS;
 }
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

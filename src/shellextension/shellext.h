@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,10 +36,10 @@
 #include <vector>
 #include <map>
 
-//Shell extension GUID
+ //Shell extension GUID
 static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
-static const char * ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
-static const char * ShellExtensionDescription = "ShellAnything Class";
+static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
+static const char* ShellExtensionDescription = "ShellAnything Class";
 
 class CCriticalSection
 {
@@ -57,10 +57,10 @@ public:
 class CCriticalSectionGuard
 {
 protected:
-  CCriticalSection * mCS;
+  CCriticalSection* mCS;
 
 public:
-  CCriticalSectionGuard(CCriticalSection * cs);
+  CCriticalSectionGuard(CCriticalSection* cs);
   ~CCriticalSectionGuard();
 };
 
@@ -74,12 +74,12 @@ public:
   ~CClassFactory();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR *);
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
   ULONG   STDMETHODCALLTYPE AddRef();
   ULONG   STDMETHODCALLTYPE Release();
 
   //IClassFactory interface
-  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR *);
+  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
   HRESULT STDMETHODCALLTYPE LockServer(BOOL);
 };
 
@@ -97,7 +97,7 @@ protected:
   shellanything::BitmapCache  m_BitmapCache;
   IconMap                     m_FileExtensionCache;
   shellanything::SelectionContext      m_Context;
-  
+
   static HMENU m_previousMenu;
 
 public:
@@ -105,21 +105,21 @@ public:
   ~CContextMenu();
 
   //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR *);
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
   ULONG   STDMETHODCALLTYPE AddRef();
   ULONG   STDMETHODCALLTYPE Release();
 
   //IContextMenu interface
   HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags);
   HRESULT STDMETHODCALLTYPE InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
-  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR *reserved, LPSTR pszName, UINT cchMax);
+  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR* reserved, LPSTR pszName, UINT cchMax);
 
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
 private:
   void BuildMenuTree(HMENU hMenu);
-  void BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos, bool & next_menu_is_column);
+  void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
 };
 
 #endif //SA_SHELLEXTENSION_H

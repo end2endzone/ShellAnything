@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,6 +33,11 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+  // do not indent code inside extern C
+#if 0
+}
 #endif
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_demo";
@@ -57,7 +62,7 @@ sa_boolean sa_plugin_demo_validate()
     return 0;
   for (size_t i = 0; i < count; i++)
   {
-    names[i] = new char [max_name_length];
+    names[i] = new char[max_name_length];
     if (names[i] == NULL)
       return 0;
   }
@@ -75,7 +80,7 @@ sa_boolean sa_plugin_demo_validate()
   for (size_t i = 0; i < count; i++)
   {
     const char* property_name = names[i];
-    const char * property_value = sa_property_store_get_property_cstr(store, property_name);
+    const char* property_value = sa_property_store_get_property_cstr(store, property_name);
 
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "  %s = %s", property_name, property_value);
   }
@@ -114,6 +119,11 @@ EXPORT_API sa_error_t sa_plugin_register()
 
   return SA_ERROR_SUCCESS;
 }
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

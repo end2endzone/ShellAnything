@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable context to an immutable context.
 /// </summary>
@@ -58,7 +63,7 @@ void sa_selection_context_unregister_properties(sa_selection_context_immutable_t
 /// <param name="ctx">The context structure object.</param>
 /// <param name="strarray">An array of const char*</param>
 /// <param name="count">The number of element in the given array</param>
-void sa_selection_context_set_elements_buffer(sa_selection_context_t* ctx ,const char ** strarray, size_t count);
+void sa_selection_context_set_elements_buffer(sa_selection_context_t* ctx, const char** strarray, size_t count);
 
 /// <summary>
 /// Get how many elements are selected in the given context.
@@ -116,6 +121,11 @@ int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx);
 /// <param name="ctx">The context structure object.</param>
 /// <returns>Returns the number of directories selected by the context.</returns>
 int sa_selection_context_get_num_directories(sa_selection_context_immutable_t* ctx);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

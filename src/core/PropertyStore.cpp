@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -53,7 +53,7 @@ namespace shellanything
     properties.clear();
   }
 
-  void PropertyStore::ClearProperty(const std::string & name)
+  void PropertyStore::ClearProperty(const std::string& name)
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
@@ -63,7 +63,7 @@ namespace shellanything
     }
   }
 
-  bool PropertyStore::HasProperty(const std::string & name) const
+  bool PropertyStore::HasProperty(const std::string& name) const
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
@@ -81,19 +81,19 @@ namespace shellanything
     return true;
   }
 
-  void PropertyStore::SetProperty(const std::string & name, const std::string & value)
+  void PropertyStore::SetProperty(const std::string& name, const std::string& value)
   {
     //overwrite previous property
     properties[name] = value;
   }
 
-  const std::string & PropertyStore::GetProperty(const std::string & name) const
+  const std::string& PropertyStore::GetProperty(const std::string& name) const
   {
     PropertyMap::const_iterator propertyIt = properties.find(name);
     bool found = (propertyIt != properties.end());
     if (found)
     {
-      const std::string & value = propertyIt->second;
+      const std::string& value = propertyIt->second;
       return value;
     }
 

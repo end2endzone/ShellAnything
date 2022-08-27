@@ -42,6 +42,11 @@
 extern "C" {
 #endif
 
+  // do not indent code inside extern C
+#if 0
+}
+#endif
+
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_strings";
 
 // Declare attributes for substr command
@@ -107,26 +112,28 @@ size_t STRFIND_ATTRIBUTES_COUNT = sizeof(STRFIND_ATTRIBUTES) / sizeof(STRFIND_AT
 
 
 
-void parse_string(const char* str, size_t & value)
+void parse_string(const char* str, size_t& value)
 {
   std::stringstream ss(str);
   ss >> value;
 }
 
-void to_string(const size_t& value, std::string & str)
+void to_string(const size_t& value, std::string& str)
 {
   std::stringstream ss;
   ss << value;
   str = ss.str();
 }
 
-void string_replace(std::string & text, const std::string & token, const std::string & value)
+void string_replace(std::string& text, const std::string& token, const std::string& value)
 {
   size_t start_pos = 0;
   size_t find_pos = std::string::npos;
-  do {
+  do
+  {
     find_pos = text.find(token, start_pos);
-    if (find_pos != std::string::npos) {
+    if (find_pos != std::string::npos)
+    {
       text.replace(find_pos, token.length(), value);
       start_pos = find_pos + value.length();
     }
@@ -605,15 +612,20 @@ EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
 EXPORT_API sa_error_t sa_plugin_register()
 {
   sa_error_t result;
-  PLUGIN_REGISTER_EVENT("substr",        &substr_event);
-  PLUGIN_REGISTER_EVENT("strreplace",    &strreplace_event);
-  PLUGIN_REGISTER_EVENT("strlen",        &strlen_event);
-  PLUGIN_REGISTER_EVENT("struppercase",  &struppercase_event);
-  PLUGIN_REGISTER_EVENT("strlowercase",  &strlowercase_event);
-  PLUGIN_REGISTER_EVENT("strfind",       &strfind_event);
+  PLUGIN_REGISTER_EVENT("substr", &substr_event);
+  PLUGIN_REGISTER_EVENT("strreplace", &strreplace_event);
+  PLUGIN_REGISTER_EVENT("strlen", &strlen_event);
+  PLUGIN_REGISTER_EVENT("struppercase", &struppercase_event);
+  PLUGIN_REGISTER_EVENT("strlowercase", &strlowercase_event);
+  PLUGIN_REGISTER_EVENT("strfind", &strfind_event);
 
   return SA_ERROR_SUCCESS;
 }
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

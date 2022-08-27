@@ -36,6 +36,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable configuration to an immutable configuration.
 /// </summary>
@@ -51,7 +56,7 @@ sa_configuration_immutable_t sa_configuration_to_immutable(sa_configuration_t* c
 /// <param name="error_size">Size of the error buffer in bytes. If the buffer is too small. The error is truncated.</param>
 /// <param name="configuration">The output configuration structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_configuration_load_file_buffer(const char * path, char * error_buffer, size_t error_size, sa_configuration_t* configuration);
+sa_error_t sa_configuration_load_file_buffer(const char* path, char* error_buffer, size_t error_size, sa_configuration_t* configuration);
 
 /// <summary>
 /// Load a configuration file
@@ -130,6 +135,11 @@ size_t sa_configuration_get_menu_count(sa_configuration_t* configuration);
 /// <param name="menu">The output menu structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_configuration_get_menu_element(sa_configuration_t* configuration, size_t index, sa_menu_t* menu);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

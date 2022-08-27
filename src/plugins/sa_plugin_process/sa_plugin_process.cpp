@@ -46,6 +46,11 @@
 extern "C" {
 #endif
 
+  // do not indent code inside extern C
+#if 0
+}
+#endif
+
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_process";
 static const char* ATTR_PROCESS_RUNNING_FILENAME = "process_filename";
 static const char* ATTR_PROCESS_RUNNING_PID = "process_pid";
@@ -148,7 +153,8 @@ sa_error_t kill_process_by_pid(DWORD pid)
 {
   bool success = false;
   HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
-  if (hProcess) {
+  if (hProcess)
+  {
     success = (TerminateProcess(hProcess, 255) != 0);
     CloseHandle(hProcess);
   }
@@ -396,7 +402,7 @@ sa_boolean validate_process_filename()
     sa_logging_print_format(SA_LOG_LEVEL_INFO, PLUGIN_NAME_IDENTIFIER, "Failed to expand value '%s'.", filename);
     return result;
   }
-  const char * filename_expanded = sa_string_get_value(&tmp_str);
+  const char* filename_expanded = sa_string_get_value(&tmp_str);
 
   //convert
   DWORD pid = find_process_id_from_name(filename_expanded);
@@ -493,13 +499,18 @@ EXPORT_API sa_error_t sa_plugin_register()
     return result; \
   }
 
-  PLUGIN_REGISTER_EVENT("killprocess",        &killprocess_event);
-  PLUGIN_REGISTER_EVENT("terminateprocess",   &terminateprocess_event);
+  PLUGIN_REGISTER_EVENT("killprocess", &killprocess_event);
+  PLUGIN_REGISTER_EVENT("terminateprocess", &terminateprocess_event);
 
 #undef PLUGIN_REGISTER_EVENT
 
   return SA_ERROR_SUCCESS;
 }
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -53,16 +53,16 @@ namespace shellanything
 {
   static Configuration* gUpdatingConfiguration = NULL;
 
-  std::string GetXmlEncoding(XMLDocument & doc, std::string & error)
+  std::string GetXmlEncoding(XMLDocument& doc, std::string& error)
   {
-    XMLNode * first = doc.FirstChild();
+    XMLNode* first = doc.FirstChild();
     if (!first)
     {
       error = "XML declaration not found.";
       return "";
     }
 
-    XMLDeclaration * declaration = first->ToDeclaration();
+    XMLDeclaration* declaration = first->ToDeclaration();
     if (!declaration)
     {
       error = "XML declaration not found.";
@@ -93,7 +93,7 @@ namespace shellanything
       return "";
     }
     size_t length = pos_end - pos_start;
-    
+
     //extract encoding
     std::string encoding = str.substr(pos_start, length);
 
@@ -121,7 +121,7 @@ namespace shellanything
     gUpdatingConfiguration = configuration;
   }
 
-  Configuration * Configuration::LoadFile(const std::string & path, std::string & error)
+  Configuration* Configuration::LoadFile(const std::string& path, std::string& error)
   {
     error = "";
 
@@ -135,7 +135,7 @@ namespace shellanything
 
     //Parse the xml file
     //http://leethomason.github.io/tinyxml2/
-    
+
     XMLDocument doc;
     XMLError result = doc.LoadFile(path.c_str());
     if (result == XML_ERROR_FILE_NOT_FOUND)
@@ -198,21 +198,21 @@ namespace shellanything
       return NULL;
     }
 
-    const XMLElement * xml_root = XMLHandle(&doc).FirstChildElement("root").ToElement();
+    const XMLElement* xml_root = XMLHandle(&doc).FirstChildElement("root").ToElement();
     if (!xml_root)
     {
       error = "Node <root> not found";
       return NULL;
     }
 
-    const XMLElement * xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
+    const XMLElement* xml_shell = XMLHandle(&doc).FirstChildElement("root").FirstChildElement("shell").ToElement();
     if (!xml_shell)
     {
       error = "Node <shell> not found";
       return NULL;
     }
 
-    Configuration * config = new Configuration();
+    Configuration* config = new Configuration();
     config->SetFilePath(path);
     config->SetFileModifiedDate(file_modified_date);
 
@@ -221,7 +221,7 @@ namespace shellanything
     while (xml_defaults)
     {
       //found a new defaults node
-      DefaultSettings * defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
+      DefaultSettings* defaults = ObjectFactory::GetInstance().ParseDefaults(xml_defaults, error);
       if (defaults != NULL)
       {
         //add the new menu to the current configuration
@@ -265,15 +265,15 @@ namespace shellanything
 
     //set active plugins for parsing child elements
     //notify the ObjectParser about this configuration's plugins.
-    const Plugin::PluginPtrList & active_plugins = config->GetPlugins();
+    const Plugin::PluginPtrList& active_plugins = config->GetPlugins();
     ObjectFactory::GetInstance().SetActivePlugins(active_plugins);
-    
+
     //find <menu> nodes under <shell>
     const XMLElement* xml_menu = xml_shell->FirstChildElement("menu");
     while (xml_menu)
     {
       //found a new menu node
-      Menu * menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error);
+      Menu* menu = ObjectFactory::GetInstance().ParseMenu(xml_menu, error);
       if (menu == NULL)
       {
         delete config;
@@ -294,7 +294,7 @@ namespace shellanything
     return config;
   }
 
-  bool Configuration::IsValidConfigFile(const std::string & path)
+  bool Configuration::IsValidConfigFile(const std::string& path)
   {
     std::string file_extension = ra::filesystem::GetFileExtention(path);
     file_extension = ra::strings::Uppercase(file_extension);
@@ -307,27 +307,27 @@ namespace shellanything
     return false;
   }
 
-  const std::string & Configuration::GetFilePath() const
+  const std::string& Configuration::GetFilePath() const
   {
     return mFilePath;
   }
 
-  void Configuration::SetFilePath(const std::string & file_path)
+  void Configuration::SetFilePath(const std::string& file_path)
   {
     mFilePath = file_path;
   }
 
-  const uint64_t & Configuration::GetFileModifiedDate() const
+  const uint64_t& Configuration::GetFileModifiedDate() const
   {
     return mFileModifiedDate;
   }
 
-  void Configuration::SetFileModifiedDate(const uint64_t & file_modified_date)
+  void Configuration::SetFileModifiedDate(const uint64_t& file_modified_date)
   {
     mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const SelectionContext & context)
+  void Configuration::Update(const SelectionContext& context)
   {
     SetUpdatingConfiguration(this);
 
@@ -346,12 +346,12 @@ namespace shellanything
         callback->SetSelectionContext(NULL);
       }
     }
-    
+
     //for each child
     Menu::MenuPtrList children = GetMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
+      Menu* child = children[i];
       child->Update(context);
     }
 
@@ -365,25 +365,25 @@ namespace shellanything
       //configuration have default properties assigned
       LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
-      const shellanything::IAction::ActionPtrList & actions = mDefaults->GetActions();
+      const shellanything::IAction::ActionPtrList& actions = mDefaults->GetActions();
 
       //convert 'actions' to a list of <const shellanything::ActionProperty *>
-      typedef std::vector<const ActionProperty *> ActionPropertyPtrList;
+      typedef std::vector<const ActionProperty*> ActionPropertyPtrList;
       ActionPropertyPtrList properties;
-      for(size_t i=0; i<actions.size(); i++)
+      for (size_t i = 0; i < actions.size(); i++)
       {
-        const shellanything::IAction * abstract_action = actions[i];
-        const shellanything::ActionProperty * action_property = dynamic_cast<const shellanything::ActionProperty *>(abstract_action);
+        const shellanything::IAction* abstract_action = actions[i];
+        const shellanything::ActionProperty* action_property = dynamic_cast<const shellanything::ActionProperty*>(abstract_action);
         if (action_property)
           properties.push_back(action_property);
       }
 
       //apply all ActionProperty
       SelectionContext empty_context;
-      for(size_t i=0; i<properties.size(); i++)
+      for (size_t i = 0; i < properties.size(); i++)
       {
-        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i+1) << " of " << properties.size() << ".";
-        const shellanything::ActionProperty * action_property = properties[i];
+        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i + 1) << " of " << properties.size() << ".";
+        const shellanything::ActionProperty* action_property = properties[i];
         if (action_property)
         {
           //no need to look for failures. ActionProperty never fails.
@@ -395,36 +395,36 @@ namespace shellanything
     }
   }
 
-  Menu * Configuration::FindMenuByCommandId(const uint32_t & command_id)
+  Menu* Configuration::FindMenuByCommandId(const uint32_t& command_id)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
-      Menu * match = child->FindMenuByCommandId(command_id);
+      Menu* child = children[i];
+      Menu* match = child->FindMenuByCommandId(command_id);
       if (match)
         return match;
     }
- 
+
     return NULL;
   }
- 
-  uint32_t Configuration::AssignCommandIds(const uint32_t & first_command_id)
+
+  uint32_t Configuration::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t nextCommandId = first_command_id;
 
     //for each child
     Menu::MenuPtrList children = GetMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
+      Menu* child = children[i];
       nextCommandId = child->AssignCommandIds(nextCommandId);
     }
- 
+
     return nextCommandId;
   }
- 
+
   void Configuration::AddPlugin(Plugin* plugin)
   {
     mPlugins.push_back(plugin);
@@ -441,7 +441,7 @@ namespace shellanything
     return mMenus;
   }
 
-  void Configuration::SetDefaultSettings(DefaultSettings * defaults)
+  void Configuration::SetDefaultSettings(DefaultSettings* defaults)
   {
     if (mDefaults)
       delete mDefaults;
@@ -449,7 +449,7 @@ namespace shellanything
     mDefaults = defaults;
   }
 
-  const DefaultSettings * Configuration::GetDefaultSettings() const
+  const DefaultSettings* Configuration::GetDefaultSettings() const
   {
     return mDefaults;
   }

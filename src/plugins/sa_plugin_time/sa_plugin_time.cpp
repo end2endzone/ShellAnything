@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,6 +36,11 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+  // do not indent code inside extern C
+#if 0
+}
 #endif
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_time";
@@ -71,7 +76,7 @@ bool is_valid_time(const std::string& value)
   return true;
 }
 
-sa_error_t parse_time(const char * attribute_name, const char* value, std::tm* output)
+sa_error_t parse_time(const char* attribute_name, const char* value, std::tm* output)
 {
   if (value == NULL)
   {
@@ -221,6 +226,11 @@ void test()
   printf("All tests in function '%s' has passed!\n", __FUNCTION__);
 #undef ASSERT
 }
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

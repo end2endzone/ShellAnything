@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,7 +40,7 @@ namespace shellanything
   class SHELLANYTHING_EXPORT PropertyManager
   {
   public:
-    static PropertyManager & GetInstance();
+    static PropertyManager& GetInstance();
   private:
     PropertyManager();
     ~PropertyManager();
@@ -83,7 +83,7 @@ namespace shellanything
     /// Delete the given property.
     /// </summary>
     /// <param name="name">The name of the property to delete.</param>
-    void ClearProperty(const std::string & name);
+    void ClearProperty(const std::string& name);
 
     /// <summary>
     /// Check if a property have been set.
@@ -91,7 +91,7 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the property to check.</param>
     /// <returns>Returns true if the property is set. Returns false otherwise.</returns>
-    bool HasProperty(const std::string & name) const;
+    bool HasProperty(const std::string& name) const;
 
     /// <summary>
     /// Check if the properties are all set.
@@ -106,14 +106,14 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the property to set.</param>
     /// <param name="value">The new value of the property.</param>
-    void SetProperty(const std::string & name, const std::string & value);
+    void SetProperty(const std::string& name, const std::string& value);
 
     /// <summary>
     /// Gets the value of the given property name.
     /// </summary>
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
-    const std::string & GetProperty(const std::string & name) const;
+    const std::string& GetProperty(const std::string& name) const;
 
     /// <summary>
     /// Find the list of properties which are not in the store.
@@ -131,7 +131,7 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    std::string Expand(const std::string & value) const;
+    std::string Expand(const std::string& value) const;
 
     /// <summary>
     /// Expands the given string by replacing property variable reference by the actual variable's value.
@@ -142,7 +142,7 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The given value to expand.</param>
     /// <returns>Returns a copy of the given value with the property references expanded.</returns>
-    std::string ExpandOnce(const std::string & value) const;
+    std::string ExpandOnce(const std::string& value) const;
 
     /// <summary>
     /// Split a given string that contains multiple joined values and then expand each values individually.

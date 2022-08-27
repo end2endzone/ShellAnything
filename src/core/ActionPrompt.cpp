@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -44,10 +44,17 @@ namespace shellanything
   class ActionPromptFactory : public virtual IActionFactory
   {
   public:
-    ActionPromptFactory() {}
-    virtual ~ActionPromptFactory() {}
+    ActionPromptFactory()
+    {
+    }
+    virtual ~ActionPromptFactory()
+    {
+    }
 
-    virtual const std::string& GetName() const { return ActionPrompt::XML_ELEMENT_NAME; }
+    virtual const std::string& GetName() const
+    {
+      return ActionPrompt::XML_ELEMENT_NAME;
+    }
 
     virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
     {
@@ -144,22 +151,22 @@ namespace shellanything
     return ok_question;
   }
 
-  bool ActionPrompt::Execute(const SelectionContext & context) const
+  bool ActionPrompt::Execute(const SelectionContext& context) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
     const std::string name = pmgr.Expand(mName);
     const std::string title = pmgr.Expand(mTitle);
     const std::string default_value = pmgr.Expand(mDefault);
-    const std::string & type = mType;
+    const std::string& type = mType;
 
-    static const char * caption = "Question / Prompt";
+    static const char* caption = "Question / Prompt";
     static const HWND parent_window = NULL;
 
     std::string answer; //the text result of the prompt, in utf-8 format
 
     //convert to windows unicode...
-    std::wstring name_utf16    = ra::unicode::Utf8ToUnicode(name);
-    std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);
+    std::wstring name_utf16 = ra::unicode::Utf8ToUnicode(name);
+    std::wstring title_utf16 = ra::unicode::Utf8ToUnicode(title);
     std::wstring default_utf16 = ra::unicode::Utf8ToUnicode(default_value);
     std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
@@ -178,7 +185,7 @@ namespace shellanything
     else if (IsYesNoQuestion())
     {
       int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_YESNOCANCEL | MB_ICONQUESTION);
-      switch(result)
+      switch (result)
       {
       case IDYES:
         answer = mValueYes;
@@ -215,62 +222,62 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionPrompt::GetType() const
+  const std::string& ActionPrompt::GetType() const
   {
     return mType;
   }
 
-  void ActionPrompt::SetType(const std::string & type)
+  void ActionPrompt::SetType(const std::string& type)
   {
     mType = type;
   }
 
-  const std::string & ActionPrompt::GetName() const
+  const std::string& ActionPrompt::GetName() const
   {
     return mName;
   }
 
-  void ActionPrompt::SetName(const std::string & name)
+  void ActionPrompt::SetName(const std::string& name)
   {
     mName = name;
   }
 
-  const std::string & ActionPrompt::GetTitle() const
+  const std::string& ActionPrompt::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionPrompt::SetTitle(const std::string & title)
+  void ActionPrompt::SetTitle(const std::string& title)
   {
     mTitle = title;
   }
 
-  const std::string & ActionPrompt::GetDefault() const
+  const std::string& ActionPrompt::GetDefault() const
   {
     return mDefault;
   }
 
-  void ActionPrompt::SetDefault(const std::string & default_value)
+  void ActionPrompt::SetDefault(const std::string& default_value)
   {
     mDefault = default_value;
   }
 
-  const std::string & ActionPrompt::GetValueYes() const
+  const std::string& ActionPrompt::GetValueYes() const
   {
     return mValueYes;
   }
 
-  void ActionPrompt::SetValueYes(const std::string & value_yes)
+  void ActionPrompt::SetValueYes(const std::string& value_yes)
   {
     mValueYes = value_yes;
   }
 
-  const std::string & ActionPrompt::GetValueNo() const
+  const std::string& ActionPrompt::GetValueNo() const
   {
     return mValueNo;
   }
 
-  void ActionPrompt::SetValueNo(const std::string & value_no)
+  void ActionPrompt::SetValueNo(const std::string& value_no)
   {
     mValueNo = value_no;
   }

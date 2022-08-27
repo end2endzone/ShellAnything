@@ -27,12 +27,16 @@
 
 #include <stdint.h>
 #include "shellanything/sa_error.h"
-#include "shellanything/sa_error.h"
 #include "shellanything/sa_configuration.h"
 #include "shellanything/sa_selection_context.h"
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+// do not indent code inside extern C
+#if 0
+}
 #endif
 
 /// <summary>
@@ -54,7 +58,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
 /// </summary>
 /// <param name="path">The path of a Configuration file</param>
 /// <returns>Returns 1 if the given path is a loaded configuration by the manager. Returns 0 otherwise.</returns>
-sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char * path);
+sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char* path);
 
 /// <summary>
 /// Clears the configuration manager of all loaded configuration
@@ -84,7 +88,12 @@ void sa_cfgmgr_clear_search_path();
 /// Add a new search path to the path list.
 /// </summary>
 /// <param name="path">The path to add to the search list.</param>
-void sa_cfgmgr_add_search_path(const char * path);
+void sa_cfgmgr_add_search_path(const char* path);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

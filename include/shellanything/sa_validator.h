@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable validator to an immutable validator.
 /// </summary>
@@ -329,6 +334,11 @@ sa_error_t sa_validator_get_inverse_string(sa_validator_immutable_t* validator, 
 /// <param name="validator">The validator structure object.</param>
 /// <param name="value">The new parameter value.</param>
 void sa_validator_set_inverse(sa_validator_t* validator, const char* value);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

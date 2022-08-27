@@ -31,7 +31,13 @@
 extern "C" {
 #endif
 
-typedef struct {
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
+typedef struct
+{
   int major;
   int minor;
   int patch;
@@ -75,6 +81,11 @@ typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* version);
 /// </remarks>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 typedef sa_error_t(*sa_plugin_register_func)();
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

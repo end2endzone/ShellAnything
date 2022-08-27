@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -69,67 +69,67 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The current context of execution.</param>
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool Execute(const SelectionContext & context) const;
+    virtual bool Execute(const SelectionContext& context) const;
 
     /// <summary>
     /// Getter for the 'name' parameter.
     /// </summary>
-    const std::string & GetName() const;
+    const std::string& GetName() const;
 
     /// <summary>
     /// Setter for the 'name' parameter.
     /// </summary>
-    void SetName(const std::string & name);
+    void SetName(const std::string& name);
 
     /// <summary>
     /// Getter for the 'type' parameter.
     /// </summary>
-    const std::string & GetType() const;
+    const std::string& GetType() const;
 
     /// <summary>
     /// Setter for the 'type' parameter.
     /// </summary>
-    void SetType(const std::string & type);
+    void SetType(const std::string& type);
 
     /// <summary>
     /// Getter for the 'title' parameter.
     /// </summary>
-    const std::string & GetTitle() const;
+    const std::string& GetTitle() const;
 
     /// <summary>
     /// Setter for the 'title' parameter.
     /// </summary>
-    void SetTitle(const std::string & title);
+    void SetTitle(const std::string& title);
 
     /// <summary>
     /// Getter for the 'default' parameter.
     /// </summary>
-    const std::string & GetDefault() const;
+    const std::string& GetDefault() const;
 
     /// <summary>
     /// Setter for the 'default' parameter.
     /// </summary>
-    void SetDefault(const std::string & default_value);
+    void SetDefault(const std::string& default_value);
 
     /// <summary>
     /// Getter for the 'valueyes' parameter.
     /// </summary>
-    const std::string & GetValueYes() const;
+    const std::string& GetValueYes() const;
 
     /// <summary>
     /// Setter for the 'valueyes' parameter.
     /// </summary>
-    void SetValueYes(const std::string & value_yes);
+    void SetValueYes(const std::string& value_yes);
 
     /// <summary>
     /// Getter for the 'valueno' parameter.
     /// </summary>
-    const std::string & GetValueNo() const;
+    const std::string& GetValueNo() const;
 
     /// <summary>
     /// Setter for the 'valueno' parameter.
     /// </summary>
-    void SetValueNo(const std::string & value_no);
+    void SetValueNo(const std::string& value_no);
 
   private:
     std::string mType;

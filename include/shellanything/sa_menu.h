@@ -36,6 +36,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable menu to an immutable menu.
 /// </summary>
@@ -94,7 +99,7 @@ const char* sa_menu_get_name_alloc(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="name">The new name for the menu.</param>
-void sa_menu_set_name(sa_menu_t* menu, const char * name);
+void sa_menu_set_name(sa_menu_t* menu, const char* name);
 
 /// <summary>
 /// Get the description of the menu.
@@ -133,7 +138,7 @@ const char* sa_menu_get_description_alloc(sa_menu_immutable_t* menu);
 /// </summary>
 /// <param name="menu">The menu structure object.</param>
 /// <param name="description">The new description for the menu.</param>
-void sa_menu_set_description(sa_menu_t* menu, const char * description);
+void sa_menu_set_description(sa_menu_t* menu, const char* description);
 
 /// <summary>
 /// Get the menu's icon.
@@ -247,6 +252,11 @@ size_t sa_menu_get_sub_menu_count(sa_menu_t* menu);
 /// <param name="submenu">The output sub menu structure object</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_menu_get_sub_menu_element(sa_menu_t* menu, size_t index, sa_menu_t* submenu);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

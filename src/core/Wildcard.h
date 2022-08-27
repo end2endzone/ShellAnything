@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -66,7 +66,7 @@ namespace shellanything
   /// Simplify a wildcard pattern. Remove sequences of '*' characters.
   /// </summary>
   /// <param name="pattern">The wildcard pattern to simplify.</param>
-  SHELLANYTHING_EXPORT void WildcardSimplify(char * pattern);
+  SHELLANYTHING_EXPORT void WildcardSimplify(char* pattern);
 
   /// <summary>
   /// Finds the position of each wildcard character in the given string.
@@ -76,14 +76,17 @@ namespace shellanything
   /// <param name="offsets">An array of size_t elements which, if provided, contains the offsets where a wildcard character is found. Can be NULL.</param>
   /// <param name="offsets_size">The size of the 'offsets' array in bytes. Mostly sizeof(offsets). Can be 0 if 'offsets' is NULL.</param>
   /// <returns>Returns the number of wildcard characters found in str.</returns>
-  SHELLANYTHING_EXPORT size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size);
+  SHELLANYTHING_EXPORT size_t FindWildcardCharacters(const char* str, size_t* offsets, size_t offsets_size);
 
   /// <summary>
   /// Evaluates if the given string contains at least one wildcard character.
   /// </summary>
   /// <param name="str">The string to evaluate.</param>
   /// <returns>Returns true when the given string contains at least one wildcard character. Returns false otherwise.</returns>
-  inline bool HasWildcardCharacters(const char * str) { return (FindWildcardCharacters(str, NULL, 0) > 0); }
+  inline bool HasWildcardCharacters(const char* str)
+  {
+    return (FindWildcardCharacters(str, NULL, 0) > 0);
+  }
 
   /// <summary>
   /// Returns true if the given pattern with wildcard characters can be expanded to match the given value.
@@ -94,7 +97,7 @@ namespace shellanything
   /// <param name="value">The value to match.</param>
   /// <param name="matches">The list of matches which allows the pattern to expand to the given value.</param>
   /// <returns>Returns true if the given pattern with wildcard characters can be expanded to match the given value. Returns false otherwise.</returns>
-  SHELLANYTHING_EXPORT bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches);
+  SHELLANYTHING_EXPORT bool WildcardSolve(const char* pattern, const char* value, WildcardList& matches);
 
   /// <summary>
   /// Returns true if the given pattern with wildcard characters matches the given value.
@@ -103,7 +106,7 @@ namespace shellanything
   /// <param name="pattern">The string with the wildcard pattern.</param>
   /// <param name="value">The value to match.</param>
   /// <returns>Returns true if the given pattern with wildcard characters matches the given value. Returns false otherwise.</returns>
-  SHELLANYTHING_EXPORT bool WildcardMatch(const char * pattern, const char * value);
+  SHELLANYTHING_EXPORT bool WildcardMatch(const char* pattern, const char* value);
 
 } //namespace shellanything
 

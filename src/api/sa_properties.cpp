@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,7 @@ void sa_properties_clear()
 
 void sa_properties_delete(const char* name)
 {
-  if (name == NULL)
+  if ( name == NULL )
     return;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   pmgr.ClearProperty(name);
@@ -44,17 +44,17 @@ void sa_properties_delete(const char* name)
 
 sa_boolean sa_properties_exists(const char* name)
 {
-  if (name == NULL)
+  if ( name == NULL )
     return 0;
   PropertyManager& pmgr = PropertyManager::GetInstance();
-  if (pmgr.HasProperty(name))
+  if ( pmgr.HasProperty(name) )
     return 1;
   return 0;
 }
 
 void sa_properties_set(const char* name, const char* value)
 {
-  if (name == NULL || value == NULL)
+  if ( name == NULL || value == NULL )
     return;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   pmgr.SetProperty(name, value);
@@ -62,24 +62,24 @@ void sa_properties_set(const char* name, const char* value)
 
 sa_error_t sa_properties_get_buffer(const char* name, int* property_length, char* buffer, size_t buffer_size)
 {
-  if (property_length)
+  if ( property_length )
     *property_length = -1;
-  if (name == NULL)
+  if ( name == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
-  if (!sa_properties_exists(name))
+  if ( !sa_properties_exists(name) )
     return SA_ERROR_NOT_FOUND;
-  const std::string & property_value = pmgr.GetProperty(name);
+  const std::string& property_value = pmgr.GetProperty(name);
   sa_error_t result = sa_cstr_copy_buffer(buffer, buffer_size, property_length, property_value);
   return result;
 }
 
 sa_error_t sa_properties_get_string(const char* name, sa_string_t* str)
 {
-  if (name == NULL || str == NULL)
+  if ( name == NULL || str == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
-  if (!sa_properties_exists(name))
+  if ( !sa_properties_exists(name) )
     return SA_ERROR_NOT_FOUND;
   const std::string& property_value = pmgr.GetProperty(name);
   sa_string_copy_stdstr(str, property_value);
@@ -88,10 +88,10 @@ sa_error_t sa_properties_get_string(const char* name, sa_string_t* str)
 
 const char* sa_properties_get_cstr(const char* name)
 {
-  if (name == NULL)
+  if ( name == NULL )
     return NULL;
   PropertyManager& pmgr = PropertyManager::GetInstance();
-  if (!pmgr.HasProperty(name))
+  if ( !pmgr.HasProperty(name) )
     return NULL;
   const std::string& property_value = pmgr.GetProperty(name);
   const char* output = property_value.c_str();
@@ -100,10 +100,10 @@ const char* sa_properties_get_cstr(const char* name)
 
 const char* sa_properties_get_alloc(const char* name)
 {
-  if (name == NULL)
+  if ( name == NULL )
     return NULL;
   PropertyManager& pmgr = PropertyManager::GetInstance();
-  if (!pmgr.HasProperty(name))
+  if ( !pmgr.HasProperty(name) )
     return NULL;
   const std::string& property_value = pmgr.GetProperty(name);
   const char* output = property_value.c_str();
@@ -112,9 +112,9 @@ const char* sa_properties_get_alloc(const char* name)
 
 sa_error_t sa_properties_expand_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
 {
-  if (expanded_length)
+  if ( expanded_length )
     *expanded_length = -1;
-  if (value == NULL)
+  if ( value == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
@@ -124,7 +124,7 @@ sa_error_t sa_properties_expand_buffer(const char* value, int* expanded_length, 
 
 sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str)
 {
-  if (value == NULL || str == NULL)
+  if ( value == NULL || str == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
@@ -134,7 +134,7 @@ sa_error_t sa_properties_expand_string(const char* value, sa_string_t* str)
 
 const char* sa_properties_expand_alloc(const char* value)
 {
-  if (value == NULL)
+  if ( value == NULL )
     return NULL;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.Expand(value);
@@ -144,9 +144,9 @@ const char* sa_properties_expand_alloc(const char* value)
 
 sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_length, char* buffer, size_t buffer_size)
 {
-  if (expanded_length)
+  if ( expanded_length )
     *expanded_length = -1;
-  if (value == NULL)
+  if ( value == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);
@@ -156,7 +156,7 @@ sa_error_t sa_properties_expand_once_buffer(const char* value, int* expanded_len
 
 sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
 {
-  if (value == NULL || str == NULL)
+  if ( value == NULL || str == NULL )
     return SA_ERROR_INVALID_ARGUMENTS;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);
@@ -166,7 +166,7 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
 
 const char* sa_properties_expand_once_alloc(const char* value)
 {
-  if (value == NULL)
+  if ( value == NULL )
     return NULL;
   PropertyManager& pmgr = PropertyManager::GetInstance();
   std::string expanded_value = pmgr.ExpandOnce(value);

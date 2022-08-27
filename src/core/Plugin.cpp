@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -69,7 +69,7 @@ namespace shellanything
     memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
   }
 
-  Plugin::Plugin(const Plugin & p)
+  Plugin::Plugin(const Plugin& p)
   {
     (*this) = p;
   }
@@ -83,19 +83,19 @@ namespace shellanything
     mEntryPoints = NULL;
   }
 
-  const Plugin & Plugin::operator =(const Plugin & p)
+  const Plugin& Plugin::operator =(const Plugin& p)
   {
     if (this != &p)
     {
-      mPath         = p.mPath;
-      mDescription  = p.mDescription;
-      mConditions   = p.mConditions;
-      mActions      = p.mActions;
+      mPath = p.mPath;
+      mDescription = p.mDescription;
+      mConditions = p.mConditions;
+      mActions = p.mActions;
 
       // do not copy loaded properties this is instance specific.
       // mEntryPoints skipped on purpose for hModule safety
       // mRegistry skipped on purpose
-      mLoaded       = false;
+      mLoaded = false;
     }
     return (*this);
   }
@@ -175,7 +175,7 @@ namespace shellanything
   {
     return mLoaded;
   }
-  
+
   bool Plugin::Load()
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
@@ -225,7 +225,7 @@ namespace shellanything
     }
 
     // remember this plugin while loading. This is required for plugins that registers features through the API.
-    gLoadingPlugin = this; 
+    gLoadingPlugin = this;
 
     //initialize & register the plugin
     sa_version_info_t version;

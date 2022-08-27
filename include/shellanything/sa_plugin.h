@@ -38,11 +38,16 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Function pointer definition for validating custom attributes.
 /// </summary>
 /// <returns>Returns 1 on validation success. Returns NULL on error.</returns>
-typedef sa_boolean (*sa_plugin_validation_attributes_func)();
+typedef sa_boolean(*sa_plugin_validation_attributes_func)();
 
 /// <summary>
 /// Function pointer definition for an update callback function.
@@ -93,13 +98,13 @@ const char* sa_plugin_action_get_xml();
 /// Get a custom data pointer from the action. This same pointer is used while creating, executing and destroying the action.
 /// </summary>
 /// <returns>Returns the xml definition of an action. Returns NULL if no xml is defined.</returns>
-void * sa_plugin_action_get_data();
+void* sa_plugin_action_get_data();
 
 /// <summary>
 /// Set a custom data pointer to the action. This same pointer is used while creating, executing and destroying the action.
 /// </summary>
 /// <param name="data">A pointer that points to custom data to keep action.</param>
-void sa_plugin_action_set_data(void * data);
+void sa_plugin_action_set_data(void* data);
 
 /// <summary>
 /// Get the property store which can store the attributes and settings for the action.
@@ -129,7 +134,12 @@ sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func);
 /// <param name="name">The name of the custom action.</param>
 /// <param name="func">A function pointer which definition matches sa_plugin_action_factory_func.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
-sa_error_t sa_plugin_register_action_event(const char * name, sa_plugin_action_event_func func);
+sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_event_func func);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

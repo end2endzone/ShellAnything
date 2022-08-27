@@ -34,6 +34,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 static const sa_boolean SA_XML_ATTR_OPTINAL = 0;
 static const sa_boolean SA_XML_ATTR_MANDATORY = 1;
 static const int SA_XML_ATTR_GROUP_ANY = -1;
@@ -125,6 +130,11 @@ void sa_xml_attr_list_update(XML_ATTR* attrs, size_t count, sa_property_store_im
 /// <param name="store">The property store to get attribute values.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_xml_attr_group_is_mutually_exclusive(XML_ATTR* attrs, size_t count, int group, sa_property_store_immutable_t* store);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

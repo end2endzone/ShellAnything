@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,7 +43,7 @@
 
 namespace Win32Registry
 {
-  bool IsIconEquals(const REGISTRY_ICON & a, const REGISTRY_ICON & b)
+  bool IsIconEquals(const REGISTRY_ICON& a, const REGISTRY_ICON& b)
   {
     if (a.path == b.path && a.index == b.index)
     {
@@ -52,11 +52,11 @@ namespace Win32Registry
     return false;
   }
 
-  DWORD ConvertToPrivateType(const REGISTRY_TYPE & value)
+  DWORD ConvertToPrivateType(const REGISTRY_TYPE& value)
   {
     DWORD type = REG_SZ;
 
-    switch(value)
+    switch (value)
     {
     case REGISTRY_TYPE_STRING:
       type = REG_SZ;
@@ -71,7 +71,7 @@ namespace Win32Registry
       type = REG_QWORD;
       break;
     default:
-      assert( false ); //should not append
+      assert(false); //should not append
     };
 
     return type;
@@ -80,7 +80,7 @@ namespace Win32Registry
   REGISTRY_TYPE ConvertToPublicType(DWORD value)
   {
     REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
-    switch(value)
+    switch (value)
     {
     case REG_SZ:
     case REG_EXPAND_SZ:
@@ -97,7 +97,7 @@ namespace Win32Registry
       type = REGISTRY_TYPE_UINT64;
       break;
     default:
-      assert( false ); //should not append
+      assert(false); //should not append
     };
     return type;
   }
@@ -117,9 +117,9 @@ namespace Win32Registry
   static HKEY_T* FindKeyInPath(const char* path)
   {
     //detecting the key within the given path
-    int num_supported_keys = sizeof(gSupportedKeys)/sizeof(HKEY_T);
+    int num_supported_keys = sizeof(gSupportedKeys) / sizeof(HKEY_T);
     HKEY_T* root_key = NULL;
-    for(int i=0; i<num_supported_keys && root_key == NULL; i++)
+    for (int i = 0; i < num_supported_keys && root_key == NULL; i++)
     {
       HKEY_T* current = &gSupportedKeys[i];
       if (_strnicmp(path, current->name, strlen(current->name)) == 0)
@@ -135,12 +135,12 @@ namespace Win32Registry
     HKEY_T* root_key = FindKeyInPath(key_path);
     if (root_key)
     {
-      size_t key_path_index = strlen(root_key->name)+1;
+      size_t key_path_index = strlen(root_key->name) + 1;
       return &key_path[key_path_index];
     }
     return NULL;
   }
-  static bool SetRegistryValue(const char* key_path, const char* value_name, int iType, const void * value, const uint32_t & iSize)
+  static bool SetRegistryValue(const char* key_path, const char* value_name, int iType, const void* value, const uint32_t& iSize)
   {
     bool result = false;
 
@@ -150,9 +150,9 @@ namespace Win32Registry
       const char* key_short_path = GetShortKeyPath(key_path);
 
       HKEY hKey;
-      if ( !RegCreateKey(root_key->key, key_short_path, &hKey))
+      if (!RegCreateKey(root_key->key, key_short_path, &hKey))
       {
-        if ( !RegSetValueEx(hKey, value_name, 0, iType, (LPBYTE)value, iSize))
+        if (!RegSetValueEx(hKey, value_name, 0, iType, (LPBYTE)value, iSize))
         {
           result = true;
         }
@@ -163,25 +163,25 @@ namespace Win32Registry
   }
 
 
-  bool GetValue(const char * key_path,
-                const char * value_name,
-                REGISTRY_TYPE & type,
-                MemoryBuffer & value)
+  bool GetValue(const char* key_path,
+                const char* value_name,
+                REGISTRY_TYPE& type,
+                MemoryBuffer& value)
   {
     bool success = false;
     HKEY_T* root_key = FindKeyInPath(key_path);
-    
+
     if (root_key)
     {
       HKEY hKey = NULL;
       const char* key_short_path = GetShortKeyPath(key_path);
 
-      if (RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
+      if (RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &hKey) == ERROR_SUCCESS)
       {
         //Read value's size and type
         DWORD value_type = 0;
         DWORD value_size = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
-        RegQueryValueEx( hKey, value_name, NULL, &value_type, NULL, &value_size);
+        RegQueryValueEx(hKey, value_name, NULL, &value_type, NULL, &value_size);
 
         DWORD length = value_size - 1;
 
@@ -190,8 +190,8 @@ namespace Win32Registry
         {
           //Read the actual data of the value
           value_type = 0;
-          RegQueryValueEx( hKey, value_name, NULL, &value_type, (LPBYTE)value.c_str(), &value_size);
-          
+          RegQueryValueEx(hKey, value_name, NULL, &value_type, (LPBYTE)value.c_str(), &value_size);
+
           type = ConvertToPublicType(value_type);
           success = (length == value.size());
         }
@@ -204,7 +204,7 @@ namespace Win32Registry
     return success;
   }
 
-  bool GetDefaultKeyValue( const char * key_path, REGISTRY_TYPE & type, MemoryBuffer & value)
+  bool GetDefaultKeyValue(const char* key_path, REGISTRY_TYPE& type, MemoryBuffer& value)
   {
     return GetValue(key_path, "", type, value);
   }
@@ -219,7 +219,7 @@ namespace Win32Registry
       const char* key_short_path = GetShortKeyPath(key_path);
 
       HKEY hKey;
-      if ( !RegOpenKey(root_key->key, key_short_path, &hKey))
+      if (!RegOpenKey(root_key->key, key_short_path, &hKey))
       {
         result = true;
         RegCloseKey(hKey);
@@ -239,7 +239,7 @@ namespace Win32Registry
 
       HKEY hKey = NULL;
       //printf("RegCreateKeyA(%s, %s, 0x%08x)\n", root_key->name, key_short_path, hKey);
-      if ( !RegCreateKey(root_key->key, key_short_path, &hKey))
+      if (!RegCreateKey(root_key->key, key_short_path, &hKey))
       {
         result = true;
       }
@@ -287,12 +287,12 @@ namespace Win32Registry
     return result;
   }
 
-  bool SetValue(const char* key_path, const char* value_name, const uint8_t* buffer, const uint32_t & buffer_size)
+  bool SetValue(const char* key_path, const char* value_name, const uint8_t* buffer, const uint32_t& buffer_size)
   {
     return SetRegistryValue(key_path, value_name, REG_BINARY, buffer, buffer_size);
   }
 
-  bool SetValue(const char* key_path, const char* value_name, const uint32_t & value)
+  bool SetValue(const char* key_path, const char* value_name, const uint32_t& value)
   {
     return SetRegistryValue(key_path, value_name, REG_DWORD, &value, sizeof(value));
   }
@@ -317,7 +317,7 @@ namespace Win32Registry
       const char* key_short_path = GetShortKeyPath(key_path);
 
       HKEY hKey = NULL;
-      if ( !RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_SET_VALUE|KEY_WOW64_64KEY, &hKey))
+      if (!RegOpenKeyEx(root_key->key, key_short_path, 0, KEY_SET_VALUE | KEY_WOW64_64KEY, &hKey))
       {
         LSTATUS status = RegDeleteValueA(hKey, value_name);
         if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND)
@@ -331,12 +331,12 @@ namespace Win32Registry
     return result;
   }
 
-  bool GetAssociatedProgram(const char* file_extention, std::string & command_line)
+  bool GetAssociatedProgram(const char* file_extention, std::string& command_line)
   {
-	  const DWORD SIZE = 2048;
+    const DWORD SIZE = 2048;
 
     HKEY hKey = NULL;
-    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, file_extention, 0, KEY_READ|KEY_WOW64_64KEY, &hKey) != ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, file_extention, 0, KEY_READ | KEY_WOW64_64KEY, &hKey) != ERROR_SUCCESS)
     {
       //Key does not exist
       command_line = "";
@@ -354,7 +354,7 @@ namespace Win32Registry
     sPath.append("\\shell\\open\\command");
 
     HKEY hProgKey = NULL;
-    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, sPath.c_str(), 0, KEY_READ|KEY_WOW64_64KEY, &hProgKey) == ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, sPath.c_str(), 0, KEY_READ | KEY_WOW64_64KEY, &hProgKey) == ERROR_SUCCESS)
     {
       DWORD progNameSize = 0;
       //Determine data type and buffer size of key
@@ -367,7 +367,7 @@ namespace Win32Registry
       RegQueryValueEx(hProgKey, "", 0, &lType, (LPBYTE)programName, &progNameSize);
 
       RegCloseKey(hProgKey);
-    
+
       command_line = programName;
 
       return true;
@@ -375,7 +375,7 @@ namespace Win32Registry
 
     command_line = "";
     return false;
-	}
+  }
 
   bool SetAssociatedProgram(const char* file_extention, const char* file_type, const char* command_line)
   {
@@ -443,10 +443,10 @@ namespace Win32Registry
     //printf("step #4\n");
 
     //Create the shell, open and command sub keys
-    const char* subKeys[] = {"shell", "open", "command"};
-    int numSubKeys = sizeof(subKeys)/sizeof(const char*);
+    const char* subKeys[] = { "shell", "open", "command" };
+    int numSubKeys = sizeof(subKeys) / sizeof(const char*);
     std::string subKey = typeKey.c_str();
-    for(int i=0; i<numSubKeys; i++)
+    for (int i = 0; i < numSubKeys; i++)
     {
       const char* currentSubKey = subKeys[i];
 
@@ -494,18 +494,18 @@ namespace Win32Registry
     return true;
   }
 
-  bool RegisterCommandForFile(const char * name, const char * command)
+  bool RegisterCommandForFile(const char* name, const char* command)
   {
     bool success = false;
-    
+
     std::string key;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s", name); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s", name);
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", name); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shell\\%s\\command", name);
     success = CreateKey(key.c_str());
     if (!success)
       return false;
@@ -517,18 +517,18 @@ namespace Win32Registry
     return true;
   }
 
-  bool RegisterCommandForFolder(const char * name, const char * command)
+  bool RegisterCommandForFolder(const char* name, const char* command)
   {
     bool success = false;
-    
+
     std::string key;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", name); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s", name);
     success = CreateKey(key.c_str());
     if (!success)
       return false;
 
-    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", name); 
+    key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shell\\%s\\command", name);
     success = CreateKey(key.c_str());
     if (!success)
       return false;
@@ -540,15 +540,15 @@ namespace Win32Registry
     return true;
   }
 
-  static REGISTRY_ICON GetFileTypeDefaultIcon(const char * iBaseKey)
+  static REGISTRY_ICON GetFileTypeDefaultIcon(const char* iBaseKey)
   {
     //Extract default icon. ie: C:\Windows\Installer\{AC76BA86-7AD7-1036-7B44-A90000000001}\PDFFile_8.ico,0
     std::string default_icon;
     {
-      std::string key = ra::strings::Format("%s\\DefaultIcon", iBaseKey); 
+      std::string key = ra::strings::Format("%s\\DefaultIcon", iBaseKey);
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
-      const char * debugValue = key.c_str();
+      const char* debugValue = key.c_str();
       bool success = GetDefaultKeyValue(key.c_str(), type, buffer);
       if (!success)
         return NULL_ICON;
@@ -556,13 +556,13 @@ namespace Win32Registry
         return NULL_ICON;
       default_icon = buffer.c_str();
     }
-    
+
     //check format of default icon. File only or file with index
     std::string file_path;
     int index = 0;
     {
       ra::strings::StringVector parts;
-      ra::strings::Split( parts, default_icon, ",");
+      ra::strings::Split(parts, default_icon, ",");
 
       if (parts.size() == 1)
       {
@@ -574,13 +574,13 @@ namespace Win32Registry
         //assumed a file and index
         file_path = parts[0];
         std::string indexStr = parts[1];
-        const char * debugValue = indexStr.c_str();
+        const char* debugValue = indexStr.c_str();
         ra::strings::Parse(indexStr, index);
       }
       else
         return NULL_ICON; //unknown format
     }
-    
+
     //Does file_path contains double quotes ?
     if (file_path.find("\"") != std::string::npos)
     {
@@ -589,7 +589,7 @@ namespace Win32Registry
 
     //Does file exists ?
     {
-      const char * debug_value = file_path.c_str();
+      const char* debug_value = file_path.c_str();
       if (file_path.size() > 0 && ra::filesystem::FileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
@@ -602,7 +602,7 @@ namespace Win32Registry
     //File does not exists. Maybe path contains "expandables" values
     file_path = ra::environment::Expand(file_path.c_str());
     {
-      const char * debug_value = file_path.c_str();
+      const char* debug_value = file_path.c_str();
       if (file_path.size() > 0 && ra::filesystem::FileExists(file_path.c_str()))
       {
         REGISTRY_ICON icon;
@@ -616,7 +616,7 @@ namespace Win32Registry
     std::string path_env = ra::environment::GetEnvironmentVariable("PATH");
     ra::strings::StringVector paths;
     ra::strings::Split(paths, path_env, ";");
-    for(size_t i=0; i<paths.size(); i++)
+    for (size_t i = 0; i < paths.size(); i++)
     {
       //build temp file path
       std::string test_path = paths[i];
@@ -627,7 +627,7 @@ namespace Win32Registry
 
       //test to find the file
       {
-        const char * debug_value = test_path.c_str();
+        const char* debug_value = test_path.c_str();
         if (test_path.size() > 0 && ra::filesystem::FileExists(test_path.c_str()))
         {
           REGISTRY_ICON icon;
@@ -642,18 +642,18 @@ namespace Win32Registry
     return NULL_ICON;
   }
 
-  bool IsValid(const REGISTRY_ICON & icon)
+  bool IsValid(const REGISTRY_ICON& icon)
   {
     if (icon.path.empty())
       return false;
     if (icon.index == INVALID_ICON_INDEX) //See issue #17
       return false;
-    if (IsIconEquals(icon,NULL_ICON))
+    if (IsIconEquals(icon, NULL_ICON))
       return false;
     return true;
   }
 
-  REGISTRY_ICON GetFileTypeIcon(const char * file_extention)
+  REGISTRY_ICON GetFileTypeIcon(const char* file_extention)
   {
     if (file_extention == NULL)
       return NULL_ICON;
@@ -674,9 +674,9 @@ namespace Win32Registry
       icon.index = 2;
       return icon;
     }
-    else if ( extention == "dll" ||
-              extention == "ocx" ||
-              extention == "sys" )
+    else if (extention == "dll" ||
+             extention == "ocx" ||
+             extention == "sys")
     {
       REGISTRY_ICON icon;
       icon.path = ra::filesystem::FindFileFromPaths("shell32.dll");
@@ -687,7 +687,7 @@ namespace Win32Registry
     //Extract document short name. ie: AcroExch.Document
     std::string document_short_name;
     {
-      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", extention.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", extention.c_str());
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = GetDefaultKeyValue(key.c_str(), type, buffer);
@@ -702,7 +702,7 @@ namespace Win32Registry
 
     //Check DefautIcon with document_short_name. ie: HKEY_CLASSES_ROOT\FirefoxHTML\DefaultIcon
     {
-      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_short_name.c_str()); 
+      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_short_name.c_str());
       REGISTRY_ICON icon = GetFileTypeDefaultIcon(basekey.c_str());
       if (IsValid(icon))
         return icon;
@@ -711,7 +711,7 @@ namespace Win32Registry
     //Extract document long name. ie: AcroExch.Document.7
     std::string document_current_version_name;
     {
-      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", document_short_name.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", document_short_name.c_str());
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = GetDefaultKeyValue(key.c_str(), type, buffer);
@@ -723,16 +723,16 @@ namespace Win32Registry
     if (!document_current_version_name.empty())
     {
       //Check DefautIcon with current version name. ie: HKEY_CLASSES_ROOT\AcroExch.Document.7\DefaultIcon
-      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_current_version_name.c_str()); 
+      std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", document_current_version_name.c_str());
       REGISTRY_ICON icon = GetFileTypeDefaultIcon(basekey.c_str());
       if (IsValid(icon))
         return icon;
     }
-    
+
     //Does the file type have an icon handler? ie: 
     std::string document_icon_handler_guid;
     {
-      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", document_short_name.c_str()); 
+      std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\ShellEx\\IconHandler", document_short_name.c_str());
       MemoryBuffer buffer;
       REGISTRY_TYPE type = REGISTRY_TYPE_STRING;
       bool success = GetDefaultKeyValue(key.c_str(), type, buffer);
@@ -743,10 +743,10 @@ namespace Win32Registry
     if (!document_icon_handler_guid.empty())
     {
       //Keep looking with IconHandler
-                                                
+
       //check default icon of icon handler. ie: HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile
       {
-        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
+        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\SOFTWARE\\Classes\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str());
         REGISTRY_ICON icon = GetFileTypeDefaultIcon(basekey.c_str());
         if (IsValid(icon))
           return icon;
@@ -754,7 +754,7 @@ namespace Win32Registry
 
       //check default icon of icon handler. ie: KEY_CLASSES_ROOT\Wow6432Node\CLSID\{42042206-2D85-11D3-8CFF-005004838597}\Old Icon\htmlfile\DefaultIcon
       {
-        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str()); 
+        std::string basekey = ra::strings::Format("HKEY_CLASSES_ROOT\\Wow6432Node\\CLSID\\%s\\Old Icon\\%s", document_icon_handler_guid.c_str(), document_short_name.c_str());
         REGISTRY_ICON icon = GetFileTypeDefaultIcon(basekey.c_str());
         if (IsValid(icon))
           return icon;
@@ -768,7 +768,7 @@ namespace Win32Registry
       if (program.size() > 0)
       {
         //check if file exists
-        const char * debugValue = program.c_str();
+        const char* debugValue = program.c_str();
         if (ra::filesystem::FileExists(program.c_str()))
         {
           REGISTRY_ICON icon;
@@ -788,7 +788,7 @@ namespace Win32Registry
           program = ra::environment::Expand(program.c_str());
 
           //try again
-          const char * debugValue = program.c_str();
+          const char* debugValue = program.c_str();
           if (ra::filesystem::FileExists(program.c_str()))
           {
             REGISTRY_ICON icon;
@@ -804,7 +804,7 @@ namespace Win32Registry
     return NULL_ICON;
   }
 
-  std::string ToString(const RGS_ENTRY & entry)
+  std::string ToString(const RGS_ENTRY& entry)
   {
     std::string output;
 
@@ -826,21 +826,21 @@ namespace Win32Registry
     static const int BUFFER_SIZE = 1024;
     char buffer[BUFFER_SIZE];
     sprintf(buffer, "path='%s', value='%s'",
-        entry.path.c_str(),
-        entry.value.c_str() );
+            entry.path.c_str(),
+            entry.value.c_str());
     output.append(buffer);
 
     return output;
   }
 
-  bool ParseRgsFlag(std::string & line, const std::string & flag)
+  bool ParseRgsFlag(std::string& line, const std::string& flag)
   {
     if (line.find(flag) != std::string::npos)
     {
       //flag found.
       //cleanup
       ra::strings::Replace(line, flag, "");
-      
+
       return true;
     }
 
@@ -848,7 +848,7 @@ namespace Win32Registry
     return false;
   }
 
-  bool ExtractNameValuePair(const std::string & line, std::string & name, std::string & value)
+  bool ExtractNameValuePair(const std::string& line, std::string& name, std::string& value)
   {
     const std::string pattern = " = s ";
     size_t pattern_pos = line.find(pattern);
@@ -863,17 +863,17 @@ namespace Win32Registry
     return false;
   }
 
-  const std::string & GetLastParentKey(const ra::strings::StringVector & keys)
+  const std::string& GetLastParentKey(const ra::strings::StringVector& keys)
   {
     static const std::string EMPTY_KEY;
     if (keys.size() == 0)
       return EMPTY_KEY;
-    
-    const std::string & last = keys[keys.size()-1];
+
+    const std::string& last = keys[keys.size() - 1];
     return last;
   }
 
-  bool IsSubDirectory(const std::string & base_path, const std::string & test_path)
+  bool IsSubDirectory(const std::string& base_path, const std::string& test_path)
   {
     if (test_path.size() < base_path.size())
       return false;
@@ -882,21 +882,21 @@ namespace Win32Registry
     return false;
   }
 
-  void ValidateRgsIntegrity(RGS_ENTRY_LIST & entries)
+  void ValidateRgsIntegrity(RGS_ENTRY_LIST& entries)
   {
-    for(size_t i=0; i<entries.size(); i++)
+    for (size_t i = 0; i < entries.size(); i++)
     {
-      RGS_ENTRY & entry = entries[i];
+      RGS_ENTRY& entry = entries[i];
       if (entry.isForceRemove)
       {
         //make sure all subdirectories are also set to ForceRemove
         //for each other entries
-        const std::string & base_path = entry.path;
-        for(size_t j=i+1; j<entries.size(); j++)
+        const std::string& base_path = entry.path;
+        for (size_t j = i + 1; j < entries.size(); j++)
         {
-          RGS_ENTRY & sub_entry = entries[j];
+          RGS_ENTRY& sub_entry = entries[j];
 
-          const std::string & sub_entry_path = sub_entry.path;
+          const std::string& sub_entry_path = sub_entry.path;
           if (IsSubDirectory(base_path, sub_entry_path))
           {
             //this is a direct child
@@ -907,7 +907,7 @@ namespace Win32Registry
     }
   }
 
-  bool ParseRgsRegistry(const std::string & rgs, const std::string & module_path, RGS_ENTRY_LIST & entries)
+  bool ParseRgsRegistry(const std::string& rgs, const std::string& module_path, RGS_ENTRY_LIST& entries)
   {
     entries.clear();
 
@@ -921,7 +921,7 @@ namespace Win32Registry
     ra::strings::StringVector lines = ra::strings::Split(tmp, "\n");
 
     //process each lines
-    for(size_t i=0; i<lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
       std::string line = lines[i];
 
@@ -929,10 +929,10 @@ namespace Win32Registry
       line = ra::strings::TrimLeft(line, '\t');
 
       //extract flags
-      bool isNoRemove     = ParseRgsFlag(line, "NoRemove ");
-      bool isForceRemove  = ParseRgsFlag(line, "ForceRemove ");
-      bool isValue        = ParseRgsFlag(line, "val ");
-      bool isKey          = !isValue;
+      bool isNoRemove = ParseRgsFlag(line, "NoRemove ");
+      bool isForceRemove = ParseRgsFlag(line, "ForceRemove ");
+      bool isValue = ParseRgsFlag(line, "val ");
+      bool isKey = !isValue;
 
       if (isValue)
       {
@@ -993,8 +993,8 @@ namespace Win32Registry
         }
 
         //trim
-        name          = ra::strings::Trim(name,           '\'');
-        default_value = ra::strings::Trim(default_value,  '\'');
+        name = ra::strings::Trim(name, '\'');
+        default_value = ra::strings::Trim(default_value, '\'');
 
         //build key full path
         std::string parent_key = GetLastParentKey(parent_keys);
@@ -1046,7 +1046,7 @@ namespace Win32Registry
     }
   };
 
-  bool CreateRegistry(const RGS_ENTRY_LIST & tmp)
+  bool CreateRegistry(const RGS_ENTRY_LIST& tmp)
   {
     RGS_ENTRY_LIST entries = tmp;
     ValidateRgsIntegrity(entries);
@@ -1054,9 +1054,9 @@ namespace Win32Registry
     //sort in acsending order to make sure that a parent entry is created before its children
     std::sort(entries.begin(), entries.end(), less_than_key());
 
-    for(size_t i=0; i<entries.size(); i++)
+    for (size_t i = 0; i < entries.size(); i++)
     {
-      const Win32Registry::RGS_ENTRY & entry = entries[i];
+      const Win32Registry::RGS_ENTRY& entry = entries[i];
       if (entry.isKey)
       {
         //std::string debug_message;
@@ -1096,7 +1096,7 @@ namespace Win32Registry
     return true;
   }
 
-  bool DeleteRegistry(const RGS_ENTRY_LIST & tmp)
+  bool DeleteRegistry(const RGS_ENTRY_LIST& tmp)
   {
     RGS_ENTRY_LIST entries = tmp;
     ValidateRgsIntegrity(entries);
@@ -1104,9 +1104,9 @@ namespace Win32Registry
     //sort in descending order to make sure that a child entry is deleted before his parent
     std::sort(entries.rbegin(), entries.rend(), less_than_key());
 
-    for(size_t i=0; i<entries.size(); i++)
+    for (size_t i = 0; i < entries.size(); i++)
     {
-      const Win32Registry::RGS_ENTRY & entry = entries[i];
+      const Win32Registry::RGS_ENTRY& entry = entries[i];
       if (entry.isNoRemove)
         continue;
 

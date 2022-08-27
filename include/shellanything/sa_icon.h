@@ -33,12 +33,17 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable icon to an immutable icon.
 /// </summary>
 /// <param name="icon">The mutable object to convert.</param>
 /// <returns>Returns an immutable icon</returns>
-sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t * icon);
+sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t* icon);
 
 /// <summary>
 /// Validate an icon
@@ -70,7 +75,7 @@ sa_error_t sa_icon_get_file_extension_string(sa_icon_immutable_t* icon, sa_strin
 /// </summary>
 /// <param name="icon">The icon structure object.</param>
 /// <returns>Returns the file extension. Returns NULL if no value is defined.</returns>
-const char * sa_icon_get_file_extension_cstr(sa_icon_immutable_t* icon);
+const char* sa_icon_get_file_extension_cstr(sa_icon_immutable_t* icon);
 
 /// <summary>
 /// Get a copy of the file extension.
@@ -138,6 +143,11 @@ int sa_icon_get_index(sa_icon_immutable_t* icon);
 /// <param name="icon">The icon structure object.</param>
 /// <param name="index">The new index.</param>
 void sa_icon_set_index(sa_icon_t* icon, int index);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

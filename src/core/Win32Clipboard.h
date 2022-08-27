@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,11 +39,17 @@ namespace Win32Clipboard
     virtual ~Clipboard();
 
   public:
-    static Clipboard & GetInstance();
+    static Clipboard& GetInstance();
 
     //enums
-    enum Format { FormatText, FormatUtf8, FormatImage, FormatBinary };
-    enum DragDropType {DragDropCopy, DragDropCut};
+    enum Format
+    {
+      FormatText, FormatUtf8, FormatImage, FormatBinary
+    };
+    enum DragDropType
+    {
+      DragDropCopy, DragDropCut
+    };
 
     //typedefs
     typedef std::vector<std::string> StringVector;
@@ -77,42 +83,42 @@ namespace Win32Clipboard
     /// </summary>
     /// <param name="text">The text value to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetText(const std::string & text);
+    virtual bool SetText(const std::string& text);
 
     /// <summary>
     /// Provides the current text value in the clipboard.
     /// </summary>
     /// <param name="text">The output text value in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsText(std::string & text);
+    virtual bool GetAsText(std::string& text);
 
     /// <summary>
     /// Assign the given utf8 text value to the clipboard.
     /// </summary>
     /// <param name="text">The utf8 text value to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetTextUtf8(const std::string & text);
+    virtual bool SetTextUtf8(const std::string& text);
 
     /// <summary>
     /// Provides the current utf8 text value in the clipboard.
     /// </summary>
     /// <param name="text">The output utf8 text value in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsTextUtf8(std::string & text);
+    virtual bool GetAsTextUtf8(std::string& text);
 
     /// <summary>
     /// Assign the given binary data to the clipboard.
     /// </summary>
     /// <param name="buffer">The binary data to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetBinary(const MemoryBuffer & buffer);
+    virtual bool SetBinary(const MemoryBuffer& buffer);
 
     /// <summary>
     /// Provides the current binary data in the clipboard.
     /// </summary>
     /// <param name="buffer">The output binary data in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsBinary(MemoryBuffer & buffer);
+    virtual bool GetAsBinary(MemoryBuffer& buffer);
 
     /// <summary>
     /// Assign the given file operation and files to the clipboard.
@@ -121,7 +127,7 @@ namespace Win32Clipboard
     /// <param name="type">The file operation to set to the clipboard.</param>
     /// <param name="files">The list of files, encoded in ansi, to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetDragDropFiles(const DragDropType & type, const StringVector & files);
+    virtual bool SetDragDropFiles(const DragDropType& type, const StringVector& files);
 
     /// <summary>
     /// Provides the current file operation and files in the clipboard.
@@ -130,7 +136,7 @@ namespace Win32Clipboard
     /// <param name="type">The file operation set to the clipboard.</param>
     /// <param name="files">The list of files, encoded in ansi, set in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsDragDropFiles(DragDropType & type, StringVector & files);
+    virtual bool GetAsDragDropFiles(DragDropType& type, StringVector& files);
 
     /// <summary>
     /// Assign the given file operation and files to the clipboard.
@@ -139,7 +145,7 @@ namespace Win32Clipboard
     /// <param name="type">The file operation to set to the clipboard.</param>
     /// <param name="files">The list of files, encoded in utf8, to set to the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool SetDragDropFilesUtf8(const DragDropType & type, const StringVector & files);
+    virtual bool SetDragDropFilesUtf8(const DragDropType& type, const StringVector& files);
 
     /// <summary>
     /// Provides the current file operation and files in the clipboard.
@@ -148,7 +154,7 @@ namespace Win32Clipboard
     /// <param name="type">The file operation set to the clipboard.</param>
     /// <param name="files">The list of files, encoded in utf8, set in the clipboard.</param>
     /// <returns>Returns true if the function is successful. Returns false otherwise.</returns>
-    virtual bool GetAsDragDropFilesUtf8(DragDropType & type, StringVector & files);
+    virtual bool GetAsDragDropFilesUtf8(DragDropType& type, StringVector& files);
 
   };
 

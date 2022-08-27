@@ -31,6 +31,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Allocate an amount of memory usable by the library.
 /// </summary>
@@ -43,6 +48,11 @@ void* sa_memory_alloc(size_t size);
 /// </summary>
 /// <param name="ptr">A void pointer of memory allocated with sa_memory_alloc().</param>
 void sa_memory_free(void* ptr);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,12 +39,12 @@
 std::string GetMGCPath()
 {
   std::string path;
-  wchar_t buffer[MAX_PATH] = {0};
+  wchar_t buffer[MAX_PATH] = { 0 };
   HMODULE hModule = NULL;
-  if (!GetModuleHandleExW( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                          (LPCWSTR) __FUNCTIONW__,
-                          &hModule))
+  if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+      GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+      (LPCWSTR)__FUNCTIONW__,
+      &hModule))
   {
     uint32_t error_code = ra::errors::GetLastErrorCode();
     std::string desc = ra::errors::GetErrorCodeDescription(error_code);
@@ -68,7 +68,7 @@ std::string GetMGCPath()
   {
     path = ra::unicode::UnicodeToUtf8(buffer);
   }
-  
+
   std::string mgc_path = ra::filesystem::GetParentPath(path) + "\\magic.mgc";
   return mgc_path;
 }
@@ -80,11 +80,13 @@ namespace shellanything
     magic_cookie = magic_open(MAGIC_NONE);
     std::string path = GetMGCPath();
 
-    if (magic_cookie == NULL) {
+    if (magic_cookie == NULL)
+    {
       ShowErrorMessage("ShellAnything(libmagic) Error", "ERROR opening MAGIC_MIME_TYPE: out of memory\n");
       return;
     }
-    if (magic_load(magic_cookie, path.c_str()) == -1) {
+    if (magic_load(magic_cookie, path.c_str()) == -1)
+    {
       magic_cookie = NULL;
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading with NULL file: ") + magic_error(magic_cookie));
       return;
@@ -96,17 +98,17 @@ namespace shellanything
     magic_close(magic_cookie);
     magic_cookie = NULL;
   }
-  
-  FileMagicManager & FileMagicManager::GetInstance()
+
+  FileMagicManager& FileMagicManager::GetInstance()
   {
     static FileMagicManager _instance;
     return _instance;
   }
 
-  std::string FileMagicManager::GetMIMEType(const std::string & path) const
+  std::string FileMagicManager::GetMIMEType(const std::string& path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_TYPE);
-    const char *result = magic_file(magic_cookie, path.c_str());
+    const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
@@ -118,10 +120,10 @@ namespace shellanything
     }
   }
 
-  std::string FileMagicManager::GetDescription(const std::string & path) const
+  std::string FileMagicManager::GetDescription(const std::string& path) const
   {
     magic_setflags(magic_cookie, MAGIC_NONE);
-    const char *result = magic_file(magic_cookie, path.c_str());
+    const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
@@ -133,10 +135,10 @@ namespace shellanything
     }
   }
 
-  std::string FileMagicManager::GetExtension(const std::string & path) const
+  std::string FileMagicManager::GetExtension(const std::string& path) const
   {
     magic_setflags(magic_cookie, MAGIC_EXTENSION);
-    const char *result = magic_file(magic_cookie, path.c_str());
+    const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
@@ -148,10 +150,10 @@ namespace shellanything
     }
   }
 
-  std::string FileMagicManager::GetCharset(const std::string & path) const
+  std::string FileMagicManager::GetCharset(const std::string& path) const
   {
     magic_setflags(magic_cookie, MAGIC_MIME_ENCODING);
-    const char *result = magic_file(magic_cookie, path.c_str());
+    const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
       ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));

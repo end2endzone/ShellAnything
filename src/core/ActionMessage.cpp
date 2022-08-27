@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,10 +45,17 @@ namespace shellanything
   class ActionMessageFactory : public virtual IActionFactory
   {
   public:
-    ActionMessageFactory() {}
-    virtual ~ActionMessageFactory() {}
+    ActionMessageFactory()
+    {
+    }
+    virtual ~ActionMessageFactory()
+    {
+    }
 
-    virtual const std::string& GetName() const { return ActionMessage::XML_ELEMENT_NAME; }
+    virtual const std::string& GetName() const
+    {
+      return ActionMessage::XML_ELEMENT_NAME;
+    }
 
     virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
     {
@@ -112,15 +119,15 @@ namespace shellanything
   {
   }
 
-  bool ActionMessage::Execute(const SelectionContext & context) const
+  bool ActionMessage::Execute(const SelectionContext& context) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
     const std::string title = pmgr.Expand(mTitle);
     const std::string caption = pmgr.Expand(mCaption);
     const std::string icon = pmgr.Expand(mIcon);
 
     //convert to windows unicode...
-    std::wstring title_utf16   = ra::unicode::Utf8ToUnicode(title);
+    std::wstring title_utf16 = ra::unicode::Utf8ToUnicode(title);
     std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
     //debug
@@ -153,32 +160,32 @@ namespace shellanything
     return true;
   }
 
-  const std::string & ActionMessage::GetTitle() const
+  const std::string& ActionMessage::GetTitle() const
   {
     return mTitle;
   }
 
-  void ActionMessage::SetTitle(const std::string & title)
+  void ActionMessage::SetTitle(const std::string& title)
   {
     mTitle = title;
   }
 
-  const std::string & ActionMessage::GetCaption() const
+  const std::string& ActionMessage::GetCaption() const
   {
     return mCaption;
   }
 
-  void ActionMessage::SetCaption(const std::string & caption)
+  void ActionMessage::SetCaption(const std::string& caption)
   {
     mCaption = caption;
   }
 
-  const std::string & ActionMessage::GetIcon() const
+  const std::string& ActionMessage::GetIcon() const
   {
     return mIcon;
   }
 
-  void ActionMessage::SetIcon(const std::string & icon)
+  void ActionMessage::SetIcon(const std::string& icon)
   {
     mIcon = icon;
   }

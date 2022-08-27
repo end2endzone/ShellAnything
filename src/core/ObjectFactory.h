@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,7 +54,7 @@ namespace shellanything
     ObjectFactory& operator=(const ObjectFactory&);
 
   public:
-    static ObjectFactory & GetInstance();
+    static ObjectFactory& GetInstance();
 
     /// <summary>
     /// Parse a string attribute in a xml node.
@@ -97,7 +97,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an Icon to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns true if the object was properly parsed. Returns false otherwise.</returns>
-    bool ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error);
+    bool ParseIcon(const tinyxml2::XMLElement* element, Icon& icon, std::string& error);
 
     /// <summary>
     /// Parses a Validator class from xml. Returns NULL if the parsing failed.
@@ -105,7 +105,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains a Validator to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid Validator pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Validator * ParseValidator(const tinyxml2::XMLElement * element, std::string & error);
+    Validator* ParseValidator(const tinyxml2::XMLElement* element, std::string& error);
 
     /// <summary>
     /// Parses a IAction class from xml. Returns NULL if the parsing failed.
@@ -113,7 +113,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an IAction to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid IAction pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    IAction * ParseAction(const tinyxml2::XMLElement * element, std::string & error);
+    IAction* ParseAction(const tinyxml2::XMLElement* element, std::string& error);
 
     /// <summary>
     /// Parses a Menu class from xml. Returns NULL if the parsing failed.
@@ -121,7 +121,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an Menu to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid Menu pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Menu * ParseMenu(const tinyxml2::XMLElement * element, std::string & error);
+    Menu* ParseMenu(const tinyxml2::XMLElement* element, std::string& error);
 
     /// <summary>
     /// Parses a DefaultSettings class from xml. Returns NULL if the parsing failed.
@@ -129,7 +129,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains an DefaultSettings to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid DefaultSettings pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    DefaultSettings * ParseDefaults(const tinyxml2::XMLElement * element, std::string & error);
+    DefaultSettings* ParseDefaults(const tinyxml2::XMLElement* element, std::string& error);
 
     /// <summary>
     /// Parses a plugin from xml. Returns NULL if the parsing failed.
@@ -137,7 +137,7 @@ namespace shellanything
     /// <param name="element">The xml element that contains a PluginDescriptor to parse.</param>
     /// <param name="error">The error description if the parsing failed.</param>
     /// <returns>Returns a valid plugin pointer if the object was properly parsed. Returns NULL otherwise.</returns>
-    Plugin * ParsePlugin(const tinyxml2::XMLElement * element, std::string & error);
+    Plugin* ParsePlugin(const tinyxml2::XMLElement* element, std::string& error);
 
   public:
     Registry registry;

@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,7 +47,7 @@ namespace shellanything
     /// Create a temporary workspace directory located in the 'workspace' directory.
     /// </summary>
     /// <param name="workspace">The path to a directory that is used for workspace.</param>
-    Workspace(const char * workspace);
+    Workspace(const char* workspace);
 
     virtual ~Workspace();
 
@@ -69,7 +69,7 @@ namespace shellanything
     /// <param name="source">The path to a directory to import into the workspace.</param>
     /// <param name="target_dir">A relative directory path in the workspace to copy the source directory to. Can be NULL to copy the source directory in the root of the workspace.</param>
     /// <returns>Returns true when the directory was successfully imported. Returns false otherwise.</returns>
-    bool ImportDirectoryUtf8(const char * source, const char * target_dir = NULL);
+    bool ImportDirectoryUtf8(const char* source, const char* target_dir = NULL);
 
     /// <summary>
     /// Import a file into the workspace.
@@ -77,7 +77,7 @@ namespace shellanything
     /// <param name="source">The path to a file to import into the workspace.</param>
     /// <param name="target_dir">A relative directory path in the workspace to copy the source file to. Can be NULL to copy the source file in the root of the workspace.</param>
     /// <returns>Returns true when the file was successfully imported. Returns false otherwise.</returns>
-    bool ImportFileUtf8(const char * source, const char * target_dir = NULL);
+    bool ImportFileUtf8(const char* source, const char* target_dir = NULL);
 
     /// <summary>
     /// Import and rename a file into the workspace.
@@ -85,7 +85,7 @@ namespace shellanything
     /// <param name="source">The path to a file to import into the workspace.</param>
     /// <param name="target">A relative file path in the workspace to copy the source file to. Can be NULL to copy the source file in the root of the workspace.</param>
     /// <returns>Returns true when the file was successfully imported. Returns false otherwise.</returns>
-    bool ImportAndRenameFileUtf8(const char * source, const char * target = NULL);
+    bool ImportAndRenameFileUtf8(const char* source, const char* target = NULL);
 
     /// <summary>
     /// Converts a relative path from the workspace into an absolute path.
@@ -93,10 +93,10 @@ namespace shellanything
     /// </summary>
     /// <param name="path">A relative path in the workspace. The given path does not have to be an existing file or directory within the workspace.</param>
     /// <returns>Returns the absolute path from the given relative path.</returns>
-    std::string GetFullPathUtf8(const char * path) const;
+    std::string GetFullPathUtf8(const char* path) const;
 
   private:
-    void Init(const char * workspace);
+    void Init(const char* workspace);
 
   private:
     std::string mWorkspace;

@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -51,7 +51,8 @@ void sa_selection_context_set_elements_buffer(sa_selection_context_t* ctx, const
   shellanything::StringList elements;
 
   //copy to elements
-  for (size_t i = 0; i < count; i++) {
+  for ( size_t i = 0; i < count; i++ )
+  {
     const char* str = strarray[i];
     elements.push_back(str);
   }
@@ -68,10 +69,10 @@ size_t sa_selection_context_get_element_count(sa_selection_context_immutable_t* 
 
 sa_error_t sa_selection_context_get_element_buffer(sa_selection_context_immutable_t* ctx, size_t idx, int* length, char* buffer, size_t buffer_size)
 {
-  if (length != NULL)
+  if ( length != NULL )
     *length = -1;
   const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
-  if (idx >= elements.size())
+  if ( idx >= elements.size() )
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
   sa_error_t result = sa_cstr_copy_buffer(buffer, buffer_size, length, element);
@@ -81,7 +82,7 @@ sa_error_t sa_selection_context_get_element_buffer(sa_selection_context_immutabl
 sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutable_t* ctx, size_t idx, sa_string_t* str)
 {
   const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
-  if (idx >= elements.size())
+  if ( idx >= elements.size() )
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   const std::string& element = elements[idx];
   sa_string_copy_stdstr(str, element);
@@ -91,7 +92,7 @@ sa_error_t sa_selection_context_get_element_string(sa_selection_context_immutabl
 const char* sa_selection_context_get_element_cstr(sa_selection_context_immutable_t* ctx, size_t idx)
 {
   const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
-  if (idx >= elements.size())
+  if ( idx >= elements.size() )
     return NULL;
   const std::string& element = elements[idx];
   const char* output = element.c_str();
@@ -101,7 +102,7 @@ const char* sa_selection_context_get_element_cstr(sa_selection_context_immutable
 const char* sa_selection_context_get_element_alloc(sa_selection_context_immutable_t* ctx, size_t idx)
 {
   const shellanything::StringList& elements = AS_CLASS_SELECTION_CONTEXT(ctx)->GetElements();
-  if (idx >= elements.size())
+  if ( idx >= elements.size() )
     return NULL;
   const std::string& element = elements[idx];
   const char* output = element.c_str();

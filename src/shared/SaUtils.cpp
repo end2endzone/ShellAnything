@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +32,7 @@
 #include <windows.h> //for MAX_PATH
 #include "rapidassist/undef_windows_macros.h"
 
-//External declarations
+ //External declarations
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
 
@@ -47,9 +47,9 @@ std::string GetCurrentModulePath()
   char buffer[MAX_PATH] = { 0 };
   HMODULE hModule = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-    GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-    (LPCSTR) __FUNCTION__,
-    &hModule))
+      GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+      (LPCSTR) __FUNCTION__,
+      &hModule))
   {
     uint32_t error_code = ra::errors::GetLastErrorCode();
     std::string desc = ra::errors::GetErrorCodeDescription(error_code);
@@ -82,9 +82,9 @@ std::string GetCurrentModulePathUtf8()
   wchar_t buffer[MAX_PATH] = { 0 };
   HMODULE hModule = NULL;
   if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-    GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-    (LPCWSTR)__FUNCTIONW__,
-    &hModule))
+      GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+      (LPCWSTR)__FUNCTIONW__,
+      &hModule))
   {
     uint32_t error_code = ra::errors::GetLastErrorCode();
     std::string desc = ra::errors::GetErrorCodeDescription(error_code);

@@ -1,3 +1,27 @@
+/**********************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2018 Antoine Beauchamp
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *********************************************************************************/
+
 #include "GlogUtils.h"
 #include "SaUtils.h"
 
@@ -8,27 +32,27 @@
 #include "rapidassist/process.h"
 #include "rapidassist/user.h"
 
-//Global declarations
+ //Global declarations
 char      g_Path[4096];             // Path to this DLL. 
-char *    g_argv[] = {g_Path, ""};  // For google::InitGoogleLogging(g_argv[0])
+char* g_argv[] = { g_Path, "" };  // For google::InitGoogleLogging(g_argv[0])
 
 namespace shellanything
 {
   extern void ShowErrorMessage(const std::string& title, const std::string& message);
 
-  int DateTimeToSeconds(const GLOG_DATETIME & dt)
+  int DateTimeToSeconds(const GLOG_DATETIME& dt)
   {
     int total_seconds = 0;
-    total_seconds += dt.year   *60*60*24*31*12;
-    total_seconds += dt.month  *60*60*24*31; //rouding to 31 days per month
-    total_seconds += dt.day    *60*60*24;
-    total_seconds += dt.hour   *60*60;
-    total_seconds += dt.minute *60;
-    total_seconds += dt.second *1;
+    total_seconds += dt.year * 60 * 60 * 24 * 31 * 12;
+    total_seconds += dt.month * 60 * 60 * 24 * 31; //rouding to 31 days per month
+    total_seconds += dt.day * 60 * 60 * 24;
+    total_seconds += dt.hour * 60 * 60;
+    total_seconds += dt.minute * 60;
+    total_seconds += dt.second * 1;
     return total_seconds;
   }
 
-  int GetDateTimeDiff(const GLOG_DATETIME & dt1, const GLOG_DATETIME & dt2)
+  int GetDateTimeDiff(const GLOG_DATETIME& dt1, const GLOG_DATETIME& dt2)
   {
     int seconds1 = DateTimeToSeconds(dt1);
     int seconds2 = DateTimeToSeconds(dt2);
@@ -36,11 +60,11 @@ namespace shellanything
     return diff;
   }
 
-  int GetLogFileAge(const std::string & path)
+  int GetLogFileAge(const std::string& path)
   {
     //when did we created this file ?
     const GLOG_DATETIME      file_date = GetFileDateTime(path);
-    const GLOG_DATETIME & invalid_date = GetInvalidLogDateTime();
+    const GLOG_DATETIME& invalid_date = GetInvalidLogDateTime();
     if (memcmp(&file_date, &invalid_date, sizeof(GLOG_DATETIME)) == 0)
       return 0; //failed getting the file's datetime
 
@@ -48,31 +72,31 @@ namespace shellanything
     tm tmp = ra::timing::GetLocalTime();
     tmp.tm_year += 1900;
     tmp.tm_mon += 1; //from [0,11] range to [1,12]
-    now.year   = tmp.tm_year  ;
-    now.month  = tmp.tm_mon   ;
-    now.day    = tmp.tm_mday  ;
-    now.hour   = tmp.tm_hour  ;
-    now.minute = tmp.tm_min   ;
-    now.second = tmp.tm_sec   ;
+    now.year = tmp.tm_year;
+    now.month = tmp.tm_mon;
+    now.day = tmp.tm_mday;
+    now.hour = tmp.tm_hour;
+    now.minute = tmp.tm_min;
+    now.second = tmp.tm_sec;
 
     int diff = GetDateTimeDiff(file_date, now);
     return diff;
   }
 
-  const GLOG_DATETIME & GetInvalidLogDateTime()
+  const GLOG_DATETIME& GetInvalidLogDateTime()
   {
-    static GLOG_DATETIME dt = {0};
+    static GLOG_DATETIME dt = { 0 };
     return dt;
   }
 
-  GLOG_DATETIME GetFileDateTime(const std::string & path)
+  GLOG_DATETIME GetFileDateTime(const std::string& path)
   {
-    GLOG_DATETIME dt = {0};
+    GLOG_DATETIME dt = { 0 };
 
     //sa.shellextension-d.dll.PCNAME.JohnSmith.log.INFO.20190503-180515.14920.log
-    
+
     std::string filename = ra::filesystem::GetFilename(path.c_str());
-    
+
     ra::strings::StringVector parts;
     ra::strings::Split(parts, filename, ".");
 
@@ -87,39 +111,39 @@ namespace shellanything
     if (parts.size() < 6)
       return GetInvalidLogDateTime(); //fail
 
-    std::string datetime = parts[parts.size()-3];
+    std::string datetime = parts[parts.size() - 3];
     ra::strings::Replace(datetime, "-", ""); //cleanup
 
     if (datetime.size() != 14)
       return GetInvalidLogDateTime(); //fail
 
     //extract fields
-    std::string year   = datetime.substr( 0, 4);
-    std::string month  = datetime.substr( 4, 2);
-    std::string day    = datetime.substr( 6, 2);
-    std::string hour   = datetime.substr( 8, 2);
+    std::string year = datetime.substr(0, 4);
+    std::string month = datetime.substr(4, 2);
+    std::string day = datetime.substr(6, 2);
+    std::string hour = datetime.substr(8, 2);
     std::string minute = datetime.substr(10, 2);
     std::string second = datetime.substr(12, 2);
 
     //trimming
-    year   = ra::strings::TrimLeft(year  , '0');
-    month  = ra::strings::TrimLeft(month , '0');
-    day    = ra::strings::TrimLeft(day   , '0');
-    hour   = ra::strings::TrimLeft(hour  , '0');
+    year = ra::strings::TrimLeft(year, '0');
+    month = ra::strings::TrimLeft(month, '0');
+    day = ra::strings::TrimLeft(day, '0');
+    hour = ra::strings::TrimLeft(hour, '0');
     minute = ra::strings::TrimLeft(minute, '0');
     second = ra::strings::TrimLeft(second, '0');
 
     //parsing
     bool parsed = true;
-    parsed = parsed && ra::strings::Parse(year  , dt.year  );
-    parsed = parsed && ra::strings::Parse(month , dt.month );
-    parsed = parsed && ra::strings::Parse(day   , dt.day   );
-    parsed = parsed && ra::strings::Parse(hour  , dt.hour  );
+    parsed = parsed && ra::strings::Parse(year, dt.year);
+    parsed = parsed && ra::strings::Parse(month, dt.month);
+    parsed = parsed && ra::strings::Parse(day, dt.day);
+    parsed = parsed && ra::strings::Parse(hour, dt.hour);
     parsed = parsed && ra::strings::Parse(minute, dt.minute);
     parsed = parsed && ra::strings::Parse(second, dt.second);
 
     if (!parsed)
-      return GetInvalidLogDateTime(); 
+      return GetInvalidLogDateTime();
 
     //success
     return dt;
@@ -128,7 +152,7 @@ namespace shellanything
   std::string GetLogDestination(int level)
   {
     //For issue #7 - Change the default filename format for log files
-    //NATIVE FORMAT:  sa.shellextension-d.dll.SES-MBL-WPC0866.beauchamp.a3.log.INFO.20180120-124422.8732.log
+    //NATIVE FORMAT:  sa.shellextension-d.dll.MYCOMPUTERNAME.johnsmith.log.INFO.20180120-124422.8732.log
     //DESIRED FORMAT: sa.shellextension-d.dll.INFO.20180120-124422.8732.log
 
     // The function google::SetLogDestination() is expecting a full path (including the destination directory)
@@ -148,7 +172,7 @@ namespace shellanything
     return path;
   }
 
-  std::string GetLogFilename(int level, const std::string & date, const std::string & time, uint32_t process_id)
+  std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id)
   {
     std::string module_path = GetCurrentModulePath();
     std::string module_filename = ra::filesystem::GetFilename(module_path.c_str());
@@ -172,11 +196,11 @@ namespace shellanything
 
   //Test if a directory allow write access to the current user.
   //Note: the only way to detect if write access is available is to actually write a file
-  bool HasDirectoryWriteAccess(const std::string & path)
+  bool HasDirectoryWriteAccess(const std::string& path)
   {
     //Check if the directory already exists
     if (!ra::filesystem::DirectoryExists(path.c_str()))
-        return false; //Directory not found. Denied write access.
+      return false; //Directory not found. Denied write access.
 
     //Generate a random filename to use as a "temporary file".
     std::string filename = ra::filesystem::GetTemporaryFileName();
@@ -196,7 +220,7 @@ namespace shellanything
     return true;
   }
 
-  bool IsValidLogDirectory(const std::string & path)
+  bool IsValidLogDirectory(const std::string& path)
   {
     //Issue #60 - Unit tests cannot execute from installation directory.
 
@@ -268,7 +292,7 @@ namespace shellanything
     return log_dir;
   }
 
-  bool IsLogFile(const std::string & path)
+  bool IsLogFile(const std::string& path)
   {
     std::string module_path = GetCurrentModulePath();
     std::string module_filename = ra::filesystem::GetFilename(module_path.c_str());
@@ -303,9 +327,9 @@ namespace shellanything
     if (!success) return;
 
     //for each files
-    for(size_t i=0; i<files.size(); i++)
+    for (size_t i = 0; i < files.size(); i++)
     {
-      const std::string & path = files[i];
+      const std::string& path = files[i];
       if (IsLogFile(path))
       {
         //that's a log file
@@ -323,7 +347,7 @@ namespace shellanything
   void DeletePreviousLogs()
   {
     static const int DAYS_TO_SECONDS = 86400;
-    static const int MAX_SECONDS_OLD = 5*DAYS_TO_SECONDS; //5 days old maximum
+    static const int MAX_SECONDS_OLD = 5 * DAYS_TO_SECONDS; //5 days old maximum
     DeletePreviousLogs(MAX_SECONDS_OLD);
   }
 
@@ -372,17 +396,17 @@ namespace shellanything
     {
       fLS::FLAGS_log_dir = log_dir;
     }
- 
+
     //Issue #7 - Change the default filename format for log files
-    std::string log_destination_info    = GetLogDestination(google::GLOG_INFO   );
+    std::string log_destination_info = GetLogDestination(google::GLOG_INFO);
     std::string log_destination_warning = GetLogDestination(google::GLOG_WARNING);
-    std::string log_destination_error   = GetLogDestination(google::GLOG_ERROR  );
-    google::SetLogDestination(google::GLOG_INFO,    log_destination_info   .c_str());
+    std::string log_destination_error = GetLogDestination(google::GLOG_ERROR);
+    google::SetLogDestination(google::GLOG_INFO, log_destination_info.c_str());
     google::SetLogDestination(google::GLOG_WARNING, log_destination_warning.c_str());
-    google::SetLogDestination(google::GLOG_ERROR,   log_destination_error  .c_str());
- 
+    google::SetLogDestination(google::GLOG_ERROR, log_destination_error.c_str());
+
     const std::vector<std::string> dirs = google::GetLoggingDirectories();
- 
+
     google::SetLogFilenameExtension(".log");
 
     // Initialize Google's logging library.

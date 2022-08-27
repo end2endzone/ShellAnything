@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,16 +40,16 @@ public:
   CInputBox(HWND hParent);
   virtual ~CInputBox();
 
-  private:
+private:
   // Disable copy constructor and copy operator
   CInputBox(const CInputBox&);
   CInputBox& operator=(const CInputBox&);
-  public:
+public:
 
-  void SetWidth(const int & width);
-  const int & GetWidth() const;
-  void SetHeight(const int & height);
-  const int & GetHeight() const;
+  void SetWidth(const int& width);
+  const int& GetWidth() const;
+  void SetHeight(const int& height);
+  const int& GetHeight() const;
   void SetPromptFont(HFONT hFont);
   HFONT GetPromptFont() const;
   void SetWindowFont(HFONT hFont);
@@ -76,7 +76,7 @@ public:
   /// Set the default text from an ansi string.
   /// </summary>
   /// <param name="text">The new text to display</param>
-  void SetTextAnsi(const std::string & text);
+  void SetTextAnsi(const std::string& text);
 
   /// <summary>
   /// Get the default text as an ansi string.
@@ -87,7 +87,7 @@ public:
   /// Set the default text from an unicode string.
   /// </summary>
   /// <param name="text">The new text to display</param>
-  void SetTextUnicode(const std::wstring & text);
+  void SetTextUnicode(const std::wstring& text);
 
   /// <summary>
   /// Get the default text as an unicode string.
@@ -100,7 +100,7 @@ public:
   /// <param name="caption">The caption of the window.</param>
   /// <param name="prompt">The prompt question displayed to the user.</param>
   /// <returns>Returns true if the user have clicked OK button. Returns false otherwise.</returns>
-  bool DoModal(const std::string  & caption, const std::string  & prompt);
+  bool DoModal(const std::string& caption, const std::string& prompt);
 
   /// <summary>
   /// Display the input box to the user and wait for the user to click the OK or CANCEL buttons.
@@ -108,7 +108,7 @@ public:
   /// <param name="caption">The caption of the window.</param>
   /// <param name="prompt">The prompt question displayed to the user.</param>
   /// <returns>Returns true if the user have clicked OK button. Returns false otherwise.</returns>
-  bool DoModal(const std::wstring & caption, const std::wstring & prompt);
+  bool DoModal(const std::wstring& caption, const std::wstring& prompt);
 
 private:
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

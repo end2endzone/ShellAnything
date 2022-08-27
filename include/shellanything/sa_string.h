@@ -32,6 +32,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Initialize a string with NULL values
 /// </summary>
@@ -55,14 +60,14 @@ void sa_string_create(sa_string_t* str);
 /// </summary>
 /// <param name="str">A pointer to a string</param>
 /// <param name="value">The initial value of the string</param>
-void sa_string_create_from_cstr(sa_string_t* str, const char * value);
+void sa_string_create_from_cstr(sa_string_t* str, const char* value);
 
 /// <summary>
 /// Create a new string initialized with the given string value
 /// </summary>
 /// <param name="str">A pointer to a string</param>
 /// <param name="value">The initial value of the string</param>
-void sa_string_create_from_str(sa_string_t* str, sa_string_t * value);
+void sa_string_create_from_str(sa_string_t* str, sa_string_t* value);
 
 /// <summary>
 /// Free an existing string.
@@ -82,7 +87,12 @@ size_t sa_string_get_length(sa_string_t* str);
 /// </summary>
 /// <param name="str">A pointer to a string</param>
 /// <returns>Returns a immutable buffer matching the value of a string.</returns>
-const char * sa_string_get_value(sa_string_t* str);
+const char* sa_string_get_value(sa_string_t* str);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

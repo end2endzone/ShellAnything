@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,33 +41,33 @@
 
 namespace shellanything
 {
-  const std::string& Validator::ATTRIBUTE_MAXFILES       = "maxfiles";
+  const std::string& Validator::ATTRIBUTE_MAXFILES = "maxfiles";
   const std::string& Validator::ATTRIBUTE_MAXDIRECTORIES = "maxfolders";
-  const std::string& Validator::ATTRIBUTE_PROPERTIES     = "properties";
+  const std::string& Validator::ATTRIBUTE_PROPERTIES = "properties";
   const std::string& Validator::ATTRIBUTE_FILEEXTENSIONS = "fileextensions";
-  const std::string& Validator::ATTRIBUTE_EXISTS         = "exists";
-  const std::string& Validator::ATTRIBUTE_CLASS          = "class";
-  const std::string& Validator::ATTRIBUTE_PATTERN        = "pattern";
-  const std::string& Validator::ATTRIBUTE_EXPRTK         = "exprtk";
-  const std::string& Validator::ATTRIBUTE_ISTRUE         = "istrue";
-  const std::string& Validator::ATTRIBUTE_ISFALSE        = "isfalse";
-  const std::string& Validator::ATTRIBUTE_ISEMPTY        = "isempty";
-  const std::string& Validator::ATTRIBUTE_INSERVE        = "inverse";
+  const std::string& Validator::ATTRIBUTE_EXISTS = "exists";
+  const std::string& Validator::ATTRIBUTE_CLASS = "class";
+  const std::string& Validator::ATTRIBUTE_PATTERN = "pattern";
+  const std::string& Validator::ATTRIBUTE_EXPRTK = "exprtk";
+  const std::string& Validator::ATTRIBUTE_ISTRUE = "istrue";
+  const std::string& Validator::ATTRIBUTE_ISFALSE = "isfalse";
+  const std::string& Validator::ATTRIBUTE_ISEMPTY = "isempty";
+  const std::string& Validator::ATTRIBUTE_INSERVE = "inverse";
 
-  bool HasValue(const ra::strings::StringVector & values, const std::string & token)
+  bool HasValue(const ra::strings::StringVector& values, const std::string& token)
   {
-    for(size_t i=0; i<values.size(); i++)
+    for (size_t i = 0; i < values.size(); i++)
     {
-      const std::string & v = values[i];
+      const std::string& v = values[i];
       if (token == v)
         return true;
     }
     return false;
   }
 
-  void Uppercase(ra::strings::StringVector & values)
+  void Uppercase(ra::strings::StringVector& values)
   {
-    for(size_t i=0; i<values.size(); i++)
+    for (size_t i = 0; i < values.size(); i++)
     {
       std::string tmp = ra::strings::Uppercase(values[i]);
       values[i] = tmp;
@@ -103,116 +103,116 @@ namespace shellanything
     mParentMenu = menu;
   }
 
-  const int & Validator::GetMaxFiles() const
+  const int& Validator::GetMaxFiles() const
   {
     return mMaxFiles;
   }
 
-  void Validator::SetMaxFiles(const int & max_files)
+  void Validator::SetMaxFiles(const int& max_files)
   {
     std::string str_value = ra::strings::ToString(max_files);
     mAttributes.SetProperty(ATTRIBUTE_MAXFILES, str_value);
     mMaxFiles = max_files;
   }
 
-  const int & Validator::GetMaxDirectories() const
+  const int& Validator::GetMaxDirectories() const
   {
     return mMaxDirectories;
   }
 
-  void Validator::SetMaxDirectories(const int & max_directories)
+  void Validator::SetMaxDirectories(const int& max_directories)
   {
     std::string str_value = ra::strings::ToString(max_directories);
     mAttributes.SetProperty(ATTRIBUTE_MAXDIRECTORIES, str_value);
     mMaxDirectories = max_directories;
   }
 
-  const std::string & Validator::GetProperties() const
+  const std::string& Validator::GetProperties() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_PROPERTIES);
   }
 
-  void Validator::SetProperties(const std::string & properties)
+  void Validator::SetProperties(const std::string& properties)
   {
     mAttributes.SetProperty(ATTRIBUTE_PROPERTIES, properties);
   }
 
-  const std::string & Validator::GetFileExtensions() const
+  const std::string& Validator::GetFileExtensions() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_FILEEXTENSIONS);
   }
 
-  void Validator::SetFileExtensions(const std::string & file_extensions)
+  void Validator::SetFileExtensions(const std::string& file_extensions)
   {
     mAttributes.SetProperty(ATTRIBUTE_FILEEXTENSIONS, file_extensions);
   }
 
-  const std::string & Validator::GetFileExists() const
+  const std::string& Validator::GetFileExists() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_EXISTS);
   }
 
-  void Validator::SetFileExists(const std::string & file_exists)
+  void Validator::SetFileExists(const std::string& file_exists)
   {
     mAttributes.SetProperty(ATTRIBUTE_EXISTS, file_exists);
   }
 
-  const std::string & Validator::GetClass() const
+  const std::string& Validator::GetClass() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_CLASS);
   }
 
-  void Validator::SetClass(const std::string & classes)
+  void Validator::SetClass(const std::string& classes)
   {
     mAttributes.SetProperty(ATTRIBUTE_CLASS, classes);
   }
 
-  const std::string & Validator::GetPattern() const
+  const std::string& Validator::GetPattern() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_PATTERN);
   }
 
-  void Validator::SetPattern(const std::string & pattern)
+  void Validator::SetPattern(const std::string& pattern)
   {
     mAttributes.SetProperty(ATTRIBUTE_PATTERN, pattern);
   }
 
-  const std::string & Validator::GetExprtk() const
+  const std::string& Validator::GetExprtk() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_EXPRTK);
   }
 
-  void Validator::SetExprtk(const std::string & exprtk)
+  void Validator::SetExprtk(const std::string& exprtk)
   {
     mAttributes.SetProperty(ATTRIBUTE_EXPRTK, exprtk);
   }
 
-  const std::string & Validator::GetIsTrue() const
+  const std::string& Validator::GetIsTrue() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_ISTRUE);
   }
 
-  void Validator::SetIsTrue(const std::string & istrue)
+  void Validator::SetIsTrue(const std::string& istrue)
   {
     mAttributes.SetProperty(ATTRIBUTE_ISTRUE, istrue);
   }
 
-  const std::string & Validator::GetIsFalse() const
+  const std::string& Validator::GetIsFalse() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_ISFALSE);
   }
 
-  void Validator::SetIsFalse(const std::string & isfalse)
+  void Validator::SetIsFalse(const std::string& isfalse)
   {
     mAttributes.SetProperty(ATTRIBUTE_ISFALSE, isfalse);
   }
 
-  const std::string & Validator::GetIsEmpty() const
+  const std::string& Validator::GetIsEmpty() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_ISEMPTY);
   }
 
-  void Validator::SetIsEmpty(const std::string & isempty)
+  void Validator::SetIsEmpty(const std::string& isempty)
   {
     mAttributes.SetProperty(ATTRIBUTE_ISEMPTY, isempty);
   }
@@ -227,29 +227,29 @@ namespace shellanything
     mCustomAttributes = attributes;
   }
 
-  const std::string & Validator::GetInserve() const
+  const std::string& Validator::GetInserve() const
   {
     return mAttributes.GetProperty(ATTRIBUTE_INSERVE);
   }
 
-  void Validator::SetInserve(const std::string & inserve)
+  void Validator::SetInserve(const std::string& inserve)
   {
     mAttributes.SetProperty(ATTRIBUTE_INSERVE, inserve);
   }
 
-  bool Validator::IsInversed(const char * name) const
+  bool Validator::IsInversed(const char* name) const
   {
     if (name == NULL)
       return false;
     if (name[0] == '\0')
       return false;
-    
+
     std::string tmp_name = name;
 
     // Validate with 'all' attribute
     if (tmp_name != "all")
     {
-      if ( IsInversed("all") )
+      if (IsInversed("all"))
         return true;
     }
 
@@ -258,7 +258,7 @@ namespace shellanything
     size_t name_length = tmp_name.size();
     size_t search_index = 0;
     size_t pos = inverse_attr.find(name, search_index);
-    while( pos != std::string::npos)
+    while (pos != std::string::npos)
     {
       // The name of the attribute was found.
 
@@ -282,7 +282,7 @@ namespace shellanything
         char previous = SA_INVERSE_ATTR_SEPARATOR_CHAR;
         if (pos >= 1)
           previous = inverse_attr[pos - 1];
-        
+
         if (previous == SA_INVERSE_ATTR_SEPARATOR_CHAR)
           return true; // We have a match!
       }
@@ -297,15 +297,15 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::Validate(const SelectionContext & context) const
+  bool Validator::Validate(const SelectionContext& context) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
-  	
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
     bool maxfiles_inversed = IsInversed("maxfiles");
     if (!maxfiles_inversed && context.GetNumFiles() > mMaxFiles)
-        return false; //too many files selected
+      return false; //too many files selected
     if (maxfiles_inversed && context.GetNumFiles() <= mMaxFiles)
-        return false; //too many files selected
+      return false; //too many files selected
 
     bool maxfolders_inversed = IsInversed("maxfolders");
     if (!maxfolders_inversed && context.GetNumDirectories() > mMaxDirectories)
@@ -317,7 +317,7 @@ namespace shellanything
     const std::string properties = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_PROPERTIES));
     if (!properties.empty())
     {
-      bool inversed = IsInversed( "properties");
+      bool inversed = IsInversed("properties");
       bool valid = ValidateProperties(context, properties, inversed);
       if (!valid)
         return false;
@@ -432,18 +432,18 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::IsTrue(const std::string & value)
+  bool Validator::IsTrue(const std::string& value)
   {
     std::string upper_case_value = ra::strings::Uppercase(value);
     if (upper_case_value == "TRUE" ||
         upper_case_value == "YES" ||
         upper_case_value == "OK" ||
         upper_case_value == "ON" ||
-        upper_case_value == "1"     )
+        upper_case_value == "1")
       return true;
-    
+
     //check with system true
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string system_true = pmgr.GetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME);
     std::string upper_case_system_true = ra::strings::Uppercase(system_true);
     if (upper_case_value == upper_case_system_true)
@@ -452,18 +452,18 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::IsFalse(const std::string & value)
+  bool Validator::IsFalse(const std::string& value)
   {
     std::string upper_case_value = ra::strings::Uppercase(value);
     if (upper_case_value == "FALSE" ||
         upper_case_value == "NO" ||
         upper_case_value == "FAIL" ||
         upper_case_value == "OFF" ||
-        upper_case_value == "0"     )
+        upper_case_value == "0")
       return true;
-    
+
     //check with system false
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string system_false = pmgr.GetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME);
     std::string upper_case_system_false = ra::strings::Uppercase(system_false);
     if (upper_case_value == upper_case_system_false)
@@ -472,26 +472,26 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::ValidateProperties(const SelectionContext & context, const std::string & properties, bool inversed) const
+  bool Validator::ValidateProperties(const SelectionContext& context, const std::string& properties, bool inversed) const
   {
     if (properties.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector property_list = ra::strings::Split(properties, SA_PROPERTIES_ATTR_SEPARATOR_STR);
 
     //each property specified must exists and be non-empty
-    for(size_t i=0; i<property_list.size(); i++)
+    for (size_t i = 0; i < property_list.size(); i++)
     {
-      const std::string & p = property_list[i];
+      const std::string& p = property_list[i];
 
       if (!inversed)
       {
         if (!pmgr.HasProperty(p))
           return false; //missing property
-        const std::string & p_value = pmgr.GetProperty(p);
+        const std::string& p_value = pmgr.GetProperty(p);
         if (p_value.empty())
           return false; //empty
       }
@@ -500,7 +500,7 @@ namespace shellanything
         // inversed
         if (pmgr.HasProperty(p))
         {
-          const std::string & p_value = pmgr.GetProperty(p);
+          const std::string& p_value = pmgr.GetProperty(p);
           if (!p_value.empty())
             return false; //not empty
         }
@@ -510,22 +510,22 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateFileExtensions(const SelectionContext & context, const std::string & file_extensions, bool inversed) const
+  bool Validator::ValidateFileExtensions(const SelectionContext& context, const std::string& file_extensions, bool inversed) const
   {
     if (file_extensions.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
     Uppercase(accepted_file_extensions);
 
     //for each file selected
-    const StringList & context_elements = context.GetElements();
-    for(size_t i=0; i<context_elements.size(); i++) 
+    const StringList& context_elements = context.GetElements();
+    for (size_t i = 0; i < context_elements.size(); i++)
     {
-      const std::string & path = context_elements[i];
+      const std::string& path = context_elements[i];
       std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(path));
 
       //each file extension must be part of accepted_file_extensions
@@ -539,20 +539,20 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateExists(const SelectionContext & context, const std::string & file_exists, bool inversed) const
+  bool Validator::ValidateExists(const SelectionContext& context, const std::string& file_exists, bool inversed) const
   {
     if (file_exists.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector mandatory_files = ra::strings::Split(file_exists, SA_EXISTS_ATTR_SEPARATOR_STR);
 
     //for each file
-    for(size_t i=0; i<mandatory_files.size(); i++)
+    for (size_t i = 0; i < mandatory_files.size(); i++)
     {
-      const std::string & element = mandatory_files[i];
+      const std::string& element = mandatory_files[i];
       bool element_exists = false;
       element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
       element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
@@ -565,9 +565,9 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const
+  bool Validator::ValidateSingleFileSingleClass(const std::string& path, const std::string& class_, bool inversed) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     if (class_ == "file")
     {
@@ -615,7 +615,7 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const
+  bool Validator::ValidateSingleFileMultipleClasses(const std::string& path, const std::string& class_, bool inversed) const
   {
     if (class_.empty())
       return true;
@@ -626,19 +626,19 @@ namespace shellanything
     bool valid = false;
     for (size_t i = 0; i < classes.size(); i++)
     {
-      const std::string & class_ = classes[i];
+      const std::string& class_ = classes[i];
       valid |= ValidateSingleFileSingleClass(path, class_, inversed);
     }
 
     return valid;
   }
 
-  bool Validator::ValidateClass(const SelectionContext & context, const std::string & class_, bool inversed) const
+  bool Validator::ValidateClass(const SelectionContext& context, const std::string& class_, bool inversed) const
   {
     if (class_.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector classes = ra::strings::Split(class_, SA_CLASS_ATTR_SEPARATOR_STR);
@@ -654,9 +654,9 @@ namespace shellanything
 
       bool found_file_extensions = false;
 
-      for(size_t i=classes.size()-1; i>=0 && i!=INVALID_INDEX_POSITION; i--)
+      for (size_t i = classes.size() - 1; i >= 0 && i != INVALID_INDEX_POSITION; i--)
       {
-        const std::string & element = classes[i];
+        const std::string& element = classes[i];
 
         // Is this a class file extension filter?
         if (!element.empty() && element[0] == '.')
@@ -679,9 +679,9 @@ namespace shellanything
       }
 
       // Delete elements of classes which were identified as file extensions
-      for(size_t i=0; i<delete_positions.size(); i++)
+      for (size_t i = 0; i < delete_positions.size(); i++)
       {
-        const size_t & delete_position = delete_positions[i];
+        const size_t& delete_position = delete_positions[i];
         classes.erase(classes.begin() + delete_position);
       }
 
@@ -701,10 +701,10 @@ namespace shellanything
       std::string classes_str = ra::strings::Join(classes, SA_CLASS_ATTR_SEPARATOR_STR);
 
       //for each file selected
-      const StringList & context_elements = context.GetElements();
+      const StringList& context_elements = context.GetElements();
       for (size_t i = 0; i < context_elements.size(); i++)
       {
-        const std::string & path = context_elements[i];
+        const std::string& path = context_elements[i];
 
         //each element must match one of the classes
         bool valid = ValidateSingleFileMultipleClasses(path, classes_str, inversed);
@@ -718,11 +718,11 @@ namespace shellanything
     return true;
   }
 
-  bool WildcardMatch(const ra::strings::StringVector & patterns, const char * value)
+  bool WildcardMatch(const ra::strings::StringVector& patterns, const char* value)
   {
-    for(size_t j=0; j<patterns.size(); j++)
+    for (size_t j = 0; j < patterns.size(); j++)
     {
-      const std::string & pattern = patterns[j];
+      const std::string& pattern = patterns[j];
       bool match = WildcardMatch(pattern.c_str(), value);
       if (match)
         return true;
@@ -730,22 +730,22 @@ namespace shellanything
     return false;
   }
 
-  bool Validator::ValidatePattern(const SelectionContext & context, const std::string & pattern, bool inversed) const
+  bool Validator::ValidatePattern(const SelectionContext& context, const std::string& pattern, bool inversed) const
   {
     if (pattern.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector patterns = ra::strings::Split(pattern, SA_PATTERN_ATTR_SEPARATOR_STR);
     Uppercase(patterns);
 
     //for each file selected
-    const StringList & context_elements = context.GetElements();
-    for(size_t i=0; i<context_elements.size(); i++) 
+    const StringList& context_elements = context.GetElements();
+    for (size_t i = 0; i < context_elements.size(); i++)
     {
-      const std::string & path = context_elements[i];
+      const std::string& path = context_elements[i];
       std::string path_uppercase = ra::strings::Uppercase(path);
 
       //each element must match one of the patterns
@@ -759,12 +759,12 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateExprtk(const SelectionContext & context, const std::string & exprtk, bool inversed) const
+  bool Validator::ValidateExprtk(const SelectionContext& context, const std::string& exprtk, bool inversed) const
   {
     if (exprtk.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     static const size_t ERROR_SIZE = 10480;
     char error[ERROR_SIZE];
@@ -785,12 +785,12 @@ namespace shellanything
     return result;
   }
 
-  bool Validator::ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const
+  bool Validator::ValidateIsTrue(const SelectionContext& context, const std::string& istrue, bool inversed) const
   {
     if (istrue.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector statements = ra::strings::Split(istrue, SA_ISTRUE_ATTR_SEPARATOR_STR);
@@ -798,7 +798,7 @@ namespace shellanything
     //for each boolean statement
     for (size_t i = 0; i < statements.size(); i++)
     {
-      const std::string & statement = statements[i];
+      const std::string& statement = statements[i];
       bool match = IsTrue(statement);
       if (!inversed && !match)
         return false; //current statement does not evaluate to true
@@ -809,12 +809,12 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const
+  bool Validator::ValidateIsFalse(const SelectionContext& context, const std::string& isfalse, bool inversed) const
   {
     if (isfalse.empty())
       return true;
 
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
     ra::strings::StringVector statements = ra::strings::Split(isfalse, SA_ISTRUE_ATTR_SEPARATOR_STR);
@@ -822,7 +822,7 @@ namespace shellanything
     //for each boolean statement
     for (size_t i = 0; i < statements.size(); i++)
     {
-      const std::string & statement = statements[i];
+      const std::string& statement = statements[i];
       bool match = IsFalse(statement);
       if (!inversed && !match)
         return false; //current statement does not evaluate to false
@@ -833,9 +833,9 @@ namespace shellanything
     return true;
   }
 
-  bool Validator::ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const
+  bool Validator::ValidateIsEmpty(const SelectionContext& context, const std::string& isempty, bool inversed) const
   {
-    PropertyManager & pmgr = PropertyManager::GetInstance();
+    PropertyManager& pmgr = PropertyManager::GetInstance();
 
     bool match = isempty.empty();
     if (!inversed && !match)
@@ -877,7 +877,7 @@ namespace shellanything
     //get condition attributes supported by this plugin
     ra::strings::StringVector plugin_conditions;
     PropertyManager::SplitAndExpand(plugin->GetConditions(), SA_CONDITIONS_ATTR_SEPARATOR_STR, plugin_conditions);
-    
+
     //if there is no condition, it cannot be linked to a validator.
     if (plugin_conditions.empty())
       return true; // no validation required

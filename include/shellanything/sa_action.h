@@ -32,6 +32,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable action to an immutable action.
 /// </summary>
@@ -45,6 +50,11 @@ sa_action_immutable_t sa_action_to_immutable(sa_action_t* action);
 /// <param name="action">The action structure object.</param>
 /// <param name="ctx">The context for executing the action.</param>
 sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_selection_context_immutable_t* ctx);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

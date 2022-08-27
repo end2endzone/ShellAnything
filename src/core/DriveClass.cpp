@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,13 +32,13 @@ namespace shellanything
 
   inline bool IsDriveLetter(char c)
   {
-    if (  (c >= 'a' && c <= 'z') ||
-          (c >= 'A' && c <= 'Z')    )
+    if ((c >= 'a' && c <= 'z') ||
+        (c >= 'A' && c <= 'Z'))
       return true;
     return false;
   }
 
-  std::string GetDriveLetter(const std::string & element)
+  std::string GetDriveLetter(const std::string& element)
   {
     std::string letter;
     if (element.size() >= 2 && element[1] == ':' && IsDriveLetter(element[0]))
@@ -46,7 +46,7 @@ namespace shellanything
     return letter;
   }
 
-  std::string GetDrivePath(const std::string & element)
+  std::string GetDrivePath(const std::string& element)
   {
     std::string letter;
     if (element.size() >= 3 && element[1] == ':' && IsDriveLetter(element[0]) && element[2] == '\\')
@@ -54,20 +54,20 @@ namespace shellanything
     return letter;
   }
 
-  bool IsNetworkPath(const std::string & path)
+  bool IsNetworkPath(const std::string& path)
   {
     if (path.size() >= 2 && path.substr(0, 2) == "\\\\")
     {
       // The path starts with \\
-      // Extract hostname
-      const char * hostname = &path[2];
+        // Extract hostname
+      const char* hostname = &path[2];
       if (hostname[0] != '\0')
       {
         // Get first character of hostname
         char first = hostname[0];
         if ((first >= 'a' && first <= 'z') ||
             (first >= 'A' && first <= 'Z') ||
-            (first >= '0' && first <= '9')  )
+            (first >= '0' && first <= '9'))
         {
           return true;
         }
@@ -76,7 +76,7 @@ namespace shellanything
     return false;
   }
 
-  DRIVE_CLASS GetDriveClassFromPath(const std::string & path)
+  DRIVE_CLASS GetDriveClassFromPath(const std::string& path)
   {
     // Patch for DRIVE_CLASS_NETWORK.
     // The function GetDriveTypeA() will return DRIVE_UNKNOWN when the given path is a network path.
@@ -88,28 +88,28 @@ namespace shellanything
       return DRIVE_CLASS_NETWORK;
 
     UINT dwDriveType = GetDriveTypeA(path.c_str());
-    switch(dwDriveType)
+    switch (dwDriveType)
     {
     case DRIVE_NO_ROOT_DIR:
+    {
+      // The function GetDriveTypeA() returns DRIVE_NO_ROOT_DIR on a path that does not exist,
+      // if the given path is a file, or if the given path is a directory that is not the root directory.
+      // The functions returns DRIVE_NO_ROOT_DIR even if the drive letter, of the given non-existing path, is a CD-ROM or DVD-Drive.
+      // However, the function will return DRIVE_CDROM is the root path of the same path is used, even if there are no disk in the optical drive.
+      // To work around these issues, try to resolve with the root path of the drive.
+      std::string root_path = GetDrivePath(path);
+      if (root_path.empty() || // We may be dealing with a network path
+          root_path == path) // We are already using a root drive path
       {
-        // The function GetDriveTypeA() returns DRIVE_NO_ROOT_DIR on a path that does not exist,
-        // if the given path is a file, or if the given path is a directory that is not the root directory.
-        // The functions returns DRIVE_NO_ROOT_DIR even if the drive letter, of the given non-existing path, is a CD-ROM or DVD-Drive.
-        // However, the function will return DRIVE_CDROM is the root path of the same path is used, even if there are no disk in the optical drive.
-        // To work around these issues, try to resolve with the root path of the drive.
-        std::string root_path = GetDrivePath(path);
-        if (root_path.empty() || // We may be dealing with a network path
-            root_path == path  ) // We are already using a root drive path
-        {
-          // There is nothing we can do.
-          return DRIVE_CLASS_UNKNOWN;
-        }
-        
-        // Try to resolve with the root path instead
-        DRIVE_CLASS resolved = GetDriveClassFromPath(root_path);
-        return resolved;
+        // There is nothing we can do.
+        return DRIVE_CLASS_UNKNOWN;
       }
-      break;
+
+      // Try to resolve with the root path instead
+      DRIVE_CLASS resolved = GetDriveClassFromPath(root_path);
+      return resolved;
+    }
+    break;
     case DRIVE_REMOVABLE:
       return DRIVE_CLASS_REMOVABLE;
     case DRIVE_FIXED:
@@ -126,7 +126,7 @@ namespace shellanything
     };
   }
 
-  DRIVE_CLASS GetDriveClassFromString(const std::string & value)
+  DRIVE_CLASS GetDriveClassFromString(const std::string& value)
   {
     if (value == "drive:removable")
       return DRIVE_CLASS_REMOVABLE;
@@ -144,9 +144,9 @@ namespace shellanything
     return DRIVE_CLASS_UNKNOWN;
   }
 
-  const char * ToString(DRIVE_CLASS & value)
+  const char* ToString(DRIVE_CLASS& value)
   {
-    switch(value)
+    switch (value)
     {
     case DRIVE_CLASS_REMOVABLE:
       return "drive:removable";

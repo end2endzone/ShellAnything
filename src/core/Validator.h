@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -106,117 +106,117 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'maxfiles' parameter.
     /// </summary>
-    const int & GetMaxFiles() const;
+    const int& GetMaxFiles() const;
 
     /// <summary>
     /// Setter for the 'maxfiles' parameter.
     /// </summary>
-    void SetMaxFiles(const int & max_files);
+    void SetMaxFiles(const int& max_files);
 
     /// <summary>
     /// Getter for the 'maxdirectories' parameter.
     /// </summary>
-    const int & GetMaxDirectories() const;
+    const int& GetMaxDirectories() const;
 
     /// <summary>
     /// Setter for the 'maxdirectories' parameter.
     /// </summary>
-    void SetMaxDirectories(const int & max_directories);
+    void SetMaxDirectories(const int& max_directories);
 
     /// <summary>
     /// Getter for the 'properties' parameter.
     /// </summary>
-    const std::string & GetProperties() const;
+    const std::string& GetProperties() const;
 
     /// <summary>
     /// Setter for the 'properties' parameter.
     /// </summary>
-    void SetProperties(const std::string & properties);
+    void SetProperties(const std::string& properties);
 
     /// <summary>
     /// Getter for the 'fileextensions' parameter.
     /// </summary>
-    const std::string & GetFileExtensions() const;
+    const std::string& GetFileExtensions() const;
 
     /// <summary>
     /// Setter for the 'fileextensions' parameter.
     /// </summary>
-    void SetFileExtensions(const std::string & file_extensions);
+    void SetFileExtensions(const std::string& file_extensions);
 
     /// <summary>
     /// Getter for the 'fileexists' parameter.
     /// </summary>
-    const std::string & GetFileExists() const;
+    const std::string& GetFileExists() const;
 
     /// <summary>
     /// Setter for the 'fileexists' parameter.
     /// </summary>
-    void SetFileExists(const std::string & file_exists);
+    void SetFileExists(const std::string& file_exists);
 
     /// <summary>
     /// Getter for the 'class' parameter.
     /// </summary>
-    const std::string & GetClass() const;
+    const std::string& GetClass() const;
 
     /// <summary>
     /// Setter for the 'class' parameter.
     /// </summary>
-    void SetClass(const std::string & classes);
+    void SetClass(const std::string& classes);
 
     /// <summary>
     /// Getter for the 'pattern' parameter.
     /// </summary>
-    const std::string & GetPattern() const;
+    const std::string& GetPattern() const;
 
     /// <summary>
     /// Setter for the 'pattern' parameter.
     /// </summary>
-    void SetPattern(const std::string & pattern);
+    void SetPattern(const std::string& pattern);
 
     /// <summary>
     /// Getter for the 'exprtk' parameter.
     /// </summary>
-    const std::string & GetExprtk() const;
+    const std::string& GetExprtk() const;
 
     /// <summary>
     /// Setter for the 'exprtk' parameter.
     /// </summary>
-    void SetExprtk(const std::string & exprtk);
+    void SetExprtk(const std::string& exprtk);
 
     /// <summary>
     /// Getter for the 'istrue' parameter.
     /// </summary>
-    const std::string & GetIsTrue() const;
+    const std::string& GetIsTrue() const;
 
     /// <summary>
     /// Setter for the 'istrue' parameter.
     /// </summary>
-    void SetIsTrue(const std::string & istrue);
+    void SetIsTrue(const std::string& istrue);
 
     /// <summary>
     /// Getter for the 'isfalse' parameter.
     /// </summary>
-    const std::string & GetIsFalse() const;
+    const std::string& GetIsFalse() const;
 
     /// <summary>
     /// Setter for the 'isfalse' parameter.
     /// </summary>
-    void SetIsFalse(const std::string & isfalse);
+    void SetIsFalse(const std::string& isfalse);
 
     /// <summary>
     /// Getter for the 'isempty' parameter.
     /// </summary>
-    const std::string & GetIsEmpty() const;
+    const std::string& GetIsEmpty() const;
 
     /// <summary>
     /// Setter for the 'isempty' parameter.
     /// </summary>
-    void SetIsEmpty(const std::string & isempty);
+    void SetIsEmpty(const std::string& isempty);
 
     /// <summary>
     /// Get the custom attributes (key and values) defined by plugins.
     /// </summary>
-    const PropertyStore & GetCustomAttributes() const;
+    const PropertyStore& GetCustomAttributes() const;
 
     /// <summary>
     /// Set the custom attributes (key and values).
@@ -226,12 +226,12 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'inserve' parameter.
     /// </summary>
-    const std::string & GetInserve() const;
+    const std::string& GetInserve() const;
 
     /// <summary>
     /// Setter for the 'inserve' parameter.
     /// </summary>
-    void SetInserve(const std::string & inserve);
+    void SetInserve(const std::string& inserve);
 
     /// <summary>
     /// Returns true if the given attribute name is in the list of inversed attributes.
@@ -240,7 +240,7 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the attribute. The name is case sensitive.</param>
     /// <returns>Returns true if the given attribute name is in the list of inversed attributes. Returns false otherwise.</returns>
-    bool IsInversed(const char * name) const;
+    bool IsInversed(const char* name) const;
 
     /// <summary>
     /// Validate the object against a set of constraints.
@@ -248,7 +248,7 @@ namespace shellanything
     /// </summary>
     /// <param name="context">The selection context used for validating.</param>
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
-    bool Validate(const SelectionContext & context) const;
+    bool Validate(const SelectionContext& context) const;
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
@@ -264,7 +264,7 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The value to test as true</param>
     /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
-    static bool IsTrue(const std::string & value);
+    static bool IsTrue(const std::string& value);
 
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
@@ -280,21 +280,21 @@ namespace shellanything
     /// </remarks>
     /// <param name="value">The value to test as true</param>
     /// <returns>Returns true if the given value can be evaluated as logical true. Returns false otherwise.</returns>
-    static bool IsFalse(const std::string & value);
+    static bool IsFalse(const std::string& value);
 
   private:
-    bool ValidateProperties(const SelectionContext & context, const std::string & properties, bool inversed) const;
-    bool ValidateFileExtensions(const SelectionContext & context, const std::string & file_extensions, bool inversed) const;
-    bool ValidateExists(const SelectionContext & context, const std::string & file_exists, bool inversed) const;
-    bool ValidateClass(const SelectionContext & context, const std::string & class_, bool inversed) const;
-    bool ValidateSingleFileMultipleClasses(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidateSingleFileSingleClass(const std::string & path, const std::string & class_, bool inversed) const;
-    bool ValidatePattern(const SelectionContext & context, const std::string & pattern, bool inversed) const;
-    bool ValidateExprtk(const SelectionContext & context, const std::string & exprtk, bool inversed) const;
-    bool ValidateIsTrue(const SelectionContext & context, const std::string & istrue, bool inversed) const;
-    bool ValidateIsFalse(const SelectionContext & context, const std::string & isfalse, bool inversed) const;
-    bool ValidateIsEmpty(const SelectionContext & context, const std::string & isempty, bool inversed) const;
-    bool ValidatePlugin(const SelectionContext & context, Plugin* plugin) const;
+    bool ValidateProperties(const SelectionContext& context, const std::string& properties, bool inversed) const;
+    bool ValidateFileExtensions(const SelectionContext& context, const std::string& file_extensions, bool inversed) const;
+    bool ValidateExists(const SelectionContext& context, const std::string& file_exists, bool inversed) const;
+    bool ValidateClass(const SelectionContext& context, const std::string& class_, bool inversed) const;
+    bool ValidateSingleFileMultipleClasses(const std::string& path, const std::string& class_, bool inversed) const;
+    bool ValidateSingleFileSingleClass(const std::string& path, const std::string& class_, bool inversed) const;
+    bool ValidatePattern(const SelectionContext& context, const std::string& pattern, bool inversed) const;
+    bool ValidateExprtk(const SelectionContext& context, const std::string& exprtk, bool inversed) const;
+    bool ValidateIsTrue(const SelectionContext& context, const std::string& istrue, bool inversed) const;
+    bool ValidateIsFalse(const SelectionContext& context, const std::string& isfalse, bool inversed) const;
+    bool ValidateIsEmpty(const SelectionContext& context, const std::string& isempty, bool inversed) const;
+    bool ValidatePlugin(const SelectionContext& context, Plugin* plugin) const;
 
   private:
     int mMaxFiles;

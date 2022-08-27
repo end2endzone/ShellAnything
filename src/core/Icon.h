@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,13 +46,13 @@ namespace shellanything
     static const int INVALID_ICON_INDEX = -1;
 
     Icon();
-    Icon(const Icon & icon);
+    Icon(const Icon& icon);
     virtual ~Icon();
 
     /// <summary>
     /// Copy operator
     /// </summary>
-    const Icon & operator =(const Icon & icon);
+    const Icon& operator =(const Icon& icon);
 
     /// <summary>
     /// Returns true if the icon have a valid path and index.
@@ -68,32 +68,32 @@ namespace shellanything
     /// <summary>
     /// Getter for the 'fileextension' parameter.
     /// </summary>
-    const std::string & GetFileExtension() const;
+    const std::string& GetFileExtension() const;
 
     /// <summary>
     /// Setter for the 'fileextension' parameter.
     /// </summary>
-    void SetFileExtension(const std::string & file_extension);
+    void SetFileExtension(const std::string& file_extension);
 
     /// <summary>
     /// Getter for the 'path' parameter.
     /// </summary>
-    const std::string & GetPath() const;
+    const std::string& GetPath() const;
 
     /// <summary>
     /// Setter for the 'path' parameter.
     /// </summary>
-    void SetPath(const std::string & path);
+    void SetPath(const std::string& path);
 
     /// <summary>
     /// Getter for the 'index' parameter.
     /// </summary>
-    const int & GetIndex() const;
+    const int& GetIndex() const;
 
     /// <summary>
     /// Setter for the 'index' parameter.
     /// </summary>
-    void SetIndex(const int & index);
+    void SetIndex(const int& index);
 
   private:
     typedef std::set<std::string /*file extension*/> FileExtensionSet;

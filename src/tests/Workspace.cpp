@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,7 +40,7 @@ namespace shellanything
     Init(workspace_dir.c_str());
   }
 
-  Workspace::Workspace(const char * workspace)
+  Workspace::Workspace(const char* workspace)
   {
     Init(workspace);
   }
@@ -69,7 +69,7 @@ namespace shellanything
     return true;
   }
 
-  void Workspace::Init(const char * workspace)
+  void Workspace::Init(const char* workspace)
   {
     if (workspace == NULL || workspace[0] == '\0')
       return;
@@ -90,7 +90,7 @@ namespace shellanything
     return mWorkspace;
   }
 
-  bool Workspace::ImportDirectoryUtf8(const char * source, const char * target_dir)
+  bool Workspace::ImportDirectoryUtf8(const char* source, const char* target_dir)
   {
     if (source == NULL)
       return false;
@@ -103,7 +103,7 @@ namespace shellanything
       return false;
 
     //printf("Importing directory into workspace: %s\n", source);
-    
+
     //Define source parent directory
     std::string parent_dir = ra::filesystem::GetParentPath(source);
 
@@ -117,9 +117,9 @@ namespace shellanything
     }
 
     //Copying each files individually.
-    for(size_t i=0; i<files.size(); i++)
+    for (size_t i = 0; i < files.size(); i++)
     {
-      const std::string & source_file = files[i];
+      const std::string& source_file = files[i];
 
       //Remove the parent path of the source directory to make the file paths relative to the parent directory.
       std::string target_relative = source_file;
@@ -144,7 +144,7 @@ namespace shellanything
     return true;
   }
 
-  bool Workspace::ImportFileUtf8(const char * source, const char * target_dir)
+  bool Workspace::ImportFileUtf8(const char* source, const char* target_dir)
   {
     if (source == NULL || source[0] == '\0')
       return false;
@@ -182,7 +182,7 @@ namespace shellanything
     return true;
   }
 
-  bool Workspace::ImportAndRenameFileUtf8(const char * source, const char * target_relative)
+  bool Workspace::ImportAndRenameFileUtf8(const char* source, const char* target_relative)
   {
     if (source == NULL || source[0] == '\0')
       return false;
@@ -219,11 +219,11 @@ namespace shellanything
     return true;
   }
 
-  std::string Workspace::GetFullPathUtf8(const char * path) const
+  std::string Workspace::GetFullPathUtf8(const char* path) const
   {
     if (path == NULL)
       return std::string();
-    
+
     if (path[0] == '\0')
       return mWorkspace;
 

@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Converts a mutable property store to an immutable property store.
 /// </summary>
@@ -51,7 +56,7 @@ void sa_property_store_clear(sa_property_store_t* store);
 /// </summary>
 /// <param name="store">The property store structure object.</param>
 /// <param name="name">The name of the property to delete.</param>
-void sa_property_store_clear_property(sa_property_store_t* store, const char * name);
+void sa_property_store_clear_property(sa_property_store_t* store, const char* name);
 
 /// <summary>
 /// Check if a property have been set.
@@ -60,7 +65,7 @@ void sa_property_store_clear_property(sa_property_store_t* store, const char * n
 /// <param name="store">The property store structure object.</param>
 /// <param name="name">The name of the property to check.</param>
 /// <returns>Returns 1 if the property is set. Returns 0 otherwise.</returns>
-sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, const char * name);
+sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, const char* name);
 
 /// <summary>
 /// Check if the properties are all set.
@@ -70,7 +75,7 @@ sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, 
 /// <param name="properties">The array of properties to check.</param>
 /// <param name="count">How many elements in the properties array.</param>
 /// <returns>Returns 1 if all the properties are set. Returns 0 otherwise.</returns>
-sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store, const char * properties[], size_t count);
+sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store, const char* properties[], size_t count);
 
 /// <summary>
 /// Sets the value of the given property name.
@@ -78,7 +83,7 @@ sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store
 /// <param name="store">The property store structure object.</param>
 /// <param name="name">The name of the property to set.</param>
 /// <param name="value">The new value of the property.</param>
-void sa_property_store_set_property(sa_property_store_t* store, const char * name, const char * value);
+void sa_property_store_set_property(sa_property_store_t* store, const char* name, const char* value);
 
 /// <summary>
 /// Get the value of the given property name.
@@ -154,6 +159,11 @@ sa_error_t sa_property_store_get_properties(sa_property_store_immutable_t* store
 /// <param name="output_names_max_length">The maximum length of each name in the output_names array.</param>
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
 sa_error_t sa_property_store_find_missing_properties(sa_property_store_immutable_t* store, const char* input_names[], size_t count_input_names, char* output_names[], size_t count_output_names, size_t output_names_max_length);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

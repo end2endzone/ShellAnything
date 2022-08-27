@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,33 +45,33 @@ namespace shellanything
   Menu::~Menu()
   {
     // delete validities
-    for(size_t i=0; i<mValidities.size(); i++)
+    for (size_t i = 0; i < mValidities.size(); i++)
     {
-      Validator * validator = mValidities[i];
+      Validator* validator = mValidities[i];
       delete validator;
     }
     mValidities.clear();
 
     // delete visibilities
-    for(size_t i=0; i<mVisibilities.size(); i++)
+    for (size_t i = 0; i < mVisibilities.size(); i++)
     {
-      Validator * validator = mVisibilities[i];
+      Validator* validator = mVisibilities[i];
       delete validator;
     }
     mVisibilities.clear();
 
     // delete actions
-    for(size_t i=0; i<mActions.size(); i++)
+    for (size_t i = 0; i < mActions.size(); i++)
     {
-      IAction * action = mActions[i];
+      IAction* action = mActions[i];
       delete action;
     }
     mActions.clear();
 
     // delete submenus
-    for(size_t i=0; i<mSubMenus.size(); i++)
+    for (size_t i = 0; i < mSubMenus.size(); i++)
     {
-      Menu * sub = mSubMenus[i];
+      Menu* sub = mSubMenus[i];
       delete sub;
     }
     mSubMenus.clear();
@@ -133,22 +133,22 @@ namespace shellanything
     return parent_menu;
   }
 
-  const std::string & Menu::GetName() const
+  const std::string& Menu::GetName() const
   {
     return mName;
   }
 
-  void Menu::SetName(const std::string & name)
+  void Menu::SetName(const std::string& name)
   {
     mName = name;
   }
 
-  const int & Menu::GetNameMaxLength() const
+  const int& Menu::GetNameMaxLength() const
   {
     return mNameMaxLength;
   }
 
-  void Menu::SetNameMaxLength(const int & name_max_length)
+  void Menu::SetNameMaxLength(const int& name_max_length)
   {
     mNameMaxLength = name_max_length;
 
@@ -159,10 +159,10 @@ namespace shellanything
       mNameMaxLength = DEFAULT_NAME_MAX_LENGTH;
   }
 
-  void Menu::TruncateName(std::string & str)
+  void Menu::TruncateName(std::string& str)
   {
     // Issue #55: Menu name maximum length limit and escape string
-  
+
     // Test if we need to truncate the input string.
     if (mNameMaxLength <= 0)
       return; // Nothing to do.
@@ -179,27 +179,27 @@ namespace shellanything
     str = truncated_str;
   }
 
-  const std::string & Menu::GetDescription() const
+  const std::string& Menu::GetDescription() const
   {
     return mDescription;
   }
 
-  void Menu::SetDescription(const std::string & description)
+  void Menu::SetDescription(const std::string& description)
   {
     mDescription = description;
   }
 
-  const Icon & Menu::GetIcon() const
+  const Icon& Menu::GetIcon() const
   {
     return mIcon;
   }
 
-  void Menu::SetIcon(const Icon & icon)
+  void Menu::SetIcon(const Icon& icon)
   {
     mIcon = icon;
   }
 
-  void Menu::Update(const SelectionContext & context)
+  void Menu::Update(const SelectionContext& context)
   {
     //update current menu
     bool visible = true;
@@ -207,9 +207,9 @@ namespace shellanything
     {
       visible = false;
       size_t count = GetVisibilityCount();
-      for(size_t i=0; i<count && visible == false; i++)
+      for (size_t i = 0; i < count && visible == false; i++)
       {
-        const Validator * validator = GetVisibility(i);
+        const Validator* validator = GetVisibility(i);
         if (validator)
         {
           visible |= validator->Validate(context);
@@ -221,9 +221,9 @@ namespace shellanything
     {
       enabled = false;
       size_t count = GetValidityCount();
-      for(size_t i=0; i<count && enabled == false; i++)
+      for (size_t i = 0; i < count && enabled == false; i++)
       {
-        const Validator * validator = GetValidity(i);
+        const Validator* validator = GetValidity(i);
         if (validator)
         {
           enabled |= validator->Validate(context);
@@ -238,9 +238,9 @@ namespace shellanything
 
     //for each child
     Menu::MenuPtrList children = GetSubMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
+      Menu* child = children[i];
       child->Update(context);
 
       //refresh the flag
@@ -256,25 +256,25 @@ namespace shellanything
     }
   }
 
-  Menu * Menu::FindMenuByCommandId(const uint32_t & command_id)
+  Menu* Menu::FindMenuByCommandId(const uint32_t& command_id)
   {
     if (mCommandId == command_id)
       return this;
- 
+
     //for each child
     Menu::MenuPtrList children = GetSubMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
-      Menu * match = child->FindMenuByCommandId(command_id);
+      Menu* child = children[i];
+      Menu* match = child->FindMenuByCommandId(command_id);
       if (match)
         return match;
     }
- 
+
     return NULL;
   }
- 
-  uint32_t Menu::AssignCommandIds(const uint32_t & first_command_id)
+
+  uint32_t Menu::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t next_command_id = first_command_id;
 
@@ -292,29 +292,29 @@ namespace shellanything
 
     //for each child
     Menu::MenuPtrList children = GetSubMenus();
-    for(size_t i=0; i<children.size(); i++)
+    for (size_t i = 0; i < children.size(); i++)
     {
-      Menu * child = children[i];
+      Menu* child = children[i];
 
       if (mCommandId == INVALID_COMMAND_ID)
         child->AssignCommandIds(INVALID_COMMAND_ID); //also assign invalid ids to sub menus
       else
         next_command_id = child->AssignCommandIds(next_command_id); //assign the next command ids to sub menus
     }
- 
+
     return next_command_id;
   }
- 
-  const uint32_t & Menu::GetCommandId() const
+
+  const uint32_t& Menu::GetCommandId() const
   {
     return mCommandId;
   }
- 
-  void Menu::SetCommandId(const uint32_t & command_id)
+
+  void Menu::SetCommandId(const uint32_t& command_id)
   {
     mCommandId = command_id;
   }
- 
+
   bool Menu::IsVisible() const
   {
     return mVisible;
@@ -340,16 +340,16 @@ namespace shellanything
     return mValidities.size();
   }
 
-  const Validator * Menu::GetValidity(size_t index) const
+  const Validator* Menu::GetValidity(size_t index) const
   {
-    const Validator * validator = NULL;
+    const Validator* validator = NULL;
     size_t count = mValidities.size();
     if (index < count)
       validator = mValidities[index];
     return validator;
   }
 
-  void Menu::AddValidity(Validator * validator)
+  void Menu::AddValidity(Validator* validator)
   {
     mValidities.push_back(validator);
     validator->SetParentMenu(this);
@@ -360,16 +360,16 @@ namespace shellanything
     return mVisibilities.size();
   }
 
-  const Validator * Menu::GetVisibility(size_t index) const
+  const Validator* Menu::GetVisibility(size_t index) const
   {
-    const Validator * validator = NULL;
+    const Validator* validator = NULL;
     size_t count = mVisibilities.size();
     if (index < count)
       validator = mVisibilities[index];
     return validator;
   }
 
-  void Menu::AddVisibility(Validator * validator)
+  void Menu::AddVisibility(Validator* validator)
   {
     mVisibilities.push_back(validator);
     validator->SetParentMenu(this);
@@ -386,13 +386,13 @@ namespace shellanything
     menu->SetParentMenu(this);
   }
 
-  void Menu::AddAction(IAction * action)
+  void Menu::AddAction(IAction* action)
   {
     mActions.push_back(action);
     action->SetParentMenu(this);
   }
 
-  const IAction::ActionPtrList & Menu::GetActions() const
+  const IAction::ActionPtrList& Menu::GetActions() const
   {
     return mActions;
   }

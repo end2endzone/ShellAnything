@@ -32,6 +32,11 @@
 extern "C" {
 #endif
 
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
 /// <summary>
 /// Clears all the registered properties.
 /// Note that environement variable properties are still registered to the manager.
@@ -169,6 +174,11 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
 /// <param name="value">The given value to expand.</param>
 /// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
 const char* sa_properties_expand_once_alloc(const char* value);
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

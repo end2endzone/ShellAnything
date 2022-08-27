@@ -1,4 +1,29 @@
-//#define WIN32_LEAN_AND_MEAN 1
+/**********************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2018 Antoine Beauchamp
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *********************************************************************************/
+
+
+ //#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
 #include <initguid.h>
@@ -80,18 +105,18 @@ std::string GuidToInterfaceName(GUID guid)
 /// <param name="name">The name of the application.</param>
 /// <param name="version">The version of the application.</param>
 /// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
-bool IsFirstApplicationRun(const std::string & name, const std::string & version)
+bool IsFirstApplicationRun(const std::string& name, const std::string& version)
 {
   std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
   if (!Win32Registry::CreateKey(key.c_str(), NULL))
   {
     // unable to get to the application's key.
     // assume it is not the first run.
-    return false;  
+    return false;
   }
- 
-  static const char * FIRST_RUN_VALUE_NAME = "first_run";
- 
+
+  static const char* FIRST_RUN_VALUE_NAME = "first_run";
+
   // try to read the value
   Win32Registry::MemoryBuffer value;
   Win32Registry::REGISTRY_TYPE value_type;
@@ -99,21 +124,21 @@ bool IsFirstApplicationRun(const std::string & name, const std::string & version
   {
     // the registry value is not found.
     // assume the application is run for the first time.
- 
+
     // update the flag to "false" for the next call
     Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
- 
+
     return true;
   }
 
   bool first_run = ra::strings::ParseBoolean(value);
- 
+
   if (first_run)
   {
     //update the flag to "false"
     Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
   }
- 
+
   return first_run;
 }
 
@@ -123,19 +148,19 @@ public:
   struct FLAGS
   {
     T value;
-    const char * name;
+    const char* name;
   };
- 
-  static std::string ToBitString(T value, const FLAGS * flags)
+
+  static std::string ToBitString(T value, const FLAGS* flags)
   {
     std::string desc;
- 
+
     size_t index = 0;
-    while(flags[index].name)
+    while (flags[index].name)
     {
-      const T & flag = flags[index].value;
-      const char * name = flags[index].name;
- 
+      const T& flag = flags[index].value;
+      const char* name = flags[index].name;
+
       //if flag is set
       if ((value & flag) == flag)
       {
@@ -143,23 +168,23 @@ public:
           desc.append("|");
         desc.append(name);
       }
- 
+
       //next flag
       index++;
     }
     return desc;
   }
 
-  static std::string ToValueString(T value, const FLAGS * flags)
+  static std::string ToValueString(T value, const FLAGS* flags)
   {
     std::string desc;
- 
+
     size_t index = 0;
-    while(flags[index].name)
+    while (flags[index].name)
     {
-      const T & flag = flags[index].value;
-      const char * name = flags[index].name;
- 
+      const T& flag = flags[index].value;
+      const char* name = flags[index].name;
+
       //if flag is set
       if (value == flag)
       {
@@ -167,7 +192,7 @@ public:
           desc.append(",");
         desc.append(name);
       }
- 
+
       //next flag
       index++;
     }
@@ -175,18 +200,18 @@ public:
   }
 };
 
-void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT & insert_pos, bool & next_menu_is_column)
+void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
 {
   //Expanded the menu's strings
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title       = pmgr.Expand(menu->GetName());
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+  std::string title = pmgr.Expand(menu->GetName());
   std::string description = pmgr.Expand(menu->GetDescription());
 
   //Get visible/enable properties based on current context.
-  bool menu_visible   = menu->IsVisible();
-  bool menu_enabled   = menu->IsEnabled();
+  bool menu_visible = menu->IsVisible();
+  bool menu_enabled = menu->IsEnabled();
   bool menu_separator = menu->IsSeparator();
-  bool menu_column    = menu->IsColumnSeparator();
+  bool menu_column = menu->IsColumnSeparator();
 
   //Skip column separator, those are not menu item
   if (menu_column)
@@ -204,7 +229,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   }
 
   //Validate menus integrity
-  const uint32_t & menu_command_id = menu->GetCommandId();
+  const uint32_t& menu_command_id = menu->GetCommandId();
   if (menu_command_id == shellanything::Menu::INVALID_COMMAND_ID)
   {
     menu->TruncateName(title);
@@ -218,9 +243,9 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
   //convert to windows unicode...
   std::wstring title_utf16 = ra::unicode::Utf8ToUnicode(title);
-  std::wstring desc_utf16  = ra::unicode::Utf8ToUnicode(description);
+  std::wstring desc_utf16 = ra::unicode::Utf8ToUnicode(description);
 
-  MENUITEMINFOW menuinfo = {0};
+  MENUITEMINFOW menuinfo = { 0 };
 
   menuinfo.cbSize = sizeof(MENUITEMINFOW);
   menuinfo.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING;
@@ -232,13 +257,13 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
   menuinfo.cch = (UINT)title_utf16.size();
 
   //add an icon
-  const shellanything::Icon & icon = menu->GetIcon();
+  const shellanything::Icon& icon = menu->GetIcon();
   if (!menu_separator && icon.IsValid())
   {
-    shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-    std::string file_extension  = pmgr.Expand(icon.GetFileExtension());
-    std::string icon_filename   = pmgr.Expand(icon.GetPath());
-    int icon_index              = icon.GetIndex();
+    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+    std::string file_extension = pmgr.Expand(icon.GetFileExtension());
+    std::string icon_filename = pmgr.Expand(icon.GetPath());
+    int icon_index = icon.GetIndex();
 
     //if the icon is pointing to a file extension
     if (!file_extension.empty())
@@ -251,14 +276,14 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
       if (found)
       {
         //already resolved
-        const shellanything::Icon & resolved_icon = wExtensionsIterator->second;
+        const shellanything::Icon& resolved_icon = wExtensionsIterator->second;
         icon_filename = resolved_icon.GetPath();
-        icon_index    = resolved_icon.GetIndex();
+        icon_index = resolved_icon.GetIndex();
       }
       else
       {
         //not found
-        
+
         //make a copy of the icon and resolve the file extension to a system icon.
         shellanything::Icon resolved_icon = icon;
         resolved_icon.ResolveFileExtensionIcon();
@@ -268,7 +293,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
         //use the resolved icon location
         icon_filename = resolved_icon.GetPath();
-        icon_index    = resolved_icon.GetIndex();
+        icon_index = resolved_icon.GetIndex();
       }
     }
 
@@ -281,11 +306,11 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     {
       HICON hIconLarge = NULL;
       HICON hIconSmall = NULL;
-      
+
       //
       std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(icon_filename);
-      UINT numIconInFile = ExtractIconExW( icon_filename_wide.c_str(), -1, NULL, NULL, 1 );
-      UINT numIconLoaded = ExtractIconExW( icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1 );
+      UINT numIconInFile = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
+      UINT numIconLoaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1);
       if (numIconLoaded >= 1)
       {
         //Find the best icon
@@ -298,7 +323,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
         DestroyIcon(hIconSmall);
 
         //add the bitmap to the cache for future use
-        m_BitmapCache.AddHandle( icon_filename.c_str(), icon_index, hBitmap );
+        m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
       }
     }
 
@@ -306,7 +331,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
     if (hBitmap != shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
     {
       //enable bitmap handling for the menu
-      menuinfo.fMask |= MIIM_BITMAP; 
+      menuinfo.fMask |= MIIM_BITMAP;
 
       //assign the HBITMAP to the HMENU
       menuinfo.hbmpItem = hBitmap;
@@ -330,9 +355,9 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu * menu, UINT &
 
     shellanything::Menu::MenuPtrList subs = menu->GetSubMenus();
     UINT sub_insert_pos = 0;
-    for(size_t i=0; i<subs.size(); i++)
+    for (size_t i = 0; i < subs.size(); i++)
     {
-      shellanything::Menu * submenu = subs[i];
+      shellanything::Menu* submenu = subs[i];
       BuildMenuTree(hSubMenu, submenu, sub_insert_pos, next_sub_menu_is_column);
     }
 
@@ -367,7 +392,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   {
     //every 10 calls, refresh the cache
     m_BitmapCache.DestroyOldHandles();
- 
+
     //reset counters
     m_BitmapCache.ResetCounters();
   }
@@ -377,19 +402,19 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   //browse through all shellanything menus and build the win32 popup menus
 
   //for each configuration
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
   shellanything::Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
   UINT insert_pos = 0;
-  for(size_t i=0; i<configs.size(); i++)
+  for (size_t i = 0; i < configs.size(); i++)
   {
-    shellanything::Configuration * config = configs[i];
+    shellanything::Configuration* config = configs[i];
     if (config)
     {
       //for each menu child
       shellanything::Menu::MenuPtrList menus = config->GetMenus();
-      for(size_t j=0; j<menus.size(); j++)
+      for (size_t j = 0; j < menus.size(); j++)
       {
-        shellanything::Menu * menu = menus[j];
+        shellanything::Menu* menu = menus[j];
 
         //Add this menu to the tree
         BuildMenuTree(hMenu, menu, insert_pos, next_menu_is_column);
@@ -418,7 +443,7 @@ void CCriticalSection::Leave()
   LeaveCriticalSection(&mCS);
 }
 
-CCriticalSectionGuard::CCriticalSectionGuard(CCriticalSection * cs)
+CCriticalSectionGuard::CCriticalSectionGuard(CCriticalSection* cs)
 {
   mCS = cs;
   if (mCS)
@@ -501,11 +526,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //Filter out queries that have nothing selected.
   //This can happend if user is copy & pasting files (using CTRL+C and CTRL+V)
   //and if the shell extension is registered as a DragDropHandlers.
-  if ( m_Context.GetElements().size() == 0 )
+  if (m_Context.GetElements().size() == 0)
   {
     //Don't know what to do with this
     LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
-    return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
+    return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0); //nothing inserted
   }
 
   //Filter out queries that are called twice for the same directory.
@@ -515,7 +540,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
     //Issue #31 - Error in logs for CContextMenu::GetCommandString().
     //Using a static variable is a poor method for solving the issue but it is a "good enough" strategy.
     LOG(INFO) << __FUNCTION__ << "(), skipped, QueryContextMenu() called twice and menu is already populated once.";
-    return MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, 0 ); //nothing inserted
+    return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0); //nothing inserted
   }
 
   //Remember current menu to prevent issues calling twice QueryContextMenu()
@@ -524,9 +549,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
 
   //Log what is selected by the user
-  const shellanything::StringList & elements = m_Context.GetElements();
+  const shellanything::StringList& elements = m_Context.GetElements();
   size_t num_selected_total = elements.size();
-  int num_files       = m_Context.GetNumFiles();
+  int num_files = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
   LOG(INFO) << "SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
@@ -534,7 +559,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   m_FirstCommandId = first_command_id;
 
   //Refresh the list of loaded configuration files
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
   cmgr.Refresh();
 
   //Update all menus with the new context
@@ -560,7 +585,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   LOG(INFO) << "Menu tree:\n" << menu_tree.c_str();
 #endif
 
-  HRESULT hr = MAKE_HRESULT ( SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items );
+  HRESULT hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items);
   return hr;
 }
 
@@ -569,7 +594,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //define the type of structure pointed by lpcmi
-  const char * struct_name = "UNKNOWN";
+  const char* struct_name = "UNKNOWN";
   if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFO))
     struct_name = "CMINVOKECOMMANDINFO";
   else if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFOEX))
@@ -580,11 +605,11 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   if (IS_INTRESOURCE(lpcmi->lpVerb))
     // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4311 : 'reinterpret_cast' : pointer truncation from 'LPCSTR' to 'int'
     // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4302 : 'reinterpret_cast' : truncation from 'LPCSTR' to 'int'
-    #pragma warning( push )
-    #pragma warning( disable: 4302 )
-    #pragma warning( disable: 4311 )
+#pragma warning( push )
+#pragma warning( disable: 4302 )
+#pragma warning( disable: 4311 )
     verb = ra::strings::ToString(reinterpret_cast<int>(lpcmi->lpVerb));
-    #pragma warning( pop )
+#pragma warning( pop )
   else
     verb = lpcmi->lpVerb;
 
@@ -593,7 +618,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   //validate
   if (!IS_INTRESOURCE(lpcmi->lpVerb))
     return E_INVALIDARG; //don't know what to do with lpcmi->lpVerb
-    
+
   UINT target_command_offset = LOWORD(lpcmi->lpVerb); //matches the command_id offset (command id of the selected menu - command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
 
@@ -601,8 +626,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::Menu * menu = cmgr.FindMenuByCommandId(target_command_id);
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::Menu* menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
@@ -610,18 +635,18 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   }
 
   //compute the visual menu title
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
   std::string title = pmgr.Expand(menu->GetName());
 
   //found a menu match, execute menu action
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
 
   //execute actions
-  const shellanything::IAction::ActionPtrList & actions = menu->GetActions();
-  for(size_t i=0; i<actions.size(); i++)
+  const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
+  for (size_t i = 0; i < actions.size(); i++)
   {
-    LOG(INFO) << __FUNCTION__ << "(), executing action " << (i+1) << " of " << actions.size() << ".";
-    const shellanything::IAction * action = actions[i];
+    LOG(INFO) << __FUNCTION__ << "(), executing action " << (i + 1) << " of " << actions.size() << ".";
+    const shellanything::IAction* action = actions[i];
     if (action)
     {
       ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
@@ -634,12 +659,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
         if (dwError)
         {
           std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed: " << error_message;
+          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed: " << error_message;
         }
         else
         {
           //simply log an error
-          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i+1) << " has failed.";
+          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed.";
         }
 
         //stop executing the next actions
@@ -653,7 +678,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR *reserved, LPSTR pszName, UINT cchMax)
+HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR* reserved, LPSTR pszName, UINT cchMax)
 {
   //build function descriptor
   static const FlagDescriptor<UINT>::FLAGS descriptors[] = {
@@ -680,8 +705,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   CCriticalSectionGuard cs_guard(&m_CS);
 
   //find the menu that is requested
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::Menu * menu = cmgr.FindMenuByCommandId(target_command_id);
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::Menu* menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown menu for command_id=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
@@ -689,50 +714,50 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   }
 
   //compute the visual menu description
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
   std::string description = pmgr.Expand(menu->GetDescription());
 
   //convert to windows unicode...
   std::wstring desc_utf16 = ra::unicode::Utf8ToUnicode(description);
-  std::string  desc_ansi  = ra::unicode::Utf8ToAnsi(description);
+  std::string  desc_ansi = ra::unicode::Utf8ToAnsi(description);
 
   //Build up tooltip string
-  switch(flags)
+  switch (flags)
   {
   case GCS_HELPTEXTA:
-    {
-      //ANIS tooltip handling
-      lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
-      return S_OK;
-    }
-    break;
+  {
+    //ANIS tooltip handling
+    lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
+    return S_OK;
+  }
+  break;
   case GCS_HELPTEXTW:
-    {
-      //UNICODE tooltip handling
-      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
-      return S_OK;
-    }
-    break;
+  {
+    //UNICODE tooltip handling
+    lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
+    return S_OK;
+  }
+  break;
   case GCS_VERBA:
-    {
-      //ANIS tooltip handling
-      lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
-      return S_OK;
-    }
-    break;
+  {
+    //ANIS tooltip handling
+    lstrcpynA(pszName, desc_ansi.c_str(), cchMax);
+    return S_OK;
+  }
+  break;
   case GCS_VERBW:
-    {
-      //UNICODE tooltip handling
-      lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
-      return S_OK;
-    }
-    break;
+  {
+    //UNICODE tooltip handling
+    lstrcpynW((LPWSTR)pszName, desc_utf16.c_str(), cchMax);
+    return S_OK;
+  }
+  break;
   case GCS_VALIDATEA:
   case GCS_VALIDATEW:
-    {
-      return S_OK;
-    }
-    break;
+  {
+    return S_OK;
+  }
+  break;
   }
 
   LOG(ERROR) << __FUNCTION__ << "(), unknown flags: " << flags;
@@ -759,7 +784,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   {
     LOG(INFO) << "User right-clicked on a background directory.";
 
-    wchar_t szPath[2*MAX_PATH] = {0};
+    wchar_t szPath[2 * MAX_PATH] = { 0 };
 
     if (SHGetPathFromIDListW(pIDFolder, szPath))
     {
@@ -784,8 +809,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   {
     LOG(INFO) << "User right-clicked on selected files/directories.";
 
-    FORMATETC fmt = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
-    STGMEDIUM stg = {TYMED_HGLOBAL};
+    FORMATETC fmt = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    STGMEDIUM stg = { TYMED_HGLOBAL };
     HDROP hDropInfo;
 
     // The selected files are expected to be in HDROP format.
@@ -804,7 +829,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     LOG(INFO) << "User right-clicked on " << num_files << " files/directories.";
 
     // For each files
-    for (UINT i=0; i<num_files; i++)
+    for (UINT i = 0; i < num_files; i++)
     {
       UINT length = DragQueryFileW(hDropInfo, i, NULL, 0);
 
@@ -812,14 +837,14 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       std::wstring path(length, '\0');
       if (path.size() != length)
         continue;
-      size_t num_characters = length+1;
+      size_t num_characters = length + 1;
 
       // Copy the element into the temporary buffer
       DragQueryFileW(hDropInfo, i, (wchar_t*)path.data(), (UINT)num_characters);
 
       //add the new file
       std::string path_utf8 = ra::unicode::UnicodeToUtf8(path);
-      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d",i) << ": '" << path_utf8 << "'.";
+      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d", i) << ": '" << path_utf8 << "'.";
       files.push_back(path_utf8);
     }
     GlobalUnlock(stg.hGlobal);
@@ -835,19 +860,19 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR * ppvObj)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
 
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
-  if (  IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
-        IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
-        IsEqualGUID(riid, CLSID_UNDOCUMENTED_01) ||
-        IsEqualGUID(riid, IID_IContextMenu2) || //{000214f4-0000-0000-c000-000000000046}
-        IsEqualGUID(riid, IID_IContextMenu3)    //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
-        )
+  if (IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+      IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+      IsEqualGUID(riid, CLSID_UNDOCUMENTED_01) ||
+      IsEqualGUID(riid, IID_IContextMenu2) || //{000214f4-0000-0000-c000-000000000046}
+      IsEqualGUID(riid, IID_IContextMenu3)    //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+      )
   {
     return E_NOINTERFACE;
   }
@@ -927,7 +952,7 @@ CClassFactory::~CClassFactory()
   InterlockedDecrement(&g_cRefDll);
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR * ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
@@ -983,7 +1008,7 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
   return ulRefCount;
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR *ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppvObj)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
@@ -1009,7 +1034,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
   return S_OK;
 }
 
-STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
+STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppvOut)
 {
   //build function descriptor
   //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
@@ -1018,7 +1043,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppvOut)
   *ppvOut = NULL;
   if (IsEqualGUID(rclsid, SHELLANYTHING_SHELLEXTENSION_CLSID))
   {
-    CClassFactory *pcf = new CClassFactory;
+    CClassFactory* pcf = new CClassFactory;
     if (!pcf) return E_OUTOFMEMORY;
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
@@ -1054,7 +1079,7 @@ STDAPI DllCanUnloadNow(void)
 STDAPI DllRegisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
-  const char * guid_str = guid_str_tmp.c_str();
+  const char* guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
   const std::string module_path = GetCurrentModulePath();
 
@@ -1114,7 +1139,7 @@ STDAPI DllRegisterServer(void)
   }
   {
     std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str(), module_path.c_str() ))
+    if (!Win32Registry::CreateKey(key.c_str(), module_path.c_str()))
       return E_ACCESSDENIED;
     if (!Win32Registry::SetValue(key.c_str(), "ThreadingModel", "Apartment"))
       return E_ACCESSDENIED;
@@ -1177,7 +1202,7 @@ STDAPI DllRegisterServer(void)
 STDAPI DllUnregisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
-  const char * guid_str = guid_str_tmp.c_str();
+  const char* guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
 
   //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
@@ -1253,12 +1278,12 @@ STDAPI DllUnregisterServer(void)
   return S_OK;
 }
 
-void InstallDefaultConfigurations(const std::string & config_dir)
+void InstallDefaultConfigurations(const std::string& config_dir)
 {
   std::string app_path = GetCurrentModulePathUtf8();
   std::string app_dir = ra::filesystem::GetParentPath(app_path);
 
-  static const char * default_files[] = {
+  static const char* default_files[] = {
     "default.xml",
     "Microsoft Office 2003.xml",
     "Microsoft Office 2007.xml",
@@ -1268,14 +1293,14 @@ void InstallDefaultConfigurations(const std::string & config_dir)
     "shellanything.xml",
     "WinDirStat.xml",
   };
-  static const size_t num_files = sizeof(default_files)/sizeof(default_files[0]);
+  static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
 
   LOG(INFO) << "First application launch. Installing default configurations files.";
 
-  for(size_t i=0; i<num_files; i++)
+  for (size_t i = 0; i < num_files; i++)
   {
-    const char * filename = default_files[i];
-    std::string source_path = app_dir    + "\\configurations\\" + filename;
+    const char* filename = default_files[i];
+    std::string source_path = app_dir + "\\configurations\\" + filename;
     std::string target_path = config_dir + "\\" + filename;
 
     LOG(INFO) << "Installing configuration file: " << target_path;
@@ -1303,7 +1328,7 @@ void LogEnvironment()
 
 void InitConfigManager()
 {
-  shellanything::ConfigManager & cmgr = shellanything::ConfigManager::GetInstance();
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
 
   static const std::string app_name = "ShellAnything";
   static const std::string app_version = SHELLANYTHING_VERSION;
@@ -1325,13 +1350,13 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  std::string prop_log_directory          = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
 
   //define global properties
-  shellanything::PropertyManager & pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.SetProperty("log.directory"        , prop_log_directory        );
-  pmgr.SetProperty("config.directory"     , config_dir                );
-  pmgr.SetProperty("home.directory"       , home_dir                  );
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+  pmgr.SetProperty("log.directory", prop_log_directory);
+  pmgr.SetProperty("config.directory", config_dir);
+  pmgr.SetProperty("home.directory", home_dir);
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)

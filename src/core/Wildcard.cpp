@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,16 +31,16 @@ namespace shellanything
 {
   static const size_t INVALID_WILDCARD_POSITION = (size_t)-1;
 
-  size_t GetNextWildcardPosition(const size_t * positions, size_t num_wildcards, size_t current)
+  size_t GetNextWildcardPosition(const size_t* positions, size_t num_wildcards, size_t current)
   {
-    for(size_t i=0; i<num_wildcards; i++)
+    for (size_t i = 0; i < num_wildcards; i++)
     {
-      const size_t & pos = positions[i];
+      const size_t& pos = positions[i];
       if (pos == current)
       {
-        if (i+1 < num_wildcards)
+        if (i + 1 < num_wildcards)
         {
-          return positions[i+1];
+          return positions[i + 1];
         }
         return INVALID_WILDCARD_POSITION; //requested wildcard is the last one
       }
@@ -48,14 +48,14 @@ namespace shellanything
     return INVALID_WILDCARD_POSITION; //wildcard position not found
   }
 
-  size_t FindWildcardCharacters(const char * str, size_t * offsets, size_t offsets_size)
+  size_t FindWildcardCharacters(const char* str, size_t* offsets, size_t offsets_size)
   {
     // Validate str
     if (str == NULL)
       return 0;
 
     // Validate offsets buffer size
-    size_t max_elements = offsets_size/sizeof(size_t);
+    size_t max_elements = offsets_size / sizeof(size_t);
     if (offsets != NULL && max_elements == 0)
       return 0;
 
@@ -65,13 +65,13 @@ namespace shellanything
     size_t num_wildcard = 0;
 
     size_t length = strlen(str);
-    for(size_t i=0; i<length; i++)
+    for (size_t i = 0; i < length; i++)
     {
-      const char & c = str[i];
+      const char& c = str[i];
       if (IsWildcard(c))
       {
         // Is this a '*' sequence ?
-        bool sequence = (c == '*' && i > 0 && str[i-1] == '*');
+        bool sequence = (c == '*' && i > 0 && str[i - 1] == '*');
         if (!sequence)
         {
           if (offsets != NULL)
@@ -91,20 +91,20 @@ namespace shellanything
     return num_wildcard;
   }
 
-  void WildcardSimplify(std::string & pattern)
+  void WildcardSimplify(std::string& pattern)
   {
     size_t length = pattern.size();
 
     // Simplify the pattern if required.
     std::string simplified_pattern;
     simplified_pattern.reserve(length);
-    for(size_t i=0; i<length; i++)
+    for (size_t i = 0; i < length; i++)
     {
-      const char & c = pattern[i];
+      const char& c = pattern[i];
       if (c == '*')
       {
         // Try to advance the pointer as long as the next character is also a '*' character.
-        while (i+1 < length && pattern[i+1] == '*')
+        while (i + 1 < length && pattern[i + 1] == '*')
           i++;
         simplified_pattern.append(1, c); // Add a single '*' character
       }
@@ -118,7 +118,7 @@ namespace shellanything
       pattern = simplified_pattern;
   }
 
-  void WildcardSimplify(char * pattern)
+  void WildcardSimplify(char* pattern)
   {
     if (pattern == NULL)
       return;
@@ -133,11 +133,11 @@ namespace shellanything
       strcpy(pattern, simplified_pattern.c_str());
   }
 
-  inline bool IsStarSequence(const char * pattern)
+  inline bool IsStarSequence(const char* pattern)
   {
     if (pattern == NULL)
       return false;
-    while(pattern[0] != '\0')
+    while (pattern[0] != '\0')
     {
       if (pattern[0] != '*')
         return false;
@@ -146,23 +146,23 @@ namespace shellanything
     return true;
   }
 
-  bool WildcardSolve( const char * pattern,
-                      const char * value,
-                      const size_t * positions,
-                      size_t num_wildcards,
-                      size_t pattern_offset,
-                      size_t value_offset,
-                      WildcardList & matches)
+  bool WildcardSolve(const char* pattern,
+                     const char* value,
+                     const size_t* positions,
+                     size_t num_wildcards,
+                     size_t pattern_offset,
+                     size_t value_offset,
+                     WildcardList& matches)
   {
     size_t pattern_length = strlen(pattern);
     size_t value_length = strlen(value);
-  
+
     // While pattern and value not fully solved
     while (pattern_offset < pattern_length || value_offset < value_length)
     {
-      const char & pattern_char  = pattern[pattern_offset];
-      const char & value_char = value[value_offset];
-      if ( !IsWildcard(pattern_char) )
+      const char& pattern_char = pattern[pattern_offset];
+      const char& value_char = value[value_offset];
+      if (!IsWildcard(pattern_char))
       {
         if (pattern_char != value_char)
           return false; // Characters don't match!
@@ -190,7 +190,7 @@ namespace shellanything
         else if (pattern_char == '*')
         {
           // If wildcard character '*' is the last one
-          if (pattern_offset+1 >= pattern_length)
+          if (pattern_offset + 1 >= pattern_length)
           {
             // Automatically match the end of the string
 
@@ -202,7 +202,7 @@ namespace shellanything
             matches.push_back(w);
 
             // If we reached a '*' sequence, move forward to the last '*' character of the sequence
-            while(pattern[pattern_offset] == '*' && (pattern_offset+1 < pattern_length) && pattern[pattern_offset+1] == '*')
+            while (pattern[pattern_offset] == '*' && (pattern_offset + 1 < pattern_length) && pattern[pattern_offset + 1] == '*')
             {
               pattern_offset++;
             }
@@ -220,7 +220,7 @@ namespace shellanything
             // Since all wildcard characters must be mapped, do not compute possibilities/candidates beyond the next wildcard character.
 
             // Compute next character
-            const char & pattern_char_next = (&pattern_char)[1];
+            const char& pattern_char_next = (&pattern_char)[1];
 
             size_t next_wildcard_position = GetNextWildcardPosition(positions, num_wildcards, pattern_offset);
 
@@ -237,11 +237,11 @@ namespace shellanything
             }
 
             // Compute maximum length of candidate
-            size_t remaining_characters_in_value = value_length-value_offset;
-            size_t candidate_max_length = remaining_characters_in_value-pattern_fixed_characters.size();
+            size_t remaining_characters_in_value = value_length - value_offset;
+            size_t candidate_max_length = remaining_characters_in_value - pattern_fixed_characters.size();
 
             // Compute all possible candidates that can fit in '*' with a length in [0,candidate_max_length]
-            for(size_t length=candidate_max_length; length>=0 && length!=INVALID_WILDCARD_POSITION; length--)
+            for (size_t length = candidate_max_length; length >= 0 && length != INVALID_WILDCARD_POSITION; length--)
             {
               // Assuming replacement string is the right one
 
@@ -283,12 +283,12 @@ namespace shellanything
     if (pattern_offset == pattern_length && value_offset == value_length)
       return true; // Solved
     if ((pattern_offset == pattern_length && value_offset < value_length) ||
-        (pattern_offset == pattern_length && value_offset < value_length)     )
+        (pattern_offset == pattern_length && value_offset < value_length))
       return false; // Reached the end of pattern or the end of value
     return false; //???
   }
 
-  bool WildcardSolve(const char * pattern, const char * value, WildcardList & matches)
+  bool WildcardSolve(const char* pattern, const char* value, WildcardList& matches)
   {
     if (pattern == NULL || value == NULL)
       return false;
@@ -301,14 +301,14 @@ namespace shellanything
 
     // Find all wildcard character positions
     size_t num_wildcards = FindWildcardCharacters(simplified_pattern.c_str(), NULL, 0);
-    
+
     // If no wildcard character found, the strings must be equal
     if (num_wildcards == 0)
       return (std::string(pattern) == std::string(value));
 
     // Allocate memory for all wildcard positions
-    size_t * positions = new size_t[num_wildcards];
-    FindWildcardCharacters(simplified_pattern.c_str(), positions, num_wildcards*sizeof(positions[0]));
+    size_t* positions = new size_t[num_wildcards];
+    FindWildcardCharacters(simplified_pattern.c_str(), positions, num_wildcards * sizeof(positions[0]));
 
     //solve wildcards
     bool solved = WildcardSolve(simplified_pattern.c_str(), value, positions, num_wildcards, 0, 0, matches);
@@ -319,14 +319,14 @@ namespace shellanything
     return solved;
   }
 
-  bool WildcardMatch(const char * pattern, const char * value)
+  bool WildcardMatch(const char* pattern, const char* value)
   {
     if (pattern == NULL || value == NULL)
       return false;
 
     // Move forward in the pattern and the value as long as we have matching characters.
     bool matching_characters = true;
-    while(matching_characters)
+    while (matching_characters)
     {
       // If the pattern is empty, the value must also be empty to match.
       if (pattern[0] == '\0')
@@ -353,7 +353,7 @@ namespace shellanything
       matching_characters = false;
 
       // If we reached a '*' sequence, move forward in the pattern to the last '*' character of the sequence
-      while(pattern[0] == '*' && pattern[1] == '*')
+      while (pattern[0] == '*' && pattern[1] == '*')
       {
         pattern++;
 
@@ -373,7 +373,7 @@ namespace shellanything
         matching_characters = true;
       }
     }
-  
+
     // If we reached a '*' character in the pattern, there is two possibilities:
     // 1) The '*' replaces the next value character.
     // 2) The '*' does not replaces the next value character.
@@ -381,12 +381,12 @@ namespace shellanything
     if (pattern[0] == '*')
     {
       // 1) The '*' replaces the next value character.
-      bool match = WildcardMatch(pattern, value+1);
+      bool match = WildcardMatch(pattern, value + 1);
       if (match)
         return true;
 
       // 2) The '*' does not replaces the next value character.
-      match = WildcardMatch(pattern+1, value);
+      match = WildcardMatch(pattern + 1, value);
       if (match)
         return true;
     }

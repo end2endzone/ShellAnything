@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,13 @@
 extern "C" {
 #endif
 
-typedef enum {
+// do not indent code inside extern C
+#if 0
+}
+#endif
+
+typedef enum
+{
   SA_ERROR_SUCCESS = 0,
   SA_ERROR_INVALID_ARGUMENTS,
   SA_ERROR_BUFFER_TOO_SMALL,
@@ -52,18 +58,25 @@ typedef enum {
   SA_ERROR_UNKNOWN = -1,
 } sa_error_t;
 
-typedef enum {
+typedef enum
+{
   SA_LOG_LEVEL_INFO = 0,
   SA_LOG_LEVEL_WARNING,
   SA_LOG_LEVEL_ERROR,
   SA_LOG_LEVEL_FATAL,
 } sa_log_level_t;
 
-typedef enum {
+typedef enum
+{
   SA_ACTION_EVENT_CREATE = 0,
   SA_ACTION_EVENT_DESTROY,
   SA_ACTION_EVENT_EXECUTE,
 } sa_action_event_t;
+
+// do not indent code inside extern C
+#if 0
+{
+#endif
 
 #ifdef __cplusplus
 }

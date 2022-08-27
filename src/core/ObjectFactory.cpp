@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -70,14 +70,14 @@ namespace shellanything
   {
   }
 
-  ObjectFactory & ObjectFactory::GetInstance()
+  ObjectFactory& ObjectFactory::GetInstance()
   {
     static ObjectFactory _instance;
     return _instance;
   }
 
-  typedef std::vector<const XMLElement *> ElementPtrList;
-  ElementPtrList GetChildNodes(const XMLElement* element, const std::string & name)
+  typedef std::vector<const XMLElement*> ElementPtrList;
+  ElementPtrList GetChildNodes(const XMLElement* element, const std::string& name)
   {
     ElementPtrList elements;
 
@@ -97,7 +97,7 @@ namespace shellanything
     return elements;
   }
 
-  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, std::string & attr_value, std::string & error)
+  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char* attr_name, bool is_optional, bool allow_empty_values, std::string& attr_value, std::string& error)
   {
     if (element == NULL)
     {
@@ -107,7 +107,7 @@ namespace shellanything
 
     attr_value = "";
 
-    const XMLAttribute * attr_node = element->FindAttribute(attr_name);
+    const XMLAttribute* attr_node = element->FindAttribute(attr_name);
     if (is_optional && !attr_node)
     {
       //failed parsing but its not an error
@@ -130,9 +130,9 @@ namespace shellanything
     return true;
   }
 
-  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char * attr_name, bool is_optional, bool allow_empty_values, int & attr_value, std::string & error)
+  bool ObjectFactory::ParseAttribute(const XMLElement* element, const char* attr_name, bool is_optional, bool allow_empty_values, int& attr_value, std::string& error)
   {
-    std::string str_value;    
+    std::string str_value;
     if (!ParseAttribute(element, attr_name, is_optional, allow_empty_values, str_value, error))
       return false; //error is already set
 
@@ -160,7 +160,7 @@ namespace shellanything
     mPlugins.clear();
   }
 
-  Validator * ObjectFactory::ParseValidator(const tinyxml2::XMLElement * element, std::string & error)
+  Validator* ObjectFactory::ParseValidator(const tinyxml2::XMLElement* element, std::string& error)
   {
     if (element == NULL)
     {
@@ -174,7 +174,7 @@ namespace shellanything
       return NULL;
     }
 
-    Validator * validator = new Validator();
+    Validator* validator = new Validator();
 
     PropertyManager& pmgr = PropertyManager::GetInstance();
 
@@ -322,7 +322,7 @@ namespace shellanything
     return validator;
   }
 
-  IAction * ObjectFactory::ParseAction(const XMLElement* element, std::string & error)
+  IAction* ObjectFactory::ParseAction(const XMLElement* element, std::string& error)
   {
     if (element == NULL)
     {
@@ -364,7 +364,7 @@ namespace shellanything
     return NULL;
   }
 
-  Menu * ObjectFactory::ParseMenu(const XMLElement* element, std::string & error)
+  Menu* ObjectFactory::ParseMenu(const XMLElement* element, std::string& error)
   {
     if (element == NULL)
     {
@@ -380,7 +380,7 @@ namespace shellanything
     }
 
     //at this step the <menu> is valid
-    Menu * menu = new Menu();
+    Menu* menu = new Menu();
 
     //parse separator
     std::string menu_separator;
@@ -451,9 +451,9 @@ namespace shellanything
 
     //find <validity> node under <menu>
     elements = GetChildNodes(element, NODE_VALIDITY);
-    for(size_t i=0; i<elements.size(); i++)
+    for (size_t i = 0; i < elements.size(); i++)
     {
-      Validator * validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+      Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
       if (validator == NULL)
       {
         delete menu;
@@ -466,9 +466,9 @@ namespace shellanything
 
     //find <visibility> node under <menu>
     elements = GetChildNodes(element, NODE_VISIBILITY);
-    for(size_t i=0; i<elements.size(); i++)
+    for (size_t i = 0; i < elements.size(); i++)
     {
-      Validator * validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+      Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
       if (validator == NULL)
       {
         delete menu;
@@ -490,7 +490,7 @@ namespace shellanything
       while (xml_action)
       {
         //found a new action node
-        IAction * action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
+        IAction* action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
         if (action == NULL)
         {
           delete menu;
@@ -507,9 +507,9 @@ namespace shellanything
 
     //find <menu> node under <menu>
     elements = GetChildNodes(element, NODE_MENU);
-    for(size_t i=0; i<elements.size(); i++)
+    for (size_t i = 0; i < elements.size(); i++)
     {
-      Menu * submenu = ObjectFactory::GetInstance().ParseMenu(elements[i], error);
+      Menu* submenu = ObjectFactory::GetInstance().ParseMenu(elements[i], error);
       if (submenu == NULL)
       {
         delete menu;
@@ -520,7 +520,7 @@ namespace shellanything
 
     //find <icon> node under <menu>
     elements = GetChildNodes(element, "icon");
-    for(size_t i=0; i<elements.size(); i++)
+    for (size_t i = 0; i < elements.size(); i++)
     {
       Icon icon;
       if (!ObjectFactory::GetInstance().ParseIcon(elements[i], icon, error))
@@ -535,7 +535,7 @@ namespace shellanything
     return menu;
   }
 
-  bool ObjectFactory::ParseIcon(const tinyxml2::XMLElement * element, Icon & icon, std::string & error)
+  bool ObjectFactory::ParseIcon(const tinyxml2::XMLElement* element, Icon& icon, std::string& error)
   {
     if (element == NULL)
     {
@@ -557,7 +557,7 @@ namespace shellanything
     //parse fileextension
     std::string icon_fileextension;
     bool hasFileExtension = ParseAttribute(element, "fileextension", true, true, icon_fileextension, error);
-    
+
     if (!hasPath && !hasFileExtension)
     {
       //failed parsing
@@ -582,7 +582,7 @@ namespace shellanything
     return true;
   }
 
-  DefaultSettings * ObjectFactory::ParseDefaults(const XMLElement* element, std::string & error)
+  DefaultSettings* ObjectFactory::ParseDefaults(const XMLElement* element, std::string& error)
   {
     if (element == NULL)
     {
@@ -597,22 +597,22 @@ namespace shellanything
       return NULL;
     }
 
-    DefaultSettings * defaults = new DefaultSettings();
+    DefaultSettings* defaults = new DefaultSettings();
 
     ElementPtrList elements; //temporary xml element containers
 
     //find <property> node under <default>
     elements = GetChildNodes(element, NODE_ACTION_PROPERTY);
-    for(size_t i=0; i<elements.size(); i++)
+    for (size_t i = 0; i < elements.size(); i++)
     {
-      const tinyxml2::XMLElement * element = elements[i];
+      const tinyxml2::XMLElement* element = elements[i];
 
       //found a new action node
-      IAction * abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
+      IAction* abstract_action = ObjectFactory::GetInstance().ParseAction(element, error);
       if (abstract_action)
       {
         //filter out all type of actions except ActionProperty actions
-        ActionProperty * property_action = dynamic_cast<ActionProperty *>(abstract_action);
+        ActionProperty* property_action = dynamic_cast<ActionProperty*>(abstract_action);
         if (property_action != NULL)
         {
           //add the new action node
