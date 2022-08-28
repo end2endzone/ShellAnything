@@ -29,11 +29,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -78,13 +76,11 @@ inline int EvaluateBooleanEx(const char * expression_string, int * result)
   return EvaluateBoolean(expression_string, result, NULL, 0);
 }
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_LIBEXPRTK_H

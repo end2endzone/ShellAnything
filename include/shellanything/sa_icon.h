@@ -31,11 +31,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -144,13 +142,11 @@ int sa_icon_get_index(sa_icon_immutable_t* icon);
 /// <param name="index">The new index.</param>
 void sa_icon_set_index(sa_icon_t* icon, int index);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_ICON_H

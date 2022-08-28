@@ -29,11 +29,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -49,13 +47,11 @@ void* sa_memory_alloc(size_t size);
 /// <param name="ptr">A void pointer of memory allocated with sa_memory_alloc().</param>
 void sa_memory_free(void* ptr);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_MEMORY_H

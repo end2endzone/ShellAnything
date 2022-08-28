@@ -31,11 +31,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -160,13 +158,11 @@ sa_error_t sa_property_store_get_properties(sa_property_store_immutable_t* store
 /// <returns>Returns 0 on success. Returns a non-zero on error.</returns>
 sa_error_t sa_property_store_find_missing_properties(sa_property_store_immutable_t* store, const char* input_names[], size_t count_input_names, char* output_names[], size_t count_output_names, size_t output_names_max_length);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_PROPERTY_STORE_H

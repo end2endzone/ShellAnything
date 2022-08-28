@@ -36,11 +36,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -136,13 +134,11 @@ sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func);
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_event_func func);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_PLUGIN_H

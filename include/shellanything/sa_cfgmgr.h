@@ -32,11 +32,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -90,13 +88,11 @@ void sa_cfgmgr_clear_search_path();
 /// <param name="path">The path to add to the search list.</param>
 void sa_cfgmgr_add_search_path(const char* path);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_CFGMGR_H

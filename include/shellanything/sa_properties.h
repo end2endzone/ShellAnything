@@ -30,11 +30,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -175,13 +173,11 @@ sa_error_t sa_properties_expand_once_string(const char* value, sa_string_t* str)
 /// <returns>Returns a valid string value. Must be free with sa_memory_free() to prevent memory leaks. Returns NULL if no value is defined.</returns>
 const char* sa_properties_expand_once_alloc(const char* value);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_PROPERTIES_H

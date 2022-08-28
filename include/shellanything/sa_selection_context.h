@@ -31,11 +31,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -122,13 +120,11 @@ int sa_selection_context_get_num_files(sa_selection_context_immutable_t* ctx);
 /// <returns>Returns the number of directories selected by the context.</returns>
 int sa_selection_context_get_num_directories(sa_selection_context_immutable_t* ctx);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_SELECTION_CONTEXT_H

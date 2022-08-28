@@ -29,11 +29,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 typedef struct
@@ -82,13 +80,11 @@ typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* version);
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 typedef sa_error_t(*sa_plugin_register_func)();
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_PLUGIN_DEFINITIONS_H

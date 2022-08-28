@@ -44,11 +44,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-  // do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_process";
@@ -507,11 +505,9 @@ EXPORT_API sa_error_t sa_plugin_register()
   return SA_ERROR_SUCCESS;
 }
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif

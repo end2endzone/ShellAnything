@@ -30,11 +30,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -51,13 +49,11 @@ sa_action_immutable_t sa_action_to_immutable(sa_action_t* action);
 /// <param name="ctx">The context for executing the action.</param>
 sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_selection_context_immutable_t* ctx);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_CONTEXT_H

@@ -30,11 +30,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -89,13 +87,11 @@ size_t sa_string_get_length(sa_string_t* str);
 /// <returns>Returns a immutable buffer matching the value of a string.</returns>
 const char* sa_string_get_value(sa_string_t* str);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_CONTEXT_H

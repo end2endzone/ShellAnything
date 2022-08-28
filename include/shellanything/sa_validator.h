@@ -31,11 +31,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -335,13 +333,11 @@ sa_error_t sa_validator_get_inverse_string(sa_validator_immutable_t* validator, 
 /// <param name="value">The new parameter value.</param>
 void sa_validator_set_inverse(sa_validator_t* validator, const char* value);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_VALIDATOR_H

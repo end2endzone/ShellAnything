@@ -29,11 +29,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-// do not indent code inside extern C
 #if 0
-}
+}  // do not indent code inside extern C
+#endif
 #endif
 
 /// <summary>
@@ -53,13 +51,11 @@ void sa_logging_print(sa_log_level_t level, const char* source_name, const char*
 /// <param name="...">The arguments in the log to print</param>
 void sa_logging_print_format(sa_log_level_t level, const char* source_name, const char* format, ...);
 
-// do not indent code inside extern C
-#if 0
-{
-#endif
-
 #ifdef __cplusplus
-}
+#if 0
+{  // do not indent code inside extern C
+#endif
+}  // extern "C"
 #endif
 
 #endif //SA_API_ERROR_MANAGER_H
