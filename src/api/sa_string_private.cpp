@@ -33,12 +33,12 @@ void sa_string_copy_stdstr(sa_string_t* dest_str, const std::string& src_str)
 
 sa_error_t sa_cstr_copy_buffer(char* dest_buffer, size_t dest_size, int* length, const std::string& src_str)
 {
-  if ( dest_buffer == NULL || dest_size == NULL )
+  if (dest_buffer == NULL || dest_size == NULL)
     return SA_ERROR_UNKNOWN;
-  if ( length != NULL )
+  if (length != NULL)
     *length = (int)src_str.length();
   const size_t minimum_buffer_size = (src_str.size() + 1);
-  if ( dest_size < minimum_buffer_size )
+  if (dest_size < minimum_buffer_size)
     return SA_ERROR_BUFFER_TOO_SMALL;
   strcpy(dest_buffer, src_str.c_str());
   return SA_ERROR_SUCCESS;
@@ -46,7 +46,7 @@ sa_error_t sa_cstr_copy_buffer(char* dest_buffer, size_t dest_size, int* length,
 
 void sa_cstr_copy_truncate_buffer(char* dest_buffer, size_t dest_size, const char* src_buffer)
 {
-  if ( dest_buffer == NULL || dest_size == 0 )
+  if (dest_buffer == NULL || dest_size == 0)
     return;
 
   // reset first and last by of the buffer
@@ -56,7 +56,7 @@ void sa_cstr_copy_truncate_buffer(char* dest_buffer, size_t dest_size, const cha
   char* dest = dest_buffer;
   const char* src = src_buffer;
   size_t length = dest_size - 1; // -1 to prevent overwriting the last character of the destination buffer
-  while ( src[0] != '\0' && length > 0 )
+  while (src[0] != '\0' && length > 0)
   {
     dest[0] = src[0];
     dest++;
@@ -70,6 +70,6 @@ void sa_cstr_copy_truncate_buffer(char* dest_buffer, size_t dest_size, const cha
 
 void sa_cstr_copy_truncate_string(char* dest_buffer, size_t dest_size, sa_string_t* str)
 {
-  if ( str )
+  if (str)
     sa_cstr_copy_truncate_buffer(dest_buffer, dest_size, AS_CLASS_STRING(str)->c_str());
 }

@@ -48,7 +48,7 @@ void* g_action_data;
 void ToCStringArray(std::vector<const char*>& destination, const std::vector<std::string>& values)
 {
   destination.clear();
-  for ( size_t i = 0; i < values.size(); i++ )
+  for (size_t i = 0; i < values.size(); i++)
   {
     const std::string& value_str = values[i];
     const char* value_cstr = value_str.c_str();
@@ -63,27 +63,29 @@ public:
     mSelection(NULL),
     mAttributes(NULL),
     mValidationFunc(NULL)
-  {}
+  {
+  }
   virtual ~PluginAttributeValidator()
-  {}
+  {
+  }
 
   virtual bool IsAttributesSupported(const StringList& names) const
   {
-    for ( size_t i = 0; i < names.size(); i++ )
+    for (size_t i = 0; i < names.size(); i++)
     {
       bool found = false;
       const std::string& expected = names[i];
 
       // search this expected name within known names
-      for ( size_t j = 0; j < mNames.size() && !found; j++ )
+      for (size_t j = 0; j < mNames.size() && !found; j++)
       {
         const std::string& current = mNames[j];
-        if ( current == expected )
+        if (current == expected)
           found = true;
       }
 
       // if the expected name is not found, this instance does not support this list of attribute names
-      if ( !found )
+      if (!found)
         return false;
     }
 
@@ -97,7 +99,7 @@ public:
 
   void SetAttributeNames(const char* names[], size_t count)
   {
-    for ( size_t i = 0; i < count; i++ )
+    for (size_t i = 0; i < count; i++)
     {
       const char* name = names[i];
       mNames.push_back(name);
@@ -127,7 +129,7 @@ public:
   bool Validate() const
   {
     // check names
-    if ( mNames.empty() )
+    if (mNames.empty())
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing attribute names.");
       return false;
@@ -136,7 +138,7 @@ public:
     std::string names_csv = ra::strings::Join(mNames, ",").c_str();
 
     // check callback
-    if ( mValidationFunc == NULL )
+    if (mValidationFunc == NULL)
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing validation function for attributes '%s'.", names_csv.c_str());
       return false;
@@ -145,9 +147,9 @@ public:
     // initialize the global objects for the validation
     memset(&g_validation_selection_context, 0, sizeof(g_validation_selection_context));
     memset(&g_validation_property_store, 0, sizeof(g_validation_property_store));
-    if ( mSelection != NULL )
+    if (mSelection != NULL)
       g_validation_selection_context = AS_TYPE_SELECTION_CONTEXT(mSelection);
-    if ( mAttributes != NULL )
+    if (mAttributes != NULL)
       g_validation_property_store = AS_TYPE_PROPERTY_STORE(mAttributes);
 
     // call the validation function of the plugin
@@ -158,7 +160,7 @@ public:
     memset(&g_validation_selection_context, 0, sizeof(g_validation_selection_context));
     memset(&g_validation_property_store, 0, sizeof(g_validation_property_store));
 
-    if ( valid )
+    if (valid)
       return true;
     return false;
   }
@@ -181,9 +183,11 @@ public:
   PluginUpdateCallback() :
     mSelection(NULL),
     mValidationFunc(NULL)
-  {}
+  {
+  }
   virtual ~PluginUpdateCallback()
-  {}
+  {
+  }
 
   virtual void SetSelectionContext(const SelectionContext* context)
   {
@@ -198,7 +202,7 @@ public:
   void OnNewSelection() const
   {
     // check callback
-    if ( mValidationFunc == NULL )
+    if (mValidationFunc == NULL)
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing update callback function.");
       return;
@@ -206,7 +210,7 @@ public:
 
     // initialize the global objects for the update
     memset(&g_update_selection_context, 0, sizeof(g_update_selection_context));
-    if ( mSelection != NULL )
+    if (mSelection != NULL)
       g_update_selection_context = AS_TYPE_SELECTION_CONTEXT(mSelection);
 
     // call the update callback function of the plugin
@@ -234,16 +238,17 @@ public:
     mStore(NULL),
     mData(NULL),
     mActionEventFunc(NULL)
-  {}
+  {
+  }
   virtual ~PluginAction()
   {
     // check callback
-    if ( mActionEventFunc == NULL )
+    if (mActionEventFunc == NULL)
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
 
     // initialize the global objects for the DESTROY event
     memset(&g_action_property_store, 0, sizeof(g_action_property_store));
-    if ( mStore )
+    if (mStore)
       g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
     g_action_name = mName.c_str();
     g_action_xml = NULL;
@@ -261,13 +266,13 @@ public:
     g_action_data = NULL;
 
     // if a destruction has failed
-    if ( result != SA_ERROR_SUCCESS )
+    if (result != SA_ERROR_SUCCESS)
     {
       const char* error = sa_error_get_error_description(result);
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed destroying action '%s': %s", mName.c_str(), error);
     }
 
-    if ( mStore )
+    if (mStore)
       delete mStore;
   }
 
@@ -309,7 +314,7 @@ public:
   virtual bool Execute(const SelectionContext& context) const
   {
     // check callback
-    if ( mActionEventFunc == NULL )
+    if (mActionEventFunc == NULL)
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
       return false;
@@ -317,7 +322,7 @@ public:
 
     // initialize the global objects for the EXECUTE event
     memset(&g_action_property_store, 0, sizeof(g_action_property_store));
-    if ( mStore )
+    if (mStore)
       g_action_property_store = AS_TYPE_PROPERTY_STORE(mStore);
     g_action_name = mName.c_str();
     g_action_xml = NULL;
@@ -337,7 +342,7 @@ public:
     g_action_data = NULL;
 
     // if a execute failed
-    if ( result != SA_ERROR_SUCCESS )
+    if (result != SA_ERROR_SUCCESS)
     {
       const char* error = sa_error_get_error_description(result);
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed executing action '%s': %s.", mName.c_str(), error);
@@ -360,9 +365,11 @@ class PluginActionFactory : public virtual IActionFactory
 public:
   PluginActionFactory() :
     mActionEventFunc(NULL)
-  {}
+  {
+  }
   virtual ~PluginActionFactory()
-  {}
+  {
+  }
 
   virtual void SetName(const char* name)
   {
@@ -382,7 +389,7 @@ public:
   virtual IAction* ParseFromXml(const std::string& xml, std::string& error) const
   {
     // check callback
-    if ( mActionEventFunc == NULL )
+    if (mActionEventFunc == NULL)
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Missing action event function.");
       return NULL;
@@ -411,7 +418,7 @@ public:
     g_action_data = NULL;
 
     // if a parsing is succesful
-    if ( result == SA_ERROR_SUCCESS )
+    if (result == SA_ERROR_SUCCESS)
     {
       PluginAction* action = new PluginAction();
       action->SetName(mName.c_str());
@@ -477,24 +484,24 @@ sa_property_store_t* sa_plugin_action_get_property_store()
 
 sa_error_t sa_plugin_register_validation_attributes(const char* names[], size_t count, sa_plugin_validation_attributes_func func)
 {
-  if ( names == NULL || func == NULL || count == 0 )
+  if (names == NULL || func == NULL || count == 0)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator. Unknown attribute names or function.");
     return SA_ERROR_INVALID_ARGUMENTS;
   }
 
   Plugin* plugin = Plugin::GetLoadingPlugin();
-  if ( plugin == NULL )
+  if (plugin == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator for attribute '%s'. Current plugin is unknown.", names[0]);
     return SA_ERROR_MISSING_RESOURCE;
   }
 
   // Check if all regitering conditions are declared by the plugin xml
-  for ( size_t i = 0; i < count; i++ )
+  for (size_t i = 0; i < count; i++)
   {
     const char* name = names[i];
-    if ( !plugin->SupportCondition(name) )
+    if (!plugin->SupportCondition(name))
     {
       sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register a validator for attribute '%s'. The plugin '%s' does not report this condition.", name, plugin->GetPath().c_str());
       return SA_ERROR_NOT_SUPPORTED;
@@ -512,14 +519,14 @@ sa_error_t sa_plugin_register_validation_attributes(const char* names[], size_t 
 
 sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func)
 {
-  if ( func == NULL )
+  if (func == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback function. Unknown function.");
     return SA_ERROR_INVALID_ARGUMENTS;
   }
 
   Plugin* plugin = Plugin::GetLoadingPlugin();
-  if ( plugin == NULL )
+  if (plugin == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register an update callback function. Current plugin is unknown.");
     return SA_ERROR_MISSING_RESOURCE;
@@ -535,21 +542,21 @@ sa_error_t sa_plugin_register_config_update(sa_plugin_config_update_func func)
 
 sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_event_func func)
 {
-  if ( name == NULL || func == NULL )
+  if (name == NULL || func == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action event function. Unknown action name or function.");
     return SA_ERROR_INVALID_ARGUMENTS;
   }
 
   Plugin* plugin = Plugin::GetLoadingPlugin();
-  if ( plugin == NULL )
+  if (plugin == NULL)
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. Current plugin is unknown.", name);
     return SA_ERROR_MISSING_RESOURCE;
   }
 
   // Check if the regitering action is declared by the plugin xml
-  if ( !plugin->SupportAction(name) )
+  if (!plugin->SupportAction(name))
   {
     sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. The plugin '%s' does not report this condition.", name, plugin->GetPath().c_str());
     return SA_ERROR_NOT_SUPPORTED;

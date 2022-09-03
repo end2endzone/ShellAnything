@@ -49,7 +49,7 @@ void sa_property_store_clear_property(sa_property_store_t* store, const char* na
 sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, const char* name)
 {
   bool found = AS_CLASS_PROPERTY_STORE(store)->HasProperty(name);
-  if ( found )
+  if (found)
     return 1;
   return 0;
 }
@@ -57,14 +57,14 @@ sa_boolean sa_property_store_has_property(sa_property_store_immutable_t* store, 
 sa_boolean sa_property_store_has_properties(sa_property_store_immutable_t* store, const char* properties[], size_t count)
 {
   StringList tmp;
-  for ( size_t i = 0; i < count; i++ )
+  for (size_t i = 0; i < count; i++)
   {
     const char* name = properties[i];
     tmp.push_back(name);
   }
 
   bool found = AS_CLASS_PROPERTY_STORE(store)->HasProperties(tmp);
-  if ( found )
+  if (found)
     return 1;
   return 0;
 }
@@ -78,7 +78,7 @@ const char* sa_property_store_get_property_cstr(sa_property_store_immutable_t* s
 {
   const shellanything::PropertyStore* store_class = AS_CLASS_PROPERTY_STORE(store);
   bool found = store_class->HasProperty(name);
-  if ( !found )
+  if (!found)
     return NULL;
   const std::string& value = store_class->GetProperty(name);
   return value.c_str();
@@ -88,7 +88,7 @@ const char* sa_property_store_get_property_alloc(sa_property_store_immutable_t* 
 {
   const shellanything::PropertyStore* store_class = AS_CLASS_PROPERTY_STORE(store);
   bool found = store_class->HasProperty(name);
-  if ( !found )
+  if (!found)
     return NULL;
   const std::string& value = store_class->GetProperty(name);
   const char* output = value.c_str();
@@ -97,7 +97,7 @@ const char* sa_property_store_get_property_alloc(sa_property_store_immutable_t* 
 
 sa_error_t sa_property_store_get_property_buffer(sa_property_store_immutable_t* store, const char* name, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_PROPERTY_STORE(store)->GetProperty(name);
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -120,7 +120,7 @@ size_t sa_property_store_get_property_count(sa_property_store_immutable_t* store
 sa_boolean sa_property_store_is_empty(sa_property_store_immutable_t* store)
 {
   bool is_empty = AS_CLASS_PROPERTY_STORE(store)->IsEmpty();
-  if ( is_empty )
+  if (is_empty)
     return 1;
   return 0;
 }
@@ -129,12 +129,12 @@ sa_error_t sa_property_store_get_properties(sa_property_store_immutable_t* store
 {
   shellanything::StringList local_names;
   AS_CLASS_PROPERTY_STORE(store)->GetProperties(local_names);
-  for ( size_t i = 0; i < local_names.size(); i++ )
+  for (size_t i = 0; i < local_names.size(); i++)
   {
-    if ( i >= count )
+    if (i >= count)
       return SA_ERROR_VALUE_OUT_OF_BOUNDS;
     const std::string& value = local_names[i];
-    if ( value.length() >= max_name_length )
+    if (value.length() >= max_name_length)
       return SA_ERROR_BUFFER_TOO_SMALL;
     strcpy(names[i], value.c_str()); // length should not be a problem since we already validated value.length() < max_name_length.
   }
@@ -146,7 +146,7 @@ sa_error_t sa_property_store_find_missing_properties(sa_property_store_immutable
   shellanything::StringList local_input_names;
 
   // copy input_names to local_input_names
-  for ( size_t i = 0; i < count_input_names; i++ )
+  for (size_t i = 0; i < count_input_names; i++)
   {
     local_input_names.push_back(input_names[i]);
   }
@@ -156,12 +156,12 @@ sa_error_t sa_property_store_find_missing_properties(sa_property_store_immutable
   AS_CLASS_PROPERTY_STORE(store)->FindMissingProperties(local_input_names, local_output_names);
 
   // copy local_output_names to output_names
-  for ( size_t i = 0; i < local_output_names.size(); i++ )
+  for (size_t i = 0; i < local_output_names.size(); i++)
   {
-    if ( i >= count_output_names )
+    if (i >= count_output_names)
       return SA_ERROR_VALUE_OUT_OF_BOUNDS;
     const std::string& value = local_output_names[i];
-    if ( value.length() >= output_names_max_length )
+    if (value.length() >= output_names_max_length)
       return SA_ERROR_BUFFER_TOO_SMALL;
     strcpy(output_names[i], value.c_str()); // length should not be a problem since we already validated value.length() < output_names_max_length.
   }

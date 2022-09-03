@@ -33,7 +33,7 @@ void sa_string_init(sa_string_t* str)
 
 sa_boolean sa_string_valid(sa_string_t* str)
 {
-  if ( str )
+  if (str)
     return str->opaque != NULL;
   return false;
 }
@@ -55,7 +55,7 @@ void sa_string_create_from_str(sa_string_t* str, sa_string_t* value)
 
 void sa_string_destroy(sa_string_t* str)
 {
-  if ( sa_string_valid(str) )
+  if (sa_string_valid(str))
     delete str->opaque;
   sa_string_init(str);
 }
@@ -63,7 +63,7 @@ void sa_string_destroy(sa_string_t* str)
 size_t sa_string_get_length(sa_string_t* str)
 {
   size_t length = 0;
-  if ( sa_string_valid(str) )
+  if (sa_string_valid(str))
     length = AS_CLASS_STRING(str)->length();
   return length;
 }
@@ -71,7 +71,7 @@ size_t sa_string_get_length(sa_string_t* str)
 const char* sa_string_get_value(sa_string_t* str)
 {
   const char* value = NULL;
-  if ( sa_string_valid(str) )
+  if (sa_string_valid(str))
     value = AS_CLASS_STRING(str)->c_str();
   return value;
 }

@@ -34,6 +34,6 @@ void* sa_memory_alloc(size_t size)
 
 void sa_memory_free(void* ptr)
 {
-  if ( ptr )
+  if (ptr)
     free(ptr);
 }

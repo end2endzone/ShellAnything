@@ -39,14 +39,14 @@ sa_icon_immutable_t sa_icon_to_immutable(sa_icon_t* icon)
 sa_boolean sa_icon_is_valid(sa_icon_immutable_t* icon)
 {
   bool is_valid = AS_CLASS_ICON(icon)->IsValid();
-  if ( is_valid )
+  if (is_valid)
     return 1;
   return 0;
 }
 
 sa_error_t sa_icon_get_file_extension_buffer(sa_icon_immutable_t* icon, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& fileextension = AS_CLASS_ICON(icon)->GetFileExtension();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, fileextension);
@@ -86,7 +86,7 @@ void sa_icon_set_file_extension(sa_icon_t* icon, const char* fileextension)
 
 sa_error_t sa_icon_get_path_buffer(sa_icon_immutable_t* icon, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& path = AS_CLASS_ICON(icon)->GetPath();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, path);

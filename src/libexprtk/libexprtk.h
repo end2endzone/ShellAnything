@@ -42,7 +42,7 @@ extern "C" {
 /// <param name="error_buffer">The output error description, if compilation of expression fails.</param>
 /// <param name="error_size">The size in bytes of the error buffer.</param>
 /// <returns>Returns 1 if the evaluation is successfull. Returns 0 otherwise.</returns>
-int EvaluateDouble(const char * expression_string, double * result, char * error_buffer, int error_size);
+int EvaluateDouble(const char* expression_string, double* result, char* error_buffer, int error_size);
 
 /// <summary>
 /// Evaluates a boolean text expression as a true or false value.
@@ -52,7 +52,7 @@ int EvaluateDouble(const char * expression_string, double * result, char * error
 /// <param name="error_buffer">The output error description, if compilation of expression fails.</param>
 /// <param name="error_size">The size in bytes of the error buffer.</param>
 /// <returns>Returns 1 if the evaluation is successfull. Returns 0 otherwise.</returns>
-int EvaluateBoolean(const char * expression_string, int * result, char * error_buffer, int error_size);
+int EvaluateBoolean(const char* expression_string, int* result, char* error_buffer, int error_size);
 
 /// <summary>
 /// Evaluates a text expression and calculates the result.
@@ -60,7 +60,7 @@ int EvaluateBoolean(const char * expression_string, int * result, char * error_b
 /// <param name="expression_string">The text expression to evaluate.</param>
 /// <param name="result">The output double value of the result expression.</param>
 /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-inline int EvaluateDoubleEx(const char * expression_string, double * result)
+inline int EvaluateDoubleEx(const char* expression_string, double* result)
 {
   return EvaluateDouble(expression_string, result, NULL, 0);
 }
@@ -71,7 +71,7 @@ inline int EvaluateDoubleEx(const char * expression_string, double * result)
 /// <param name="expression_string">The text expression to evaluate.</param>
 /// <param name="result">The output bool value of the result expression.</param>
 /// <returns>Returns true if the evaluation is successfull. Returns false otherwise.</returns>
-inline int EvaluateBooleanEx(const char * expression_string, int * result)
+inline int EvaluateBooleanEx(const char* expression_string, int* result)
 {
   return EvaluateBoolean(expression_string, result, NULL, 0);
 }

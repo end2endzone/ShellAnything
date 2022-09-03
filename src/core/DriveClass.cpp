@@ -58,8 +58,8 @@ namespace shellanything
   {
     if (path.size() >= 2 && path.substr(0, 2) == "\\\\")
     {
-      // The path starts with \\
-        // Extract hostname
+      // The path starts with \\ characters
+      // Extract hostname
       const char* hostname = &path[2];
       if (hostname[0] != '\0')
       {

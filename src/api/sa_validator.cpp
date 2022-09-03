@@ -38,21 +38,21 @@ sa_validator_immutable_t sa_validator_to_immutable(sa_validator_t* validator)
 
 sa_boolean sa_validator_is_attribute_inversed(sa_validator_immutable_t* validator, const char* name)
 {
-  if ( name == NULL )
+  if (name == NULL)
     return 0;
   bool inversed = AS_CLASS_VALIDATOR(validator)->IsInversed(name);
-  if ( inversed )
+  if (inversed)
     return 1;
   return 0;
 }
 
 sa_boolean sa_validator_validate(sa_validator_immutable_t* validator, sa_selection_context_immutable_t* ctx)
 {
-  if ( ctx == NULL )
+  if (ctx == NULL)
     return 0;
   const SelectionContext* context = AS_CLASS_SELECTION_CONTEXT(ctx);
   bool valid = AS_CLASS_VALIDATOR(validator)->Validate(*context);
-  if ( valid )
+  if (valid)
     return 1;
   return 0;
 }
@@ -81,7 +81,7 @@ void sa_validator_set_max_directories(sa_validator_t* validator, int max_directo
 
 sa_error_t sa_validator_get_properties_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& properties = AS_CLASS_VALIDATOR(validator)->GetProperties();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, properties);
@@ -116,7 +116,7 @@ void sa_validator_set_properties(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_file_extensions_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& file_extensions = AS_CLASS_VALIDATOR(validator)->GetFileExtensions();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, file_extensions);
@@ -137,7 +137,7 @@ void sa_validator_set_file_extensions(sa_validator_t* validator, const char* val
 
 sa_error_t sa_validator_get_file_exists_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& file_exists = AS_CLASS_VALIDATOR(validator)->GetFileExists();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, file_exists);
@@ -158,7 +158,7 @@ void sa_validator_set_file_exists(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_class_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetClass();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -179,7 +179,7 @@ void sa_validator_set_class(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_pattern_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetPattern();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -200,7 +200,7 @@ void sa_validator_set_pattern(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_exprtk_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetExprtk();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -221,7 +221,7 @@ void sa_validator_set_exprtk(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_istrue_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetIsTrue();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -242,7 +242,7 @@ void sa_validator_set_istrue(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_isfalse_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetIsFalse();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);
@@ -263,7 +263,7 @@ void sa_validator_set_isfalse(sa_validator_t* validator, const char* value)
 
 sa_error_t sa_validator_get_inverse_buffer(sa_validator_immutable_t* validator, int* length, char* buffer, size_t size)
 {
-  if ( length )
+  if (length)
     *length = -1;
   const std::string& value = AS_CLASS_VALIDATOR(validator)->GetInserve();
   sa_error_t result = sa_cstr_copy_buffer(buffer, size, length, value);

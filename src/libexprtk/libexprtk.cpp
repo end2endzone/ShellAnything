@@ -1,18 +1,18 @@
 /**********************************************************************************
  * MIT License
- * 
+ *
  * Copyright (c) 2018 Antoine Beauchamp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,13 +36,14 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-// https://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
+
+ // https://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
 #if defined(_MSC_VER) && _MSC_VER < 1900
 
 #define snprintf c99_snprintf
 #define vsnprintf c99_vsnprintf
 
-__inline int c99_vsnprintf(char *outBuf, size_t size, const char *format, va_list ap)
+__inline int c99_vsnprintf(char* outBuf, size_t size, const char* format, va_list ap)
 {
   int count = -1;
   if (size != 0)
@@ -52,7 +53,7 @@ __inline int c99_vsnprintf(char *outBuf, size_t size, const char *format, va_lis
   return count;
 }
 
-__inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
+__inline int c99_snprintf(char* outBuf, size_t size, const char* format, ...)
 {
   int count;
   va_list ap;
@@ -65,7 +66,7 @@ __inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...)
 #endif
 
 
-int EvaluateDouble(const char * expression_string, double * result, char * error_buffer, int error_size)
+int EvaluateDouble(const char* expression_string, double* result, char* error_buffer, int error_size)
 {
   if (error_buffer != NULL && error_size > 0)
     error_buffer[0] = '\0';
@@ -76,14 +77,14 @@ int EvaluateDouble(const char * expression_string, double * result, char * error
   expression_t expression;
   parser_t parser;
 
-  if (!parser.compile(expression_string,expression))
+  if (!parser.compile(expression_string, expression))
   {
     //Output error description in output
     if (error_buffer != NULL && error_size > 0)
     {
       std::string error_description = parser.error();
 
-      size_t min_buffer_size = MIN(error_description.size()+1, error_size); // +1 to include the last non-NULL character
+      size_t min_buffer_size = MIN(error_description.size() + 1, error_size); // +1 to include the last non-NULL character
       snprintf(error_buffer, min_buffer_size, "%s", error_description.c_str());
     }
     return 0;
@@ -95,7 +96,7 @@ int EvaluateDouble(const char * expression_string, double * result, char * error
   return 1;
 }
 
-int EvaluateBoolean(const char * expression_string, int* result, char * error, int error_size)
+int EvaluateBoolean(const char* expression_string, int* result, char* error, int error_size)
 {
   double tmp = 0.0;
   bool success = EvaluateDouble(expression_string, &tmp, error, error_size);

@@ -29,7 +29,7 @@ using namespace shellanything;
 
 const char* sa_error_get_error_description(sa_error_t code)
 {
-  switch ( code )
+  switch (code)
   {
   case SA_ERROR_SUCCESS:      return "No error. The operation completed successfully"; break;
   case SA_ERROR_INVALID_ARGUMENTS:      return "Invalid arguments"; break;
@@ -61,9 +61,9 @@ void sa_error_show_message(const char* title, const char* message)
   std::string title_str;
   std::string message_str;
 
-  if ( title )
+  if (title)
     title_str = title;
-  if ( message )
+  if (message)
     message_str = message;
 
   ShowErrorMessage(title, message);
@@ -74,9 +74,9 @@ void sa_error_show_message_utf8(const char* title, const char* message)
   std::string title_str;
   std::string message_str;
 
-  if ( title )
+  if (title)
     title_str = title;
-  if ( message )
+  if (message)
     message_str = message;
 
   ShowErrorMessageUtf8(title, message);

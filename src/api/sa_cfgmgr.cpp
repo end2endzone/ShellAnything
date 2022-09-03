@@ -38,10 +38,10 @@ size_t sa_cfgmgr_get_configuration_count()
 
 sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t* configuration)
 {
-  if ( configuration == NULL )
+  if (configuration == NULL)
     return SA_ERROR_INVALID_ARGUMENTS;
   Configuration::ConfigurationPtrList configs = ConfigManager::GetInstance().GetConfigurations();
-  if ( configs.empty() || index > (configs.size() - 1) )
+  if (configs.empty() || index > (configs.size() - 1))
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
   shellanything::Configuration* config_element = configs[index];
   *configuration = AS_TYPE_CONFIGURATION(config_element);
@@ -51,7 +51,7 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
 sa_boolean sa_cfgmgr_is_configuration_file_loaded(const char* path)
 {
   bool loaded = ConfigManager::GetInstance().IsConfigFileLoaded(path);
-  if ( loaded )
+  if (loaded)
     return 1;
   return 0;
 }

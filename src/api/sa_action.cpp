@@ -39,7 +39,7 @@ sa_action_immutable_t sa_action_to_immutable(sa_action_t* action)
 sa_error_t sa_action_execute(sa_action_immutable_t* action, sa_selection_context_immutable_t* ctx)
 {
   bool success = AS_CLASS_ACTION(action)->Execute(*AS_CLASS_SELECTION_CONTEXT(ctx));
-  if ( success )
+  if (success)
     return SA_ERROR_SUCCESS;
   return SA_ERROR_UNKNOWN;
 }

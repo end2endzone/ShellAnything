@@ -27,10 +27,10 @@
 
 #include <string>
 
-/// <summary>
-/// Get the current module path. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
+ /// <summary>
+ /// Get the current module path. This file must be included only in DLL and not static libraries.
+ /// </summary>
+ /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
 std::string GetCurrentModulePath();
 
 /// <summary>

@@ -33,9 +33,9 @@
 
 void sa_logging_print(sa_log_level_t level, const char* source_name, const char* message)
 {
-  if ( source_name )
+  if (source_name)
   {
-    switch ( level )
+    switch (level)
     {
     case SA_LOG_LEVEL_INFO:
       LOG(INFO) << "[ " << source_name << " ]: " << message;
@@ -53,7 +53,7 @@ void sa_logging_print(sa_log_level_t level, const char* source_name, const char*
   }
   else // source_name == NULL
   {
-    switch ( level )
+    switch (level)
     {
     case SA_LOG_LEVEL_INFO:
       LOG(INFO) << message;
