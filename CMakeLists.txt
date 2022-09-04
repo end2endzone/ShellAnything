@@ -378,16 +378,14 @@ set(CPACK_PACKAGE_VENDOR "end2endzone")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_GENERATOR "ZIP")
-if (NSIS_FOUND)
-  list(APPEND CPACK_GENERATOR "NSIS")
-endif (NSIS_FOUND)
+
 if (WIX_FOUND)
   list(APPEND CPACK_GENERATOR "WIX")
 endif (WIX_FOUND)
 
-#########################
-# Common specific stuff #
-#########################
+####################################
+# Common generator packaging stuff #
+####################################
 
 # Define our "main" start menu shortcuts for our execuables.
 # NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
@@ -406,63 +404,9 @@ set(CPACK_PACKAGE_EXECUTABLES
   # "sa.tests${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
 )
 
-#######################
-# NSIS specific stuff #
-#######################
-
-set(CPACK_NSIS_CONTACT "end2endzone@gmail.com")
-set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/end2endzone/ShellAnything")
-set(CPACK_NSIS_HELP_LINK "https://github.com/end2endzone/ShellAnything")
-set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-
-# Icon in the add/remove control panel. Must be an .exe file.
-# Use the main dll as we do not have main exe.
-# The filename will be wrong in debug builds.
-set(CPACK_NSIS_INSTALLED_ICON_NAME docs\\\\shellanything.ico)
-
-# Define our secondaries start menu shortcuts (for files that are not direct target executables).
-# See the following for details:
-# https://stackoverflow.com/questions/14831739/how-do-i-add-a-start-menu-entry-for-a-text-file-in-cpack-ans-nsis
-# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
-# Note: As found with issue #60, the shortcuts created here have the 'Start in' property set to the installation directory. 
-#       If a shortcut is pointing to a executable/document that is not stored in the installation root directory,
-#       the created shortcut will not work.
-set(CPACK_NSIS_MENU_LINKS
-  "${README_FILENAME}" "${README_FILENAME}"
-  "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
-  "${CONTRIBUTING_FILENAME}" "${CONTRIBUTING_FILENAME}"
-  "${AUTHOR_FILENAME}"   "${AUTHOR_FILENAME}"
-  "${CHANGES_FILENAME}"  "${CHANGES_FILENAME}"
-  "${LICENSE_FILENAME}"  "${LICENSE_FILENAME}"
-  "licenses" "Third party licenses"
-  "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
-)
-
-# Define more anchor points for NSIS installer.
-# SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS   "; CPACK_NSIS_EXTRA_INSTALL_COMMANDS INSERT LOCATION"    )
-# SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "; CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS INSERT LOCATION"  )
-
-# Issue #60 Unit tests cannot execute from installation directory:
-# Shortcuts that must start in 'bin' directory must be created manually...
-# NSIS CreateShortCut documentation: https://nsis.sourceforge.io/Reference/CreateShortCut
-# Note: CMake escaping mechanism is complicated. In short, to insert a backslash, use the literal string \\\\ and to insert a double-quote character, use the literal string \\\" .
-#       Also, generator expression variable such as `$<TARGET_FILE_NAME:sa.tests>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
-SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
-  SetOutPath \\\"$INSTDIR\\\\bin\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\sa.tests${CMAKE_DEBUG_POSTFIX}.exe\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Register shell extension.lnk\\\"   \\\"$INSTDIR\\\\bin\\\\register.bat\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Unregister shell extension.lnk\\\" \\\"$INSTDIR\\\\bin\\\\unregister.bat\\\"
-  SetOutPath \\\"$INSTDIR\\\"
-  ")
-SET(CPACK_NSIS_DELETE_ICONS_EXTRA "
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Run Unit Tests.lnk\\\"
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Register shell extension.lnk\\\"
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Unregister shell extension.lnk\\\"
-  ")
-
-#######################
+######################
 # WIX specific stuff #
-#######################
+######################
 
 # Set variables for WIX installer
 set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
