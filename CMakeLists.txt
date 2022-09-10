@@ -409,7 +409,7 @@ set(CPACK_PACKAGE_EXECUTABLES
 ######################
 
 # Set variables for WIX installer
-set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
+set(CPACK_WIX_UPGRADE_GUID "210E4570-6F3C-47A5-B243-12B592E13407")  # when updating the version number also generate a new GUID
 set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
