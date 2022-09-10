@@ -373,7 +373,7 @@ set(CPACK_PACKAGE_VERSION ${SHELLANYTHING_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR "${SHELLANYTHING_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${SHELLANYTHING_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${SHELLANYTHING_VERSION_PATCH}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one to integrate third party applications with Windows File Explorer.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.")
 set(CPACK_PACKAGE_VENDOR "end2endzone")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
@@ -415,6 +415,10 @@ set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ic
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
 
+set(CPACK_WIX_PROPERTY_ARPCOMMENTS "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_WIX_HELP_LINK}")
+set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "${CPACK_WIX_HELP_LINK}")
+
 # Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
 # Set CPACK_WIX_UPGRADE_GUID to something fixed while leaving CPACK_WIX_PRODUCT_GUID unset
 # (so that you get a unique new product GUID for every package you create).
@@ -431,10 +435,13 @@ set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY
 set_property(INSTALL "${AUTHOR_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${AUTHOR_FILENAME}"        )
 set_property(INSTALL "${CHANGES_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${CHANGES_FILENAME}"       )
 set_property(INSTALL "${LICENSE_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${LICENSE_FILENAME}"       )
-set_property(INSTALL "./licenses"                                       PROPERTY CPACK_START_MENU_SHORTCUTS "Third party licenses"      ) # This one does not work!
-set_property(INSTALL "https://github.com/end2endzone/ShellAnything"     PROPERTY CPACK_START_MENU_SHORTCUTS "ShellAnything Web Site"    )
 set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register shell extension"  )
 set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister shell extension")
+
+# Define custom shortcuts
+set(CPACK_WIX_PATCH_FILE    "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.patches.in")
+set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.extra.in")
+set(CPACK_WIX_EXTENSIONS "WiXUtilExtension") # This is required for the util:InternetShortcut in WIX.extra.in
 
 # we don't want to split our program up into several things
 set(CPACK_MONOLITHIC_INSTALL 1)
