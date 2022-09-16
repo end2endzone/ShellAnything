@@ -434,15 +434,15 @@ set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "${CPACK_WIX_HELP_LINK}")
 
 # Define start menu shortcuts for WIX
 # More shortcuts are defined in file "wix/WIX.extra.in"
-set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME} unit tests")
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
 set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )
 set_property(INSTALL "${AUTHOR_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${AUTHOR_FILENAME}"        )
 set_property(INSTALL "${CHANGES_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${CHANGES_FILENAME}"       )
 set_property(INSTALL "${LICENSE_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${LICENSE_FILENAME}"       )
-set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register shell extension"  )
-set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister shell extension")
+set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register ${PROJECT_NAME}"  )
+set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister ${PROJECT_NAME}")
 
 # Define custom shortcuts
 set(CPACK_WIX_PATCH_FILE    "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.patches.in")
