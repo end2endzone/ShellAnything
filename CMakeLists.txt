@@ -140,9 +140,9 @@ set(LIBMAGIC_MGC_DIR "${CMAKE_SOURCE_DIR}/third_parties/libmagic/install/binary"
 ##############################################################################################################################################
 
 # Build options
-option(SHELLANYTHING_BUILD_DOC "Build ShellAnything documentation" OFF)
-option(SHELLANYTHING_BUILD_TEST "Build all ShellAnything's unit tests" OFF)
-option(SHELLANYTHING_BUILD_PLUGINS "Build all ShellAnything's plugins" OFF)
+option(SHELLANYTHING_BUILD_DOC "Build ${PROJECT_NAME} documentation" OFF)
+option(SHELLANYTHING_BUILD_TEST "Build all ${PROJECT_NAME}'s unit tests" OFF)
+option(SHELLANYTHING_BUILD_PLUGINS "Build all ${PROJECT_NAME}'s plugins" OFF)
 
 # Force a debug postfix if none specified.
 # This allows publishing both release and debug binaries to the same location
@@ -368,13 +368,14 @@ endif()
 # Packaging
 ##############################################################################################################################################
 
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION ${SHELLANYTHING_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR "${SHELLANYTHING_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${SHELLANYTHING_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${SHELLANYTHING_VERSION_PATCH}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.")
 set(CPACK_PACKAGE_VENDOR "end2endzone")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_GENERATOR "ZIP")
@@ -425,7 +426,7 @@ set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")  # as per v0.
 set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
-set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "${PROJECT_NAME}")
 
 set(CPACK_WIX_PROPERTY_ARPCOMMENTS "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_WIX_HELP_LINK}")
