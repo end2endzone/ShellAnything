@@ -409,7 +409,19 @@ set(CPACK_PACKAGE_EXECUTABLES
 ######################
 
 # Set variables for WIX installer
-set(CPACK_WIX_UPGRADE_GUID "210E4570-6F3C-47A5-B243-12B592E13407")  # when updating the version number also generate a new GUID
+
+# If we do not specify a value for CPACK_WIX_PRODUCT_GUID,
+# cpack will generate a new random PRODUCT_GUID value for every package you create.
+# If we do not set a PRODUCT_GUID (so that you get a unique new product GUID for every package you create)
+# and use a fixed UPGRADE_GUID (the same in every builds),
+# the installation of a newer version should silently uninstall the previous version.
+# This would cause an existing installation (with the same upgrade GUID) to be replaced 
+# (files of the old package are removed)
+# rather than installed in parallel.
+# See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
+# This is intended behavior for ShellAnything.
+set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")  # as per v0.7.0 and older
+
 set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
@@ -419,15 +431,8 @@ set(CPACK_WIX_PROPERTY_ARPCOMMENTS "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_WIX_HELP_LINK}")
 set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "${CPACK_WIX_HELP_LINK}")
 
-# Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
-# Set CPACK_WIX_UPGRADE_GUID to something fixed while leaving CPACK_WIX_PRODUCT_GUID unset
-# (so that you get a unique new product GUID for every package you create).
-# This would cause an existing installation (with the same upgrade GUID) to be replaced 
-# (files of the old package are removed)
-# rather than installed in parallel.
-# See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
-
 # Define start menu shortcuts for WIX
+# More shortcuts are defined in file "wix/WIX.extra.in"
 set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
@@ -442,6 +447,27 @@ set_property(INSTALL "bin/unregister.bat"                               PROPERTY
 set(CPACK_WIX_PATCH_FILE    "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.patches.in")
 set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.extra.in")
 set(CPACK_WIX_EXTENSIONS "WiXUtilExtension") # This is required for the util:InternetShortcut in WIX.extra.in
+
+# Starting from version 0.8.0 we must disable the installation of ShellAnything if an existing version is already installed.
+# See issues for details:
+#  #101 (Deprecate setup.exe installer in favor of the Windows Installer (*.msi)) and
+#  #113 (Upgrading from v0.7.0 to 0.8.0 installs at the wrong location),
+# To implement this, we must change WIX <MajorUpgrade> node in the <Product> definition.
+# CPack does not allow modifications to <MajorUpgrade> using the CPACK_WIX_PATCH_FILE or other mecanisms.
+# So we must do it the hard way by changing its default WIX template.
+#
+# Copy cmake's WIX template...
+set(CUSTOM_WIX_TEMPLATE_FILE_PATH "${CMAKE_BINARY_DIR}/WIX.template.in")
+configure_file("${CMAKE_ROOT}/Modules/Internal/CPack/WIX.template.in" "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" COPYONLY)
+# Change the template as we need it.
+file(READ "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" CUSTOM_WIX_TEMPLATE_FILE_CONTENTS)
+string(REPLACE
+  "AllowSameVersionUpgrades=\"yes\""
+  "AllowSameVersionUpgrades=\"yes\"\n\t\t\tDisallow=\"yes\"\n\t\t\tDisallowUpgradeErrorMessage=\"Another version of [ProductName] is already installed. Installation of this version cannot continue. To configure or remove the existing version of [ProductName], use Add/Remove Programs on the Control Panel.\""
+  CUSTOM_WIX_TEMPLATE_FILE_CONTENTS "${CUSTOM_WIX_TEMPLATE_FILE_CONTENTS}")
+file(WRITE "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" "${CUSTOM_WIX_TEMPLATE_FILE_CONTENTS}")
+# Apply the new custom template
+set(CPACK_WIX_TEMPLATE "${CUSTOM_WIX_TEMPLATE_FILE_PATH}")
 
 # we don't want to split our program up into several things
 set(CPACK_MONOLITHIC_INSTALL 1)

@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?include "cpack_variables.wxi"?>
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Fragment>
 
+    <!-- Supported Project Reference Variables: https://wixtoolset.org/documentation/manual/v3/votive/votive_project_references.html -->
+
+    <!-- Definition of CM_SHORTCUT_EXTRA
+    <DirectoryRef Id="TARGETDIR">
+      <Directory Id="ProgramMenuFolder">
+          <Directory Id="PROGRAM_MENU_FOLDER" Name="$(var.CPACK_PACKAGE_NAME) $(var.CPACK_PACKAGE_VERSION)"/>
+      </Directory>
+    </DirectoryRef>
+    -->
+
     <DirectoryRef Id="PROGRAM_MENU_FOLDER">
       <Component Id="CM_SHORTCUT_EXTRA" Guid="*">
-        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed_links" Type="integer" Value="1" KeyPath="yes"/>
-
-        <!--
-        <Shortcut Id="CM_DP_licenses_shortcut"
-                  Name="Third party licenses"
-                  Target="[SystemFolder]explorer.exe"
-                  Arguments="&quot;[CM_DP_licenses]&quot;"/>
-
-        <Shortcut Id="CM_DP_licenses_shortcut"
-                  Name="Third party licenses"
-                  Directory="CM_DP_licenses"
-                  Target="[#CM_DP_licenses]"
-                  Advertise="no" />
-
-        <Shortcut Id="CM_DP_licenses_shortcut"
-                  Name="Third party licenses"
-                  Directory="CM_DP_licenses"
-                  Target="[CM_DP_licenses]"
-                  Advertise="no" />
-        -->
 
         <Shortcut Id="CM_DP_licenses_shortcut"
                   Name="Third party licenses"
@@ -35,6 +27,12 @@
             Name="ShellAnything Homepage"
             Target="https://github.com/end2endzone/ShellAnything/"
             Type="url"/>
+
+        <!-- Delete shortcuts directory on uninstall: "C:\Users\%USERNAME%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\ShellAnything *" -->
+        <RemoveFolder Id="PROGRAM_MENU_FOLDER" On="uninstall"/>
+
+        <!-- Use a custom registry value as keypath -->
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed_extra_links" Type="integer" Value="1" KeyPath="yes"/>
 
       </Component>
     </DirectoryRef>
