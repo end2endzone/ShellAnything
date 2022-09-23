@@ -93,10 +93,8 @@ add_custom_command( TARGET sa.core POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${CMAKE_SOURCE_DIR}/resources/unregister.bat $<TARGET_FILE_DIR:sa.core>/unregister.bat
                     COMMENT "Copying unregister.bat script.")
-add_custom_command( TARGET sa.core POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_SOURCE_DIR}/resources/refresh.bat $<TARGET_FILE_DIR:sa.core>/refresh.bat
-                    COMMENT "Copying refresh.bat script.")
+
+# Copy files and other dependencies to target dir
 add_custom_command( TARGET sa.core POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${LIBMAGIC_MGC_DIR}/magic.mgc $<TARGET_FILE_DIR:sa.core>/magic.mgc
