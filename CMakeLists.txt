@@ -445,9 +445,12 @@ set_property(INSTALL "bin/register.bat"                                 PROPERTY
 set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister ${PROJECT_NAME}")
 
 # Define custom shortcuts
-set(CPACK_WIX_PATCH_FILE    "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.patches.in")
-set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/wix/WIX.extra.in")
+configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.patches.in" "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
+configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.extra.in"   "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
+set(CPACK_WIX_PATCH_FILE    "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
+set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
 set(CPACK_WIX_EXTENSIONS "WiXUtilExtension") # This is required for the util:InternetShortcut in WIX.extra.in
+set(CPACK_WIX_UI_REF "WixUI_FeatureTree") # To show a custom install directory and list of features.
 
 # Starting from version 0.8.0 we must disable the installation of ShellAnything if an existing version is already installed.
 # See issues for details:

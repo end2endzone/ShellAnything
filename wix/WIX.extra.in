@@ -6,16 +6,6 @@
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Fragment>
 
-    <!-- Supported Project Reference Variables: https://wixtoolset.org/documentation/manual/v3/votive/votive_project_references.html -->
-
-    <!-- Definition of CM_SHORTCUT_EXTRA
-    <DirectoryRef Id="TARGETDIR">
-      <Directory Id="ProgramMenuFolder">
-          <Directory Id="PROGRAM_MENU_FOLDER" Name="$(var.CPACK_PACKAGE_NAME) $(var.CPACK_PACKAGE_VERSION)"/>
-      </Directory>
-    </DirectoryRef>
-    -->
-
     <DirectoryRef Id="PROGRAM_MENU_FOLDER">
       <Component Id="CM_SHORTCUT_EXTRA" Guid="*">
 
@@ -36,6 +26,28 @@
 
       </Component>
     </DirectoryRef>
+
+    <InstallExecuteSequence>
+      <Custom Action="RegisterFeatureInstall" After="InstallFiles">
+        <![CDATA[(&RegistrationFeature=3)]]>
+      </Custom>
+      <Custom Action="UnregisterFeatureUninstall" After="InstallInitialize">
+        <![CDATA[(&RegistrationFeature=2) AND (!RegistrationFeature=3)]]>
+      </Custom>
+    </InstallExecuteSequence>
+    <CustomAction Id="RegisterFeatureInstall"     Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s    &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
+    <CustomAction Id="UnregisterFeatureUninstall" Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s /u &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
+
+    <DirectoryRef Id="INSTALL_ROOT">
+      <Component Id="cmpREGISTRATION" Guid="*">
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]\[ProductVersion]" Name="registration" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="RegistrationFeature" Title="Register components" Level="1" Description="Register the shell extension and COM server components" />
+    <FeatureRef Id="RegistrationFeature">
+      <ComponentRef Id="cmpREGISTRATION"/>
+    </FeatureRef>
 
   </Fragment>
 </Wix>
