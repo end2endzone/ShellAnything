@@ -118,7 +118,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestIcon, testMultipleResolveFailures) // issue #98
     {
-      static const std::string UNKNOWN_FILE_EXTENSION = "123456789";
+      static const std::string UNKNOWN_FILE_EXTENSION = "foobar123456789";
 
       Icon icon;
       icon.SetFileExtension(UNKNOWN_FILE_EXTENSION);
