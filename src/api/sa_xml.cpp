@@ -227,7 +227,7 @@ void sa_xml_attr_list_update(XML_ATTR* attrs, size_t count, sa_property_store_im
       attr.tmp_value = _strdup(property_value.c_str());
 
       // And expand the value
-      attr.tmp_value = sa_properties_expand_alloc(attr.tmp_value);
+      attr.tmp_expanded = sa_properties_expand_alloc(attr.tmp_value);
     }
   }
 }
