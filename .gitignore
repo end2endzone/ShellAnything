@@ -12,3 +12,4 @@
 /src/plugins/sa_plugin_strings/install
 /src/plugins/sa_plugin_process/install
 /src/plugins/sa_plugin_process/build
+/scripts/refresh.tmp.bat

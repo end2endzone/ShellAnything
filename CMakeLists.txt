@@ -140,9 +140,9 @@ set(LIBMAGIC_MGC_DIR "${CMAKE_SOURCE_DIR}/third_parties/libmagic/install/binary"
 ##############################################################################################################################################
 
 # Build options
-option(SHELLANYTHING_BUILD_DOC "Build ShellAnything documentation" OFF)
-option(SHELLANYTHING_BUILD_TEST "Build all ShellAnything's unit tests" OFF)
-option(SHELLANYTHING_BUILD_PLUGINS "Build all ShellAnything's plugins" OFF)
+option(SHELLANYTHING_BUILD_DOC "Build ${PROJECT_NAME} documentation" OFF)
+option(SHELLANYTHING_BUILD_TEST "Build all ${PROJECT_NAME}'s unit tests" OFF)
+option(SHELLANYTHING_BUILD_PLUGINS "Build all ${PROJECT_NAME}'s plugins" OFF)
 
 # Force a debug postfix if none specified.
 # This allows publishing both release and debug binaries to the same location
@@ -368,26 +368,25 @@ endif()
 # Packaging
 ##############################################################################################################################################
 
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION ${SHELLANYTHING_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR "${SHELLANYTHING_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${SHELLANYTHING_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${SHELLANYTHING_VERSION_PATCH}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ShellAnything - ShellAnything allows one to integrate third party applications with Windows File Explorer.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.")
 set(CPACK_PACKAGE_VENDOR "end2endzone")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_GENERATOR "ZIP")
-if (NSIS_FOUND)
-  list(APPEND CPACK_GENERATOR "NSIS")
-endif (NSIS_FOUND)
+
 if (WIX_FOUND)
   list(APPEND CPACK_GENERATOR "WIX")
 endif (WIX_FOUND)
 
-#########################
-# Common specific stuff #
-#########################
+####################################
+# Common generator packaging stuff #
+####################################
 
 # Define our "main" start menu shortcuts for our execuables.
 # NSIS uses CPACK_PACKAGE_EXECUTABLES to create start menu shortcuts.
@@ -406,91 +405,73 @@ set(CPACK_PACKAGE_EXECUTABLES
   # "sa.tests${CMAKE_DEBUG_POSTFIX}.exe" "Run Unit Tests"
 )
 
-#######################
-# NSIS specific stuff #
-#######################
-
-set(CPACK_NSIS_CONTACT "end2endzone@gmail.com")
-set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/end2endzone/ShellAnything")
-set(CPACK_NSIS_HELP_LINK "https://github.com/end2endzone/ShellAnything")
-set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-
-# Icon in the add/remove control panel. Must be an .exe file.
-# Use the main dll as we do not have main exe.
-# The filename will be wrong in debug builds.
-set(CPACK_NSIS_INSTALLED_ICON_NAME docs\\\\shellanything.ico)
-
-# Define our secondaries start menu shortcuts (for files that are not direct target executables).
-# See the following for details:
-# https://stackoverflow.com/questions/14831739/how-do-i-add-a-start-menu-entry-for-a-text-file-in-cpack-ans-nsis
-# https://stackoverflow.com/questions/2640760/creating-windows-desktop-icon-in-cmake-cpack-nsis
-# Note: As found with issue #60, the shortcuts created here have the 'Start in' property set to the installation directory. 
-#       If a shortcut is pointing to a executable/document that is not stored in the installation root directory,
-#       the created shortcut will not work.
-set(CPACK_NSIS_MENU_LINKS
-  "${README_FILENAME}" "${README_FILENAME}"
-  "${USERMANUAL_FILENAME}" "${USERMANUAL_FILENAME}"
-  "${CONTRIBUTING_FILENAME}" "${CONTRIBUTING_FILENAME}"
-  "${AUTHOR_FILENAME}"   "${AUTHOR_FILENAME}"
-  "${CHANGES_FILENAME}"  "${CHANGES_FILENAME}"
-  "${LICENSE_FILENAME}"  "${LICENSE_FILENAME}"
-  "licenses" "Third party licenses"
-  "https://github.com/end2endzone/ShellAnything" "ShellAnything Web Site"
-)
-
-# Define more anchor points for NSIS installer.
-# SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS   "; CPACK_NSIS_EXTRA_INSTALL_COMMANDS INSERT LOCATION"    )
-# SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "; CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS INSERT LOCATION"  )
-
-# Issue #60 Unit tests cannot execute from installation directory:
-# Shortcuts that must start in 'bin' directory must be created manually...
-# NSIS CreateShortCut documentation: https://nsis.sourceforge.io/Reference/CreateShortCut
-# Note: CMake escaping mechanism is complicated. In short, to insert a backslash, use the literal string \\\\ and to insert a double-quote character, use the literal string \\\" .
-#       Also, generator expression variable such as `$<TARGET_FILE_NAME:sa.tests>` does not work with CPACK_NSIS_CREATE_ICONS_EXTRA.
-SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
-  SetOutPath \\\"$INSTDIR\\\\bin\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Run Unit Tests.lnk\\\"             \\\"$INSTDIR\\\\bin\\\\sa.tests${CMAKE_DEBUG_POSTFIX}.exe\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Register shell extension.lnk\\\"   \\\"$INSTDIR\\\\bin\\\\register.bat\\\"
-  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Unregister shell extension.lnk\\\" \\\"$INSTDIR\\\\bin\\\\unregister.bat\\\"
-  SetOutPath \\\"$INSTDIR\\\"
-  ")
-SET(CPACK_NSIS_DELETE_ICONS_EXTRA "
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Run Unit Tests.lnk\\\"
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Register shell extension.lnk\\\"
-  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Unregister shell extension.lnk\\\"
-  ")
-
-#######################
+######################
 # WIX specific stuff #
-#######################
+######################
 
 # Set variables for WIX installer
-set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")
-set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
-set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
-set(CPACK_WIX_PROGRAM_MENU_FOLDER "ShellAnything ${SHELLANYTHING_VERSION}")
 
-# Do not set 'CPACK_WIX_PRODUCT_GUID' to a valid GUID (ie "C532D05F-E319-4A0E-BD41-14B0B26F245B")
-# Set CPACK_WIX_UPGRADE_GUID to something fixed while leaving CPACK_WIX_PRODUCT_GUID unset
-# (so that you get a unique new product GUID for every package you create).
+# If we do not specify a value for CPACK_WIX_PRODUCT_GUID,
+# cpack will generate a new random PRODUCT_GUID value for every package you create.
+# If we do not set a PRODUCT_GUID (so that you get a unique new product GUID for every package you create)
+# and use a fixed UPGRADE_GUID (the same in every builds),
+# the installation of a newer version should silently uninstall the previous version.
 # This would cause an existing installation (with the same upgrade GUID) to be replaced 
 # (files of the old package are removed)
 # rather than installed in parallel.
 # See https://gitlab.kitware.com/cmake/cmake/-/issues/18081 for details.
+# This is intended behavior for ShellAnything.
+set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")  # as per v0.7.0 and older
+
+set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
+set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "${PROJECT_NAME}")
+
+set(CPACK_WIX_PROPERTY_ARPCOMMENTS "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_WIX_HELP_LINK}")
+set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "${CPACK_WIX_HELP_LINK}")
 
 # Define start menu shortcuts for WIX
-set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "Run Unit Tests"            )
+# More shortcuts are defined in file "wix/WIX.extra.in"
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME} unit tests")
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
 set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )
 set_property(INSTALL "${AUTHOR_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${AUTHOR_FILENAME}"        )
 set_property(INSTALL "${CHANGES_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${CHANGES_FILENAME}"       )
 set_property(INSTALL "${LICENSE_FILENAME}"                              PROPERTY CPACK_START_MENU_SHORTCUTS "${LICENSE_FILENAME}"       )
-set_property(INSTALL "./licenses"                                       PROPERTY CPACK_START_MENU_SHORTCUTS "Third party licenses"      ) # This one does not work!
-set_property(INSTALL "https://github.com/end2endzone/ShellAnything"     PROPERTY CPACK_START_MENU_SHORTCUTS "ShellAnything Web Site"    )
-set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register shell extension"  )
-set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister shell extension")
+set_property(INSTALL "bin/register.bat"                                 PROPERTY CPACK_START_MENU_SHORTCUTS "Register ${PROJECT_NAME}"  )
+set_property(INSTALL "bin/unregister.bat"                               PROPERTY CPACK_START_MENU_SHORTCUTS "Unregister ${PROJECT_NAME}")
+
+# Define custom shortcuts
+configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.patches.in" "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
+configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.extra.in"   "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
+set(CPACK_WIX_PATCH_FILE    "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
+set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
+set(CPACK_WIX_EXTENSIONS "WiXUtilExtension") # This is required for the util:InternetShortcut in WIX.extra.in
+set(CPACK_WIX_UI_REF "WixUI_FeatureTree") # To show a custom install directory and list of features.
+
+# Starting from version 0.8.0 we must disable the installation of ShellAnything if an existing version is already installed.
+# See issues for details:
+#  #101 (Deprecate setup.exe installer in favor of the Windows Installer (*.msi)) and
+#  #113 (Upgrading from v0.7.0 to 0.8.0 installs at the wrong location),
+# To implement this, we must change WIX <MajorUpgrade> node in the <Product> definition.
+# CPack does not allow modifications to <MajorUpgrade> using the CPACK_WIX_PATCH_FILE or other mecanisms.
+# So we must do it the hard way by changing its default WIX template.
+#
+# Copy cmake's WIX template...
+set(CUSTOM_WIX_TEMPLATE_FILE_PATH "${CMAKE_BINARY_DIR}/WIX.template.in")
+configure_file("${CMAKE_ROOT}/Modules/Internal/CPack/WIX.template.in" "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" COPYONLY)
+# Change the template as we need it.
+file(READ "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" CUSTOM_WIX_TEMPLATE_FILE_CONTENTS)
+string(REPLACE
+  "AllowSameVersionUpgrades=\"yes\""
+  "AllowSameVersionUpgrades=\"yes\"\n\t\t\tDisallow=\"yes\"\n\t\t\tDisallowUpgradeErrorMessage=\"Another version of [ProductName] is already installed. Installation of this version cannot continue. To configure or remove the existing version of [ProductName], use Add/Remove Programs on the Control Panel.\""
+  CUSTOM_WIX_TEMPLATE_FILE_CONTENTS "${CUSTOM_WIX_TEMPLATE_FILE_CONTENTS}")
+file(WRITE "${CUSTOM_WIX_TEMPLATE_FILE_PATH}" "${CUSTOM_WIX_TEMPLATE_FILE_CONTENTS}")
+# Apply the new custom template
+set(CPACK_WIX_TEMPLATE "${CUSTOM_WIX_TEMPLATE_FILE_PATH}")
 
 # we don't want to split our program up into several things
 set(CPACK_MONOLITHIC_INSTALL 1)

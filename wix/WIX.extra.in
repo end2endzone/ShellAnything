@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include "cpack_variables.wxi"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Fragment>
+
+    <DirectoryRef Id="PROGRAM_MENU_FOLDER">
+      <Component Id="CM_SHORTCUT_EXTRA" Guid="*">
+
+        <Shortcut Id="CM_DP_licenses_shortcut"
+                  Name="Third party licenses"
+                  Target="[CM_DP_licenses]"/>
+
+        <util:InternetShortcut Id="CM_SP_www_shortcut"
+            Name="ShellAnything Homepage"
+            Target="https://github.com/end2endzone/ShellAnything/"
+            Type="url"/>
+
+        <!-- Delete shortcuts directory on uninstall: "C:\Users\%USERNAME%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\ShellAnything *" -->
+        <RemoveFolder Id="PROGRAM_MENU_FOLDER" On="uninstall"/>
+
+        <!-- Use a custom registry value as keypath -->
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed_extra_links" Type="integer" Value="1" KeyPath="yes"/>
+
+      </Component>
+    </DirectoryRef>
+
+    <InstallExecuteSequence>
+      <Custom Action="RegisterFeatureInstall" After="InstallFiles">
+        <![CDATA[(&RegistrationFeature=3)]]>
+      </Custom>
+      <Custom Action="UnregisterFeatureUninstall" After="InstallInitialize">
+        <![CDATA[(&RegistrationFeature=2) AND (!RegistrationFeature=3)]]>
+      </Custom>
+    </InstallExecuteSequence>
+    <CustomAction Id="RegisterFeatureInstall"     Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s    &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
+    <CustomAction Id="UnregisterFeatureUninstall" Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s /u &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
+
+    <DirectoryRef Id="INSTALL_ROOT">
+      <Component Id="cmpREGISTRATION" Guid="*">
+        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]\[ProductVersion]" Name="registration" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="RegistrationFeature" Title="Register components" Level="1" Description="Register the shell extension and COM server components" />
+    <FeatureRef Id="RegistrationFeature">
+      <ComponentRef Id="cmpREGISTRATION"/>
+    </FeatureRef>
+
+  </Fragment>
+</Wix>

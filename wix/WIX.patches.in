@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CPackWiXPatch>
+  <CPackWiXFragment Id="#PRODUCT">
+    <FeatureRef Id="RegistrationFeature"/>
+  </CPackWiXFragment>
+  <CPackWiXFragment Id="#PRODUCTFEATURE">
+    <ComponentRef Id="CM_SHORTCUT_EXTRA"/>
+  </CPackWiXFragment>
+</CPackWiXPatch>

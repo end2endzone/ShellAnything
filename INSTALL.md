@@ -24,8 +24,7 @@ The `build_all_release.bat` script emulates [AppVeyor](https://ci.appveyor.com/p
 The following steps will be executed :
  - All required library dependencies will be downloaded and build  in `third_parties` directory located at the root of the source code. Existing dependencies that are already available on the system are **ignored**. This is to make sure that each dependency is build with settings that are compatible with ShellAnything and installed in the directory expected by the build scripts.
  - ShellAnything application will be build inside the `build` directory located at the root of the source code.
- - Installation packages will be created in the `build` directory if the required package managers are available on the system (NSIS, Wix Toolset). The installation packages are named as follows :
-   - `ShellAnything-[version]-win64.exe`, if *NSIS* is installed on the system.
+ - Installation packages will be created in the `build` directory if the required package manager (Wix Toolset) are available on the system. The installation packages are named as follows :
    - `ShellAnything-[version]-win64.msi`, if *Wix Toolset* is installed on the system.
    - `ShellAnything-[version]-win64.zip`, a portable version.
 - Application files will be installed in the `install` directory located at the root of the source code.
@@ -79,7 +78,6 @@ The following software must be installed on the system for compiling source code
 ### Windows Requirements ###
 
 * Microsoft Visual C++ 2017 or newer
-* (optional) [NSIS (Nullsoft Scriptable Install System)](https://nsis.sourceforge.io/)  v3.0a1 (or newer)
 * (optional) [WiX Toolset](https://wixtoolset.org/)  v3.11.2 (or newer)
 
 

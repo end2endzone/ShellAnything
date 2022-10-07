@@ -45,6 +45,14 @@ if(SHELLANYTHING_BUILD_PLUGINS)
 endif()
 add_subdirectory(tests/sa_plugin_test_data)
 
+add_custom_target(src_dummy_target
+                  SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
+                          "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+                          "${CMAKE_CURRENT_SOURCE_DIR}/resource.rc.in"
+                          "${CMAKE_CURRENT_SOURCE_DIR}/version.h.in"
+                          "${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in"
+)
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
         DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
@@ -52,5 +60,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
 install(FILES ${LIBMAGIC_MGC_DIR}/magic.mgc
               ${LIBMAGIC_MGC_DIR}/file.exe
               ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll
+              $<TARGET_FILE:glog::glog>
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
 )
