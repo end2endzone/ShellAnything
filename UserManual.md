@@ -78,13 +78,13 @@ This manual includes a description of the system functionalities and capabilitie
 
 # Post Installation #
 
-The following instructions define how to activate the Shell Extension after installing the application.
+The following instructions define how to activate or disable the Shell Extension after installation.
+
+_Note:_ Starting from version 0.8.0, the registration/unregistration of the shell extension is done automatically when installing/uninstalling.
 
 
 
 ## Register the shell extension ##
-
-Following the installation of the software, the shell extension must be registered on the system to be recognized as a trusted source.
 
 To register the shell extension, execute the following commands:
 
@@ -118,7 +118,7 @@ Refer to the following post for details:
 
 ## Unregister the shell extension ##
 
-To stop using the shell extension, you must unregister the extension from the system.
+To stop or temporary disable using the shell extension, you must unregister the extension from the system.
 
 Note that prior to uninstall the application, the shell extension **must first** be unregistered from the system. Omitting to unregister the shell extension from the system will fail the uninstall process or not fully remove the shell extension from the system.
 
