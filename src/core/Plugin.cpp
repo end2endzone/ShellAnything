@@ -51,6 +51,7 @@ namespace shellanything
   {
     HMODULE hModule;
     sa_plugin_initialize_func initialize_func;
+    sa_plugin_terminate_func terminate_func;
     sa_plugin_register_func register_func;
   };
 
@@ -208,11 +209,19 @@ namespace shellanything
     }
 
     //search for entry points
-    sa_plugin_initialize_func initialize_func = (sa_plugin_initialize_func)GetProcAddress(hModule, xstr(SA_PLUGIN_INITIALIZATION_FUNCTION_NAME));
+    sa_plugin_initialize_func initialize_func = (sa_plugin_initialize_func)GetProcAddress(hModule, xstr(SA_PLUGIN_INITIALIZE_FUNCTION_NAME));
     if (initialize_func == NULL)
     {
       FreeLibrary(hModule);
-      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_INITIALIZATION_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_INITIALIZE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      return false;
+    }
+
+    sa_plugin_terminate_func terminate_func = (sa_plugin_terminate_func)GetProcAddress(hModule, xstr(SA_PLUGIN_TERMINATE_FUNCTION_NAME));
+    if (terminate_func == NULL)
+    {
+      FreeLibrary(hModule);
+      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_TERMINATE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
       return false;
     }
 
@@ -253,6 +262,7 @@ namespace shellanything
     // this plugin is valid.
     this->mEntryPoints->hModule = hModule;
     this->mEntryPoints->initialize_func = initialize_func;
+    this->mEntryPoints->terminate_func = terminate_func;
     this->mEntryPoints->register_func = register_func;
     mLoaded = true;
 
@@ -274,18 +284,32 @@ namespace shellanything
 
   bool Plugin::Unload()
   {
-    if (mEntryPoints->hModule != 0)
+    if (mEntryPoints->hModule == 0)
+      return false; // something is wrong, nothing to unload or already unload
+
+    bool success = true;
+
+    // remember this plugin while unloading. This is required for plugins that calls the API.
+    gLoadingPlugin = this;
+
+    sa_error_t terminate_error = this->mEntryPoints->terminate_func();
+    if (terminate_error != SA_ERROR_SUCCESS)
     {
-      mRegistry.Clear();
+      const char* terminate_error_str = sa_error_get_error_description(terminate_error);
+      LOG(ERROR) << "The plugin '" << mPath << "' has failed to terminate. Error code: " << ra::strings::Format("0x%x", terminate_error) << ", " << terminate_error_str;
 
-      FreeLibrary(mEntryPoints->hModule);
-      memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
-      mLoaded = false;
-
-      return true;
+      success = false;
     }
 
-    return false;
+    gLoadingPlugin = NULL;
+
+    mRegistry.Clear();
+
+    FreeLibrary(mEntryPoints->hModule);
+    memset(mEntryPoints, 0, sizeof(Plugin::ENTRY_POINTS));
+    mLoaded = false;
+
+    return success;
   }
 
   Registry& Plugin::GetRegistry()

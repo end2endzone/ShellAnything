@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <plugins>
+    <plugin path="${application.directory}\sa_plugin_test_data.dll"
+            actions="sa_plugin_test_data" />
+  </plugins>
+  <shell>
+
+    <menu name="foo1">
+      <actions>
+        <sa_plugin_test_data id="1" />
+        <sa_plugin_test_data id="2" />
+        <sa_plugin_test_data id="3" />
+        <sa_plugin_test_data id="4" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

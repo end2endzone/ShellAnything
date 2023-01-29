@@ -159,6 +159,11 @@ EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
   return SA_ERROR_SUCCESS;
 }
 
+EXPORT_API sa_error_t sa_plugin_terminate()
+{
+  return SA_ERROR_SUCCESS;
+}
+
 EXPORT_API sa_error_t sa_plugin_register()
 {
   // register validation function for 'start_time' and 'end_time' custom attributes

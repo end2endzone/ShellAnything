@@ -50,7 +50,12 @@ typedef struct
 /// <summary>
 /// Defines the name of a plugin entry point for initialization.
 /// </summary>
-#define SA_PLUGIN_INITIALIZATION_FUNCTION_NAME sa_plugin_initialize
+#define SA_PLUGIN_INITIALIZE_FUNCTION_NAME sa_plugin_initialize
+
+/// <summary>
+/// Defines the name of a plugin entry point for terminate.
+/// </summary>
+#define SA_PLUGIN_TERMINATE_FUNCTION_NAME sa_plugin_terminate
 
 /// <summary>
 /// Defines the name of a plugin entry point for initialization.
@@ -62,12 +67,24 @@ typedef struct
 /// </summary>
 /// <remarks>
 /// ShellAnything is expecting a function whose name matches macro
-/// SA_PLUGIN_INITIALIZATION_FUNCTION_NAME and function signature
+/// SA_PLUGIN_INITIALIZE_FUNCTION_NAME and function signature
 /// matches this type definition.
 /// </remarks>
 /// <param name="version">The version of the application.</param>
 /// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
 typedef sa_error_t(*sa_plugin_initialize_func)(sa_version_info_t* version);
+
+/// <summary>
+/// Type definition for a plugin's terminate entry point.
+/// </summary>
+/// <remarks>
+/// ShellAnything is expecting a function whose name matches macro
+/// SA_PLUGIN_TERMINATE_FUNCTION_NAME and function signature
+/// matches this type definition.
+/// </remarks>
+/// <param name="version">The version of the application.</param>
+/// <returns>Returns 0 on success. Returns non-zero otherwise.</returns>
+typedef sa_error_t(*sa_plugin_terminate_func)();
 
 /// <summary>
 /// Function pointer definition for plugins registration function.
