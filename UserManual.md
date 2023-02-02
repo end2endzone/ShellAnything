@@ -48,10 +48,11 @@ This manual includes a description of the system functionalities and capabilitie
   * [Plugin overview](#plugin-overview)
   * [C API](#c-api)
   * [Creating a new plugin](#creating-a-new-plugin)
+  * [Register services and features to the system](#register-services-and-features-to-the-system)
     * [Register a function callback when the selection changes](#register-a-function-callback-when-the-selection-changes)
     * [Register additional validation attributes](#register-additional-validation-attributes)
     * [Register new custom actions](#register-new-custom-actions)
-    * [Plugin example](#plugin_example])
+  * [Plugin example](#plugin-example)
   * [Plugin declaration](#plugin-declaration)
     * [&lt;plugins&gt; element](#plugins-element)
     * [&lt;plugin&gt; element](#plugin-element)
@@ -1360,7 +1361,9 @@ For example, the following would define `services.wce.command.start` and `servic
 
 ## Plugin overview ##
 
-ShellAnything supports plugins which can be used to extend ShellAnything with more functionality. **The support for plugins is in beta and features are limitted**.
+ShellAnything supports plugins which can be used to extend ShellAnything with more functionality.
+
+**The support for plugins is in beta and features are limitted**.
 
 ShellAnything does not implement a plugin detection system. It cannot automatically detect and load plugin files. The reason is explained below.
 
@@ -1384,9 +1387,21 @@ The API is not designed for programming your own Windows Shell extensions. An ex
 
 ## Creating a new plugin ##
 
-All plugins are designed to have a two generic entry points. The name of these entry points are `sa_plugin_initialize()` and `sa_plugin_register()`. When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization is successful, the system calls `sa_plugin_register()` which allow the plugin to register all its features to the system through the [C API](#c-api).
+All plugins are designed to have a three generic entry points. The name of these entry points are `sa_plugin_initialize()`, `sa_plugin_terminate()` and `sa_plugin_register()`.
 
-The implementation of `sa_plugin_register()` must register one or mutiple services using the API:
+When a plugin is declared in a _Configuration File_, the system calls `sa_plugin_initialize()` to let the plugin initialize. If the initialization succeeds, the system calls `sa_plugin_register()` which allows the plugin to register all its functionality to the system through the [C API](#c-api). When a configuration is unloaded, the system calls `sa_plugin_terminate()` to let the plugin cleanup its memory.
+
+Note that all function entry points can be called multiple times in the same session. This is because the scope of each plugin is its _Configuration File_. For example, if the same plugin is declared in 3 configurations, then `sa_plugin_initialize()`, `sa_plugin_register()` and `sa_plugin_terminate()` will be called 3 times. If a plugin implements custom conditions, it must register the attributes in all Configurations where the plugin is declared.
+
+Plugins must be careful not to initialize a variable that has already been initialized. The same goes for terminate. If a plugin is initialized 5 times in the same session, then only the 5th _sa_plugin_terminate()_ call should be considered the last terminate before the dll is unloaded.
+
+
+
+## Register services and features to the system ##
+
+The implementation of `sa_plugin_register()` allow a plugin to register one or mutiple services using the API.
+
+This section explains how to implement typical plugin use cases.
 
 
 
@@ -1478,7 +1493,7 @@ The plugin must allocate an instance of this structure and fill it with the pars
 
 
 
-### Plugin example ###
+## Plugin example ##
 
 The documentation contains a sample plugin example called `sa_plugin_demo` to help with the developpement of a new plugin. The sample files are located in `[installation directory]\bin\docs\sa_plugin_demo.zip`.
 
