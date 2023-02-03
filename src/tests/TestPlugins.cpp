@@ -543,6 +543,72 @@ namespace shellanything
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPlugins, testPluginInitializeAndTerminate)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Import the required files into the workspace
+      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+      std::string test_name = ra::testing::GetTestQualifiedName();
+      std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
+      ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
+
+      //Wait to make sure that the next file copy/modification will not have the same timestamp
+      ra::timing::Millisleep(1500);
+
+      //Make sure that plugin's status property is not set
+      static const std::string PLUGIN_STATUS_PROPERTY_NAME = "sa_plugin_test_data.status";
+      pmgr.ClearProperty(PLUGIN_STATUS_PROPERTY_NAME);
+
+      //Setup ConfigManager to read files from workspace
+      cmgr.ClearSearchPath();
+      cmgr.AddSearchPath(workspace.GetBaseDirectory());
+      cmgr.Refresh();
+      
+      //ASSERT the file is loaded
+      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ASSERT_EQ(1, configs.size());
+
+      Configuration* config0 = cmgr.GetConfigurations()[0];
+
+      //ASSERT all plugins were loaded
+      for (size_t i = 0; i < config0->GetPlugins().size(); i++)
+      {
+        const Plugin* plugin = config0->GetPlugins()[i];
+        ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
+      }
+
+      //Get menus
+      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      ASSERT_EQ(1, menus.size());
+      Menu* menu0 = menus[0];
+      ASSERT_TRUE(menu0 != NULL);
+
+      //ASSERT that plugin's property status is now set (during initialization)
+      ASSERT_TRUE(pmgr.HasProperty(PLUGIN_STATUS_PROPERTY_NAME)) << "The property '" << PLUGIN_STATUS_PROPERTY_NAME << "' is not set. The plugin may not have set its status property during initialization.";
+      ASSERT_EQ(pmgr.GetProperty(PLUGIN_STATUS_PROPERTY_NAME), "initilized");
+
+      //force the configuration (and the plugin) to be unloaded.
+      ASSERT_TRUE(ra::filesystem::DeleteFile(config0->GetFilePath().c_str())) << "Failed to delete configuration file '" << config0->GetFilePath() << "'.";
+      cmgr.ClearSearchPath();
+      cmgr.Refresh();
+
+      //ASSERT the configuration is unloaded
+      configs = cmgr.GetConfigurations();
+      ASSERT_EQ(0, configs.size());
+
+      //ASSERT that plugin's property status was removed (during termination)
+      ASSERT_FALSE(pmgr.HasProperty(PLUGIN_STATUS_PROPERTY_NAME)) << "The property '" << PLUGIN_STATUS_PROPERTY_NAME << "' exists. The plugin may not have delete its status property during termination.";
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
     TEST_F(TestPlugins, testPluginActionGetData)
     {
       ConfigManager& cmgr = ConfigManager::GetInstance();

@@ -599,6 +599,11 @@ EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
   return SA_ERROR_SUCCESS;
 }
 
+EXPORT_API sa_error_t sa_plugin_terminate()
+{
+  return SA_ERROR_SUCCESS;
+}
+
 #define PLUGIN_REGISTER_EVENT(name, event_func) \
   result = sa_plugin_register_action_event(name, event_func); \
   if (result != SA_ERROR_SUCCESS) \

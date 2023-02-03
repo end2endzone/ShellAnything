@@ -46,6 +46,7 @@ extern "C" {
 #endif
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_test_data";
+static const char* PLUGIN_STATUS_PROPERTY_NAME = "sa_plugin_test_data.status";
 static const char* ATTR_ID = "id";
 
 const char* to_hex_string(void* address, char* buffer, size_t size)
@@ -300,6 +301,18 @@ EXPORT_API sa_error_t sa_plugin_initialize(sa_version_info_t* version)
 {
   if (version->major == 0 && version->minor < 8) // this plugin is designed for version 0.8.0 and over
     return SA_ERROR_NOT_SUPPORTED;
+
+  // Set a property to notify the plugin is initialized
+  sa_properties_set(PLUGIN_STATUS_PROPERTY_NAME, "initilized");
+
+  return SA_ERROR_SUCCESS;
+}
+
+EXPORT_API sa_error_t sa_plugin_terminate()
+{
+  // Set a property to notify the plugin has terminated
+  sa_properties_delete(PLUGIN_STATUS_PROPERTY_NAME);
+
   return SA_ERROR_SUCCESS;
 }
 
