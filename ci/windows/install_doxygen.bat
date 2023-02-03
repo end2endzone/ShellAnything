@@ -5,7 +5,7 @@
 :: https://www.doxygen.nl/download.html
 
 echo Installing Doxygen...
-set DOXYGEN_URL=https://www.doxygen.nl/files/doxygen-1.9.6.windows.x64.bin.zip
+set DOXYGEN_URL=https://github.com/doxygen/doxygen/releases/download/Release_1_9_6/doxygen-1.9.6.windows.x64.bin.zip
 set DOXYGEN_FILE=%TEMP%\doxygen.zip
 set DOXYGEN_INSTALL_DIR=%TEMP%\doxygen
 
