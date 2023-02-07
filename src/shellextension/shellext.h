@@ -39,9 +39,7 @@
  //Shell extension GUID
 static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
 static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
-static const wchar_t* ShellExtensionClassNameW = L"ShellExtension.ShellAnything"; //no space in string
 static const char* ShellExtensionDescription = "ShellAnything Class";
-static const wchar_t* ShellExtensionDescriptionW = L"ShellAnything Class";
 
 class CCriticalSection
 {

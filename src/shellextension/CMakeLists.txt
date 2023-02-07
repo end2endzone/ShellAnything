@@ -7,8 +7,6 @@ add_library(sa.shellextension SHARED
   ${CMAKE_SOURCE_DIR}/src/resource.rc.in
   ${CMAKE_SOURCE_DIR}/src/version.rc.in
   logger_stub.h
-  reg.cpp
-  reg.h
   shellext.cpp
   shellext.h
   shellext.def

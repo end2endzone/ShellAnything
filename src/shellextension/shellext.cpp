@@ -64,8 +64,6 @@
 //#include "PropertyManager.h"
 #include "SaUtils.h"
 
-#include "reg.h"
-
 #include <assert.h>
 
 //Declarations
@@ -1113,7 +1111,7 @@ STDAPI DllCanUnloadNow(void)
   return S_FALSE;
 }
 
-STDAPI DllRegisterServer_DISABLED(void)
+STDAPI DllRegisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
   const char* guid_str = guid_str_tmp.c_str();
@@ -1236,7 +1234,7 @@ STDAPI DllRegisterServer_DISABLED(void)
   return S_OK;
 }
 
-STDAPI DllUnregisterServer_DISABLED(void)
+STDAPI DllUnregisterServer(void)
 {
   const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
   const char* guid_str = guid_str_tmp.c_str();
@@ -1313,54 +1311,6 @@ STDAPI DllUnregisterServer_DISABLED(void)
   SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
 
   return S_OK;
-}
-
-STDAPI DllRegisterServer(void)
-{
-  HRESULT hr;
-
-  wchar_t szModule[MAX_PATH];
-  if (GetModuleFileNameW(g_hmodDll, szModule, ARRAYSIZE(szModule)) == 0)
-  {
-    hr = HRESULT_FROM_WIN32(GetLastError());
-    return hr;
-  }
-
-  // Register the component.
-  hr = RegisterInprocServer(szModule, SHELLANYTHING_SHELLEXTENSION_CLSID,
-                            ShellExtensionClassNameW,
-                            L"Apartment");
-  if (SUCCEEDED(hr))
-  {
-    // Register the context menu handler. The context menu handler is 
-    // associated with the any file class.
-    // Control the visibility in QueryContextMenu
-    hr = RegisterShellExtContextMenuHandler(L"*", SHELLANYTHING_SHELLEXTENSION_CLSID, ShellExtensionClassNameW);
-  }
-
-  return hr;
-}
-
-STDAPI DllUnregisterServer(void)
-{
-  HRESULT hr = S_OK;
-
-  wchar_t szModule[MAX_PATH];
-  if (GetModuleFileNameW(g_hmodDll, szModule, ARRAYSIZE(szModule)) == 0)
-  {
-    hr = HRESULT_FROM_WIN32(GetLastError());
-    return hr;
-  }
-
-  // Unregister the component.
-  hr = UnregisterInprocServer(SHELLANYTHING_SHELLEXTENSION_CLSID);
-  if (SUCCEEDED(hr))
-  {
-    // Unregister the context menu handler.
-    hr = UnregisterShellExtContextMenuHandler(L"*", SHELLANYTHING_SHELLEXTENSION_CLSID);
-  }
-
-  return hr;
 }
 
 void InstallDefaultConfigurations(const std::string& config_dir)
