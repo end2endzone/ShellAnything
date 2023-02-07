@@ -1400,6 +1400,8 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   {
     g_hmodDll = hInstance;
 
+    DisableThreadLibraryCalls((HMODULE)hInstance);
+
     //if (!shellanything::IsTestingEnvironment())
     //{
     //  // Initialize Google's logging library.
