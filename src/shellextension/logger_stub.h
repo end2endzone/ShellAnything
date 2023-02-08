@@ -97,8 +97,8 @@ public:
   }
   void Log(const char* value)
   {
-    //fputs(value, file);
-    std::cout << value;
+    fputs(value, file);
+    //std::cout << value;
   }
   inline void Log(const std::string& value)
   {
@@ -106,8 +106,8 @@ public:
   }
   void Log(const char* value, int flags)
   {
-    //if ( g_log == NULL )
-    //  return;
+    if (file == NULL)
+      return;
 
     if (flags & LOG_FLAGS_LEVEL)
     {
