@@ -6,7 +6,6 @@ add_library(sa.shellextension SHARED
   ${SHELLANYTHING_VERSION_RC}
   ${CMAKE_SOURCE_DIR}/src/resource.rc.in
   ${CMAKE_SOURCE_DIR}/src/version.rc.in
-  logger_stub.h
   shellext.cpp
   shellext.h
   shellext.def
@@ -21,20 +20,20 @@ target_include_directories(sa.shellextension
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-#    glog::glog
-#    libmagic
+    glog::glog
+    libmagic
     ${CMAKE_SOURCE_DIR}/src/shared
-#    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core
 )
 
 # Define linking dependencies.
 target_link_libraries(sa.shellextension
   PRIVATE
-#    sa.core
+    sa.core
     sa.shared
     rapidassist
-#    glog::glog
-#    libmagic
+    glog::glog
+    libmagic
 )
 
 # Define files that will be part of the installation package.

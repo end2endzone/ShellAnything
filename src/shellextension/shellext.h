@@ -29,9 +29,9 @@
 #include "shellanything/config.h"
 
 #include "BitmapCache.h"
-//#include "SelectionContext.h"
-//#include "Menu.h"
-//#include "Icon.h"
+#include "SelectionContext.h"
+#include "Menu.h"
+#include "Icon.h"
 
 #include <vector>
 #include <map>
@@ -86,7 +86,7 @@ public:
 class CContextMenu : public IContextMenu, IShellExtInit
 {
 public:
-  //typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
+  typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
 
 protected:
   CCriticalSection            m_CS; //protects class members
@@ -94,9 +94,9 @@ protected:
   UINT                        m_FirstCommandId;
   bool                        m_IsBackGround;
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
-  //shellanything::BitmapCache  m_BitmapCache;
-  //IconMap                     m_FileExtensionCache;
-  //shellanything::SelectionContext      m_Context;
+  shellanything::BitmapCache  m_BitmapCache;
+  IconMap                     m_FileExtensionCache;
+  shellanything::SelectionContext      m_Context;
 
   static HMENU m_previousMenu;
 
@@ -117,9 +117,9 @@ public:
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
-//private:
-//  void BuildMenuTree(HMENU hMenu);
-//  void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
+private:
+  void BuildMenuTree(HMENU hMenu);
+  void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
 };
 
 #endif //SA_SHELLEXTENSION_H
