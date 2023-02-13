@@ -43,6 +43,13 @@
 
 namespace Win32Registry
 {
+  std::string safe_null(const char* value)
+  {
+    if (value)
+      return value;
+    return "(null)";
+  }
+
   bool IsIconEquals(const REGISTRY_ICON& a, const REGISTRY_ICON& b)
   {
     if (a.path == b.path && a.index == b.index)
@@ -162,6 +169,19 @@ namespace Win32Registry
     return result;
   }
 
+  inline DWORD GetRelevantDataStorageSize(const DWORD& type, const DWORD& value_size)
+  {
+    if (value_size == 0)
+      return 0;
+    switch (type)
+    {
+    case REG_SZ:
+    case REG_EXPAND_SZ:
+      return value_size - 1;
+    default:
+      return value_size;
+    };
+  }
 
   bool GetValue(const char* key_path,
                 const char* value_name,
@@ -183,20 +203,38 @@ namespace Win32Registry
         DWORD value_size = 0; //the size of the returned buffer in bytes. This size includes any terminating null character.
         RegQueryValueEx(hKey, value_name, NULL, &value_type, NULL, &value_size);
 
-        DWORD length = value_size - 1;
+        //allocate space for storing data value in a string
+        size_t string_length = GetRelevantDataStorageSize(value_type, value_size);
+        value.assign(string_length, 0);
+        bool alloc_success = (value.size() == string_length); // check that allocation worked.
 
-        //allocate space for value
-        if (value_size > 0 && value.assign(length, 0).size())
+        if (value_size > 0 && alloc_success)
         {
           //Read the actual data of the value
           value_type = 0;
           RegQueryValueEx(hKey, value_name, NULL, &value_type, (LPBYTE)value.c_str(), &value_size);
 
           type = ConvertToPublicType(value_type);
-          success = (length == value.size());
+
+          size_t expected_size = GetRelevantDataStorageSize(value_type, value_size);
+          success = (value.size() == expected_size);
         }
 
         RegCloseKey(hKey);
+
+        //// DEBUG
+        //{
+        //  std::string text;
+        //  text += "success=" + ra::strings::ToString((int)success) + "\n";
+        //  text += "alloc_success=" + ra::strings::ToString((int)alloc_success) + "\n";
+        //  text += "key_path=" + safe_null(key_path) + "\n";
+        //  text += "value_name=" + safe_null(value_name) + "\n";
+        //  text += "value_size=" + ra::strings::ToString((uint32_t)value_size) + "\n";
+        //  if (success && (value_type == REG_SZ || value_type == REG_EXPAND_SZ))
+        //      text += "value=" + safe_null(value.c_str()) + "\n";
+        //  MessageBox(NULL, text.c_str(), __FUNCTION__ " [return]", MB_OK | MB_ICONEXCLAMATION);
+        //}
+
         return success;
       }
     }

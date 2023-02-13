@@ -1087,7 +1087,7 @@ STDAPI DllRegisterServer(void)
 
   //Register version 1 of our class
   {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
     if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
       return E_ACCESSDENIED;
   }
