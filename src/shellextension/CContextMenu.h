@@ -22,12 +22,11 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_SHELLEXTENSION_H
-#define SA_SHELLEXTENSION_H
+#pragma once
 
-#include "shellanything/version.h"
-#include "shellanything/config.h"
+#include "stdafx.h"
 
+#include "CCriticalSection.h"
 #include "BitmapCache.h"
 #include "SelectionContext.h"
 #include "Menu.h"
@@ -35,53 +34,6 @@
 
 #include <vector>
 #include <map>
-
- //Shell extension GUID
-static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
-static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
-static const char* ShellExtensionDescription = "ShellAnything Class";
-
-class CCriticalSection
-{
-protected:
-  CRITICAL_SECTION mCS;
-
-public:
-  CCriticalSection();
-  virtual ~CCriticalSection();
-
-  void Enter();
-  void Leave();
-};
-
-class CCriticalSectionGuard
-{
-protected:
-  CCriticalSection* mCS;
-
-public:
-  CCriticalSectionGuard(CCriticalSection* cs);
-  ~CCriticalSectionGuard();
-};
-
-class CClassFactory : public IClassFactory
-{
-protected:
-  ULONG m_cRef;
-
-public:
-  CClassFactory();
-  ~CClassFactory();
-
-  //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
-  ULONG   STDMETHODCALLTYPE AddRef();
-  ULONG   STDMETHODCALLTYPE Release();
-
-  //IClassFactory interface
-  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
-  HRESULT STDMETHODCALLTYPE LockServer(BOOL);
-};
 
 class CContextMenu : public IContextMenu, IShellExtInit
 {
@@ -121,5 +73,3 @@ private:
   void BuildMenuTree(HMENU hMenu);
   void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
 };
-
-#endif //SA_SHELLEXTENSION_H

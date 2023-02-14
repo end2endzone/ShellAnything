@@ -6,9 +6,17 @@ add_library(sa.shellextension SHARED
   ${SHELLANYTHING_VERSION_RC}
   ${CMAKE_SOURCE_DIR}/src/resource.rc.in
   ${CMAKE_SOURCE_DIR}/src/version.rc.in
+  CClassFactory.cpp
+  CClassFactory.h
+  CContextMenu.cpp
+  CContextMenu.h
+  CCriticalSection.cpp
+  CCriticalSection.h
+  dllmain.cpp
   shellext.cpp
   shellext.h
   shellext.def
+  stdafx.h
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables

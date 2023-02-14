@@ -22,44 +22,27 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "stdafx.h"
+#pragma once
 
-#include "CCriticalSection.h"
+#define WIN32_LEAN_AND_MEAN 1
 
-CCriticalSection::CCriticalSection()
-{
-  InitializeCriticalSection(&mCS);
-}
+ // Windows Header Files:
+#include <Windows.h>
+#include <unknwn.h>
+#include <Shlwapi.h>
+#include <shellapi.h>
+#include <atlbase.h>
+#include <ShObjIdl.h>
+#include <ShlObj.h>
+#include <ShlGuid.h>
+#include <initguid.h>
+#include <CmnQuery.h>
+#include <DSQuery.h>
+#include <DSClient.h>
 
-CCriticalSection::~CCriticalSection()
-{
-  DeleteCriticalSection(&mCS);
-}
+// Shell extension CLSID / GUID
+// {B0D35103-86A1-471C-A653-E130E3439A3B}
+DEFINE_GUID(SHELLANYTHING_SHELLEXTENSION_CLSID, 0xb0d35103, 0x86a1, 0x471c, 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b);
 
-void CCriticalSection::Enter()
-{
-  EnterCriticalSection(&mCS);
-}
-
-void CCriticalSection::Leave()
-{
-  LeaveCriticalSection(&mCS);
-}
-
-CCriticalSectionGuard::CCriticalSectionGuard(CCriticalSection* cs)
-{
-  mCS = cs;
-  if (mCS)
-  {
-    mCS->Enter();
-  }
-}
-
-CCriticalSectionGuard::~CCriticalSectionGuard()
-{
-  if (mCS)
-  {
-    mCS->Leave();
-  }
-  mCS = NULL;
-}
+static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
+static const char* ShellExtensionDescription = "ShellAnything Class";

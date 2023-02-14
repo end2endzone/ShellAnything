@@ -22,47 +22,9 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_SHELLEXTENSION_H
-#define SA_SHELLEXTENSION_H
+#pragma once
 
-#include "shellanything/version.h"
-#include "shellanything/config.h"
-
-#include "BitmapCache.h"
-#include "SelectionContext.h"
-#include "Menu.h"
-#include "Icon.h"
-
-#include <vector>
-#include <map>
-
- //Shell extension GUID
-static const GUID SHELLANYTHING_SHELLEXTENSION_CLSID = { 0xb0d35103, 0x86a1, 0x471c, { 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b } }; //this is the CLSID (GUID) or our Shell Extension, {B0D35103-86A1-471C-A653-E130E3439A3B}
-static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
-static const char* ShellExtensionDescription = "ShellAnything Class";
-
-class CCriticalSection
-{
-protected:
-  CRITICAL_SECTION mCS;
-
-public:
-  CCriticalSection();
-  virtual ~CCriticalSection();
-
-  void Enter();
-  void Leave();
-};
-
-class CCriticalSectionGuard
-{
-protected:
-  CCriticalSection* mCS;
-
-public:
-  CCriticalSectionGuard(CCriticalSection* cs);
-  ~CCriticalSectionGuard();
-};
+#include "stdafx.h"
 
 class CClassFactory : public IClassFactory
 {
@@ -82,44 +44,3 @@ public:
   HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
   HRESULT STDMETHODCALLTYPE LockServer(BOOL);
 };
-
-class CContextMenu : public IContextMenu, IShellExtInit
-{
-public:
-  typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
-
-protected:
-  CCriticalSection            m_CS; //protects class members
-  ULONG                       m_cRef;
-  UINT                        m_FirstCommandId;
-  bool                        m_IsBackGround;
-  int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
-  shellanything::BitmapCache  m_BitmapCache;
-  IconMap                     m_FileExtensionCache;
-  shellanything::SelectionContext      m_Context;
-
-  static HMENU m_previousMenu;
-
-public:
-  CContextMenu();
-  ~CContextMenu();
-
-  //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
-  ULONG   STDMETHODCALLTYPE AddRef();
-  ULONG   STDMETHODCALLTYPE Release();
-
-  //IContextMenu interface
-  HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags);
-  HRESULT STDMETHODCALLTYPE InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi);
-  HRESULT STDMETHODCALLTYPE GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR* reserved, LPSTR pszName, UINT cchMax);
-
-  //IShellExtInit interface
-  HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
-
-private:
-  void BuildMenuTree(HMENU hMenu);
-  void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
-};
-
-#endif //SA_SHELLEXTENSION_H
