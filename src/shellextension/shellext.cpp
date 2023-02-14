@@ -78,6 +78,37 @@ std::string GuidToInterfaceName(GUID guid)
   return GuidToString(guid);
 }
 
+std::string GetProcessContextDesc()
+{
+  std::string desc;
+  desc.reserve(32);
+  desc += "pid=";
+  desc += ra::strings::ToString(ra::process::GetCurrentProcessId());
+  desc += " tid=";
+  desc += ra::strings::ToString((uint32_t)GetCurrentThreadId());
+  return desc;
+}
+
+std::string ToHexString(void* value)
+{
+  size_t address = reinterpret_cast<size_t>(value);
+  char buffer[1024];
+  static bool is_32bit = (sizeof(address) == 4);
+  static bool is_64bit = (sizeof(address) == 8);
+#ifdef _WIN32
+  if (is_32bit)
+    sprintf(buffer, "0x%Ix", address);
+  else if (is_64bit)
+    sprintf(buffer, "0x%Ix", address);
+#else
+  if (is_32bit)
+    sprintf(buffer, "0x%zx", address);
+  else if (is_64bit)
+    sprintf(buffer, "0x%zx", address);
+#endif
+  return buffer;
+}
+
 bool IsFirstApplicationRun(const std::string& name, const std::string& version)
 {
   std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
@@ -252,6 +283,8 @@ void InstallDefaultConfigurations(const std::string& config_dir)
 void LogEnvironment()
 {
   LOG(INFO) << "Enabling logging";
+  LOG(INFO) << "Process id: " << ra::strings::ToString(ra::process::GetCurrentProcessId());
+  LOG(INFO) << "Thread id: " << ra::strings::ToString((uint32_t)GetCurrentThreadId());
   LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
   LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
 
@@ -294,4 +327,37 @@ void InitConfigManager()
   pmgr.SetProperty("log.directory", prop_log_directory);
   pmgr.SetProperty("config.directory", config_dir);
   pmgr.SetProperty("home.directory", home_dir);
+}
+
+void DebugHook(const char* fname)
+{
+  std::string text;
+  text += fname;
+  text += "()\n";
+
+  uint32_t pid = GetCurrentProcessId();
+  uint32_t tid = (uint32_t)GetCurrentThreadId();
+
+  text += "pid=";
+  text += ra::strings::ToString(pid);
+  text += " (";
+  text += ra::strings::Format("0x%x", pid);
+  text += ")\n";
+
+  text += "tid=";
+  text += ra::strings::ToString(tid);
+  text += " (";
+  text += ra::strings::Format("0x%x", tid);
+  text += ")\n";
+
+  std::string process_path = ra::process::GetCurrentProcessPath();
+  std::string process_filename = ra::filesystem::GetFilename(process_path.c_str());
+  std::string caption;
+  caption += "ShellAnything's debuging hook";
+  caption += ", ";
+  caption += process_filename;
+  caption += ", ";
+  caption += ra::strings::ToString(pid);
+
+  MessageBoxA(NULL, text.c_str(), caption.c_str(), MB_OK | MB_ICONEXCLAMATION);
 }

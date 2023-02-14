@@ -52,8 +52,6 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/environment.h"
 
-extern UINT g_cRefDll; // Reference counter of this DLL
-
 HMENU CContextMenu::m_previousMenu = 0;
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
@@ -282,8 +280,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
 CContextMenu::CContextMenu()
 {
-  LOG(INFO) << __FUNCTION__ << "(), new";
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
   m_cRef = 0L;
   m_FirstCommandId = 0;
@@ -291,16 +288,15 @@ CContextMenu::CContextMenu()
   m_BuildMenuTreeCount = 0;
 
   // Increment the dll's reference counter.
-  InterlockedIncrement(&g_cRefDll);
+  DllAddRef();
 }
 
 CContextMenu::~CContextMenu()
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete";
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
 
   // Decrement the dll's reference counter.
-  InterlockedDecrement(&g_cRefDll);
+  DllRelease();
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags)
@@ -308,8 +304,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   std::string flags_str = GetQueryContextMenuFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")";
+  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")" << " this=" << ToHexString(this);
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -347,14 +342,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //Remember current menu to prevent issues calling twice QueryContextMenu()
   m_previousMenu = hMenu;
 
-  //MessageBox(NULL, "ATTACH NOW!", (std::string("ATTACH NOW!") + " " + __FUNCTION__).c_str(), MB_OK);
-
   //Log what is selected by the user
   const shellanything::StringList& elements = m_Context.GetElements();
   size_t num_selected_total = elements.size();
   int num_files = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
-  LOG(INFO) << "SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
+  LOG(INFO) << __FUNCTION__ << "(), SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   //Keep a reference the our first command id. We will need it when InvokeCommand is called.
   m_FirstCommandId = first_command_id;
@@ -378,49 +371,49 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   if (next_command_id != first_command_id)
     menu_last_command_id = next_command_id - 1;
   UINT num_menu_items = next_command_id - first_command_id;
-  LOG(INFO) << "Menu: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
+  LOG(INFO) << __FUNCTION__ << "(), Menu: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
 
   //debug the constructed menu tree
 #ifdef _DEBUG
   std::string menu_tree = Win32Utils::GetMenuTree(hMenu, 2);
-  LOG(INFO) << "Menu tree:\n" << menu_tree.c_str();
+  LOG(INFO) << __FUNCTION__ << "(), Menu tree:\n" << menu_tree.c_str();
 #endif
 
   HRESULT hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items);
   return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcmi)
+HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 {
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-
-  //define the type of structure pointed by lpcmi
+  //define the type of structure pointed by pici
   const char* struct_name = "UNKNOWN";
-  if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFO))
+  if (pici->cbSize == sizeof(CMINVOKECOMMANDINFO))
     struct_name = "CMINVOKECOMMANDINFO";
-  else if (lpcmi->cbSize == sizeof(CMINVOKECOMMANDINFOEX))
+  else if (pici->cbSize == sizeof(CMINVOKECOMMANDINFOEX))
     struct_name = "CMINVOKECOMMANDINFOEX";
 
-  //define how we should interpret lpcmi->lpVerb
+  //define how we should interpret pici->lpVerb
   std::string verb;
-  if (IS_INTRESOURCE(lpcmi->lpVerb))
+  if (IS_INTRESOURCE(pici->lpVerb))
+  {
     // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4311 : 'reinterpret_cast' : pointer truncation from 'LPCSTR' to 'int'
     // D:\Projects\ShellAnything\src\shellext.cpp(632) : warning C4302 : 'reinterpret_cast' : truncation from 'LPCSTR' to 'int'
 #pragma warning( push )
 #pragma warning( disable: 4302 )
 #pragma warning( disable: 4311 )
-    verb = ra::strings::ToString(reinterpret_cast<int>(lpcmi->lpVerb));
+    verb = ra::strings::ToString(reinterpret_cast<int>(pici->lpVerb));
 #pragma warning( pop )
+  }
   else
-    verb = lpcmi->lpVerb;
+    verb = pici->lpVerb;
 
-  LOG(INFO) << __FUNCTION__ << "(), lpcmi->cbSize=" << struct_name << ", lpcmi->fMask=" << lpcmi->fMask << ", lpcmi->lpVerb=" << verb;
+  LOG(INFO) << __FUNCTION__ << "(), pici->cbSize=" << struct_name << ", pici->fMask=" << pici->fMask << ", pici->lpVerb=" << verb << " this=" << ToHexString(this);
 
   //validate
-  if (!IS_INTRESOURCE(lpcmi->lpVerb))
-    return E_INVALIDARG; //don't know what to do with lpcmi->lpVerb
+  if (!IS_INTRESOURCE(pici->lpVerb))
+    return E_INVALIDARG; //don't know what to do with pici->lpVerb
 
-  UINT target_command_offset = LOWORD(lpcmi->lpVerb); //matches the command_id offset (command id of the selected menu - command id of the first menu)
+  UINT target_command_offset = LOWORD(pici->lpVerb); //matches the command_id offset (command id of the selected menu - command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
 
   //From this point, it is safe to use class members without other threads interference
@@ -431,7 +424,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpcm
   shellanything::Menu* menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for lpcmi->lpVerb=" << verb;
+    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for pici->lpVerb=" << verb;
     return E_INVALIDARG;
   }
 
@@ -484,8 +477,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   std::string flags_str = GetGetCommandStringFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  //LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", flags=" << flags_hex << "=(" << flags_str << ")";
+  LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << " this=" << ToHexString(this) << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", flags=" << flags_hex << "=(" << flags_str << ")" << " this=" << ToHexString(this);
 
   UINT target_command_offset = (UINT)command_id; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
@@ -556,7 +548,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
   LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder;
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
@@ -571,7 +562,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   // Did we clicked on a folder's background or the desktop directory?
   if (pIDFolder)
   {
-    LOG(INFO) << "User right-clicked on a background directory.";
+    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on a background directory.";
 
     wchar_t szPath[2 * MAX_PATH] = { 0 };
 
@@ -580,15 +571,19 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       if (szPath[0] != '\0')
       {
         std::string path_utf8 = ra::unicode::UnicodeToUtf8(szPath);
-        LOG(INFO) << "Found directory '" << path_utf8 << "'.";
+        LOG(INFO) << __FUNCTION__ << "(), Found directory '" << path_utf8 << "'.";
         m_IsBackGround = true;
         files.push_back(path_utf8);
       }
       else
+      {
+        LOG(WARNING) << __FUNCTION__ << "(), found empty path in pIDFolder.";
         return E_INVALIDARG;
+      }
     }
     else
     {
+      LOG(ERROR) << __FUNCTION__ << "(), SHGetPathFromIDList() has failed.";
       return E_INVALIDARG;
     }
   }
@@ -596,7 +591,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   // User clicked on one or more file or directory
   else if (pDataObj)
   {
-    LOG(INFO) << "User right-clicked on selected files/directories.";
+    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on selected files/directories.";
 
     FORMATETC fmt = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     STGMEDIUM stg = { TYMED_HGLOBAL };
@@ -604,18 +599,22 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
     // The selected files are expected to be in HDROP format.
     if (FAILED(pDataObj->GetData(&fmt, &stg)))
+    {
+      LOG(WARNING) << __FUNCTION__ << "(), selected files are not in HDROP format.";
       return E_INVALIDARG;
+    }
 
     // Get a locked pointer to the files data.
     hDropInfo = (HDROP)GlobalLock(stg.hGlobal);
     if (NULL == hDropInfo)
     {
       ReleaseStgMedium(&stg);
+      LOG(ERROR) << __FUNCTION__ << "(), failed to get lock on selected files.";
       return E_INVALIDARG;
     }
 
     UINT num_files = DragQueryFileW(hDropInfo, 0xFFFFFFFF, NULL, 0);
-    LOG(INFO) << "User right-clicked on " << num_files << " files/directories.";
+    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on " << num_files << " files/directories.";
 
     // For each files
     for (UINT i = 0; i < num_files; i++)
@@ -633,7 +632,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
       //add the new file
       std::string path_utf8 = ra::unicode::UnicodeToUtf8(path);
-      LOG(INFO) << "Found file/directory #" << ra::strings::Format("%03d", i) << ": '" << path_utf8 << "'.";
+      LOG(INFO) << __FUNCTION__ << "(), Found file/directory #" << ra::strings::Format("%03d", i) << ": '" << path_utf8 << "'.";
       files.push_back(path_utf8);
     }
     GlobalUnlock(stg.hGlobal);
@@ -651,9 +650,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
-  //build function descriptor
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
+  std::string riid_str = GuidToInterfaceName(riid);
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this) << ", ppvObj=" << ppvObj;
 
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
   if (IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
@@ -689,12 +687,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << riid_str;
   return E_NOINTERFACE;
 }
 

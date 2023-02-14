@@ -24,9 +24,10 @@
 
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN 1
+#include "targetver.h"
 
- // Windows Header Files:
+// Windows Header Files:
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
 #include <unknwn.h>
 #include <Shlwapi.h>
@@ -40,9 +41,19 @@
 #include <DSQuery.h>
 #include <DSClient.h>
 
+void DllAddRef();
+void DllRelease();
+
+#define INITGUID
+#include <guiddef.h>
+
 // Shell extension CLSID / GUID
 // {B0D35103-86A1-471C-A653-E130E3439A3B}
-DEFINE_GUID(SHELLANYTHING_SHELLEXTENSION_CLSID, 0xb0d35103, 0x86a1, 0x471c, 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b);
+DEFINE_GUID(CLSID_ShellAnythingMenu, 0xb0d35103, 0x86a1, 0x471c, 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b);
 
 static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
 static const char* ShellExtensionDescription = "ShellAnything Class";
+
+// Debugging support
+#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
+#define SA_ENABLE_SCOPE_DEBUGGING

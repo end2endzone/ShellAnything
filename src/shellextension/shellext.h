@@ -32,8 +32,16 @@
 #include "shellanything/version.h"
 #include "shellanything/config.h"
 
+#ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
+#define ATTACH_HOOK_DEBUGGING DebugHook(__FUNCTION__);
+#else
+#define ATTACH_HOOK_DEBUGGING ;
+#endif // #ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
+
 std::string GuidToString(GUID guid);
 std::string GuidToInterfaceName(GUID guid);
+std::string GetProcessContextDesc();
+std::string ToHexString(void* value);
 
 /// <summary>
 /// Returns true if the application is run for the first time.
@@ -52,5 +60,6 @@ void InstallDefaultConfigurations(const std::string& config_dir);
 void LogEnvironment();
 void InitConfigManager();
 
+void DebugHook(const char* fname);
 
 #endif //SA_SHELLEXTENSION_H

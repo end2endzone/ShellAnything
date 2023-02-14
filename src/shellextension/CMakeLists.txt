@@ -17,6 +17,7 @@ add_library(sa.shellextension SHARED
   shellext.h
   shellext.def
   stdafx.h
+  targetver.h
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables

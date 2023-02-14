@@ -59,34 +59,48 @@
 UINT        g_cRefDll = 0;            // Reference counter of this DLL
 HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
 
-STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppvOut)
+void DllAddRef(void)
 {
-  //build function descriptor
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), rclsid=" << GuidToInterfaceName(rclsid).c_str() << ", riid=" << GuidToInterfaceName(riid).c_str() << "";
+  LOG(INFO) << __FUNCTION__ << "(), new";
+
+  InterlockedIncrement(&g_cRefDll);
+}
+
+void DllRelease(void)
+{
+  LOG(INFO) << __FUNCTION__ << "(), delete";
+
+  InterlockedDecrement(&g_cRefDll);
+}
+
+STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppvOut)
+{
+  std::string clsid_str = GuidToInterfaceName(clsid);
+  std::string riid_str = GuidToInterfaceName(riid);
+  LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
   *ppvOut = NULL;
-  if (IsEqualGUID(rclsid, SHELLANYTHING_SHELLEXTENSION_CLSID))
+  if (IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
   {
     CClassFactory* pcf = new CClassFactory;
     if (!pcf) return E_OUTOFMEMORY;
     HRESULT hr = pcf->QueryInterface(riid, ppvOut);
     if (FAILED(hr))
     {
-      LOG(ERROR) << __FUNCTION__ << "(), Interface " << GuidToInterfaceName(riid).c_str() << " not found!";
+      LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
       delete pcf;
       pcf = NULL;
     }
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
     return hr;
   }
-  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << GuidToInterfaceName(rclsid).c_str() << " not found!";
+  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << riid_str << " not found!";
   return CLASS_E_CLASSNOTAVAILABLE;
 }
 
 STDAPI DllCanUnloadNow(void)
 {
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
+  LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
@@ -103,7 +117,7 @@ STDAPI DllCanUnloadNow(void)
 
 STDAPI DllRegisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
+  const std::string guid_str_tmp = GuidToString(CLSID_ShellAnythingMenu).c_str();
   const char* guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
   const std::string module_path = GetCurrentModulePath();
@@ -226,7 +240,7 @@ STDAPI DllRegisterServer(void)
 
 STDAPI DllUnregisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(SHELLANYTHING_SHELLEXTENSION_CLSID).c_str();
+  const std::string guid_str_tmp = GuidToString(CLSID_ShellAnythingMenu).c_str();
   const char* guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
 
@@ -248,7 +262,7 @@ STDAPI DllUnregisterServer(void)
 
   // Unregister the shell extension for the desktop or the file explorer's background
   {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!Win32Registry::DeleteKey(key.c_str()))
       return E_ACCESSDENIED;
   }
@@ -307,6 +321,8 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 {
   if (dwReason == DLL_PROCESS_ATTACH)
   {
+    ATTACH_HOOK_DEBUGGING;
+
     g_hmodDll = hInstance;
 
     DisableThreadLibraryCalls((HMODULE)hInstance);

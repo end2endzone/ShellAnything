@@ -33,34 +33,30 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
-extern UINT g_cRefDll; // Reference counter of this DLL
-
 // Constructeur de l'interface IClassFactory:
 CClassFactory::CClassFactory()
 {
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), new";
+  LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
   m_cRef = 0L;
 
   // Increment the dll's reference counter.
-  InterlockedIncrement(&g_cRefDll);
+  DllAddRef();
 }
 
 // Destructeur de l'interface IClassFactory:
 CClassFactory::~CClassFactory()
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete";
+  LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
 
   // Decrement the dll's reference counter.
-  InterlockedDecrement(&g_cRefDll);
+  DllRelease();
 }
 
 HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
-  //build function descriptor
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << GuidToInterfaceName(riid).c_str() << ", ppvObj=" << ppvObj;
+  std::string riid_str = GuidToInterfaceName(riid);
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", ppvObj=" << ppvObj << ", this=" << ToHexString(this);
 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
@@ -81,12 +77,12 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
   if (*ppvObj)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << GuidToInterfaceName(riid).c_str();
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
     AddRef();
     return NOERROR;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << GuidToInterfaceName(riid).c_str();
+  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << riid_str;
   return E_NOINTERFACE;
 }
 
@@ -114,9 +110,8 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
 
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppvObj)
 {
-  //build function descriptor
-  //MessageBox(NULL, __FUNCTION__, __FUNCTION__, MB_OK);
-  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << GuidToInterfaceName(riid).c_str();
+  std::string riid_str = GuidToInterfaceName(riid);
+  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << riid_str << " this=" << ToHexString(this);
 
   *ppvObj = NULL;
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
@@ -125,6 +120,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
   HRESULT hr = pContextMenu->QueryInterface(riid, ppvObj);
   if (FAILED(hr))
   {
+    LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
     delete pContextMenu;
     pContextMenu = NULL;
   }
