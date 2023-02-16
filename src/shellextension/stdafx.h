@@ -55,5 +55,5 @@ static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //n
 static const char* ShellExtensionDescription = "ShellAnything Class";
 
 // Debugging support
-#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
-#define SA_ENABLE_SCOPE_DEBUGGING
+//#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
+//#define SA_ENABLE_SCOPE_DEBUGGING
