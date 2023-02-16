@@ -52,7 +52,6 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/environment.h"
 
-HMENU CContextMenu::m_previousMenu = 0;
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
@@ -286,6 +285,7 @@ CContextMenu::CContextMenu()
   m_FirstCommandId = 0;
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
+  m_previousMenu = 0;
 
   // Increment the dll's reference counter.
   DllAddRef();
@@ -330,7 +330,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   }
 
   //Filter out queries that are called twice for the same directory.
-  if (hMenu == CContextMenu::m_previousMenu)
+  if (hMenu == m_previousMenu)
   {
     //Issue  #6 - Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
     //Issue #31 - Error in logs for CContextMenu::GetCommandString().

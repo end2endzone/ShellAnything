@@ -48,9 +48,8 @@ protected:
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
   shellanything::BitmapCache  m_BitmapCache;
   IconMap                     m_FileExtensionCache;
+  HMENU                       m_previousMenu;
   shellanything::SelectionContext      m_Context;
-
-  static HMENU m_previousMenu;
 
   ~CContextMenu();
 
