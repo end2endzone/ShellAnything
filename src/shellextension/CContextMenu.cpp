@@ -282,7 +282,7 @@ CContextMenu::CContextMenu()
 {
   LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
-  m_cRef = 0L;
+  m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
   m_FirstCommandId = 0;
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
@@ -468,7 +468,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
   }
 
   LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "' completed.";
-
   return S_OK;
 }
 
@@ -547,7 +546,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder;
+  LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder << " this=" << ToHexString(this);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
@@ -701,8 +700,7 @@ ULONG STDMETHODCALLTYPE CContextMenu::AddRef()
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Increment the object's internal counter.
-  InterlockedIncrement(&m_cRef);
-  return m_cRef;
+  return InterlockedIncrement(&m_refCount);
 }
 
 ULONG STDMETHODCALLTYPE CContextMenu::Release()
@@ -710,10 +708,10 @@ ULONG STDMETHODCALLTYPE CContextMenu::Release()
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Decrement the object's internal counter.
-  ULONG ulRefCount = InterlockedDecrement(&m_cRef);
-  if (0 == m_cRef)
+  LONG refCount = InterlockedDecrement(&m_refCount);
+  if (refCount == 0)
   {
     delete this;
   }
-  return ulRefCount;
+  return refCount;
 }

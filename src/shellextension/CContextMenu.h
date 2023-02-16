@@ -42,7 +42,7 @@ public:
 
 protected:
   CCriticalSection            m_CS; //protects class members
-  ULONG                       m_cRef;
+  ULONG                       m_refCount;
   UINT                        m_FirstCommandId;
   bool                        m_IsBackGround;
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
@@ -52,9 +52,10 @@ protected:
 
   static HMENU m_previousMenu;
 
+  ~CContextMenu();
+
 public:
   CContextMenu();
-  ~CContextMenu();
 
   //IUnknown interface
   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);

@@ -29,11 +29,11 @@
 class CClassFactory : public IClassFactory
 {
 protected:
-  ULONG m_cRef;
+  ULONG m_refCount;
+  ~CClassFactory();
 
 public:
   CClassFactory();
-  ~CClassFactory();
 
   //IUnknown interface
   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);

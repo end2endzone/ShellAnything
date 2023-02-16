@@ -38,7 +38,7 @@ CClassFactory::CClassFactory()
 {
   LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
-  m_cRef = 0L;
+  m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
 
   // Increment the dll's reference counter.
   DllAddRef();
@@ -91,8 +91,7 @@ ULONG STDMETHODCALLTYPE CClassFactory::AddRef()
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Increment the object's internal counter.
-  InterlockedIncrement(&m_cRef);
-  return m_cRef;
+  return InterlockedIncrement(&m_refCount);
 }
 
 ULONG STDMETHODCALLTYPE CClassFactory::Release()
@@ -100,12 +99,12 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Decrement the object's internal counter.
-  ULONG ulRefCount = InterlockedDecrement(&m_cRef);
-  if (0 == m_cRef)
+  LONG refCount = InterlockedDecrement(&m_refCount);
+  if (refCount == 0)
   {
     delete this;
   }
-  return ulRefCount;
+  return refCount;
 }
 
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppvObj)
@@ -121,15 +120,31 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
   if (FAILED(hr))
   {
     LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
-    delete pContextMenu;
+    pContextMenu->Release();
     pContextMenu = NULL;
   }
   return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL fLock)
+HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL bLock)
 {
+  LOG(INFO) << __FUNCTION__ << "(), bLock=" << (int)bLock << " this=" << ToHexString(this);
+
   //https://docs.microsoft.com/en-us/windows/desktop/api/unknwnbase/nf-unknwnbase-iclassfactory-lockserver
   //https://docs.microsoft.com/en-us/windows/desktop/api/combaseapi/nf-combaseapi-colockobjectexternal
+
+  // Note:
+  // Previous implementations was blindly returning S_OK without doing anything else. This is probably a bad idea. Examples: git-for-windows/7-Zip
+  // Other implementations resolves on adding a lock on the DLL. This is better but not it does not follow the official microsoft documentation. Examples: SmartRename, https://github.com/microsoft/Windows-classic-samples/
+  // Finaly, some implementation just return E_NOTIMPL to let explorer know. Examples: TortoiseGit.
+
+  if (bLock)
+  {
+    DllAddRef();
+  }
+  else
+  {
+    DllRelease();
+  }
   return S_OK;
 }

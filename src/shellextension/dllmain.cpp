@@ -88,7 +88,7 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppvOut)
     if (FAILED(hr))
     {
       LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
-      delete pcf;
+      pcf->Release();
       pcf = NULL;
     }
     LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
