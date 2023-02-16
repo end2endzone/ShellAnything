@@ -58,6 +58,13 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", ppvObj=" << ppvObj << ", this=" << ToHexString(this);
 
+  //static const QITAB qit[] =
+  //{
+  //  QITABENT(CClassFactory, IClassFactory),
+  //  { 0, 0 }
+  //};
+  //return QISearch(this, qit, riid, ppvObj);
+
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
@@ -79,10 +86,10 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
     // Increment the reference count and return the pointer.
     LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
     AddRef();
-    return NOERROR;
+    return S_OK;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << riid_str;
+  LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
   return E_NOINTERFACE;
 }
 

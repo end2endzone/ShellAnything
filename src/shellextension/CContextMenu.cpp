@@ -652,6 +652,21 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this) << ", ppvObj=" << ppvObj;
 
+  //static const QITAB qit[] =
+  //{
+  //  QITABENT(CContextMenu, IShellExtInit),
+  //  QITABENT(CContextMenu, IContextMenu),
+  //  { 0, 0 },
+  //};
+  //return QISearch(this, qit, riid, ppv);
+
+  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
+
+  // Always set out parameter to NULL, validating it first.
+  if (!ppvObj)
+    return E_INVALIDARG;
+  *ppvObj = NULL;
+
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
   if (IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
       IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
@@ -660,16 +675,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
       IsEqualGUID(riid, IID_IContextMenu3)    //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
       )
   {
+    LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
     return E_NOINTERFACE;
   }
 
-  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
-
-  // Always set out parameter to NULL, validating it first.
-  if (!ppvObj)
-    return E_INVALIDARG;
-
-  *ppvObj = NULL;
   if (IsEqualGUID(riid, IID_IUnknown))
   {
     *ppvObj = (LPVOID)this;
@@ -688,10 +697,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
     // Increment the reference count and return the pointer.
     LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
     AddRef();
-    return NOERROR;
+    return S_OK;
   }
 
-  LOG(WARNING) << __FUNCTION__ << "(), NOT FOUND: " << riid_str;
+  LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
   return E_NOINTERFACE;
 }
 

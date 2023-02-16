@@ -79,23 +79,27 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppvOut)
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
+  // Always set out parameter to NULL, validating it first.
+  if (!ppvOut)
+    return E_INVALIDARG;
   *ppvOut = NULL;
-  if (IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
+
+  if (!IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
   {
-    CClassFactory* pcf = new CClassFactory;
-    if (!pcf) return E_OUTOFMEMORY;
-    HRESULT hr = pcf->QueryInterface(riid, ppvOut);
-    if (FAILED(hr))
-    {
-      LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
-      pcf->Release();
-      pcf = NULL;
-    }
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
-    return hr;
+    LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
+    return CLASS_E_CLASSNOTAVAILABLE;
   }
-  LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << riid_str << " not found!";
-  return CLASS_E_CLASSNOTAVAILABLE;
+
+  CClassFactory* pcf = new CClassFactory;
+  if (!pcf) return E_OUTOFMEMORY;
+  HRESULT hr = pcf->QueryInterface(riid, ppvOut);
+  if (FAILED(hr))
+  {
+    LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    pcf->Release();
+  }
+  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
+  return hr;
 }
 
 STDAPI DllCanUnloadNow(void)
