@@ -476,7 +476,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   std::string flags_str = GetGetCommandStringFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << " this=" << ToHexString(this) << ", reserved=" << reserved << ", pszName=" << pszName << ", cchMax=" << cchMax << ", flags=" << flags_hex << "=(" << flags_str << ")" << " this=" << ToHexString(this);
+  // only show this log in verbose mode
+  //LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", cchMax=" << cchMax << " this=" << ToHexString(this) << ", flags=" << flags_hex << ":" << flags_str;
 
   UINT target_command_offset = (UINT)command_id; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
