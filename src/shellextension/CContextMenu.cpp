@@ -647,10 +647,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
+HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this) << ", ppvObj=" << ppvObj;
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
   //static const QITAB qit[] =
   //{
@@ -663,39 +663,31 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
-  if (!ppvObj)
+  if (!ppv)
     return E_INVALIDARG;
-  *ppvObj = NULL;
+  *ppv = NULL;
 
   //Filter out unimplemented know interfaces so they do not show as WARNINGS
-  if (IsEqualGUID(riid, IID_IObjectWithSite) || //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
-      IsEqualGUID(riid, IID_IInternetSecurityManager) || //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
-      IsEqualGUID(riid, CLSID_UNDOCUMENTED_01) ||
-      IsEqualGUID(riid, IID_IContextMenu2) || //{000214f4-0000-0000-c000-000000000046}
-      IsEqualGUID(riid, IID_IContextMenu3)    //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+  if (IsEqualGUID(riid, IID_IObjectWithSite) ||           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+      IsEqualGUID(riid, IID_IInternetSecurityManager) ||  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+      IsEqualGUID(riid, IID_IContextMenu2) ||             //{000214f4-0000-0000-c000-000000000046}
+      IsEqualGUID(riid, IID_IContextMenu3) ||             //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+      IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)
       )
   {
     LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
     return E_NOINTERFACE;
   }
 
-  if (IsEqualGUID(riid, IID_IUnknown))
-  {
-    *ppvObj = (LPVOID)this;
-  }
-  else if (IsEqualGUID(riid, IID_IShellExtInit))
-  {
-    *ppvObj = (LPSHELLEXTINIT)this;
-  }
-  else if (IsEqualGUID(riid, IID_IContextMenu))
-  {
-    *ppvObj = (LPCONTEXTMENU)this;
-  }
+  //https://stackoverflow.com/questions/1742848/why-exactly-do-i-need-an-explicit-upcast-when-implementing-queryinterface-in-a
+  if (IsEqualGUID(riid, IID_IUnknown))        *ppv = (LPVOID)this;
+  if (IsEqualGUID(riid, IID_IShellExtInit))   *ppv = (LPSHELLEXTINIT)this;
+  if (IsEqualGUID(riid, IID_IContextMenu))    *ppv = (LPCONTEXTMENU)this;
 
-  if (*ppvObj)
+  if (*ppv)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
     AddRef();
     return S_OK;
   }

@@ -73,16 +73,16 @@ void DllRelease(void)
   InterlockedDecrement(&g_cRefDll);
 }
 
-STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppvOut)
+STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
 {
   std::string clsid_str = GuidToInterfaceName(clsid);
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
   // Always set out parameter to NULL, validating it first.
-  if (!ppvOut)
+  if (!ppv)
     return E_INVALIDARG;
-  *ppvOut = NULL;
+  *ppv = NULL;
 
   if (!IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
   {
@@ -92,13 +92,14 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppvOut)
 
   CClassFactory* pcf = new CClassFactory;
   if (!pcf) return E_OUTOFMEMORY;
-  HRESULT hr = pcf->QueryInterface(riid, ppvOut);
+  HRESULT hr = pcf->QueryInterface(riid, ppv);
   if (FAILED(hr))
   {
     LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
     pcf->Release();
   }
-  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
+
+  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   return hr;
 }
 

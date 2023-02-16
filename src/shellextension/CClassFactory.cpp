@@ -53,10 +53,10 @@ CClassFactory::~CClassFactory()
   DllRelease();
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", ppvObj=" << ppvObj << ", this=" << ToHexString(this);
+  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
   //static const QITAB qit[] =
   //{
@@ -68,23 +68,18 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
-  if (!ppvObj)
+  if (!ppv)
     return E_INVALIDARG;
-  *ppvObj = NULL;
+  *ppv = NULL;
 
-  if (IsEqualGUID(riid, IID_IUnknown))
-  {
-    *ppvObj = (LPVOID)this;
-  }
-  else if (IsEqualGUID(riid, IID_IClassFactory))
-  {
-    *ppvObj = (LPCLASSFACTORY)this;
-  }
+  //https://stackoverflow.com/questions/1742848/why-exactly-do-i-need-an-explicit-upcast-when-implementing-queryinterface-in-a
+  if (IsEqualGUID(riid, IID_IUnknown))        *ppv = (LPVOID)this;
+  if (IsEqualGUID(riid, IID_IClassFactory))   *ppv = (LPCLASSFACTORY)this;
 
-  if (*ppvObj)
+  if (*ppv)
   {
     // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str;
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
     AddRef();
     return S_OK;
   }
@@ -114,22 +109,28 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
   return refCount;
 }
 
-HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppvObj)
+HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << riid_str << " this=" << ToHexString(this);
 
-  *ppvObj = NULL;
+  // Always set out parameter to NULL, validating it first.
+  if (!ppv)
+    return E_INVALIDARG;
+  *ppv = NULL;
+
   if (pUnkOuter) return CLASS_E_NOAGGREGATION;
   CContextMenu* pContextMenu = new CContextMenu();
   if (!pContextMenu) return E_OUTOFMEMORY;
-  HRESULT hr = pContextMenu->QueryInterface(riid, ppvObj);
+  HRESULT hr = pContextMenu->QueryInterface(riid, ppv);
   if (FAILED(hr))
   {
     LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
     pContextMenu->Release();
-    pContextMenu = NULL;
+    return hr;
   }
+
+  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   return hr;
 }
 
