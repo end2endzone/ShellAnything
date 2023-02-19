@@ -35,23 +35,10 @@
 #include <vector>
 #include <map>
 
-class CContextMenu : public IContextMenu, IShellExtInit
+class CContextMenu : public IShellExtInit, public IContextMenu
 {
 public:
   typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
-
-protected:
-  CCriticalSection            m_CS; //protects class members
-  ULONG                       m_refCount;
-  UINT                        m_FirstCommandId;
-  bool                        m_IsBackGround;
-  int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
-  shellanything::BitmapCache  m_BitmapCache;
-  IconMap                     m_FileExtensionCache;
-  HMENU                       m_previousMenu;
-  shellanything::SelectionContext      m_Context;
-
-  ~CContextMenu();
 
 public:
   CContextMenu();
@@ -69,7 +56,20 @@ public:
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
+protected:
+  ~CContextMenu();
+
 private:
   void BuildMenuTree(HMENU hMenu);
   void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
+
+  CCriticalSection            m_CS; //protects class members
+  ULONG                       m_refCount;
+  UINT                        m_FirstCommandId;
+  bool                        m_IsBackGround;
+  int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
+  shellanything::BitmapCache  m_BitmapCache;
+  IconMap                     m_FileExtensionCache;
+  HMENU                       m_previousMenu;
+  shellanything::SelectionContext      m_Context;
 };

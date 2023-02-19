@@ -28,10 +28,6 @@
 
 class CClassFactory : public IClassFactory
 {
-protected:
-  ULONG m_refCount;
-  ~CClassFactory();
-
 public:
   CClassFactory();
 
@@ -43,4 +39,8 @@ public:
   //IClassFactory interface
   HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
   HRESULT STDMETHODCALLTYPE LockServer(BOOL);
+
+private:
+  ~CClassFactory();
+  ULONG m_refCount;
 };

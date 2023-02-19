@@ -61,3 +61,6 @@ static const char* ShellExtensionDescription = "ShellAnything Class";
 // Debugging support
 //#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
 //#define SA_ENABLE_SCOPE_DEBUGGING
+
+// QueryInterface implementations
+#define SA_QUERYINTERFACE_IMPL 0

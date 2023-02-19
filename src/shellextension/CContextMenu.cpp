@@ -281,7 +281,12 @@ CContextMenu::CContextMenu()
 {
   LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
+#if SA_QUERYINTERFACE_IMPL == 0
   m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
+#elif SA_QUERYINTERFACE_IMPL == 1
+  m_refCount = 1;
+#endif
+
   m_FirstCommandId = 0;
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
@@ -653,14 +658,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
-  //static const QITAB qit[] =
-  //{
-  //  QITABENT(CContextMenu, IShellExtInit),
-  //  QITABENT(CContextMenu, IContextMenu),
-  //  { 0, 0 },
-  //};
-  //return QISearch(this, qit, riid, ppv);
+  HRESULT hr = E_NOINTERFACE;
 
+#if SA_QUERYINTERFACE_IMPL == 0
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
@@ -668,17 +668,17 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
     return E_INVALIDARG;
   *ppv = NULL;
 
-  //Filter out unimplemented know interfaces so they do not show as WARNINGS
-  if (IsEqualGUID(riid, IID_IObjectWithSite) ||           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
-      IsEqualGUID(riid, IID_IInternetSecurityManager) ||  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
-      IsEqualGUID(riid, IID_IContextMenu2) ||             //{000214f4-0000-0000-c000-000000000046}
-      IsEqualGUID(riid, IID_IContextMenu3) ||             //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
-      IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)
-      )
-  {
-    LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
-    return E_NOINTERFACE;
-  }
+  ////Filter out unimplemented know interfaces so they do not show as WARNINGS
+  //if (IsEqualGUID(riid, IID_IObjectWithSite) ||           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
+  //    IsEqualGUID(riid, IID_IInternetSecurityManager) ||  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
+  //    IsEqualGUID(riid, IID_IContextMenu2) ||             //{000214f4-0000-0000-c000-000000000046}
+  //    IsEqualGUID(riid, IID_IContextMenu3) ||             //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+  //    IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)
+  //    )
+  //{
+  //  LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
+  //  return E_NOINTERFACE;
+  //}
 
   //https://stackoverflow.com/questions/1742848/why-exactly-do-i-need-an-explicit-upcast-when-implementing-queryinterface-in-a
   if (IsEqualGUID(riid, IID_IUnknown))        *ppv = (LPVOID)this;
@@ -687,14 +687,26 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
 
   if (*ppv)
   {
-    // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
     AddRef();
-    return S_OK;
+    hr = S_OK;
   }
+  else
+    hr = E_NOINTERFACE;
+#elif SA_QUERYINTERFACE_IMPL == 1
+  static const QITAB qit[] =
+  {
+    QITABENT(CContextMenu, IShellExtInit),
+    QITABENT(CContextMenu, IContextMenu),
+    { 0, 0 },
+  };
+  hr = QISearch(this, qit, riid, ppv);
+#endif
 
-  LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
-  return E_NOINTERFACE;
+  if (SUCCEEDED(hr))
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+  else
+    LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
+  return hr;
 }
 
 ULONG STDMETHODCALLTYPE CContextMenu::AddRef()

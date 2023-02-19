@@ -84,22 +84,26 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
     return E_INVALIDARG;
   *ppv = NULL;
 
-  if (!IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
+  HRESULT hr = CLASS_E_CLASSNOTAVAILABLE;
+
+  if (IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
   {
+    hr = E_OUTOFMEMORY;
+
+    CClassFactory* pClassFactory = new CClassFactory();
+    if (pClassFactory)
+    {
+      hr = pClassFactory->QueryInterface(riid, ppv);
+      pClassFactory->Release();
+    }
+  }
+
+  if (hr == CLASS_E_CLASSNOTAVAILABLE)
     LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
-    return CLASS_E_CLASSNOTAVAILABLE;
-  }
-
-  CClassFactory* pcf = new CClassFactory;
-  if (!pcf) return E_OUTOFMEMORY;
-  HRESULT hr = pcf->QueryInterface(riid, ppv);
-  if (FAILED(hr))
-  {
+  else if (FAILED(hr))
     LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
-    pcf->Release();
-  }
-
-  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+  else
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   return hr;
 }
 
@@ -212,14 +216,14 @@ STDAPI DllRegisterServer(void)
 
   // Register the shell extension for the desktop or the file explorer's background
   {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }
 
   // Register the shell extension for drives
   {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\ShellEx\\ContextMenuHandlers\\%s", ShellExtensionClassName);
+    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
     if (!Win32Registry::CreateKey(key.c_str(), guid_str))
       return E_ACCESSDENIED;
   }

@@ -38,7 +38,11 @@ CClassFactory::CClassFactory()
 {
   LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
+#if SA_QUERYINTERFACE_IMPL == 0
   m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
+#elif SA_QUERYINTERFACE_IMPL == 1
+  m_refCount = 1;
+#endif
 
   // Increment the dll's reference counter.
   DllAddRef();
@@ -58,13 +62,9 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
-  //static const QITAB qit[] =
-  //{
-  //  QITABENT(CClassFactory, IClassFactory),
-  //  { 0, 0 }
-  //};
-  //return QISearch(this, qit, riid, ppvObj);
+  HRESULT hr = E_NOINTERFACE;
 
+#if SA_QUERYINTERFACE_IMPL == 0
   //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
 
   // Always set out parameter to NULL, validating it first.
@@ -78,14 +78,25 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
 
   if (*ppv)
   {
-    // Increment the reference count and return the pointer.
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
     AddRef();
-    return S_OK;
+    hr = S_OK;
   }
+  else
+    hr = E_NOINTERFACE;
+#elif SA_QUERYINTERFACE_IMPL == 1
+  static const QITAB qit[] =
+  {
+    QITABENT(CClassFactory, IClassFactory),
+    { 0, 0 }
+  };
+  hr = QISearch(this, qit, riid, ppv);
+#endif
 
-  LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
-  return E_NOINTERFACE;
+  if (SUCCEEDED(hr))
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+  else
+    LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
+  return hr;
 }
 
 ULONG STDMETHODCALLTYPE CClassFactory::AddRef()
@@ -114,6 +125,7 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
   std::string riid_str = GuidToInterfaceName(riid);
   LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << riid_str << " this=" << ToHexString(this);
 
+#if SA_QUERYINTERFACE_IMPL == 0
   // Always set out parameter to NULL, validating it first.
   if (!ppv)
     return E_INVALIDARG;
@@ -125,12 +137,31 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
   HRESULT hr = pContextMenu->QueryInterface(riid, ppv);
   if (FAILED(hr))
   {
-    LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
     pContextMenu->Release();
-    return hr;
   }
+#elif SA_QUERYINTERFACE_IMPL == 1
+  HRESULT hr = CLASS_E_NOAGGREGATION;
 
-  LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+  // pUnkOuter is used for aggregation. We do not support it in the sample.
+  if (pUnkOuter == NULL)
+  {
+    hr = E_OUTOFMEMORY;
+
+    // Create the COM component.
+    CContextMenu* pExt = new (std::nothrow) CContextMenu();
+    if (pExt)
+    {
+      // Query the specified interface.
+      hr = pExt->QueryInterface(riid, ppv);
+      pExt->Release();
+    }
+  }
+#endif
+
+  if (SUCCEEDED(hr))
+    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+  else
+    LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
   return hr;
 }
 
@@ -143,8 +174,8 @@ HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL bLock)
 
   // Note:
   // Previous implementations was blindly returning S_OK without doing anything else. This is probably a bad idea. Examples: git-for-windows/7-Zip
-  // Other implementations resolves on adding a lock on the DLL. This is better but not it does not follow the official microsoft documentation. Examples: SmartRename, https://github.com/microsoft/Windows-classic-samples/
-  // Finaly, some implementation just return E_NOTIMPL to let explorer know. Examples: TortoiseGit.
+  // Other implementations just return E_NOTIMPL to let explorer know. Examples: TortoiseGit.
+  // Finaly, most other implementations resolves on adding a lock on the DLL. This is better but not it does not follow the official microsoft documentation. Examples: chrdavis/SmartRename, owncloud/client, https://github.com/microsoft/Windows-classic-samples/
 
   if (bLock)
   {
