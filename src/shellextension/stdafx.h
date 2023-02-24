@@ -63,4 +63,4 @@ static const char* ShellExtensionDescription = "ShellAnything Class";
 //#define SA_ENABLE_SCOPE_DEBUGGING
 
 // QueryInterface implementations
-#define SA_QUERYINTERFACE_IMPL 0
+#define SA_QUERYINTERFACE_IMPL 1
