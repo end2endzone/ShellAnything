@@ -252,8 +252,18 @@ STDAPI DllUnregisterServer(void)
   const std::string guid_str_tmp = GuidToString(CLSID_ShellAnythingMenu).c_str();
   const char* guid_str = guid_str_tmp.c_str();
   const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
+  const std::string guid_icontextmenu_tmp = GuidToString(IID_IContextMenu);
+  const std::string guid_icontextmenu = guid_icontextmenu_tmp.c_str();
 
   //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
+
+  // Removed the shell extension from the user's cached Shell Extensions
+  {
+    std::string key = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Cached";
+    std::string value = ra::strings::Format("%s {000214E4-0000-0000-C000-000000000046} 0xFFFF", guid_str); // {B0D35103-86A1-471C-A653-E130E3439A3B} {000214E4-0000-0000-C000-000000000046} 0xFFFF
+    if (!Win32Registry::DeleteValue(key.c_str(), value.c_str()))
+      return E_ACCESSDENIED;
+  }
 
   // Unregister the shell extension from the system's approved Shell Extensions
   {
