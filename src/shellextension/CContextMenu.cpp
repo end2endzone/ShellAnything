@@ -668,7 +668,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
     return E_INVALIDARG;
   *ppv = NULL;
 
-  ////Filter out unimplemented know interfaces so they do not show as WARNINGS
+  ////Filter out unimplemented known interfaces so they do not show as WARNINGS
   //if (IsEqualGUID(riid, IID_IObjectWithSite) ||           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
   //    IsEqualGUID(riid, IID_IInternetSecurityManager) ||  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
   //    IsEqualGUID(riid, IID_IContextMenu2) ||             //{000214f4-0000-0000-c000-000000000046}
@@ -705,7 +705,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   if (SUCCEEDED(hr))
     LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   else
-    LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    LOG(INFO) << __FUNCTION__ << "(), unknown interface " << riid_str;
   return hr;
 }
 
