@@ -22,44 +22,25 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_SHELLEXTENSION_H
-#define SA_SHELLEXTENSION_H
+#pragma once
 
 #include "stdafx.h"
 
-#include <string>
+class CClassFactory : public IClassFactory
+{
+public:
+  CClassFactory();
 
-#include "shellanything/version.h"
-#include "shellanything/config.h"
+  //IUnknown interface
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
+  ULONG   STDMETHODCALLTYPE AddRef();
+  ULONG   STDMETHODCALLTYPE Release();
 
-#ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
-#define ATTACH_HOOK_DEBUGGING DebugHook(__FUNCTION__);
-#else
-#define ATTACH_HOOK_DEBUGGING ;
-#endif // #ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
+  //IClassFactory interface
+  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
+  HRESULT STDMETHODCALLTYPE LockServer(BOOL);
 
-std::string GuidToString(GUID guid);
-std::string GuidToInterfaceName(GUID guid);
-std::string GetProcessContextDesc();
-std::string ToHexString(void* value);
-
-/// <summary>
-/// Returns true if the application is run for the first time.
-/// Note, for Windows users, the implementation is based on registry keys in HKEY_CURRENT_USER\Software\name\version.
-/// </summary>
-/// <param name="name">The name of the application.</param>
-/// <param name="version">The version of the application.</param>
-/// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
-bool IsFirstApplicationRun(const std::string& name, const std::string& version);
-
-std::string GetQueryContextMenuFlags(UINT flags);
-std::string GetGetCommandStringFlags(UINT flags);
-
-void InstallDefaultConfigurations(const std::string& config_dir);
-
-void LogEnvironment();
-void InitConfigManager();
-
-void DebugHook(const char* fname);
-
-#endif //SA_SHELLEXTENSION_H
+private:
+  ~CClassFactory();
+  ULONG m_refCount;
+};
