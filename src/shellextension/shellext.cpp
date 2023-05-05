@@ -35,6 +35,7 @@
 #include "Win32Registry.h"
 #include "Win32Utils.h"
 #include "GlogUtils.h"
+#include "SaUtils.h"
 
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/strings.h"
@@ -361,4 +362,24 @@ void DebugHook(const char* fname)
   caption += ra::strings::ToString(pid);
 
   MessageBoxA(NULL, text.c_str(), caption.c_str(), MB_OK | MB_ICONEXCLAMATION);
+}
+
+bool IsFileExplorerProcess()
+{
+  const std::string path = ra::process::GetCurrentProcessPathUtf8();
+  const std::string filename = ra::filesystem::GetFilename(path.c_str());
+  const std::string filename_upper = ra::strings::Uppercase(filename);
+  if (filename_upper == "EXPLORER.EXE")
+    return true;
+  return false;
+}
+
+bool IsRegsvr32Process()
+{
+  const std::string path = ra::process::GetCurrentProcessPathUtf8();
+  const std::string filename = ra::filesystem::GetFilename(path.c_str());
+  const std::string filename_upper = ra::strings::Uppercase(filename);
+  if (filename_upper == "REGSVR32.EXE")
+    return true;
+  return false;
 }

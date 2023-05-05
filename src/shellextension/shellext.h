@@ -62,4 +62,16 @@ void InitConfigManager();
 
 void DebugHook(const char* fname);
 
+/// <summary>
+/// Detect if the process loading the shell extension is Windows File Explorer.
+/// </summary>
+/// <returns>Returns true if the loading process is Windows File Explorer. Returns false otherwise.</returns>
+bool IsFileExplorerProcess();
+
+/// <summary>
+/// Detect if the process loading the shell extension is Windows regsvr32 application.
+/// </summary>
+/// <returns>Returns true if the loading process is Windows regsvr32 application. Returns false otherwise.</returns>
+bool IsRegsvr32Process();
+
 #endif //SA_SHELLEXTENSION_H

@@ -338,6 +338,11 @@ STDAPI DllUnregisterServer(void)
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+  // Skip log initializations and default configuration installation if process that is loading this dll is regsvr32.exe.
+  // Shell extension un/registration will not call a shell extension entry points and does not require logging support.
+  if (IsRegsvr32Process())
+    return 1;
+
   if (dwReason == DLL_PROCESS_ATTACH)
   {
     ATTACH_HOOK_DEBUGGING;
