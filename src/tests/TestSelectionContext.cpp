@@ -28,6 +28,9 @@
 #include "rapidassist/process.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
+#include "rapidassist/errors.h"
+
+#include "LockFile.h"
 
 namespace shellanything
 {
@@ -553,12 +556,236 @@ namespace shellanything
         "selection.charset"                 "=utf-8"                                                              "\n";
       //"selection.libmagic_ext"          "=???"                                                "\n"
 
-    //act
+      //act
       std::string actual_string = pmgr.Expand(test_string);
 
       ASSERT_EQ(std::string(expected_string), actual_string);
 
       context.UnregisterProperties();
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestSelectionContext, testFileMagicPropertiesEmpty)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //create an empty file in a temporary directory for this test
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string test_dir = temp_dir + ra::filesystem::GetPathSeparatorStr() + ra::testing::GetTestQualifiedName();
+      std::string test_file = test_dir + ra::filesystem::GetPathSeparatorStr() + "emptyfile";
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      ASSERT_TRUE(ra::testing::CreateFile(test_file.c_str(), 0));
+
+      SelectionContext context;
+#ifdef _WIN32
+      {
+        StringList elements;
+        elements.push_back(test_file);
+        context.SetElements(elements);
+      }
+#else
+      //TODO: complete with known path to files
+#endif
+
+      ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.description"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.charset"));
+      //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+      //act
+      context.RegisterProperties();
+
+      const char* test_string = ""
+        "selection.mimetype"                "=${selection.mimetype}"      "\n"
+        "selection.description"             "=${selection.description}"   "\n"
+        "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.libmagic_ext}"  "\n"
+
+      const char* expected_string = ""
+        "selection.mimetype"                "=inode/x-empty"    "\n"
+        "selection.description"             "=empty"            "\n"
+        "selection.charset"                 "=binary"           "\n";
+
+      //act
+      std::string actual_string = pmgr.Expand(test_string);
+
+      ASSERT_EQ(std::string(expected_string), actual_string);
+
+      context.UnregisterProperties();
+
+      //cleanup
+      ra::filesystem::DeleteDirectory(test_dir.c_str());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestSelectionContext, testFileMagicPropertiesUnknown)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //create a "data" file in a temporary directory for this test
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string test_dir = temp_dir + ra::filesystem::GetPathSeparatorStr() + ra::testing::GetTestQualifiedName();
+      std::string test_file = test_dir + ra::filesystem::GetPathSeparatorStr() + "datafile";
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      ASSERT_TRUE(ra::testing::CreateFile(test_file.c_str(), 293)); //293 is an random number grater than 255 so that all possible bytes exists in the file
+
+      SelectionContext context;
+#ifdef _WIN32
+      {
+        StringList elements;
+        elements.push_back(test_file);
+        context.SetElements(elements);
+      }
+#else
+      //TODO: complete with known path to files
+#endif
+
+      ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.description"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.charset"));
+      //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+      //act
+      context.RegisterProperties();
+
+      const char* test_string = ""
+        "selection.mimetype"                "=${selection.mimetype}"      "\n"
+        "selection.description"             "=${selection.description}"   "\n"
+        "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.libmagic_ext}"  "\n"
+
+      const char* expected_string = ""
+        "selection.mimetype"                "=application/octet-stream"   "\n"
+        "selection.description"             "=data"                       "\n"
+        "selection.charset"                 "=binary"                     "\n";
+
+      //act
+      std::string actual_string = pmgr.Expand(test_string);
+
+      ASSERT_EQ(std::string(expected_string), actual_string);
+
+      context.UnregisterProperties();
+
+      //cleanup
+      ra::filesystem::DeleteDirectory(test_dir.c_str());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestSelectionContext, testFileMagicPropertiesFileLockedByFopen)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //create a "data" file in a temporary directory for this test
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string test_dir = temp_dir + ra::filesystem::GetPathSeparatorStr() + ra::testing::GetTestQualifiedName();
+      std::string test_file = test_dir + ra::filesystem::GetPathSeparatorStr() + "locked-by-fsopen";
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      ASSERT_TRUE(ra::testing::CreateFile(test_file.c_str(), 293));
+
+      FILE* f = fopen_lock(test_file.c_str(), "ab");
+      ASSERT_TRUE(f != NULL);
+
+      SelectionContext context;
+#ifdef _WIN32
+      {
+        StringList elements;
+        elements.push_back(test_file);
+        context.SetElements(elements);
+      }
+#else
+      //TODO: complete with known path to files
+#endif
+
+      ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.description"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.charset"));
+      //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+      //act
+      context.RegisterProperties();
+
+      const char* test_string = ""
+        "selection.mimetype"                "=${selection.mimetype}"      "\n"
+        "selection.description"             "=${selection.description}"   "\n"
+        "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.libmagic_ext}"  "\n"
+
+      const char* expected_string = ""
+        "selection.mimetype"                "=writable, executable, regular file, no read permission"   "\n"
+        "selection.description"             "=writable, executable, regular file, no read permission"   "\n"
+        "selection.charset"                 "=writable, executable, regular file, no read permission"   "\n";
+
+      //act
+      std::string actual_string = pmgr.Expand(test_string);
+
+      //make sure to unlock the file before reaching a failed assertion
+      fclose_lock(f);
+      f = NULL;
+
+      ASSERT_EQ(std::string(expected_string), actual_string);
+
+      context.UnregisterProperties();
+
+      //cleanup
+      ra::filesystem::DeleteDirectory(test_dir.c_str());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestSelectionContext, testFileMagicPropertiesFileLockedByFileLock)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //create a "data" file in a temporary directory for this test
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string test_dir = temp_dir + ra::filesystem::GetPathSeparatorStr() + ra::testing::GetTestQualifiedName();
+      std::string test_file = test_dir + ra::filesystem::GetPathSeparatorStr() + "locked-by-win32.lockfile";
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      ASSERT_TRUE(ra::testing::CreateFile(test_file.c_str(), 293));
+
+      // lock the file
+      FILE_LOCK_HANDLE * hLock = NULL;
+      bool locked = file_lock(test_file.c_str(), &hLock);
+      ASSERT_TRUE(locked);
+
+      SelectionContext context;
+#ifdef _WIN32
+      {
+        StringList elements;
+        elements.push_back(test_file);
+        context.SetElements(elements);
+      }
+#else
+      //TODO: complete with known path to files
+#endif
+
+      ASSERT_FALSE(pmgr.HasProperty("selection.mimetype"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.description"));
+      ASSERT_FALSE(pmgr.HasProperty("selection.charset"));
+      //ASSERT_FALSE(pmgr.HasProperty("selection.libmagic_ext"));
+
+      //act
+      context.RegisterProperties();
+
+      const char* test_string = ""
+        "selection.mimetype"                "=${selection.mimetype}"      "\n"
+        "selection.description"             "=${selection.description}"   "\n"
+        "selection.charset"                 "=${selection.charset}"       "\n";
+      //"selection.libmagic_ext"          "=${selection.libmagic_ext}"  "\n"
+
+      const char* expected_string = ""
+        "selection.mimetype"                "=writable, executable, regular file, no read permission"   "\n"
+        "selection.description"             "=writable, executable, regular file, no read permission"   "\n"
+        "selection.charset"                 "=writable, executable, regular file, no read permission"   "\n";
+
+      //act
+      std::string actual_string = pmgr.Expand(test_string);
+
+      //make sure to unlock the file before reaching a failed assertion
+      bool unlocked = file_unlock(&hLock);
+      ASSERT_TRUE(unlocked);
+
+      ASSERT_EQ(std::string(expected_string), actual_string);
+
+      context.UnregisterProperties();
+
+      //cleanup
+      ra::filesystem::DeleteDirectory(test_dir.c_str());
     }
     //--------------------------------------------------------------------------------------------------
 

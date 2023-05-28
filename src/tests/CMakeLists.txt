@@ -50,6 +50,8 @@ add_executable(sa.tests
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
   ${PLUGINS_TEST_FILES}
+  LockFile.cpp
+  LockFile.h
   main.cpp
   ArgumentsHandler.cpp
   ArgumentsHandler.h
