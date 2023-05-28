@@ -34,6 +34,11 @@
 #include "FileMagicManager.h"
 #include "ErrorManager.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
 
 
 std::string GetMGCPath()
@@ -56,8 +61,7 @@ std::string GetMGCPath()
       "\n" +
       ra::strings::Format("0x%08x", error_code) + ": " + desc;
 
-    //display an error on 
-    shellanything::ShowErrorMessage("ShellAnything Error", message);
+    LOG(ERROR) << "File magic error: " << message << ".";
 
     return std::string();
   }
@@ -78,17 +82,22 @@ namespace shellanything
   FileMagicManager::FileMagicManager()
   {
     magic_cookie = magic_open(MAGIC_NONE);
-    std::string path = GetMGCPath();
-
     if (magic_cookie == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", "ERROR opening MAGIC_MIME_TYPE: out of memory\n");
+      std::string message = "Failed to open magic library";
+      LOG(ERROR) << "File magic error: " << message << ".";
       return;
     }
+
+    std::string path = GetMGCPath();
     if (magic_load(magic_cookie, path.c_str()) == -1)
     {
       magic_cookie = NULL;
-      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading with NULL file: ") + magic_error(magic_cookie));
+
+      std::string message = "Failed to load magic file '" + path + "'. ";
+      message += magic_error(magic_cookie);
+      LOG(ERROR) << "File magic error: " << message << ".";
+
       return;
     }
   }
@@ -111,7 +120,10 @@ namespace shellanything
     const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      std::string message = "Failed to get mime type of file '" + path + "'. ";
+      message += magic_error(magic_cookie);
+      LOG(ERROR) << "File magic error: " << message << ".";
+
       return std::string();
     }
     else
@@ -126,7 +138,10 @@ namespace shellanything
     const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      std::string message = "Failed to get description of file '" + path + "'. ";
+      message += magic_error(magic_cookie);
+      LOG(ERROR) << "File magic error: " << message << ".";
+
       return std::string();
     }
     else
@@ -141,7 +156,10 @@ namespace shellanything
     const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      std::string message = "Failed to get extension of file '" + path + "'. ";
+      message += magic_error(magic_cookie);
+      LOG(ERROR) << "File magic error: " << message << ".";
+
       return std::string();
     }
     else
@@ -156,7 +174,10 @@ namespace shellanything
     const char* result = magic_file(magic_cookie, path.c_str());
     if (result == NULL)
     {
-      ShowErrorMessage("ShellAnything(libmagic) Error", std::string("ERROR loading file: ") + magic_error(magic_cookie));
+      std::string message = "Failed to get character set of file '" + path + "'. ";
+      message += magic_error(magic_cookie);
+      LOG(ERROR) << "File magic error: " << message << ".";
+
       return std::string();
     }
     else
