@@ -290,6 +290,14 @@ void LogEnvironment()
   LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
   LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
 
+  LOG(INFO) << "System metrics:";
+  LOG(INFO) << "SM_CXSCREEN  : " << GetSystemMetrics(SM_CXSCREEN);
+  LOG(INFO) << "SM_CYSCREEN  : " << GetSystemMetrics(SM_CYSCREEN);
+  LOG(INFO) << "SM_CXSMICON : " << GetSystemMetrics(SM_CXSMICON);
+  LOG(INFO) << "SM_CYSMICON : " << GetSystemMetrics(SM_CYSMICON);
+  LOG(INFO) << "SM_CXICON  : " << GetSystemMetrics(SM_CXICON);
+  LOG(INFO) << "SM_CYICON  : " << GetSystemMetrics(SM_CYICON);
+
   LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
   LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();

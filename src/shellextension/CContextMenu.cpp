@@ -161,23 +161,40 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
       HICON hIconLarge = NULL;
       HICON hIconSmall = NULL;
 
-      //
       std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(icon_filename);
+
+      //check how many icons the file contains
       UINT numIconInFile = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
-      UINT numIconLoaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1);
-      if (numIconLoaded >= 1)
+      if (numIconInFile == 0)
+        LOG(ERROR) << __FUNCTION__ << "(), File '" << icon_filename << "' does not contains an icon.";
+
+      //the file contains 1 or more icons, try to load a small and a large one
+      UINT numIconLoaded = 0;
+      if (numIconInFile >= 1)
+        numIconLoaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1);
+      if (numIconInFile >= 1 && numIconLoaded == 0)
+        LOG(ERROR) << __FUNCTION__ << "(), Failed to load icon index " << icon_index << " from file '" << icon_filename << "'.";
+      else
       {
         //Find the best icon
         HICON hIcon = Win32Utils::GetBestIconForMenu(hIconLarge, hIconSmall);
 
+        SIZE menu_icon_size = Win32Utils::GetIconSize(hIcon);
+        LOG(INFO) << __FUNCTION__ << "(), Icon " << icon_index << " from file '" << icon_filename << "' is " << menu_icon_size.cx << "x" << menu_icon_size.cy;
+
         //Convert the icon to a bitmap (with invisible background)
         hBitmap = Win32Utils::CopyAsBitmap(hIcon);
+        if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+          LOG(ERROR) << __FUNCTION__ << "(), Icon " << icon_index << " from file '" << icon_filename << "' has failed to convert to bitmap with alpha channel.";
 
-        DestroyIcon(hIconLarge);
-        DestroyIcon(hIconSmall);
+        if (hIconLarge != NULL)
+          DestroyIcon(hIconLarge);
+        if (hIconSmall != NULL)
+          DestroyIcon(hIconSmall);
 
         //add the bitmap to the cache for future use
-        m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
+        if (hBitmap != shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+          m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
       }
     }
 

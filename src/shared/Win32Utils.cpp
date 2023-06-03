@@ -66,6 +66,13 @@ namespace Win32Utils
 
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall)
   {
+    if (hIconSmall != NULL && hIconLarge == NULL)
+      return hIconSmall;
+    else if (hIconSmall == NULL && hIconLarge != NULL)
+      return hIconLarge;
+    else if (hIconSmall == NULL && hIconLarge == NULL)
+      return NULL;
+
     SIZE large_size = GetIconSize(hIconLarge);
     SIZE small_size = GetIconSize(hIconSmall);
 
