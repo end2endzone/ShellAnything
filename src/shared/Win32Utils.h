@@ -30,6 +30,11 @@
 
 namespace Win32Utils
 {
+  void GetWindowsVersion(int& major, int& minor);
+  std::string GetWindowsProductName();
+  int GetSystemDPI();
+  float GetSystemScaling();
+  int GetSystemScalingPercent();
   SIZE GetIconSize(HICON hIcon);
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
   RGBQUAD ToRgbQuad(const DWORD& color);

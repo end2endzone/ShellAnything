@@ -22,23 +22,130 @@
  * SOFTWARE.
  *********************************************************************************/
 
- //#define WIN32_LEAN_AND_MEAN 1
-#include "Win32Utils.h"
-#undef GetEnvironmentVariable
-#undef DeleteFile
-#undef CreateDirectory
-#undef CopyFile
-#undef CreateFile
+// https://learn.microsoft.com/en-us/windows/win32/winprog/using-the-windows-headers?redirectedfrom=MSDN
 
+// Windows 8.1:
+#define NTDDI_VERSION 0x06030000  // Target Windows 8.1
+#define _WIN32_WINNT 0x0603       // Target Windows 8.1
+#define WINVER 0x0603             // Target Windows 8.1
+
+// Windows 10
+//#define NTDDI_VERSION 0x0A000000  // Target Windows 10 (first version, 1507 "Threshold")
+//#define _WIN32_WINNT 0x0A00       // Target Windows 10
+//#define WINVER 0x0A00             // Target Windows 10
+
+#include "shellscalingapi.h"
+#pragma comment(lib, "Shcore.lib")  // for GetProcessDpiAwareness()
+
+
+#include "Win32Utils.h"
+
+#include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/unicode.h"
 
 #include <string>
 #include <assert.h>
 
+#include "shellscalingapi.h"
+#pragma comment(lib, "Shcore.lib")  // for GetProcessDpiAwareness()
+
 namespace Win32Utils
 {
   static const size_t BITS_PER_PIXEL = 32;
   static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL / 8;
+  static int const DEFAULT_SYSTEM_DPI = 96;
+
+  void GetWindowsVersion(int& major, int& minor)
+  {
+    OSVERSIONINFOEX info;
+    ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
+    info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+# pragma warning(push)
+#pragma warning(disable: 4996)
+    GetVersionEx((LPOSVERSIONINFO)&info);//info requires typecasting
+# pragma warning(pop)
+  //VerifyVersionInfo(&info, -1, -1);
+
+    major = info.dwMajorVersion;
+    minor = info.dwMinorVersion;
+  }
+
+  std::string GetRegistryKeyValue(HKEY hKey, const std::string& subKey, const std::string& value)
+  {
+    static const std::string EMPTY;
+
+    // Read value size
+    DWORD dataSize = 0;
+    LONG retCode = ::RegGetValueA(
+      hKey,
+      subKey.c_str(),
+      value.c_str(),
+      RRF_RT_REG_SZ,
+      nullptr,
+      nullptr,
+      &dataSize
+    );
+    if (retCode != ERROR_SUCCESS)
+      return EMPTY;
+
+    // Allocate memory
+    std::string data;
+    data.resize(dataSize / sizeof(data[0]));
+
+    // Read actual value
+    retCode = ::RegGetValueA(
+      hKey,
+      subKey.c_str(),
+      value.c_str(),
+      RRF_RT_REG_SZ,
+      nullptr,
+      &data[0],
+      &dataSize
+    );
+    if (retCode != ERROR_SUCCESS)
+      return EMPTY;
+
+    DWORD stringLength = dataSize / sizeof(data[0]);
+    stringLength--; // Exclude the NUL written by the Win32 API
+    data.resize(stringLength);
+
+    return data;
+  }
+
+  std::string GetWindowsProductName()
+  {
+    std::string product_name = GetRegistryKeyValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ProductName");
+    return product_name;
+  }
+
+  int GetSystemDPI()
+  {
+    const HDC hDC = ::GetDC(HWND_DESKTOP);
+    int dpi = ::GetDeviceCaps(hDC, LOGPIXELSX);
+    ::ReleaseDC(HWND_DESKTOP, hDC);
+    return dpi;
+  }
+
+  float GetSystemScaling()
+  {
+    float scaling = static_cast<float>(GetSystemDPI()) / static_cast<float>(DEFAULT_SYSTEM_DPI);
+    return scaling;
+  }
+
+  int GetSystemScalingPercent()
+  {
+    int scaling = static_cast<int>(GetSystemDPI() * 100) / DEFAULT_SYSTEM_DPI;
+    return scaling;
+  }
+
+  PROCESS_DPI_AWARENESS GetCurrentProcessDpiAwareness()
+  {
+    PROCESS_DPI_AWARENESS current_process_awareness;
+    HANDLE hProcess = GetCurrentProcess();
+    GetProcessDpiAwareness(hProcess, &current_process_awareness);
+    CloseHandle(hProcess);
+    return current_process_awareness;
+  }
 
   SIZE GetIconSize(HICON hIcon)
   {

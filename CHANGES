@@ -1,6 +1,8 @@
 Changes for 0.8.0
 
 **NOTE:** The file name of Shellanything's shell extension is now `sa.shellextension.dll`. If you update from a previous version, make sure you unregister the previous shell extension (formally `shellext.dll`).
+**NOTE:** Deprecated support for Windows 7. Version 0.7 is the last version to support Windows 7.
+
 
 * Shellanything now features support for plugins (beta).
 * Now using GLOG (Google Logging Library) as a shared DLL instead of a static library.

@@ -118,10 +118,12 @@ Please refer to file [INSTALL.md](INSTALL.md) for details on how installing/buil
 
 ShellAnything has been tested with the following platform:
 
-*   Windows 7 (32 and 64 bit)
+*   Windows 8.1 (32 and 64 bit)
 *   Windows 10 (32 and 64 bit)
 
 **NOTE:** Version 0.6.1 is the last version of ShellAnything that supports 32-bit Windows.
+
+**NOTE:** Version 0.7   is the last version of ShellAnything that supports Windows 7.
 
 
 
