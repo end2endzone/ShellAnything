@@ -32,9 +32,18 @@ namespace Win32Utils
 {
   void GetWindowsVersion(int& major, int& minor);
   std::string GetWindowsProductName();
+  bool EnableMonitorDpiAwareness();
+  bool IsMonitorDpiAwarenessEnabled();
   int GetSystemDPI();
   float GetSystemScaling();
   int GetSystemScalingPercent();
+  int GetSystemDefaultDPI();
+  int GetMonitorCount();
+  bool GetMousePositionInVirtualScreenCoordinates(int* x, int* y);
+  bool GetMousePositionInMonitorCoordinates(int* monitor_index, int* x, int* y);
+  int GetMonitorDPI(int monitor_index);
+  float GetMonitorScaling(int monitor_index);
+  int GetMonitorScalingPercent(int monitor_index);
   SIZE GetIconSize(HICON hIcon);
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
   RGBQUAD ToRgbQuad(const DWORD& color);

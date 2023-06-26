@@ -52,6 +52,10 @@ int main(int argc, char** argv)
   bool has_PrintProcessSettings = ra::cli::ParseArgument("PrintProcessSettings", std::string(), argc, argv);
   if (has_PrintProcessSettings)
     return shellanything::PrintProcessSettings(argc, argv);
+  if (shellanything::HasCommandLineEntryPoints(argc, argv))
+  {
+    return shellanything::ProcessCommandLineEntryPoints(argc, argv);
+  }
 
   // Initialize Google's logging library.
   shellanything::InitLogger();

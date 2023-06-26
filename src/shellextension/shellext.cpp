@@ -298,16 +298,27 @@ void LogEnvironment()
   LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
 
   LOG(INFO) << "System metrics:";
-  LOG(INFO) << "SM_CXSCREEN  : " << GetSystemMetrics(SM_CXSCREEN);
-  LOG(INFO) << "SM_CYSCREEN  : " << GetSystemMetrics(SM_CYSCREEN);
-  LOG(INFO) << "SM_CXSMICON  : " << GetSystemMetrics(SM_CXSMICON);
-  LOG(INFO) << "SM_CYSMICON  : " << GetSystemMetrics(SM_CYSMICON);
-  LOG(INFO) << "SM_CXICON    : " << GetSystemMetrics(SM_CXICON);
-  LOG(INFO) << "SM_CYICON    : " << GetSystemMetrics(SM_CYICON);
-  LOG(INFO) << "";
+  LOG(INFO) << "SM_CXSCREEN    : " << GetSystemMetrics(SM_CXSCREEN);
+  LOG(INFO) << "SM_CYSCREEN    : " << GetSystemMetrics(SM_CYSCREEN);
+  LOG(INFO) << "SM_CXSMICON    : " << GetSystemMetrics(SM_CXSMICON);
+  LOG(INFO) << "SM_CYSMICON    : " << GetSystemMetrics(SM_CYSMICON);
+  LOG(INFO) << "SM_CXICON      : " << GetSystemMetrics(SM_CXICON);
+  LOG(INFO) << "SM_CYICON      : " << GetSystemMetrics(SM_CYICON);
 
-  LOG(INFO) << "System DPI: " << Win32Utils::GetSystemDPI();
-  LOG(INFO) << "Scaling: " << Win32Utils::GetSystemScalingPercent() << "%";
+  bool monitor_dpi_aware = Win32Utils::IsMonitorDpiAwarenessEnabled();
+  LOG(INFO) << "Process is monitor DPI aware : " << ra::strings::ToString(monitor_dpi_aware);
+  LOG(INFO) << "System DPI     : " << Win32Utils::GetSystemDPI();
+  LOG(INFO) << "System Scaling : " << Win32Utils::GetSystemScalingPercent() << "%";
+
+  // Print information about monitor and their scaling
+  int monitor_count = Win32Utils::GetMonitorCount();
+  LOG(INFO) << "System monitor count : " << monitor_count;
+  for (int i = 0; i < monitor_count; i++)
+  {
+    int dpi = Win32Utils::GetMonitorDPI(i);
+    int scaling = Win32Utils::GetMonitorScalingPercent(i);
+    LOG(INFO) << "Monitor " << i << " is scaled to " << scaling << "% (dpi " << dpi << ")";
+  }
 
   LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();

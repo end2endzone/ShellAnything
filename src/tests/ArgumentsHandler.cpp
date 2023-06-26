@@ -26,6 +26,7 @@
 #include "rapidassist/process.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
+#include "rapidassist/cli.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -41,6 +42,8 @@
 
 namespace shellanything
 {
+  typedef std::vector<COMMAND_LINE_ENTRY_POINT> cmd_line_entry_points_t;
+  cmd_line_entry_points_t g_cmd_line_entry_points;
 
   //https://stackoverflow.com/questions/8046097/how-to-check-if-a-process-has-the-administrative-rights
   bool IsProcessElevated()
@@ -149,6 +152,96 @@ namespace shellanything
     fclose(f);
 
     return 0;
+  }
+
+  COMMAND_LINE_ENTRY_POINT* RegisterCommandLineEntryPoint(const char* name, CommandLineEntryPoint func)
+  {
+    COMMAND_LINE_ENTRY_POINT ep;
+    ep.name = name;
+    ep.func = func;
+    g_cmd_line_entry_points.push_back(ep);
+    COMMAND_LINE_ENTRY_POINT* last = &g_cmd_line_entry_points[g_cmd_line_entry_points.size() - 1];
+    return last;
+  }
+
+  bool HasCommandLineEntryPoints(int argc, char** argv)
+  {
+    for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
+    {
+      COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
+      std::string dummy;
+      bool match = ra::cli::ParseArgument(ep.name, dummy, argc, argv);
+      if (match)
+        return true;
+    }
+    return false;
+  }
+
+  int ProcessCommandLineEntryPoints(int argc, char** argv)
+  {
+    for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
+    {
+      COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
+      std::string dummy;
+      bool match = ra::cli::ParseArgument(ep.name, dummy, argc, argv);
+      if (match)
+      {
+        int exit_code = ep.func(argc, argv);
+        if (exit_code != 0)
+          return exit_code;
+      }
+    }
+    return 0; // success
+  }
+
+  COMMAND_LINE_ENTRY_POINT* FindCommandLineEntryPointByName(const char* name)
+  {
+    if (name == NULL)
+      return NULL;
+    for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
+    {
+      COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
+      if (ep.name == name)
+        return &ep;
+    }
+    return NULL;
+  }
+
+  int InvokeCommandLineEntryPoint(const char* name, int argc, char** argv)
+  {
+    COMMAND_LINE_ENTRY_POINT* ep = FindCommandLineEntryPointByName(name);
+    if (ep == NULL)
+      return -1;
+    int exit_code = InvokeCommandLineEntryPoint(ep, argc, argv);
+    return exit_code;
+  }
+
+  int InvokeCommandLineEntryPoint(const COMMAND_LINE_ENTRY_POINT* entry, int argc, char** argv)
+  {
+    std::string self_path = ra::process::GetCurrentProcessPath();
+
+    // Do we need to wrap current process in double quotes ?
+    if (self_path.find(' ') != std::string::npos)
+    {
+      self_path.insert(0, 1, '\"');
+      self_path.append(1, '\"');
+    }
+
+    // Build the list of arguments for the invoke command line
+    std::string arguments;
+    arguments += "--";
+    arguments += entry->name;
+    for (int i = 0; i < argc; i++)
+    {
+      if (argv[i] == NULL) continue;
+      arguments += " ";
+      arguments += argv[i];
+    }
+
+    // Invoke ourself with a new command line
+    std::string command_line = self_path + " " + arguments;
+    int exit_code = system(command_line.c_str());
+    return exit_code;
   }
 
 } //namespace shellanything

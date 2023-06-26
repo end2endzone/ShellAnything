@@ -53,7 +53,9 @@ namespace Win32Utils
 {
   static const size_t BITS_PER_PIXEL = 32;
   static const size_t BYTES_PER_PIXEL = BITS_PER_PIXEL / 8;
-  static int const DEFAULT_SYSTEM_DPI = 96;
+  static const int DEFAULT_SYSTEM_DPI = 96;
+
+  PROCESS_DPI_AWARENESS GetCurrentProcessDpiAwareness();
 
   void GetWindowsVersion(int& major, int& minor)
   {
@@ -118,6 +120,21 @@ namespace Win32Utils
     return product_name;
   }
 
+  bool EnableMonitorDpiAwareness()
+  {
+    if (SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE) != S_OK)
+      return false;
+    return true;
+  }
+
+  bool IsMonitorDpiAwarenessEnabled()
+  {
+    PROCESS_DPI_AWARENESS pda = GetCurrentProcessDpiAwareness();
+    if (pda == PROCESS_PER_MONITOR_DPI_AWARE)
+      return true;
+    return false;
+  }
+
   int GetSystemDPI()
   {
     const HDC hDC = ::GetDC(HWND_DESKTOP);
@@ -135,6 +152,185 @@ namespace Win32Utils
   int GetSystemScalingPercent()
   {
     int scaling = static_cast<int>(GetSystemDPI() * 100) / DEFAULT_SYSTEM_DPI;
+    return scaling;
+  }
+
+  int GetSystemDefaultDPI()
+  {
+    return DEFAULT_SYSTEM_DPI;
+  }
+
+  int GetMonitorDPI(HMONITOR hMonitor)
+  {
+    UINT dpi_x = 0;
+    UINT dpi_y = 0;
+    if (GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y) == S_OK)
+    {
+      return dpi_x;
+    }
+    return 0;
+  }
+
+  float GetMonitorScaling(HMONITOR hMonitor)
+  {
+    float scaling = static_cast<float>(GetMonitorDPI(hMonitor)) / static_cast<float>(DEFAULT_SYSTEM_DPI);
+    return scaling;
+  }
+
+  int GetMonitorScalingPercent(HMONITOR hMonitor)
+  {
+    int scaling = static_cast<int>(GetMonitorDPI(hMonitor) * 100) / DEFAULT_SYSTEM_DPI;
+    return scaling;
+  }
+
+  struct MONITOR_INDEX_FROM_HANDLE_INFO
+  {
+    bool found;
+    int index;
+    HMONITOR hMonitor;
+  };
+
+  BOOL CALLBACK GetMonitorIndexFromHandleProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  {
+    MONITOR_INDEX_FROM_HANDLE_INFO* info = (MONITOR_INDEX_FROM_HANDLE_INFO*)dwData;
+    if (info->hMonitor == hMonitor)
+    {
+      info->found = true;
+      return FALSE;
+    }
+    info->index++;
+    return TRUE;
+  }
+
+  int GetMonitorIndexFromHandle(HMONITOR hMonitor)
+  {
+    MONITOR_INDEX_FROM_HANDLE_INFO info = { 0 };
+    info.hMonitor = hMonitor;
+    // https://github.com/MicrosoftDocs/feedback/issues/1011
+    EnumDisplayMonitors(NULL, NULL, GetMonitorIndexFromHandleProc, (LPARAM)&info); 
+    if (!info.found)
+      return -1;
+    return info.index;
+  }
+
+  struct MONITOR_HANDLE_FROM_INDEX_INFO
+  {
+    bool found;
+    int query_index;
+    int current_index;
+    HMONITOR hMonitor;
+  };
+
+  BOOL CALLBACK GetMonitorHandleFromIndexProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  {
+    MONITOR_HANDLE_FROM_INDEX_INFO* info = (MONITOR_HANDLE_FROM_INDEX_INFO*)dwData;
+    if (info->query_index == info->current_index)
+    {
+      info->hMonitor = hMonitor;
+      info->found = true;
+      return FALSE;
+    }
+    info->current_index++;
+    return TRUE;
+  }
+
+  HMONITOR GetMonitorHandleFromIndex(int index)
+  {
+    MONITOR_HANDLE_FROM_INDEX_INFO info = { 0 };
+    info.query_index = index;
+
+    // https://github.com/MicrosoftDocs/feedback/issues/1011
+    EnumDisplayMonitors(NULL, NULL, GetMonitorHandleFromIndexProc, (LPARAM)&info);
+    if (!info.found)
+      return NULL;
+    return info.hMonitor;
+  }
+
+  struct MONITOR_COUNT_INFO
+  {
+    int count;
+  };
+
+  BOOL CALLBACK GetMonitorCountProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  {
+    MONITOR_COUNT_INFO* info = (MONITOR_COUNT_INFO*)dwData;
+    info->count++;
+    return TRUE;
+  }
+
+  int GetMonitorCount()
+  {
+    MONITOR_COUNT_INFO info = { 0 };
+    EnumDisplayMonitors(NULL, NULL, GetMonitorCountProc, (LPARAM)&info);
+    return info.count;
+  }
+
+  bool GetMousePositionInVirtualScreenCoordinates(int* x, int* y)
+  {
+    if (x == NULL || y == NULL)
+      return false;
+    POINT p;
+    if (!GetCursorPos(&p))
+      return false;
+    *x = p.x;
+    *y = p.y;
+    return true;
+  }
+
+  bool GetMousePositionInMonitorCoordinates(int* monitor_index, int* x, int* y)
+  {
+    if (monitor_index == NULL || x == NULL || y == NULL)
+      return false;
+
+    POINT p;
+    if (!GetCursorPos(&p))
+      return false;
+
+    HMONITOR hMonitor = MonitorFromPoint(p, MONITOR_DEFAULTTONULL);
+    if (hMonitor == NULL)
+      return 0;
+
+    MONITORINFO info = { 0 };
+    info.cbSize = sizeof(info);
+    if (!GetMonitorInfoA(hMonitor, &info))
+      return false;
+
+    // convert from virtual screen coordinates to monitor coordinates
+    RECT work_area = info.rcWork;
+    p.x -= work_area.left;
+    p.y -= work_area.top;
+
+    *monitor_index = GetMonitorIndexFromHandle(hMonitor);
+    *x = p.x;
+    *y = p.y;
+
+    return true;
+  }
+
+  int GetMonitorDPI(int monitor_index)
+  {
+    HMONITOR hMonitor = GetMonitorHandleFromIndex(monitor_index);
+    if (hMonitor == 0)
+      return 0;
+    int dpi = GetMonitorDPI(hMonitor);
+    return dpi;
+  }
+
+  float GetMonitorScaling(int monitor_index)
+  {
+    HMONITOR hMonitor = GetMonitorHandleFromIndex(monitor_index);
+    if (hMonitor == 0)
+      return 0.0f;
+    float scaling = static_cast<float>(GetMonitorDPI(hMonitor)) / static_cast<float>(DEFAULT_SYSTEM_DPI);
+    return scaling;
+  }
+
+  int GetMonitorScalingPercent(int monitor_index)
+  {
+    HMONITOR hMonitor = GetMonitorHandleFromIndex(monitor_index);
+    if (hMonitor == 0)
+      return 0;
+    int scaling = static_cast<int>(GetMonitorDPI(hMonitor) * 100) / DEFAULT_SYSTEM_DPI;
     return scaling;
   }
 
