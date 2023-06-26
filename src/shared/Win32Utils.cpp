@@ -636,7 +636,7 @@ namespace Win32Utils
     WORD    cClrBits;
 
     // Retrieve the bitmap color format, width, and height.  
-    assert(GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp));
+    GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp);
 
     // Convert the color format to a count of bits.  
     cClrBits = (WORD)(bmp.bmPlanes * bmp.bmBitsPixel);

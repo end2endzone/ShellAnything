@@ -176,7 +176,7 @@ namespace shellanything
     }
     int ProcessIconAsBitmap(HICON hIcon, const std::string& outout_file_path, SIZE & icon_size)
     {
-      if (hIcon == INVALID_HANDLE_VALUE)
+      if (hIcon == NULL)
         return 16;
 
       //Convert the icon to a bitmap (with invisible background)
