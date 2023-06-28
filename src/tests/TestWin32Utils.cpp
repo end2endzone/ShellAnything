@@ -69,12 +69,13 @@ namespace shellanything
         DestroyIcon(hIconSmall);
 
         //save to a file
-        std::string file_path = ra::testing::GetTestQualifiedName();
+        std::string test_name = ra::testing::GetTestQualifiedName();
         static const size_t BUFFER_SIZE = 1024;
-        char post_filename[BUFFER_SIZE];
-        sprintf(post_filename, ".shell32.dll.index%03d.bmp", i);
-        file_path.append(post_filename);
-        Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
+        char filename[BUFFER_SIZE];
+        sprintf(filename, "%s.shell32.dll.index%03d.v1.bmp", test_name.c_str(), i);
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV1File(filename, hBitmap));
+        sprintf(filename, "%s.shell32.dll.index%03d.v3.bmp", test_name.c_str(), i);
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV3File(filename, hBitmap));
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -124,7 +125,7 @@ namespace shellanything
         char post_filename[BUFFER_SIZE];
         sprintf(post_filename, ".%s.index%03d.bmp", dll_filename.c_str(), index);
         file_path.append(post_filename);
-        Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapFile(file_path.c_str(), hBitmap));
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -184,7 +185,7 @@ namespace shellanything
       HBITMAP hBitmap = Win32Utils::CopyAsBitmap(hIcon, icon_size.cx, icon_size.cy);
 
       //save to a file
-      bool created = Win32Utils::CreateBmpFile(outout_file_path.c_str(), hBitmap);
+      bool created = Win32Utils::SaveAs32BppBitmapFile(outout_file_path.c_str(), hBitmap);
       if (!created)
       {
         printf("Failed to create bitmap: '%s'\n", outout_file_path.c_str());
@@ -282,14 +283,14 @@ namespace shellanything
       //DestroyIcon(hIconSmall);
 
       ////save to a file
-      //bool large_created = Win32Utils::CreateBmpFile(output_large_path.c_str(), hBitmapLarge);
+      //bool large_created = Win32Utils::SaveAs32BppBitmapFile(output_large_path.c_str(), hBitmapLarge);
       //if (!large_created)
       //{
       //  printf("Failed to create bitmap: '%s'\n", output_large_path.c_str());
       //  return 15;
       //}
 
-      //bool small_created = Win32Utils::CreateBmpFile(output_small_path.c_str(), hBitmapSmall);
+      //bool small_created = Win32Utils::SaveAs32BppBitmapFile(output_small_path.c_str(), hBitmapSmall);
       //if (!small_created)
       //{
       //  printf("Failed to create bitmap: '%s'\n", output_small_path.c_str());

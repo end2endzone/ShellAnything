@@ -48,11 +48,15 @@ namespace Win32Utils
   HICON GetBestIconForMenu(HICON hIconLarge, HICON hIconSmall);
   RGBQUAD ToRgbQuad(const DWORD& color);
   SIZE GetBitmapSize(HBITMAP hBitmap);
+  int GetBitPerPixel(HBITMAP hBitmap);
+  int GetBitPerPixel(BITMAP* bmp);
   BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color);
   HBITMAP CreateBitmapWithAlphaChannel(int width, int height, HDC hDc);
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height);
   HBITMAP CopyAsBitmap(HICON hIcon);
-  bool CreateBmpFile(const char* path, HBITMAP hBitmap);
+  bool SaveAs32BppBitmapFile(const char* path, HBITMAP hBitmap);
+  bool SaveAs32BppBitmapV1File(const char* path, HBITMAP hBitmap);
+  bool SaveAs32BppBitmapV3File(const char* path, HBITMAP hBitmap);
   BOOL IsFullyTransparent(HBITMAP hBitmap);
   BOOL IsFullyTransparent(const std::string& buffer);
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos);

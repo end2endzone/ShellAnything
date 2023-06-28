@@ -49,6 +49,54 @@
 #include "shellscalingapi.h"
 #pragma comment(lib, "Shcore.lib")  // for GetProcessDpiAwareness()
 
+#pragma pack(push, 1)
+// https://en.wikipedia.org/wiki/BMP_file_format
+typedef struct tagBITMAPV2INFOHEADER
+{
+  // V1
+  DWORD      biSize;
+  LONG       biWidth;
+  LONG       biHeight;
+  WORD       biPlanes;
+  WORD       biBitCount;
+  DWORD      biCompression;
+  DWORD      biSizeImage;
+  LONG       biXPelsPerMeter;
+  LONG       biYPelsPerMeter;
+  DWORD      biClrUsed;
+  DWORD      biClrImportant;
+
+  // V2
+  DWORD biRedMask;
+  DWORD biGreenMask;
+  DWORD biBlueMask;
+} BITMAPV2INFOHEADER, FAR* LPBITMAPV2INFOHEADER, * PBITMAPV2INFOHEADER;
+
+typedef struct tagBITMAPV3INFOHEADER
+{
+  // V1
+  DWORD      biSize;
+  LONG       biWidth;
+  LONG       biHeight;
+  WORD       biPlanes;
+  WORD       biBitCount;
+  DWORD      biCompression;
+  DWORD      biSizeImage;
+  LONG       biXPelsPerMeter;
+  LONG       biYPelsPerMeter;
+  DWORD      biClrUsed;
+  DWORD      biClrImportant;
+
+  // V2
+  DWORD biRedMask;
+  DWORD biGreenMask;
+  DWORD biBlueMask;
+
+  // V3
+  DWORD biAlphaMask;
+} BITMAPV3INFOHEADER, FAR* LPBITMAPV3INFOHEADER, * PBITMAPV3INFOHEADER;
+#pragma pack(pop)
+
 namespace Win32Utils
 {
   static const size_t BITS_PER_PIXEL = 32;
@@ -190,7 +238,7 @@ namespace Win32Utils
     HMONITOR hMonitor;
   };
 
-  BOOL CALLBACK GetMonitorIndexFromHandleProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  BOOL CALLBACK GetMonitorIndexFromHandleProc(HMONITOR hMonitor, HDC /*hdcMonitor*/, LPRECT /*lprcMonitor*/, LPARAM dwData)
   {
     MONITOR_INDEX_FROM_HANDLE_INFO* info = (MONITOR_INDEX_FROM_HANDLE_INFO*)dwData;
     if (info->hMonitor == hMonitor)
@@ -221,7 +269,7 @@ namespace Win32Utils
     HMONITOR hMonitor;
   };
 
-  BOOL CALLBACK GetMonitorHandleFromIndexProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  BOOL CALLBACK GetMonitorHandleFromIndexProc(HMONITOR hMonitor, HDC /*hdcMonitor*/, LPRECT /*lprcMonitor*/, LPARAM dwData)
   {
     MONITOR_HANDLE_FROM_INDEX_INFO* info = (MONITOR_HANDLE_FROM_INDEX_INFO*)dwData;
     if (info->query_index == info->current_index)
@@ -251,7 +299,7 @@ namespace Win32Utils
     int count;
   };
 
-  BOOL CALLBACK GetMonitorCountProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+  BOOL CALLBACK GetMonitorCountProc(HMONITOR /*hMonitor*/, HDC /*hdcMonitor*/, LPRECT /*lprcMonitor*/, LPARAM dwData)
   {
     MONITOR_COUNT_INFO* info = (MONITOR_COUNT_INFO*)dwData;
     info->count++;
@@ -430,6 +478,46 @@ namespace Win32Utils
     return size;
   }
 
+  int GetBitPerPixel(HBITMAP hBitmap)
+  {
+    BITMAP bmp;
+
+    // Assume the hBitmap was probably not created by CreateDIBSection() but by any other means,
+    // so query for info using BITMAP instead of DIBSECTION.
+#ifndef NDEBUG
+    int object_size =
+#endif
+    GetObject(hBitmap, sizeof(bmp), &bmp);
+#ifndef NDEBUG
+    assert((size_t)object_size == sizeof(bmp));
+#endif
+
+    return GetBitPerPixel(&bmp);
+  }
+
+  int GetBitPerPixel(BITMAP* bmp)
+  {
+    //HDC hDC = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
+    //wBmpBitCount = GetDeviceCaps(hDC, BITSPIXEL) * GetDeviceCaps(hDC, PLANES);
+    //DeleteDC(hDC);
+    const WORD wTotalBitCount = (WORD)(bmp->bmPlanes * bmp->bmBitsPixel);
+    WORD wBitPerPixels = 0;
+    if (wTotalBitCount == 1)
+      wBitPerPixels = 1;
+    else if (wTotalBitCount <= 4)
+      wBitPerPixels = 4;
+    else if (wTotalBitCount <= 8)
+      wBitPerPixels = 8;
+    else if (wTotalBitCount <= 16)
+      wBitPerPixels = 16;
+    else if (wTotalBitCount <= 24)
+      wBitPerPixels = 24;
+    else
+      wBitPerPixels = 32;
+
+    return wBitPerPixels;
+  }
+
   BOOL FillTransparentPixels(HBITMAP hBitmap, COLORREF background_color)
   {
     //FillTransparentPixels() blends every pixels of the given bitmap with the given background_color.
@@ -489,6 +577,16 @@ namespace Win32Utils
     fwrite(buffer.data(), 1, buffer.size(), f);
     fclose(f);
   }
+  void DumpBuffer(const std::string file_path, const void* buffer, const size_t & buffer_size)
+  {
+    FILE* f = fopen(file_path.c_str(), "wb");
+    if (!f)
+      return;
+
+    fwrite(buffer, 1, buffer_size, f);
+    fclose(f);
+  }
+
 #endif
 
   HBITMAP CreateBitmapWithAlphaChannel(int width, int height, HDC hDc)
@@ -502,7 +600,7 @@ namespace Win32Utils
     bmi.bmiHeader.biCompression = BI_RGB;
     bmi.bmiHeader.biSizeImage = width * height * 4;
     VOID* pvBits;
-    return CreateDIBSection(hDc, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);;
+    return CreateDIBSection(hDc, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);
   }
 
   HBITMAP CopyAsBitmap(HICON hIcon, const int bitmap_width, const int bitmap_height)
@@ -543,12 +641,12 @@ namespace Win32Utils
 
     // Create a 32bbp bitmap and select it.
     HBITMAP hBitmap = CreateBitmapWithAlphaChannel(bitmap_width, bitmap_height, hDcMem);
-    HBITMAP hbmOld = (HBITMAP)SelectObject(hDcMem, hBitmap);
+    HBITMAP hOldBitmap = (HBITMAP)SelectObject(hDcMem, hBitmap);
 
 #if 0
     // Make sure the destination bitmap is fully transparent by default
-    LONG numPixelsRead = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
-    assert(numPixelsRead == image_size);
+    LONG numPixelsRead2 = GetBitmapBits(hBitmap, (LONG)color_pixels.size(), (void*)color_pixels.data());
+    assert(numPixelsRead2 == image_size);
     DumpString("c:\\temp\\destination_bitmap.data", color_pixels);
 #endif
 
@@ -597,7 +695,7 @@ namespace Win32Utils
 
     //for GIMP, if all pixels are invisible, the color information is lost
     //if fully transparent, make it opaque
-    bool isFullyTransparent = IsFullyTransparent(hBitmap);
+    isFullyTransparent = IsFullyTransparent(hBitmap);
     if (isFullyTransparent)
     {
       for (size_t i = 0; i < num_pixels && isFullyTransparent == true; i++)
@@ -612,9 +710,12 @@ namespace Win32Utils
 #endif
 
     // Clean up.
-    SelectObject(hDcMem, hbmOld);
-    DeleteDC(hDcMem);
-    ReleaseDC(hWndDesktop, hDcDesktop);
+    if (hOldBitmap)
+      SelectObject(hDcMem, hOldBitmap);
+    if (hDcMem)
+      DeleteDC(hDcMem);
+    if (hDcDesktop)
+      ReleaseDC(hWndDesktop, hDcDesktop);
 
     return hBitmap;
   }
@@ -638,19 +739,8 @@ namespace Win32Utils
     // Retrieve the bitmap color format, width, and height.  
     GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp);
 
-    // Convert the color format to a count of bits.  
-    cClrBits = (WORD)(bmp.bmPlanes * bmp.bmBitsPixel);
-    if (cClrBits == 1)
-      cClrBits = 1;
-    else if (cClrBits <= 4)
-      cClrBits = 4;
-    else if (cClrBits <= 8)
-      cClrBits = 8;
-    else if (cClrBits <= 16)
-      cClrBits = 16;
-    else if (cClrBits <= 24)
-      cClrBits = 24;
-    else cClrBits = 32;
+    // Convert the color format to a count of bits.
+    cClrBits = (WORD)GetBitPerPixel(&bmp);
 
     // Allocate memory for the BITMAPINFO structure. (This structure  
     // contains a BITMAPINFOHEADER structure and an array of RGBQUAD  
@@ -695,75 +785,319 @@ namespace Win32Utils
     return pbmi;
   }
 
-  //https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
-  bool CreateBmpFile(const char* pszFile, HBITMAP hBMP)
+  bool SaveAs32BppBitmapFile(const char* path, HBITMAP hBitmap)
   {
-    HANDLE hf;                 // file handle  
-    BITMAPFILEHEADER hdr;       // bitmap file-header  
-    PBITMAPINFOHEADER pbih;     // bitmap info-header  
-    LPBYTE lpBits;              // memory pointer  
-    DWORD dwTotal;              // total count of bytes  
-    DWORD cb;                   // incremental count of bytes  
-    BYTE* hp;                   // byte pointer  
-    DWORD dwTmp;
-    PBITMAPINFO pbi;
-    HDC hDC;
+    return SaveAs32BppBitmapV3File(path, hBitmap);
+  }
 
-    hDC = CreateCompatibleDC(GetWindowDC(GetDesktopWindow()));
-    SelectObject(hDC, hBMP);
+  //https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
+  bool SaveAs32BppBitmapV1File(const char* pszFile, HBITMAP hBitmap)
+  {
+    HANDLE hFile = NULL;            // file handle  
+    BITMAPFILEHEADER bfi;           // bitmap file-header  
+    PBITMAPINFOHEADER pbih = NULL;  // bitmap info-header  
+    LPBYTE lpBits = NULL;           // memory pointer  
+    DWORD dwBytesWritten = 0;       // last amount of bytes written to file
+    DWORD dwTotal = 0;              // total count of bytes  
+    PBITMAPINFO pbi = NULL;
+    bool bReturn = false;           // function return value
 
-    pbi = CreateBitmapInfoStruct(hBMP);
+    HWND hWndDesktop = GetDesktopWindow();
+    HDC hDcDesktop = GetDC(hWndDesktop);
+    HDC hDcMem = CreateCompatibleDC(hDcDesktop);
+
+    HBITMAP hOldBitmap = (HBITMAP)SelectObject(hDcMem, hBitmap);
+
+    BITMAP bitmap = { 0 };
+    GetObject(hBitmap, sizeof(BITMAP), &bitmap);
+
+    pbi = CreateBitmapInfoStruct(hBitmap);
 
     pbih = (PBITMAPINFOHEADER)pbi;
     lpBits = (LPBYTE)GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
     if (!lpBits)
-      return false;
+    {
+      bReturn = false;
+      goto cleanup;
+    }
 
     // Retrieve the color table (RGBQUAD array) and the bits  
     // (array of palette indices) from the DIB.  
-    GetDIBits(hDC, hBMP, 0, (WORD)pbih->biHeight, lpBits, pbi, DIB_RGB_COLORS);
+    GetDIBits(hDcMem, hBitmap, 0, (WORD)pbih->biHeight, lpBits, pbi, DIB_RGB_COLORS);
+
+#if 0
+    std::string pixels;
+    size_t pixel_buffer_length = (size_t)pbih->biSizeImage;
+    pixels.assign(pixel_buffer_length, 0);
+    if (pixels.size() != pixel_buffer_length)
+      return false;
+    GetDIBits(hDcMem, hBitmap, 0, (WORD)pbih->biHeight, (void*)pixels.data(), pbi, DIB_RGB_COLORS);
+    DumpString("c:\\temp\\GetDIBits.data", pixels);
+    GetBitmapBits(hBitmap, (LONG)pixels.size(), (void*)pixels.data());
+    DumpString("c:\\temp\\GetBitmapBits.data", pixels);
+#endif
 
     // Create the .BMP file.  
-    hf = ::CreateFileA(pszFile,
+    hFile = ::CreateFileA(pszFile,
                        GENERIC_READ | GENERIC_WRITE,
                        (DWORD)0,
                        NULL,
                        CREATE_ALWAYS,
                        FILE_ATTRIBUTE_NORMAL,
                        (HANDLE)NULL);
-    if (hf == INVALID_HANDLE_VALUE)
+    if (hFile == INVALID_HANDLE_VALUE)
     {
-      GlobalFree((HGLOBAL)lpBits);
-      return false;
+      bReturn = false;
+      goto cleanup;
     }
 
-    hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M"  
+    bfi.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M"  
     // Compute the size of the entire file.  
-    hdr.bfSize = (DWORD)(sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD) + pbih->biSizeImage);
-    hdr.bfReserved1 = 0;
-    hdr.bfReserved2 = 0;
+    bfi.bfSize = (DWORD)(sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD) + pbih->biSizeImage);
+    bfi.bfReserved1 = 0;
+    bfi.bfReserved2 = 0;
 
     // Compute the offset to the array of color indices.  
-    hdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD);
+    bfi.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD);
 
-    // Copy the BITMAPFILEHEADER into the .BMP file.  
-    WriteFile(hf, (LPVOID)&hdr, sizeof(BITMAPFILEHEADER), (LPDWORD)&dwTmp, NULL);
+    // Copy the BITMAPFILEHEADER into the .BMP file.
+    dwBytesWritten = 0;
+    WriteFile(hFile, (LPVOID)&bfi, sizeof(BITMAPFILEHEADER), (LPDWORD)&dwBytesWritten, NULL);
+    dwTotal += dwBytesWritten;
 
     // Copy the BITMAPINFOHEADER and RGBQUAD array into the file.  
-    WriteFile(hf, (LPVOID)pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof(RGBQUAD), (LPDWORD)&dwTmp, (NULL));
+    dwBytesWritten = 0;
+    WriteFile(hFile, (LPVOID)pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof(RGBQUAD), (LPDWORD)&dwBytesWritten, (NULL));
+    dwTotal += dwBytesWritten;
 
     // Copy the array of color indices into the .BMP file.  
-    dwTotal = cb = pbih->biSizeImage;
-    hp = lpBits;
-    WriteFile(hf, (LPSTR)hp, (int)cb, (LPDWORD)&dwTmp, NULL);
+    dwBytesWritten = 0;
+    WriteFile(hFile, lpBits, (DWORD)pbih->biSizeImage, (LPDWORD)&dwBytesWritten, NULL);
+    dwTotal += dwBytesWritten;
 
+#ifndef NDEBUG // if debuging
+    assert(dwTotal == bfi.bfSize);
+#endif
+
+    // success
+    bReturn = true;
+
+    // Using goto for win32 api is most elegant way of cleaning up:
+    // https://github.com/search?q=repo%3Amicrosoft%2FWindows-classic-samples+%22goto+%22&type=code
+  cleanup:
     // Close the .BMP file.
-    CloseHandle(hf);
+    if (hFile)
+      CloseHandle(hFile);
 
-    // Free memory.  
-    GlobalFree((HGLOBAL)lpBits);
+    // Free memory.
+    if (lpBits)
+      GlobalFree((HGLOBAL)lpBits);
+    if (pbi)
+      LocalFree(pbi);
 
-    return true;
+    // Clean up.
+    if (hOldBitmap)
+      SelectObject(hDcMem, hOldBitmap);
+    if (hDcMem)
+      DeleteDC(hDcMem);
+    if (hDcDesktop)
+      ReleaseDC(hWndDesktop, hDcDesktop);
+
+    return bReturn;
+  }
+
+  // https://en.wikipedia.org/wiki/BMP_file_format
+  // https://upload.wikimedia.org/wikipedia/commons/7/75/BMPfileFormat.svg
+  // https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
+  bool SaveAs32BppBitmapV3File(const char* path, HBITMAP hBitmap)
+  {
+    //#define FORCE_DEFAULT_PALETTE
+    WORD wBitCount;
+    DWORD dwPaletteSize = 0, dwPixelArraySize = 0, dwFileSize = 0, dwBytesWritten = 0, dwDIBSize = 0;
+    BITMAP Bitmap0;
+    BITMAPFILEHEADER bmfHdr;
+    BITMAPV3INFOHEADER bi;
+    LPBITMAPV3INFOHEADER lpbi;
+    HANDLE hFile = NULL, hDib = NULL, hOldBitmap = NULL;
+    bool bReturn = false;
+#ifdef FORCE_DEFAULT_PALETTE
+    HANDLE hPal = NULL;
+    HANDLE hOldPal2 = NULL;
+#endif
+
+#ifndef NDEBUG // if debuging
+    {
+      // Assume hBitmap was created by calling CreateDIBSection().
+      DIBSECTION dib = { 0 };
+#ifndef NDEBUG
+      int object_size =
+#endif
+        GetObject(hBitmap, sizeof(dib), &dib);
+#ifndef NDEBUG
+      assert((size_t)object_size == sizeof(dib));
+#endif
+
+    }
+#endif
+
+    // But also assume the hBitmap was created by any other means.
+#ifndef NDEBUG
+    int object_size =
+#endif
+      GetObject(hBitmap, sizeof(Bitmap0), &Bitmap0);
+#ifndef NDEBUG
+    assert((size_t)object_size == sizeof(Bitmap0));
+#endif
+
+    HWND hWndDesktop = GetDesktopWindow();
+    HDC hDcDesktop = GetDC(hWndDesktop);
+    HDC hDcMem = CreateCompatibleDC(hDcDesktop);
+
+#ifndef NDEBUG // if debuging
+    {
+      BITMAPINFOHEADER biInternal = { 0 };
+      biInternal.biSize = sizeof(biInternal);
+      biInternal.biBitCount = 0; // tell GetDIBits to fill in a BITMAPINFOHEADER structure or BITMAPCOREHEADER without the color table.
+      // MSDN: The bitmap identified by the hbmp parameter must not be selected into a device context when the application calls this function.
+      int result = GetDIBits(hDcMem, hBitmap, 0, (UINT)Bitmap0.bmHeight, NULL, (BITMAPINFO*)&biInternal, DIB_RGB_COLORS);
+      assert(result > 0);
+    }
+#endif
+
+    hOldBitmap = (HBITMAP)SelectObject(hDcMem, hBitmap);
+
+    wBitCount = (WORD)GetBitPerPixel(&Bitmap0);
+
+    // Init our local BITMAP INFO structure. This structure is used in the output file.
+    // It is also used as the "requested bitmap format" when calling GetDIBits().
+    bi.biSize = sizeof(BITMAPV3INFOHEADER);
+    bi.biWidth = Bitmap0.bmWidth;
+    bi.biHeight = Bitmap0.bmHeight;
+    bi.biPlanes = 1;
+    bi.biBitCount = wBitCount;
+    bi.biCompression = BI_RGB;
+    bi.biSizeImage = 0;
+    bi.biXPelsPerMeter = 2835;  // 72 DPI
+    bi.biYPelsPerMeter = 2835;  // 72 DPI
+    bi.biClrImportant = 0;
+    bi.biClrUsed = 0; // tell GetDIBits() to not use a color table (a.k.a palette)
+
+    bi.biRedMask =    0x00ff0000;
+    bi.biGreenMask =  0x0000ff00;
+    bi.biBlueMask =   0x000000ff;
+    bi.biAlphaMask =  0xff000000;
+
+    dwPixelArraySize = ((Bitmap0.bmWidth * wBitCount + 31) & ~31) / 8 * Bitmap0.bmHeight;
+    bi.biSizeImage = dwPixelArraySize;
+
+    dwDIBSize = sizeof(BITMAPV3INFOHEADER) + dwPaletteSize + dwPixelArraySize;
+    hDib = GlobalAlloc(GHND, dwDIBSize);
+    lpbi = (LPBITMAPV3INFOHEADER)GlobalLock(hDib);
+    *lpbi = bi;
+
+#ifdef FORCE_DEFAULT_PALETTE
+    hPal = GetStockObject(DEFAULT_PALETTE);
+    if (hPal)
+    {
+      hDC = GetDC(NULL);
+      hOldPal2 = SelectPalette(hDC, (HPALETTE)hPal, FALSE);
+      RealizePalette(hDC);
+    }
+#endif
+
+    void* lpPixelArrayAddress = LPBYTE(lpbi) + sizeof(BITMAPV3INFOHEADER) + dwPaletteSize;
+    GetDIBits(hDcMem, hBitmap, 0, (UINT)Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+
+    // Function GetDIBits() usually overrides the BITMAPV3INFOHEADER with an instance of BITMAPINFOHEADER.
+    if (lpbi->biSize == sizeof(BITMAPINFOHEADER))
+    {
+      // Rebuild our BITMAPV3INFOHEADER.
+      lpbi->biSize          = bi.biSize         ;
+      lpbi->biXPelsPerMeter = bi.biXPelsPerMeter;
+      lpbi->biYPelsPerMeter = bi.biYPelsPerMeter;
+      lpbi->biClrImportant  = bi.biClrImportant ;
+      lpbi->biClrUsed       = bi.biClrUsed      ;
+      // V2 and V3
+      lpbi->biRedMask       = bi.biRedMask      ;
+      lpbi->biGreenMask     = bi.biGreenMask    ;
+      lpbi->biBlueMask      = bi.biBlueMask     ;
+      lpbi->biAlphaMask     = bi.biAlphaMask    ;
+    }
+
+#if 0
+    lpbi->biCompression = BI_RGB;
+    GetDIBits(hDC, hBitmap, 0, (UINT)Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+    DumpBuffer("c:\\temp\\GetDIBits.BI_RGB.data", lpPixelArrayAddress, dwPixelArraySize);
+    lpbi->biCompression = BI_BITFIELDS;
+    GetDIBits(hDC, hBitmap, 0, (UINT)Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+    DumpBuffer("c:\\temp\\GetDIBits.BI_BITFIELDS.data", lpPixelArrayAddress, dwPixelArraySize);
+    lpbi->biCompression = BI_RGB;
+    GetDIBits(hDC, hBitmap, 0, -Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+    DumpBuffer("c:\\temp\\GetDIBits.-BI_RGB.data", lpPixelArrayAddress, dwPixelArraySize);
+    lpbi->biCompression = BI_BITFIELDS;
+    GetDIBits(hDC, hBitmap, 0, -Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+    DumpBuffer("c:\\temp\\GetDIBits.-BI_BITFIELDS.data", lpPixelArrayAddress, dwPixelArraySize);
+
+    lpbi->biCompression = BI_RGB;
+    GetDIBits(hDC, hBitmap, 0, (UINT)Bitmap0.bmHeight, (LPSTR)lpPixelArrayAddress, (BITMAPINFO*)lpbi, DIB_RGB_COLORS);
+
+    //GetBitmapBits(hBitmap, (LONG)pixels.size(), (void*)pixels.data());
+    //DumpString("c:\\temp\\GetBitmapBits.data", pixels);
+#endif
+
+#ifdef FORCE_DEFAULT_PALETTE
+    if (hOldPal2)
+    {
+      SelectPalette(hDC, (HPALETTE)hOldPal2, TRUE);
+      RealizePalette(hDC);
+      ReleaseDC(NULL, hDC);
+    }
+#endif
+
+    hFile = CreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+      bReturn = false;
+      goto cleanup;
+    }
+
+    bmfHdr.bfType = 0x4D42; // "BM"
+    dwFileSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPV3INFOHEADER) + dwPaletteSize + dwPixelArraySize;
+    bmfHdr.bfSize = dwFileSize;
+    bmfHdr.bfReserved1 = 0;
+    bmfHdr.bfReserved2 = 0;
+    bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + (DWORD)sizeof(BITMAPV3INFOHEADER) + dwPaletteSize;
+
+    WriteFile(hFile, (LPSTR)&bmfHdr, sizeof(bmfHdr), &dwBytesWritten, NULL);
+    WriteFile(hFile, (LPSTR)lpbi, dwDIBSize, &dwBytesWritten, NULL);
+
+    // success
+    bReturn = true;
+
+    // Using goto for win32 api is most elegant way of cleaning up:
+    // https://github.com/search?q=repo%3Amicrosoft%2FWindows-classic-samples+%22goto+%22&type=code
+  cleanup:
+    // Close the .BMP file.
+    if (hFile)
+      CloseHandle(hFile);
+
+    // Free memory.
+    if (hDib)
+      GlobalUnlock(hDib);
+    if (hDib)
+      GlobalFree(hDib);
+
+    // Clean up.
+    if (hOldBitmap)
+      SelectObject(hDcMem, hOldBitmap);
+    if (hDcMem)
+      DeleteDC(hDcMem);
+    if (hDcDesktop)
+      ReleaseDC(hWndDesktop, hDcDesktop);
+
+    return TRUE;
   }
 
   BOOL IsFullyTransparent(HBITMAP hBitmap)
