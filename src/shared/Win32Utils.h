@@ -57,6 +57,7 @@ namespace Win32Utils
   bool SaveAs32BppBitmapFile(const char* path, HBITMAP hBitmap);
   bool SaveAs32BppBitmapV1File(const char* path, HBITMAP hBitmap);
   bool SaveAs32BppBitmapV3File(const char* path, HBITMAP hBitmap);
+  bool SaveBitmapFile(const char* path, HBITMAP hBitmap);
   BOOL IsFullyTransparent(HBITMAP hBitmap);
   BOOL IsFullyTransparent(const std::string& buffer);
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos);

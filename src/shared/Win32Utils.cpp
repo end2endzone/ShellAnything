@@ -1097,7 +1097,190 @@ namespace Win32Utils
     if (hDcDesktop)
       ReleaseDC(hWndDesktop, hDcDesktop);
 
-    return TRUE;
+    return bReturn;
+  }
+
+  // https://en.wikipedia.org/wiki/BMP_file_format
+  // https://upload.wikimedia.org/wikipedia/commons/7/75/BMPfileFormat.svg
+  // https://stackoverflow.com/questions/24720451/save-hbitmap-to-bmp-file-using-only-win32
+  // https://stackoverflow.com/questions/69574015/retrieving-the-palette-of-a-bitmap-image
+  bool SaveBitmapFile(const char* path, HBITMAP hBitmap)
+  {
+    WORD wBitCount = 0;
+    DWORD dwPaletteSize = 0;
+    DWORD dwPaletteColorCount = 0;
+    DWORD dwPixelArraySize = 0;
+    DWORD dwFileSize = 0;
+    DWORD dwBitmapInfoHeaderSize = 0;
+    DWORD dwBitmapInfoAndPaletteSize = 0;
+    DWORD dwBytesWritten = 0;
+    DWORD dwTotalBytesWritten = 0;
+    BITMAP bmp;
+    BITMAPFILEHEADER bmpFileHdr;
+    BITMAPINFO* lpBmpInfo = NULL;
+    BITMAPV3INFOHEADER bmpInfo3;
+    BYTE* lpPixelArray = NULL;
+    HANDLE hFile = NULL;
+    bool bReturn = false;
+
+    // Get properties of the bitmap
+#ifndef NDEBUG
+    int object_size =
+#endif
+      GetObject(hBitmap, sizeof(bmp), &bmp);
+#ifndef NDEBUG
+    assert((size_t)object_size == sizeof(bmp));
+#endif
+
+    HWND hWndDesktop = GetDesktopWindow();
+    HDC hDcDesktop = GetDC(hWndDesktop);
+    HDC hDcMem = CreateCompatibleDC(hDcDesktop);
+
+    // Check bit per pixels
+    wBitCount = (WORD)GetBitPerPixel(&bmp);
+
+    // Get the internal bitmap format, palette and pixels.
+    // If the bitmap is 24bpp or more, there is no color table.
+    // If the bitmap has a color table, we need to allocate space for the color table and the BITMAPINFOHEADER
+    dwPaletteColorCount = (wBitCount < 24) ? (1 << wBitCount) : 0;
+    dwPaletteSize = (wBitCount < 24) ? sizeof(RGBQUAD) * dwPaletteColorCount : 0;
+    dwPixelArraySize = ((bmp.bmWidth * wBitCount + 31) & ~31) / 8 * bmp.bmHeight;
+    dwBitmapInfoAndPaletteSize = sizeof(BITMAPINFO) + dwPaletteSize - 1 * sizeof(RGBQUAD); // -1*RGBQUAD (because of BITMAPINFO::bmiColors[1])
+    lpBmpInfo = (BITMAPINFO*)LocalAlloc(LPTR, dwBitmapInfoAndPaletteSize);
+    if (lpBmpInfo == NULL) goto cleanup;
+    RGBQUAD * lpPaletteColorArray = (wBitCount < 24) ? lpBmpInfo->bmiColors : NULL;
+    lpPixelArray = (BYTE*)LocalAlloc(LPTR, dwPixelArraySize);
+    if (lpPixelArray == NULL) goto cleanup;
+#ifndef NDEBUG
+    // DEBUG: fill memory to check for overflows
+    memset(lpBmpInfo, 0x77, dwBitmapInfoAndPaletteSize);
+    if (lpPaletteColorArray)
+      memset(lpPaletteColorArray, 0x88, dwPaletteSize);
+    memset(lpPixelArray, 0x99, dwPixelArraySize);
+#endif
+    memset(lpBmpInfo, 0x00, dwBitmapInfoAndPaletteSize);
+    lpBmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    lpBmpInfo->bmiHeader.biWidth = bmp.bmWidth;
+    lpBmpInfo->bmiHeader.biHeight = bmp.bmHeight;
+    lpBmpInfo->bmiHeader.biPlanes = bmp.bmPlanes;
+    lpBmpInfo->bmiHeader.biBitCount = bmp.bmBitsPixel;
+    lpBmpInfo->bmiHeader.biCompression = BI_RGB;
+    lpBmpInfo->bmiHeader.biSizeImage = dwPixelArraySize;
+    lpBmpInfo->bmiHeader.biClrUsed = dwPaletteColorCount;
+    lpBmpInfo->bmiHeader.biClrImportant = dwPaletteColorCount;
+#ifndef NDEBUG
+    int result =
+#endif
+      GetDIBits(hDcMem, hBitmap, 0, (UINT)bmp.bmHeight, lpPixelArray, lpBmpInfo, DIB_RGB_COLORS);
+#ifndef NDEBUG
+    assert(result > 0);
+    //NOT ALWAYS TRUE. assert(dwPaletteColorCount == lpBmpInfo->bmiHeader.biClrUsed);
+#endif
+
+    // Fix cleared fields in the bitmap info
+    // Don't know why this is happening
+    lpBmpInfo->bmiHeader.biClrUsed = dwPaletteColorCount;
+    lpBmpInfo->bmiHeader.biClrImportant = dwPaletteColorCount;
+
+    // Double check what we got
+#ifndef NDEBUG
+    assert(dwPixelArraySize == lpBmpInfo->bmiHeader.biSizeImage);
+#endif
+
+    // Set default properties
+    lpBmpInfo->bmiHeader.biXPelsPerMeter = 2835;  // 72 DPI
+    lpBmpInfo->bmiHeader.biYPelsPerMeter = 2835;  // 72 DPI
+
+    // Compute the expected output file size.
+    dwBitmapInfoHeaderSize = sizeof(BITMAPINFOHEADER);
+    if (wBitCount == 32)
+    {
+      // For 32bpp bitmap, it is best to use BITMAPV3INFOHEADER instead of the normal BITMAPINFOHEADER.
+      // Transparency (alpha channel) seems to be only supported from BITMAPV3INFOHEADER.
+      dwBitmapInfoHeaderSize = sizeof(BITMAPV3INFOHEADER);
+    }
+    dwFileSize = sizeof(BITMAPFILEHEADER) + dwBitmapInfoHeaderSize + dwPaletteSize + dwPixelArraySize;
+
+    // Build the file header
+    bmpFileHdr.bfType = 0x4D42; // "BM"
+    bmpFileHdr.bfSize = dwFileSize;
+    bmpFileHdr.bfReserved1 = 0;
+    bmpFileHdr.bfReserved2 = 0;
+    bmpFileHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + dwBitmapInfoHeaderSize + dwPaletteSize;
+
+    // Create the output file
+    hFile = CreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) goto cleanup;
+
+    // Write file header
+    dwBytesWritten = 0;
+    WriteFile(hFile, &bmpFileHdr, sizeof(bmpFileHdr), &dwBytesWritten, NULL);
+    dwTotalBytesWritten += dwBytesWritten;
+
+    // Write BITMAPFILEHEADER and palette
+    if (wBitCount < 32)
+    {
+      dwBytesWritten = 0;
+      WriteFile(hFile, lpBmpInfo, dwBitmapInfoAndPaletteSize, &dwBytesWritten, NULL);
+      dwTotalBytesWritten += dwBytesWritten;
+    }
+    else
+    {
+      // 32 bit per pixel bitmaps...
+
+      // Use the original BITMAPINFOHEADER as a base.
+      memcpy(&bmpInfo3, &lpBmpInfo->bmiHeader, sizeof(BITMAPINFOHEADER));
+
+      // Fix the actual size
+      bmpInfo3.biSize = sizeof(BITMAPV3INFOHEADER);
+
+      // Fill remaining fields
+      bmpInfo3.biRedMask =    0x00ff0000;
+      bmpInfo3.biGreenMask =  0x0000ff00;
+      bmpInfo3.biBlueMask =   0x000000ff;
+      bmpInfo3.biAlphaMask =  0xff000000;
+
+      // BITMAPV3INFOHEADER
+      dwBytesWritten = 0;
+      WriteFile(hFile, &bmpInfo3, sizeof(bmpInfo3), &dwBytesWritten, NULL);
+      dwTotalBytesWritten += dwBytesWritten;
+
+      // No palette for 32 bit bitmaps.
+    }
+
+    // Pixels data
+    dwBytesWritten = 0;
+    WriteFile(hFile, lpPixelArray, dwPixelArraySize, &dwBytesWritten, NULL);
+    dwTotalBytesWritten += dwBytesWritten;
+    
+#ifndef NDEBUG
+    assert(dwTotalBytesWritten == bmpFileHdr.bfSize);
+#endif
+
+    // success
+    bReturn = true;
+
+    // Using goto for win32 api is most elegant way of cleaning up:
+    // https://github.com/search?q=repo%3Amicrosoft%2FWindows-classic-samples+%22goto+%22&type=code
+  cleanup:
+    // Close the .BMP file.
+    if (hFile)
+      CloseHandle(hFile);
+
+    // Free memory.
+    if (lpBmpInfo)
+      LocalFree(lpBmpInfo);
+    if (lpPixelArray)
+      LocalFree(lpPixelArray);
+
+    // Clean up.
+    if (hDcMem)
+      DeleteDC(hDcMem);
+    if (hDcDesktop)
+      ReleaseDC(hWndDesktop, hDcDesktop);
+
+    return bReturn;
   }
 
   BOOL IsFullyTransparent(HBITMAP hBitmap)

@@ -35,6 +35,7 @@
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/cli.h"
+#include "rapidassist/errors.h"
 
 namespace shellanything
 {
@@ -366,6 +367,60 @@ namespace shellanything
         };
         int exit_code = shellanything::InvokeCommandLineEntryPoint("ExtractLargeAndSmallIcons", argc, argv);
         ASSERT_EQ(0, exit_code);
+      }
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestWin32Utils, testSaveBitmapToFile)
+    {
+      struct BITMAP_METADATA
+      {
+        const char* path;
+        int bit_per_pixels;
+        uint32_t load_flags;
+      };
+      static const BITMAP_METADATA bitmaps[] = {
+        {"test_files\\Smiley.40x60.1bpp.bmp" ,  1, LR_MONOCHROME         },
+        {"test_files\\Smiley.80x80.1bpp.bmp" ,  1, LR_MONOCHROME         },
+        {"test_files\\Smiley.40x60.4bpp.bmp" ,  4, LR_CREATEDIBSECTION   },
+        {"test_files\\Smiley.80x80.4bpp.bmp" ,  4, LR_CREATEDIBSECTION   },
+        {"test_files\\Smiley.80x80.8bpp.bmp" ,  8, LR_CREATEDIBSECTION   },
+        {"test_files\\Smiley.80x80.24bpp.bmp", 24, LR_CREATEDIBSECTION   },
+        //{"test_files\\Smiley.80x80.32bpp.bmp", 32, LR_CREATEDIBSECTION                      },
+      };
+      static const size_t num_bitmaps = sizeof(bitmaps) / sizeof(bitmaps[0]);
+
+      for (int i = 0; i < num_bitmaps; i++)
+      {
+        const std::string bitmap_path = ra::filesystem::GetPathBasedOnCurrentProcess(bitmaps[i].path);
+
+        ASSERT_TRUE(ra::filesystem::FileExists(bitmap_path.c_str())) << "File does not exists: " << bitmap_path;
+
+        HBITMAP hBitmap = (HBITMAP)LoadImage(NULL, bitmap_path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | bitmaps[i].load_flags);
+        DWORD err_code = GetLastError();
+        std::string err_desc = ra::errors::GetErrorCodeDescription(err_code);
+        ASSERT_TRUE(hBitmap != NULL) << "Failed loading file: " << bitmaps[i].path;
+
+        // Check that we loaded the bitmap properly.
+        int actual_bits_per_pixels = Win32Utils::GetBitPerPixel(hBitmap);
+        int expected_bits_per_pixels = bitmaps[i].bit_per_pixels;
+        ASSERT_EQ(expected_bits_per_pixels, actual_bits_per_pixels) << "Incorrect bits per pixels reported: " << bitmaps[i].path;
+
+        // build output file
+        std::string temp_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        std::string bitmap_filename = ra::filesystem::GetFilename(bitmap_path.c_str());
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(temp_dir.c_str()));
+
+        std::string output_path = temp_dir + "\\" + bitmap_filename;
+
+        // remove data from previous runs
+        ra::filesystem::DeleteFile(output_path.c_str());
+
+        // Save as *.bmp
+        bool saved = Win32Utils::SaveBitmapFile(output_path.c_str(), hBitmap);
+        ASSERT_TRUE(saved) << "Failed to save bitmap to file: " << output_path;
+
+        //cleanup
+        DeleteObject(hBitmap);
       }
     }
     //--------------------------------------------------------------------------------------------------
