@@ -1177,10 +1177,10 @@ namespace Win32Utils
     //NOT ALWAYS TRUE. assert(dwPaletteColorCount == lpBmpInfo->bmiHeader.biClrUsed);
 #endif
 
-    // Fix cleared fields in the bitmap info
-    // Don't know why this is happening
-    lpBmpInfo->bmiHeader.biClrUsed = dwPaletteColorCount;
-    lpBmpInfo->bmiHeader.biClrImportant = dwPaletteColorCount;
+    // Note, GetDIBits() is cleaning biClrUsed and biClrImportant.
+    // According to the documentation:
+    //   If biClrUsed is zero, the array contains the maximum number of colors for the given bitdepth; that is, 2^biBitCount colors.
+    //   If biClrImportant is zero, all colors are important.
 
     // Double check what we got
 #ifndef NDEBUG
@@ -1188,8 +1188,15 @@ namespace Win32Utils
 #endif
 
     // Set default properties
-    lpBmpInfo->bmiHeader.biXPelsPerMeter = 2835;  // 72 DPI
-    lpBmpInfo->bmiHeader.biYPelsPerMeter = 2835;  // 72 DPI
+    lpBmpInfo->bmiHeader.biXPelsPerMeter = 0;  // Windows 10 Paint does not set any DPI.
+    lpBmpInfo->bmiHeader.biYPelsPerMeter = 0;  // Windows 10 Paint does not set any DPI.
+    if (wBitCount == 32)
+    {
+      // 32 bit per pixels are not supported in Paint.
+      // Use GIMP default of 76 dpi.
+      lpBmpInfo->bmiHeader.biXPelsPerMeter = 2835;  // 72 DPI
+      lpBmpInfo->bmiHeader.biYPelsPerMeter = 2835;  // 72 DPI
+    }
 
     // Compute the expected output file size.
     dwBitmapInfoHeaderSize = sizeof(BITMAPINFOHEADER);
@@ -1234,6 +1241,10 @@ namespace Win32Utils
 
       // Fix the actual size
       bmpInfo3.biSize = sizeof(BITMAPV3INFOHEADER);
+
+      // Fix biCompression because we use BITMAPV3INFOHEADER.
+      // BI_BITFIELDS: Uncompressed RGB with color masks. Valid for 16-bpp and 32-bpp bitmaps.
+      bmpInfo3.biCompression = BI_BITFIELDS;
 
       // Fill remaining fields
       bmpInfo3.biRedMask =    0x00ff0000;
@@ -1281,6 +1292,139 @@ namespace Win32Utils
       ReleaseDC(hWndDesktop, hDcDesktop);
 
     return bReturn;
+  }
+
+  HBITMAP LoadBitmapFromFile(const char* path)
+  {
+    // LoadImage() function does not support 32bpp bitmap. We must load the bitmap ourself.
+
+    DWORD dwReadSize = 0;
+    DWORD dwBitmapInfoReadSize = 0;  // how much we have read the BITMAPINFOHEADER
+    DWORD dwPixelArraySize = 0;
+    //LONG lPixelWriteSize = 0;
+    BYTE* lpPixelArray = NULL;
+    BITMAPFILEHEADER bmpFileHdr;
+    BITMAPV3INFOHEADER bi3;
+    BITMAPINFO bmi;
+    VOID* pvBits;
+    HBITMAP hBitmap = NULL;
+    HBITMAP hReturn = NULL;
+
+    FILE* f = fopen(path, "rb");
+    if (!f) return NULL;
+
+    HWND hWndDesktop = GetDesktopWindow();
+    HDC hDcDesktop = GetDC(hWndDesktop);
+    HDC hDcMem = CreateCompatibleDC(hDcDesktop);
+
+    memset(&bmpFileHdr, 0x00, sizeof(bmpFileHdr));
+    dwReadSize = (DWORD)fread(&bmpFileHdr, 1, sizeof(bmpFileHdr), f);
+    if (dwReadSize != sizeof(bmpFileHdr)) goto cleanup;
+
+    // Check integrity
+    if (bmpFileHdr.bfType != 0x4D42) goto cleanup; // "BM"
+
+    // Read the BITMAPINFOHEADER
+    memset(&bi3, 0x00, sizeof(bi3));
+    dwReadSize = (DWORD)fread(&bi3, 1, sizeof(BITMAPINFOHEADER), f);
+    if (dwReadSize != sizeof(BITMAPINFOHEADER)) goto cleanup;
+    dwBitmapInfoReadSize += dwReadSize;
+
+    // Check integrity
+    if (bi3.biSize < sizeof(BITMAPINFOHEADER)) goto cleanup;  
+    if (bi3.biBitCount == 0) goto cleanup;
+    if (bi3.biSizeImage == 0) goto cleanup;
+    if (bi3.biClrUsed != 0) goto cleanup;
+    if (bi3.biClrImportant != 0) goto cleanup;
+
+    // Could we fallback to LoadImage() ?
+    if (bi3.biBitCount < 32)
+    {
+      // Yes fallback to LoadImage()
+      hBitmap = (HBITMAP)LoadImageA(NULL, path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_CREATEDIBSECTION);
+      hReturn = hBitmap;
+      goto cleanup;
+    }
+
+    // Read remaining fields of the info header
+    if (bi3.biSize >= sizeof(BITMAPV2INFOHEADER))
+    {
+      // Read red, greeen and blue masks.
+      dwReadSize = (DWORD)fread(&bi3.biRedMask, 1, 3 * sizeof(RGBQUAD), f);
+      if (dwReadSize != 3 * sizeof(RGBQUAD)) goto cleanup;
+      dwBitmapInfoReadSize += dwReadSize;
+
+      // Check integrity
+      if (bi3.biRedMask   != 0x00ff0000) goto cleanup;
+      if (bi3.biGreenMask != 0x0000ff00) goto cleanup;
+      if (bi3.biBlueMask  != 0x000000ff) goto cleanup;
+    }
+    if (bi3.biSize >= sizeof(BITMAPV3INFOHEADER))
+    {
+      // Read red, greeen and blue masks.
+      dwReadSize = (DWORD)fread(&bi3.biAlphaMask, 1, 1 * sizeof(RGBQUAD), f);
+      if (dwReadSize != 1 * sizeof(RGBQUAD)) goto cleanup;
+      dwBitmapInfoReadSize += dwReadSize;
+
+      // Check integrity
+      if (bi3.biAlphaMask != 0xff000000) goto cleanup;
+    }
+
+    // Read remaining part of the BITMAPINFOHEADER which we do not support
+    if (dwBitmapInfoReadSize < bi3.biSize)
+    {
+      size_t remainder = bi3.biSize - dwBitmapInfoReadSize;
+      if (fseek(f, (long)remainder, SEEK_CUR) == 0) goto cleanup;
+    }
+
+    // Create a 32bpp bitmap with a DIB section
+    memcpy(&bmi.bmiHeader, &bi3, sizeof(bmi.bmiHeader));
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biCompression = BI_RGB;
+    pvBits = NULL;
+    hBitmap = CreateDIBSection(hDcMem, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);
+    if (hBitmap == NULL) goto cleanup;
+
+    // Read the pixel data directly into the created hBitmap's DIB section
+#ifndef NDEBUG
+    assert((DWORD)ftell(f) == bmpFileHdr.bfOffBits);
+#endif
+    dwPixelArraySize = bi3.biSizeImage;
+    dwReadSize = (DWORD)fread(pvBits, 1, dwPixelArraySize, f);
+    if (dwReadSize != dwPixelArraySize) goto cleanup;
+
+    //// Allocate temporary local memory to read the pixels.
+    //lpPixelArray = (BYTE*)LocalAlloc(LPTR, dwPixelArraySize);
+    //if (lpPixelArray == NULL) goto cleanup;
+    //dwReadSize = (DWORD)fread(lpPixelArray, 1, dwPixelArraySize, f);
+    //if (dwReadSize != dwPixelArraySize) goto cleanup;
+
+    //Assign our temporary pixel buffer as the new bitmap pixel buffer
+    //lPixelWriteSize = SetBitmapBits(hBitmap, dwPixelArraySize, lpPixelArray);
+    //if ((DWORD)lPixelWriteSize != dwPixelArraySize) goto cleanup;
+    //memcpy(pvBits, lpPixelArray, dwPixelArraySize);
+
+    // success
+    hReturn = hBitmap;
+
+    // Using goto for win32 api is most elegant way of cleaning up:
+    // https://github.com/search?q=repo%3Amicrosoft%2FWindows-classic-samples+%22goto+%22&type=code
+  cleanup:
+    // Close the .BMP file.
+    if (f)
+      fclose(f);
+
+    // Free memory.
+    if (lpPixelArray)
+      LocalFree(lpPixelArray);
+
+    // Clean up.
+    if (hDcMem)
+      DeleteDC(hDcMem);
+    if (hDcDesktop)
+      ReleaseDC(hWndDesktop, hDcDesktop);
+
+    return hReturn;
   }
 
   BOOL IsFullyTransparent(HBITMAP hBitmap)
