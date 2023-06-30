@@ -51,6 +51,19 @@ namespace shellanything
 {
   namespace test
   {
+    std::string zero_padding(std::string& input, size_t final_length)
+    {
+      std::string output = input;
+      while (output.length() < final_length)
+      {
+        output.insert(0, 1, '0');
+      }
+      return output;
+    }
+    std::string ToString(SIZE s)
+    {
+      return ra::strings::ToString(s.cx) + "x" + ra::strings::ToString(s.cy);
+    }
 
     //--------------------------------------------------------------------------------------------------
     void TestWin32Utils::SetUp()
@@ -68,7 +81,8 @@ namespace shellanything
         HICON hIconLarge = NULL;
         HICON hIconSmall = NULL;
 
-        UINT numIconLoaded = ExtractIconEx("c:\\windows\\system32\\shell32.dll", i, &hIconLarge, &hIconSmall, 1);
+        const char* icon_path = "c:\\windows\\system32\\shell32.dll";
+        UINT numIconLoaded = ExtractIconEx(icon_path, i, &hIconLarge, &hIconSmall, 1);
         ASSERT_GE(numIconLoaded, 1); //at least 1 icon loaded
         ASSERT_TRUE(hIconLarge != NULL);
 
@@ -79,14 +93,16 @@ namespace shellanything
         DestroyIcon(hIconLarge);
         DestroyIcon(hIconSmall);
 
+        // build output files
+        std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+        std::string dll_filename = ra::filesystem::GetFilename(icon_path);
+        std::string output_path_v1 = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(i), 3) + ".v1.bmp";
+        std::string output_path_v3 = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(i), 3) + ".v3.bmp";
+
         //save to a file
-        std::string test_name = ra::testing::GetTestQualifiedName();
-        static const size_t BUFFER_SIZE = 1024;
-        char filename[BUFFER_SIZE];
-        sprintf(filename, "%s.shell32.dll.index%03d.v1.bmp", test_name.c_str(), i);
-        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV1File(filename, hBitmap));
-        sprintf(filename, "%s.shell32.dll.index%03d.v3.bmp", test_name.c_str(), i);
-        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV3File(filename, hBitmap));
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV1File(output_path_v1.c_str(), hBitmap));
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV3File(output_path_v3.c_str(), hBitmap));
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -129,14 +145,14 @@ namespace shellanything
         DestroyIcon(hIconLarge);
         DestroyIcon(hIconSmall);
 
-        //save to a file
-        std::string file_path = ra::testing::GetTestQualifiedName();
+        // build output files
+        std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string dll_filename = ra::filesystem::GetFilename(icon_path);
-        static const size_t BUFFER_SIZE = 1024;
-        char post_filename[BUFFER_SIZE];
-        sprintf(post_filename, ".%s.index%03d.bmp", dll_filename.c_str(), index);
-        file_path.append(post_filename);
-        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapFile(file_path.c_str(), hBitmap));
+        std::string output_path = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(index), 3) + ".bmp";
+
+        //save to a file
+        ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapFile(output_path.c_str(), hBitmap));
 
         //delete the bitmap
         DeleteObject(hBitmap);
@@ -182,10 +198,6 @@ namespace shellanything
       ASSERT_EQ(0, exit_code);
     }
     //--------------------------------------------------------------------------------------------------
-    std::string ToString(SIZE s)
-    {
-      return ra::strings::ToString(s.cx) + "x" + ra::strings::ToString(s.cy);
-    }
     int ProcessIconAsBitmap(HICON hIcon, const std::string& outout_file_path, SIZE & icon_size)
     {
       if (hIcon == NULL)
@@ -325,12 +337,11 @@ namespace shellanything
         ASSERT_TRUE(ra::filesystem::FileExists(icon_path.c_str())) << "File does not exists: " << icon_path;
 
         // build output files
-        std::string temp_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string icon_filename = ra::filesystem::GetFilename(icon_path.c_str());
-        ASSERT_TRUE(ra::filesystem::CreateDirectory(temp_dir.c_str()));
-
-        std::string large_bmp_path = temp_dir + "\\" + icon_filename + ".large.bmp";
-        std::string small_bmp_path = temp_dir + "\\" + icon_filename + ".small.bmp";
+        std::string large_bmp_path = test_dir + "\\" + icon_filename + ".large.bmp";
+        std::string small_bmp_path = test_dir + "\\" + icon_filename + ".small.bmp";
 
         // remove data from previous runs
         ra::filesystem::DeleteFile(large_bmp_path.c_str());
@@ -449,11 +460,10 @@ namespace shellanything
         ASSERT_TRUE(ra::filesystem::FileExists(icon_path.c_str())) << "File does not exists: " << icon_path;
 
         // build output files
-        std::string temp_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string icon_filename = ra::filesystem::GetFilename(icon_path.c_str());
-        ASSERT_TRUE(ra::filesystem::CreateDirectory(temp_dir.c_str()));
-
-        std::string small_bmp_path = temp_dir + "\\" + icon_filename + ".small.bmp";
+        std::string small_bmp_path = test_dir + "\\" + icon_filename + ".small.bmp";
 
         // remove data from previous runs
         ra::filesystem::DeleteFile(small_bmp_path.c_str());
@@ -608,12 +618,11 @@ namespace shellanything
         int expected_bits_per_pixels = bitmaps[i].bit_per_pixels;
         ASSERT_EQ(expected_bits_per_pixels, actual_bits_per_pixels) << "Incorrect bits per pixels reported: " << bitmaps[i].path;
 
-        // build output file
-        std::string temp_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        // build output files
+        std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string bitmap_filename = ra::filesystem::GetFilename(bitmap_path.c_str());
-        ASSERT_TRUE(ra::filesystem::CreateDirectory(temp_dir.c_str()));
-
-        std::string output_path = temp_dir + "\\" + bitmap_filename;
+        std::string output_path = test_dir + "\\" + bitmap_filename;
 
         // remove data from previous runs
         ra::filesystem::DeleteFile(output_path.c_str());
