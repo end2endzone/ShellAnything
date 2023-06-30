@@ -284,34 +284,6 @@ namespace shellanything
           return 1000 + exit_code;
       }
 
-      ////Convert the icon to a bitmap (with invisible background)
-      //SIZE icon_size_large = Win32Utils::GetIconSize(hIconLarge);
-      //HBITMAP hBitmapLarge = Win32Utils::CopyAsBitmap(hIconLarge, icon_size_large.cx, icon_size_large.cy);
-      //SIZE icon_size_small = Win32Utils::GetIconSize(hIconSmall);
-      //HBITMAP hBitmapSmall = Win32Utils::CopyAsBitmap(hIconSmall, icon_size_small.cx, icon_size_small.cy);
-
-      //DestroyIcon(hIconLarge);
-      //DestroyIcon(hIconSmall);
-
-      ////save to a file
-      //bool large_created = Win32Utils::SaveAs32BppBitmapFile(output_large_path.c_str(), hBitmapLarge);
-      //if (!large_created)
-      //{
-      //  printf("Failed to create bitmap: '%s'\n", output_large_path.c_str());
-      //  return 15;
-      //}
-
-      //bool small_created = Win32Utils::SaveAs32BppBitmapFile(output_small_path.c_str(), hBitmapSmall);
-      //if (!small_created)
-      //{
-      //  printf("Failed to create bitmap: '%s'\n", output_small_path.c_str());
-      //  return 16;
-      //}
-
-      ////delete the bitmap
-      //DeleteObject(hBitmapLarge);
-      //DeleteObject(hBitmapSmall);
-
       // print stats about icons
       std::string icon_file_name = ra::filesystem::GetFilename(icon_path.c_str());
       std::cout << "icon_path=" << icon_file_name << "  -->  ";
@@ -324,7 +296,7 @@ namespace shellanything
       return 0;
     }
     COMMAND_LINE_ENTRY_POINT* ExtractLargeAndSmallIconsEntryPoint = shellanything::RegisterCommandLineEntryPoint("ExtractLargeAndSmallIcons", ExtractLargeAndSmallIcons);
-    TEST_F(TestWin32Utils, testExtractIconResolutionsWithScalingIssue117)
+    TEST_F(TestWin32Utils, testExtractLargeAndSmallIconsIssue117)
     {
       //https://github.com/end2endzone/ShellAnything/issues/117
 
@@ -365,17 +337,137 @@ namespace shellanything
         ra::filesystem::DeleteFile(small_bmp_path.c_str());
 
         // invoke extraction function
-        int argc = 3;
+        const int argc = 3;
         static const std::string DOUBLE_QUOTES = "\"";
         std::string arg0 = std::string("--icon_path=") + DOUBLE_QUOTES + icon_path + DOUBLE_QUOTES;
         std::string arg1 = std::string("--output_large_path=") + DOUBLE_QUOTES + large_bmp_path + DOUBLE_QUOTES;
         std::string arg2 = std::string("--output_small_path=") + DOUBLE_QUOTES + small_bmp_path + DOUBLE_QUOTES;
-        char* argv[3] = {
+        char* argv[argc] = {
           (char*)arg0.c_str(),
           (char*)arg1.c_str(),
           (char*)arg2.c_str(),
         };
         int exit_code = shellanything::InvokeCommandLineEntryPoint("ExtractLargeAndSmallIcons", argc, argv);
+        ASSERT_EQ(0, exit_code);
+      }
+    }
+    //--------------------------------------------------------------------------------------------------
+    int ExtractSmallIcon(int argc, char** argv)
+    {
+      //MessageBox(NULL, "ATTACH NOW!", "ATTACH NOW!", MB_OK);
+
+      // Set current process as monitor dpi aware...
+      Win32Utils::EnableMonitorDpiAwareness();
+      bool monitor_dpi_aware = Win32Utils::IsMonitorDpiAwarenessEnabled();
+      if (!monitor_dpi_aware)
+        return 5;
+
+      const char* argument_name;
+
+      argument_name = "icon_path";
+      std::string icon_path;
+      bool has_icon_path = ra::cli::ParseArgument(argument_name, icon_path, argc, argv);
+      if (!has_icon_path)
+      {
+        printf("Missing argument: '%s'\n", argument_name);
+        return 10;
+      }
+
+      argument_name = "output_path";
+      std::string output_path;
+      bool has_output_path = ra::cli::ParseArgument(argument_name, output_path, argc, argv);
+      if (!has_output_path)
+      {
+        printf("Missing argument: '%s'\n", argument_name);
+        return 11;
+      }
+
+      if (!ra::filesystem::FileExists(icon_path.c_str()))
+      {
+        printf("File not found: '%s'\n", icon_path.c_str());
+        return 13;
+      }
+
+      static const HICON INVALID_ICON_HANDLE_VALUE = NULL;
+
+      HICON hIconSmall = INVALID_ICON_HANDLE_VALUE;
+
+      static const int index = 0;
+      UINT numIconLoaded = ExtractIconEx(icon_path.c_str(), index, NULL, &hIconSmall, 1);
+      if (numIconLoaded != 1)
+      {
+        printf("No icons in file: '%s'\n", icon_path.c_str());
+        return 14;
+      }
+
+      SIZE icon_size_small;
+
+      if (hIconSmall != INVALID_ICON_HANDLE_VALUE)
+      {
+        int exit_code = ProcessIconAsBitmap(hIconSmall, output_path, icon_size_small);
+        DestroyIcon(hIconSmall);
+        if (exit_code != 0)
+          return 1000 + exit_code;
+      }
+
+      // print stats about icons
+      std::string icon_file_name = ra::filesystem::GetFilename(icon_path.c_str());
+      std::cout << "icon_path=" << icon_file_name << "  -->  ";
+      if (ra::filesystem::FileExists(output_path.c_str()))
+        std::cout << " small:" << ToString(icon_size_small);
+      std::cout << "\n";
+
+      return 0;
+    }
+    COMMAND_LINE_ENTRY_POINT* ExtractSmallIconEntryPoint = shellanything::RegisterCommandLineEntryPoint("ExtractSmallIcon", ExtractSmallIcon);
+    TEST_F(TestWin32Utils, testExtractSmallIconIssue117)
+    {
+      //https://github.com/end2endzone/ShellAnything/issues/117
+
+      static const char* icons[] = {
+        "test_files\\test-res-16-20-24-32-40-48-60-64-72-80-96-120-128-144-160-192-256.ico",
+        "test_files\\test-res-16-32-48-64-96-128-256.ico",
+        "test_files\\issue117\\alarm_clock-256-32bpp-8ba-compressed.ico",
+        "test_files\\issue117\\alarm_clock-16-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-20-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-24-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-32-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-40-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-48-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-64-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-96-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-128-32bpp-8ba-uncompressed.ico",
+        "test_files\\issue117\\alarm_clock-all-compressed.ico",
+      };
+      static const size_t num_icons = sizeof(icons) / sizeof(icons[0]);
+
+      for (int i = 0; i < num_icons; i++)
+      {
+        const std::string icon_path = ra::filesystem::GetPathBasedOnCurrentProcess(icons[i]);
+        const int index = 0;
+
+        ASSERT_TRUE(ra::filesystem::FileExists(icon_path.c_str())) << "File does not exists: " << icon_path;
+
+        // build output files
+        std::string temp_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
+        std::string icon_filename = ra::filesystem::GetFilename(icon_path.c_str());
+        ASSERT_TRUE(ra::filesystem::CreateDirectory(temp_dir.c_str()));
+
+        std::string small_bmp_path = temp_dir + "\\" + icon_filename + ".small.bmp";
+
+        // remove data from previous runs
+        ra::filesystem::DeleteFile(small_bmp_path.c_str());
+
+        // invoke extraction function
+        const int argc = 2;
+        static const std::string DOUBLE_QUOTES = "\"";
+        std::string arg0 = std::string("--icon_path=") + DOUBLE_QUOTES + icon_path + DOUBLE_QUOTES;
+        std::string arg1 = std::string("--output_path=") + DOUBLE_QUOTES + small_bmp_path + DOUBLE_QUOTES;
+        char* argv[argc] = {
+          (char*)arg0.c_str(),
+          (char*)arg1.c_str(),
+        };
+        int exit_code = shellanything::InvokeCommandLineEntryPoint("ExtractSmallIcon", argc, argv);
         ASSERT_EQ(0, exit_code);
       }
     }
