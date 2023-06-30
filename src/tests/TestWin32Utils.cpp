@@ -97,8 +97,8 @@ namespace shellanything
         std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
         ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string dll_filename = ra::filesystem::GetFilename(icon_path);
-        std::string output_path_v1 = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(i), 3) + ".v1.bmp";
-        std::string output_path_v3 = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(i), 3) + ".v3.bmp";
+        std::string output_path_v1 = test_dir + "\\" + dll_filename + "." + zero_padding(ra::strings::ToString(i), 3) + ".v1.bmp";
+        std::string output_path_v3 = test_dir + "\\" + dll_filename + "." + zero_padding(ra::strings::ToString(i), 3) + ".v3.bmp";
 
         //save to a file
         ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapV1File(output_path_v1.c_str(), hBitmap));
@@ -149,7 +149,7 @@ namespace shellanything
         std::string test_dir = ra::filesystem::GetTemporaryDirectory() + "\\" + ra::testing::GetTestQualifiedName();
         ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
         std::string dll_filename = ra::filesystem::GetFilename(icon_path);
-        std::string output_path = test_dir + "\\" + dll_filename + ".index" + zero_padding(ra::strings::ToString(index), 3) + ".bmp";
+        std::string output_path = test_dir + "\\" + dll_filename + "." + zero_padding(ra::strings::ToString(index), 3) + ".bmp";
 
         //save to a file
         ASSERT_TRUE(Win32Utils::SaveAs32BppBitmapFile(output_path.c_str(), hBitmap));
