@@ -1,6 +1,8 @@
 Changes for 0.8.0
 
 **NOTE:** The file name of Shellanything's shell extension is now `sa.shellextension.dll`. If you update from a previous version, make sure you unregister the previous shell extension (formally `shellext.dll`).
+**NOTE:** Deprecated support for Windows 7. Version 0.7 is the last version to support Windows 7.
+
 
 * Shellanything now features support for plugins (beta).
 * Now using GLOG (Google Logging Library) as a shared DLL instead of a static library.
@@ -12,6 +14,7 @@ Changes for 0.8.0
 * Fixed issue #101: Deprecate setup.exe installer in favor of the Windows Installer (*.msi).
 * Fixed issue #113: Upgrading from v0.7.0 to 0.8.0 installs at the wrong location.
 * Fixed issue #114: Implement sa_plugin_terminate() in the C API.
+* Fixed issue #117: Menu entries with icons that uses an icon file (.ico) does not work when scale is greater than 100%.
 * Fixed issue #118: Registry corruption while registering the extension.
 * Fixed issue #119: Disable logs when the shell extension is loaded by registry editor (regedit.exe).
 

@@ -52,6 +52,7 @@
 #include "ConfigManager.h"
 #include "PropertyManager.h"
 #include "SaUtils.h"
+#include "Win32Utils.h"
 
 #include <assert.h>
 
@@ -285,10 +286,39 @@ void InstallDefaultConfigurations(const std::string& config_dir)
 void LogEnvironment()
 {
   LOG(INFO) << "Enabling logging";
+
+  int windows_major = 0, windows_minor = 0;
+  Win32Utils::GetWindowsVersion(windows_major, windows_minor);
+  LOG(INFO) << "Windows version " << windows_major << "." << windows_minor << "\n";
+  LOG(INFO) << "Windows product name: " << Win32Utils::GetWindowsProductName() << "\n";
+
   LOG(INFO) << "Process id: " << ra::strings::ToString(ra::process::GetCurrentProcessId());
   LOG(INFO) << "Thread id: " << ra::strings::ToString((uint32_t)GetCurrentThreadId());
   LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
   LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
+
+  LOG(INFO) << "System metrics:";
+  LOG(INFO) << "SM_CXSCREEN    : " << GetSystemMetrics(SM_CXSCREEN);
+  LOG(INFO) << "SM_CYSCREEN    : " << GetSystemMetrics(SM_CYSCREEN);
+  LOG(INFO) << "SM_CXSMICON    : " << GetSystemMetrics(SM_CXSMICON);
+  LOG(INFO) << "SM_CYSMICON    : " << GetSystemMetrics(SM_CYSMICON);
+  LOG(INFO) << "SM_CXICON      : " << GetSystemMetrics(SM_CXICON);
+  LOG(INFO) << "SM_CYICON      : " << GetSystemMetrics(SM_CYICON);
+
+  bool monitor_dpi_aware = Win32Utils::IsMonitorDpiAwarenessEnabled();
+  LOG(INFO) << "Process is monitor DPI aware : " << ra::strings::ToString(monitor_dpi_aware);
+  LOG(INFO) << "System DPI     : " << Win32Utils::GetSystemDPI();
+  LOG(INFO) << "System Scaling : " << Win32Utils::GetSystemScalingPercent() << "%";
+
+  // Print information about monitor and their scaling
+  int monitor_count = Win32Utils::GetMonitorCount();
+  LOG(INFO) << "System monitor count : " << monitor_count;
+  for (int i = 0; i < monitor_count; i++)
+  {
+    int dpi = Win32Utils::GetMonitorDPI(i);
+    int scaling = Win32Utils::GetMonitorScalingPercent(i);
+    LOG(INFO) << "Monitor " << i << " is scaled to " << scaling << "% (dpi " << dpi << ")";
+  }
 
   LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
   LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();

@@ -225,7 +225,7 @@ namespace shellanything
           file_path = ra::testing::GetTestQualifiedName();
           sprintf(filename, "%03Iu.icon_%s.bmp", i, file_extension);
           file_path = workspace.GetFullPathUtf8(filename);
-          created = Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
+          created = Win32Utils::SaveAs32BppBitmapFile(file_path.c_str(), hBitmap);
 
           //delete the bitmap
           DeleteObject(hBitmap);
@@ -313,7 +313,7 @@ namespace shellanything
         //save to a file
         sprintf(filename, ".icon_%s.bmp", file_extension);
         file_path = workspace.GetFullPathUtf8(filename);
-        created = Win32Utils::CreateBmpFile(file_path.c_str(), hBitmap);
+        created = Win32Utils::SaveAs32BppBitmapFile(file_path.c_str(), hBitmap);
 
         //delete the bitmap
         DeleteObject(hBitmap);
