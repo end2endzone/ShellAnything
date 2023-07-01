@@ -158,38 +158,36 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
     //if nothing in cache, create a new one
     if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE && !icon_filename.empty())
     {
-      HICON hIconLarge = NULL;
+      // #117 - ExtractIconEx() behavior is different when the monitor is scaled. A small and a large icon
+      // cannot always be extracted when scaling factor is greater than 1.0. The solution is to only extract a small icon.
+      // Small icons matches the size of a menu icon (16x16). A "large" (or larger) icon is not necessary.
+      // The size of a small icon is scaled to match the monitor scaling. For 300% scaling, menu icons are 48x48.
       HICON hIconSmall = NULL;
 
       std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(icon_filename);
 
       //check how many icons the file contains
-      UINT numIconInFile = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
-      if (numIconInFile == 0)
-        LOG(ERROR) << __FUNCTION__ << "(), File '" << icon_filename << "' does not contains an icon.";
+      UINT num_icon_in_file = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
+      if (num_icon_in_file == 0)
+        LOG(WARNING) << __FUNCTION__ << "(), File '" << icon_filename << "' does not contains an icon.";
       else
       {
-        //the file contains 1 or more icons, try to load a small and a large one
-        UINT numIconLoaded = 0;
-        if (numIconInFile >= 1)
-          numIconLoaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1);
-        if (numIconInFile >= 1 && numIconLoaded == 0)
-          LOG(ERROR) << __FUNCTION__ << "(), Failed to load icon index " << icon_index << " from file '" << icon_filename << "'.";
+        //the file contains 1 or more icons, try to load a small one
+        UINT num_icon_loaded = 0;
+        if (num_icon_in_file >= 1)
+          num_icon_loaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, NULL, &hIconSmall, 1);
+        if (num_icon_in_file >= 1 && num_icon_loaded == 0)
+          LOG(WARNING) << __FUNCTION__ << "(), Failed to load icon index " << icon_index << " from file '" << icon_filename << "'.";
         else
         {
-          //Find the best icon
-          HICON hIcon = Win32Utils::GetBestIconForMenu(hIconLarge, hIconSmall);
+          SIZE menu_icon_size = Win32Utils::GetIconSize(hIconSmall);
+          // LOG(INFO) << __FUNCTION__ << "(), Loaded icon " << icon_index << " from file '" << icon_filename << "' is " << menu_icon_size.cx << "x" << menu_icon_size.cy << ".";
 
-          SIZE menu_icon_size = Win32Utils::GetIconSize(hIcon);
-          LOG(INFO) << __FUNCTION__ << "(), Icon " << icon_index << " from file '" << icon_filename << "' is " << menu_icon_size.cx << "x" << menu_icon_size.cy << ".";
-
-          //Convert the icon to a bitmap (with invisible background)
-          hBitmap = Win32Utils::CopyAsBitmap(hIcon);
+          //Convert the icon to a 32bpp bitmap with alpha channel (invisible background)
+          hBitmap = Win32Utils::CopyAsBitmap(hIconSmall);
           if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
             LOG(ERROR) << __FUNCTION__ << "(), Icon " << icon_index << " from file '" << icon_filename << "' has failed to convert to bitmap.";
 
-          if (hIconLarge != NULL)
-            DestroyIcon(hIconLarge);
           if (hIconSmall != NULL)
             DestroyIcon(hIconSmall);
 
@@ -197,7 +195,6 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
           if (hBitmap != shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
             m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
         }
-
       }
     }
 
