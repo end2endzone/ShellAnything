@@ -17,6 +17,7 @@ Changes for 0.8.0
 * Fixed issue #117: Menu entries with icons that uses an icon file (.ico) does not work when scale is greater than 100%.
 * Fixed issue #118: Registry corruption while registering the extension.
 * Fixed issue #119: Disable logs when the shell extension is loaded by registry editor (regedit.exe).
+* Fixed issue #121: ShellAnything Errors out when opening a context on Google Docs/Sheets/etc.
 
 
 Changes for 0.7.0
