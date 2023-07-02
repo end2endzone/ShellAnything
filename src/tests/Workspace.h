@@ -95,10 +95,24 @@ namespace shellanything
     /// <returns>Returns the absolute path from the given relative path.</returns>
     std::string GetFullPathUtf8(const char* path) const;
 
+    /// <summary>
+    /// Set the prefered location for a base directory.
+    /// </summary>
+    /// <param name="path">An absolute path to define as the prefered location for a base directory.</param>
+    static void SetPreferedRootDirectoryUtf8(const char* path);
+
+    /// <summary>
+    /// Get the prefered location set for a base directory.
+    /// </summary>
+    /// <param name="path">An absolute path to define as the prefered location for a base directory.</param>
+    /// <returns>Returns the absolute path from the given relative path.</returns>
+    static std::string GetPreferedRootDirectoryUtf8();
+
   private:
     void Init(const char* workspace);
 
   private:
+    static std::string sRootDirectory;
     std::string mWorkspace;
   };
 

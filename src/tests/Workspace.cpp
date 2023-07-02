@@ -30,12 +30,13 @@
 
 namespace shellanything
 {
+  std::string Workspace::sRootDirectory;
 
   Workspace::Workspace()
   {
-    std::string temp_dir = ra::filesystem::GetTemporaryDirectoryUtf8();
+    std::string root_dir = (!sRootDirectory.empty() ? sRootDirectory : ra::filesystem::GetTemporaryDirectoryUtf8());
     std::string test_name = ra::testing::GetTestQualifiedName();
-    std::string workspace_dir = temp_dir + "\\" + test_name;
+    std::string workspace_dir = root_dir + "\\" + test_name;
 
     Init(workspace_dir.c_str());
   }
@@ -241,6 +242,16 @@ namespace shellanything
     source.insert(0, mWorkspace);
 
     return source;
+  }
+
+  void Workspace::SetPreferedRootDirectoryUtf8(const char* path)
+  {
+    sRootDirectory = path;
+  }
+
+  std::string Workspace::GetPreferedRootDirectoryUtf8()
+  {
+    return sRootDirectory;
   }
 
 } //namespace shellanything

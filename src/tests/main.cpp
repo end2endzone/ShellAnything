@@ -36,15 +36,68 @@
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/cli.h"
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/unicode.h"
+#include "rapidassist/process_utf8.h"
+#include "rapidassist/user_utf8.h"
 
 #include "ArgumentsHandler.h"
 #include "GlogUtils.h"
 #include "SaUtils.h"
 #include "PropertyManager.h"
+#include "Workspace.h"
 
 using namespace ra;
+
+int SetTestPreferedRootDirectory()
+{
+  std::string exec_dir = ra::process::GetCurrentProcessDirUtf8();
+  std::string home_dir = ra::user::GetDocumentsDirectoryUtf8();
+  std::string temp_dir = ra::filesystem::GetTemporaryDirectoryUtf8();
+
+  // Find a suitable write directory
+  std::string writable_dir;
+  if (ra::filesystem::HasDirectoryWriteAccessUtf8(exec_dir.c_str()))
+    writable_dir = exec_dir;
+  else if (ra::filesystem::HasDirectoryWriteAccessUtf8(home_dir.c_str()))
+    writable_dir = home_dir;
+  else if (ra::filesystem::HasDirectoryWriteAccessUtf8(temp_dir.c_str()))
+    writable_dir = temp_dir;
+  else
+  {
+    const char* message = "Failed to find a writable directory to use for tests";
+
+    LOG(ERROR) << message;
+    printf(message);
+    printf("\n");
+
+    return 1;
+  }
+
+  std::string root_dir = writable_dir + ra::filesystem::GetPathSeparatorStr() + "test_workspace";
+
+  // Should we clean root directory first ?
+  if (ra::filesystem::DirectoryExistsUtf8(root_dir.c_str()))
+  {
+    // Directory already exists. Clean it.
+    bool deleted = ra::filesystem::DeleteDirectoryUtf8(root_dir.c_str());
+    if (!deleted)
+    {
+      // hope for the best...
+    }
+  }
+
+  // Create the root directory
+  bool created = ra::filesystem::CreateDirectoryUtf8(root_dir.c_str());
+  if (!created)
+    return 2;
+
+  shellanything::Workspace::SetPreferedRootDirectoryUtf8(root_dir.c_str());
+  printf("Using test directory: '%s'.\n", root_dir.c_str());
+  LOG(INFO) << "Using test directory: '" << root_dir << "'.";
+
+  return 0;
+}
 
 int main(int argc, char** argv)
 {
@@ -76,6 +129,14 @@ int main(int argc, char** argv)
   pmgr.SetProperty("application.path", prop_application_path);
   pmgr.SetProperty("application.directory", prop_application_directory);
   pmgr.SetProperty("log.directory", prop_log_directory);
+
+  int exit_code = SetTestPreferedRootDirectory();
+  if (exit_code != 0)
+  {
+    // Shutdown Google's logging library.
+    google::ShutdownGoogleLogging();
+    return exit_code;
+  }
 
   LOG(INFO) << "Starting unit tests";
   LOG(INFO) << __FUNCTION__ << "() - BEGIN";
