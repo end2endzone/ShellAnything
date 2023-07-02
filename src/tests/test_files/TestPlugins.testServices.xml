@@ -22,6 +22,8 @@
       msiserver                       Windows Installer
       mpssvc                          Windows Defender Firewall
       WebClient                       WebClient
+      defragsvc                       Optimize drives
+      gupdate                         Google Update Service (gupdate)
       -->
       <property name="sa_plugin_services.names" value=""/>
       <property name="sa_plugin_services.names" value="WinDefend;${sa_plugin_services.names}"/>
@@ -33,6 +35,8 @@
       <property name="sa_plugin_services.names" value="msiserver;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="mpssvc;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="WebClient;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="defragsvc;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="gupdate;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="aaaa;${sa_plugin_services.names}"/>
     </default>
 

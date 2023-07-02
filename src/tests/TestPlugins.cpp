@@ -292,7 +292,7 @@ namespace shellanything
       //TODO: complete with known path to files
 #endif
 
-    //Define the list of expected properties
+      //Define the list of expected properties
       ra::strings::StringVector expected_properties;
       expected_properties.push_back("sa_plugin_services.WinDefend.status");
       expected_properties.push_back("sa_plugin_services.Dhcp.status");
@@ -302,6 +302,8 @@ namespace shellanything
       expected_properties.push_back("sa_plugin_services.Fax.status");
       expected_properties.push_back("sa_plugin_services.msiserver.status");
       expected_properties.push_back("sa_plugin_services.WebClient.status");
+      expected_properties.push_back("sa_plugin_services.defragsvc.status");
+      expected_properties.push_back("sa_plugin_services.gupdate.status");
       expected_properties.push_back("sa_plugin_services.aaaa.status");
 
       //Clear expected properties
@@ -330,7 +332,7 @@ namespace shellanything
       static const std::string& STATUS_STOPPED = "stopped";
       static const std::string& STATUS_EMPTY = "";
       ASSERT_EQ(STATUS_RUNNING, pmgr.GetProperty("sa_plugin_services.Dhcp.status"));
-      ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.WebClient.status"));
+      ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.gupdate.status"));
       ASSERT_EQ(STATUS_EMPTY, pmgr.GetProperty("sa_plugin_services.aaaa.status"));
 
       //Cleanup
