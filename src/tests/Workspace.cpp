@@ -121,6 +121,10 @@ namespace shellanything
     {
       const std::string& source_file = files[i];
 
+      // Check that values returned by FindFilesUtf8() are actually files and not directories.
+      if (ra::filesystem::DirectoryExistsUtf8(source_file.c_str()))
+        continue;
+
       //Remove the parent path of the source directory to make the file paths relative to the parent directory.
       std::string target_relative = source_file;
       target_relative.replace(0, parent_dir.size(), ""); //make the source relative

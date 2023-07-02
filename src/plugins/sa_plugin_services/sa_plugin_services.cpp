@@ -55,7 +55,7 @@ void get_service_last_error(DWORD * error_code, char ** buffer, size_t * buffer_
                                NULL, (*error_code), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
 
   //Copy the error message into the output buffer.
-  char* message_copy = _strdup(messageBuffer);
+  *buffer = _strdup(messageBuffer);
   *buffer_size = size;
 
   //Free the Win32's string's buffer.
@@ -87,7 +87,7 @@ const char* get_service_status(const char* name)
     get_service_last_error(&win32_error_code, &error_desc, &error_desc_size);
 
     // Print a nice logging message
-    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "Failed openning service '%s'. Error: %u, %s.", name, win32_error_code, error_desc);
+    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "Failed openning service '%s'. Error: 0x%x, %s.", name, win32_error_code, error_desc);
 
     // Cleanup
     free(error_desc);
@@ -107,7 +107,7 @@ const char* get_service_status(const char* name)
     get_service_last_error(&win32_error_code, &error_desc, &error_desc_size);
 
     // Print a nice logging message
-    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "QueryServiceStatusEx has failed for service '%s'. Error: %u, %s.", name, win32_error_code, error_desc);
+    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "QueryServiceStatusEx has failed for service '%s'. Error: 0x%x, %s.", name, win32_error_code, error_desc);
 
     // Cleanup
     free(error_desc);
