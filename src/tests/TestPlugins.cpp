@@ -319,8 +319,10 @@ namespace shellanything
       {
         const std::string& property_name = expected_properties[i];
         ASSERT_TRUE(pmgr.HasProperty(property_name)) << "The expected property '" << property_name << "' is not found.";
-        //const std::string& value = pmgr.GetProperty(property_name);
-        //printf("Found property '%s' with value '%s'.\n", property_name.c_str(), value.c_str());
+
+        // Debug
+        const std::string& value = pmgr.GetProperty(property_name);
+        printf("Found property '%s' with value '%s'.\n", property_name.c_str(), value.c_str());
       }
 
       //ASSERT expected process status

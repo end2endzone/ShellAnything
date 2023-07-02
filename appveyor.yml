@@ -96,4 +96,5 @@ test_script:
 
 artifacts:
 - path: .\build\bin\Release\sa.tests.*.release.xml
+- path: .\build\bin\Release\test_logs\*.log
 - path: .\build\shellanything-*-win*.*
