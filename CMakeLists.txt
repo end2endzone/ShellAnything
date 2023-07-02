@@ -151,6 +151,14 @@ if(NOT CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX "-d")
 endif()
 
+# Define EXEC_FILENAME_POSTFIX to accurately guess the end of filename of library/executable files
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(EXEC_FILENAME_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+else()
+  set(EXEC_FILENAME_POSTFIX "")
+endif()
+MESSAGE( STATUS "EXEC_FILENAME_POSTFIX:        " ${EXEC_FILENAME_POSTFIX} )
+
 # Prevents annoying warnings on MSVC
 if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
