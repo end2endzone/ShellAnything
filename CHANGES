@@ -18,6 +18,7 @@ Changes for 0.8.0
 * Fixed issue #118: Registry corruption while registering the extension.
 * Fixed issue #119: Disable logs when the shell extension is loaded by registry editor (regedit.exe).
 * Fixed issue #121: ShellAnything Errors out when opening a context on Google Docs/Sheets/etc.
+* Fixed issue #124: Property 'application.path' resolves to sa.core.dll instead of sa.shellextension.dll.
 
 
 Changes for 0.7.0

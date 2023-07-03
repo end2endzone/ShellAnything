@@ -145,6 +145,18 @@ namespace shellanything
     std::string ExpandOnce(const std::string& value) const;
 
     /// <summary>
+    /// Gets the path of the current application or module running ShellAnything. Must be set manually by the application.
+    /// </summary>
+    /// <returns>Returns the value of the path. Returns an empty string if never set.</returns>
+    static const std::string& GetApplicationPath();
+
+    /// <summary>
+    /// Sets the path of the current application or module running ShellAnything. Must be set manually by the application.
+    /// </summary>
+    /// <param name="value">The value of the path.</param>
+    static void SetApplicationPath(const std::string& value);
+
+    /// <summary>
     /// Split a given string that contains multiple joined values and then expand each values individually.
     /// </summary>
     /// <param name="value">The given joined value</param>
@@ -165,6 +177,7 @@ namespace shellanything
     void RegisterEnvironmentVariables();
     void RegisterDefaultProperties();
     PropertyStore properties;
+    static std::string application_path;
   };
 
 } //namespace shellanything

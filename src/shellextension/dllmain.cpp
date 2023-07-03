@@ -355,6 +355,10 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     {
       // Initialize Google's logging library.
       shellanything::InitLogger();
+
+      //Issue #124. Define property 'application.path'.
+      std::string dll_path = GetCurrentModulePathUtf8();
+      shellanything::PropertyManager::SetApplicationPath(dll_path);
     }
 
     LogEnvironment();

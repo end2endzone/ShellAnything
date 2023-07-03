@@ -120,14 +120,13 @@ int main(int argc, char** argv)
   std::string log_dir = fLS::FLAGS_log_dir;
   printf("Using log directory: '%s'.\n", log_dir.c_str());
 
-  //define global properties
-  std::string prop_application_path = GetCurrentModulePathUtf8();
-  std::string prop_application_directory = ra::filesystem::GetParentPath(prop_application_path);
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  //Issue #124. Define property 'application.path'.
+  std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
+  shellanything::PropertyManager::SetApplicationPath(exec_path);
 
+  //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.SetProperty("application.path", prop_application_path);
-  pmgr.SetProperty("application.directory", prop_application_directory);
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
   pmgr.SetProperty("log.directory", prop_log_directory);
 
   int exit_code = SetTestPreferedRootDirectory();

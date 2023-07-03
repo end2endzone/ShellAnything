@@ -38,6 +38,8 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
   const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
 
+  std::string PropertyManager::application_path;
+
   PropertyManager::PropertyManager()
   {
     RegisterEnvironmentVariables();
@@ -200,6 +202,16 @@ namespace shellanything
     return output;
   }
 
+  const std::string& PropertyManager::GetApplicationPath()
+  {
+    return application_path;
+  }
+
+  void PropertyManager::SetApplicationPath(const std::string& value)
+  {
+    application_path = value;
+  }
+
   void PropertyManager::SplitAndExpand(const std::string& input_value, const char* separator, StringList& output_list)
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
@@ -261,11 +273,19 @@ namespace shellanything
   void PropertyManager::RegisterDefaultProperties()
   {
     //define global properties
-    std::string prop_application_path = GetCurrentModulePathUtf8();
-    std::string prop_application_directory = ra::filesystem::GetParentPath(prop_application_path);
+    std::string prop_core_module_path = GetCurrentModulePathUtf8();
+    std::string prop_application_directory = ra::filesystem::GetParentPath(prop_core_module_path);
     std::string prop_path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string prop_line_separator = ra::environment::GetLineSeparator();
 
+    // Issue #124. Define property 'application.path'.
+    // We can not call usual function to detect the path of the application.
+    // For example,
+    //   GetCurrentModulePathUtf8() returns the path of sa.core.dll. Not sa.tests.exe or sa.shellextension.dll.
+    //   GetCurrentProcessPath() would return the path of explorer.exe when the shell extension is loaded.
+    //
+    std::string prop_application_path = PropertyManager::GetApplicationPath();
+    
     SetProperty("application.path", prop_application_path);
     SetProperty("application.directory", prop_application_directory);
     SetProperty("path.separator", prop_path_separator);
