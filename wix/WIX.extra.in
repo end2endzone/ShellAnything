@@ -35,8 +35,8 @@
         <![CDATA[(&RegistrationFeature=2) AND (!RegistrationFeature=3)]]>
       </Custom>
     </InstallExecuteSequence>
-    <CustomAction Id="RegisterFeatureInstall"     Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s    &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
-    <CustomAction Id="UnregisterFeatureUninstall" Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s /u &quot;[CM_DP_bin]sa.shellextension${CMAKE_DEBUG_POSTFIX}.dll&quot;"/>
+    <CustomAction Id="RegisterFeatureInstall"     Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s    &quot;[CM_DP_bin]sa.shellextension${EXEC_FILENAME_POSTFIX}.dll&quot;"/>
+    <CustomAction Id="UnregisterFeatureUninstall" Return="check" Impersonate="no" Execute="deferred" Directory="CM_DP_bin" ExeCommand="regsvr32.exe /s /u &quot;[CM_DP_bin]sa.shellextension${EXEC_FILENAME_POSTFIX}.dll&quot;"/>
 
     <DirectoryRef Id="INSTALL_ROOT">
       <Component Id="cmpREGISTRATION" Guid="*">
