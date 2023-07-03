@@ -262,7 +262,6 @@ void InstallDefaultConfigurations(const std::string& config_dir)
     "Microsoft Office 2013.xml",
     "Microsoft Office 2016.xml",
     "shellanything.xml",
-    "WinDirStat.xml",
   };
   static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
 

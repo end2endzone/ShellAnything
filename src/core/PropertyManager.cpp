@@ -26,6 +26,8 @@
 #include "SaUtils.h"
 #include "SelectionContext.h"
 
+#include "shellanything/version.h"
+
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
 
@@ -275,6 +277,7 @@ namespace shellanything
     //define global properties
     std::string prop_core_module_path = GetCurrentModulePathUtf8();
     std::string prop_application_directory = ra::filesystem::GetParentPath(prop_core_module_path);
+    std::string prop_install_directory = ra::filesystem::GetParentPath(prop_application_directory);
     std::string prop_path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string prop_line_separator = ra::environment::GetLineSeparator();
 
@@ -288,6 +291,8 @@ namespace shellanything
     
     SetProperty("application.path", prop_application_path);
     SetProperty("application.directory", prop_application_directory);
+    SetProperty("application.install.directory", prop_install_directory);
+    SetProperty("application.version", SHELLANYTHING_VERSION);
     SetProperty("path.separator", prop_path_separator);
     SetProperty("line.separator", prop_line_separator);
     SetProperty("newline", prop_line_separator);
