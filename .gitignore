@@ -1,7 +1,9 @@
 /build
 /install
 /third_parties
+/out
 .vscode
+.vs
 /src/plugins/sa_plugin_time/build
 /src/plugins/sa_plugin_time/install
 /src/plugins/sa_plugin_demo/build
