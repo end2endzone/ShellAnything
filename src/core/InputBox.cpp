@@ -334,7 +334,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     // textbox Answer
     HWND hTextBoxAnswer = CreateWindowEx(/*WS_EX_STATICEDGE*/ WS_EX_CLIENTEDGE,
                                          "EDIT", "",
-                                         WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL /*| WS_TABSTOP */ ,
+                                         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_NOHIDESEL,
                                          DEFAULT_HORIZONTAL_PADDING, client_height - DEFAULT_VERTICAL_PADDING - DEFAULT_TEXTBOX_HEIGHT, client_width - 2 * DEFAULT_HORIZONTAL_PADDING, DEFAULT_TEXTBOX_HEIGHT,
                                          hWnd,
                                          NULL,
@@ -488,6 +488,16 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     return (LRESULT)null_brush;
   }
   break;
+  case WM_SETFOCUS:
+  {
+    HWND focused_ctrl = GetFocus();
+    HWND thisWindow = pInputBox->GetWindow();
+
+    // When the window gets the focus, set the focus on the textbox answer.
+    HWND hTextBoxAnswer = pInputBox->GetCtrl(TEXTBOX_ANSWER);
+    SetFocus(hTextBoxAnswer);
+  }
+  break;
   default:
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
   }
@@ -594,19 +604,14 @@ bool CInputBox::DoModal(const std::wstring& caption, const std::wstring& prompt)
         result = true; //OK button
       }
       break;
-      case VK_TAB:
-      {
-        //Jump to the next focusable element
-        HWND focused_ctrl = GetFocus();
-        if (focused_ctrl == m_hTextBoxAnswer) SetFocus(m_hButtonOK);
-        if (focused_ctrl == m_hButtonOK) SetFocus(m_hButtonCancel);
-        if (focused_ctrl == m_hButtonCancel) SetFocus(m_hTextBoxAnswer);
-      }
-      break;
       };
     }
-    TranslateMessage(&msg);
-    DispatchMessageW(&msg);
+
+    if (!IsDialogMessage(m_hInputBox, &msg))
+    {
+      TranslateMessage(&msg);
+      DispatchMessageW(&msg);
+    }
   }
 
   return result;
