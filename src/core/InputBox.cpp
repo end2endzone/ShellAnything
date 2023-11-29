@@ -73,6 +73,7 @@ HFONT CreateInputBoxFont()
 
 CInputBox::CInputBox(HWND hParent) :
   m_hInstance(NULL),
+  m_prevEditProc(NULL),
   m_hWindowFont(NULL),
   m_hIcon(NULL),
   m_hParent(NULL),
@@ -288,7 +289,7 @@ inline CInputBox* GetInputBoxInstance(HWND hWnd)
 
 LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  //Get the inputbox saved when WM_CREATE message was processed
+  //Get the CInputBox instance saved when WM_CREATE message was processed.
   CInputBox* pInputBox = GetInputBoxInstance(hWnd);
 
   switch (uMsg)
@@ -342,6 +343,12 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                                          NULL);
     pInputBox->SetCtrl(CInputBox::TEXTBOX_ANSWER, hTextBoxAnswer);
     SendMessage(hTextBoxAnswer, WM_SETFONT, (WPARAM)hWindowFont, 0);
+
+    // Set our custom message handler function
+    if (!(pInputBox->m_prevEditProc = (WNDPROC)SetWindowLongPtrW(hTextBoxAnswer, GWLP_WNDPROC, (LONG_PTR)(&EditProc))))
+    {
+      return ERROR_NOT_SUPPORTED;
+    }
 
     //default value for anwser
     std::wstring default_text = pInputBox->GetTextUnicode();
@@ -502,6 +509,21 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
   }
   return 0;
+}
+
+LRESULT CALLBACK CInputBox::EditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  //Get the CInputBox instance saved when WM_CREATE message was processed.
+  HWND hMainWnd = GetParent(hWnd);
+  CInputBox* pInputBox = GetInputBoxInstance(hMainWnd);
+
+  if (uMsg == WM_CHAR && wParam == 1) // CTRL+A
+  {
+    SendMessage(hWnd, EM_SETSEL, 0, -1);
+    return 1;
+  }
+
+  return CallWindowProc(pInputBox->m_prevEditProc, hWnd, uMsg, wParam, lParam);
 }
 
 bool CInputBox::DoModal(const std::string& caption, const std::string& prompt)
