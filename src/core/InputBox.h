@@ -112,9 +112,11 @@ public:
 
 private:
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  static LRESULT CALLBACK EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
   BOOL UpdateWindowStyle(HWND hWnd, LONG new_styles);
 
   HINSTANCE m_hInstance;
+  WNDPROC m_prevEditProc; // previous edit control message process function
   HFONT m_hWindowFont; //main font
   HFONT m_hPromptFont;
   HICON m_hIcon;
