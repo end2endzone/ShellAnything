@@ -5,7 +5,6 @@ project(ShellAnything)
 #Find optional packages.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(WIX)
-find_package(NSIS)
 find_package(GRIP)
 
 ##############################################################################################################################################
