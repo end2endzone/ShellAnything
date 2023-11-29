@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Configure GIT
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -30,7 +30,7 @@ jobs:
         git submodule update --init --recursive
 
     - name: Setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
@@ -49,6 +49,11 @@ jobs:
       run: |
         set
 
+    - name: List Windows services for debugging
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\list_services_status.bat
+
     - name: Deploy 'tests not available' badge before building
       uses: exuanbo/actions-deploy-gist@v1
       if: github.event_name != 'pull_request'
@@ -57,11 +62,6 @@ jobs:
         gist_id: 58cf6c72c08e706335337d5ef9ca48e8
         gist_file_name: ${{env.GIT_REPOSITORY}}.${{env.GIT_BRANCH}}.${{env.GITHUB_WORKFLOW}}.json
         file_path: ./ci/github/tests_not_available.badge.json
-
-    - name: List existing Windows services
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      shell: cmd
-      run: call ci\github\list_services_status.bat
 
     - name: Install Doxygen
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -160,16 +160,16 @@ jobs:
         file_path: ./badge.json
     
     - name: Archive test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: unit-test-results
         path: build\bin\${{env.Configuration}}\sa.tests.*.xml
     
     - name: Archive test logs
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: unit-test-logs
-        path: build\bin\${{env.Configuration}}\*.log
+        path: build\bin\${{env.Configuration}}\test_logs\*.log
 
     - name: Get ShellAnything version
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -180,7 +180,7 @@ jobs:
         echo SHELLANYTHING_VERSION=%SHELLANYTHING_VERSION%>> %GITHUB_ENV%
     
     - name: Archive installation packages
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Installation packages.
         path: build/ShellAnything-${{env.SHELLANYTHING_VERSION}}-*.*
