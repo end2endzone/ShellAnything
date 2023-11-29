@@ -334,7 +334,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     // textbox Answer
     HWND hTextBoxAnswer = CreateWindowEx(/*WS_EX_STATICEDGE*/ WS_EX_CLIENTEDGE,
                                          "EDIT", "",
-                                         WS_VISIBLE | WS_CHILD /*| WS_TABSTOP | ES_AUTOHSCROLL*/,
+                                         WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL /*| WS_TABSTOP */ ,
                                          DEFAULT_HORIZONTAL_PADDING, client_height - DEFAULT_VERTICAL_PADDING - DEFAULT_TEXTBOX_HEIGHT, client_width - 2 * DEFAULT_HORIZONTAL_PADDING, DEFAULT_TEXTBOX_HEIGHT,
                                          hWnd,
                                          NULL,
