@@ -1,0 +1,186 @@
+name: Windows
+
+on: [push, pull_request]
+
+env:
+  PlatformToolset: v142
+
+  # build platform, i.e. x86, x64, Any CPU. This setting is optional.
+  Platform: x64
+
+  # build Configuration, i.e. Debug, Release, etc.
+  Configuration: Release
+
+jobs:
+  build:
+    # For a list of available runner types, refer to
+    # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Configure GIT
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        git config --local core.autocrlf true
+        git config --local advice.detachedHead false
+        git submodule update --init --recursive
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+
+    - name: Create new environment variables
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        python -c "import os; print('GIT_REPOSITORY=' + os.path.split(os.getenv('GITHUB_REPOSITORY'))[1]);" >> %GITHUB_ENV%
+        python -c "import os; print('GIT_BRANCH=' + os.path.split(os.getenv('GITHUB_REF'))[1]);" >> %GITHUB_ENV%
+        echo GITHUB_WORKFLOW=%GITHUB_WORKFLOW%>> %GITHUB_ENV%
+
+    - name: List environment variables for debugging
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        set
+
+    - name: Deploy 'tests not available' badge before building
+      uses: exuanbo/actions-deploy-gist@v1
+      if: github.event_name != 'pull_request'
+      with:
+        token: ${{ secrets.BADGES }}
+        gist_id: 58cf6c72c08e706335337d5ef9ca48e8
+        gist_file_name: ${{env.GIT_REPOSITORY}}.${{env.GIT_BRANCH}}.${{env.GITHUB_WORKFLOW}}.json
+        file_path: ./ci/github/tests_not_available.badge.json
+
+    - name: List existing Windows services
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\list_services_status.bat
+
+    - name: Install Doxygen
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_doxygen.bat
+
+    - name: Install Google Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_googletest.bat
+
+    - name: Install TinyXML2
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_tinyxml2.bat
+
+    - name: Install RapidAssist
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_rapidassist.bat
+
+    - name: Install GLOG
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_glog.bat
+
+    - name: Install GRIP
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_grip.bat
+
+    - name: Install zlib
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_zlib.bat
+
+    - name: Install libmagic
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_libmagic.bat
+
+    - name: Build Shellanything
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_shellanything.bat
+
+    - name: Build plugin process
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_sa_plugin_process.bat
+
+    - name: Build plugin services
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_sa_plugin_services.bat
+
+    - name: Build plugin strings
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_sa_plugin_strings.bat
+
+    - name: Build plugin time
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_sa_plugin_time.bat
+
+    - name: Build plugin time
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_sa_plugin_demo.bat
+
+    - name: Run unit tests
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\test_script.bat
+
+    - name: Search unit test report file
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        for /f "tokens=* usebackq" %%f in (`dir/b/s build\bin\${{env.configuration}}\sa.tests.*.xml`) do (set UNITTEST_REPORT_PATH=%%f)
+        echo UNITTEST_REPORT_PATH=%UNITTEST_REPORT_PATH%
+        echo UNITTEST_REPORT_PATH=%UNITTEST_REPORT_PATH%>> %GITHUB_ENV%
+      
+    - name: Create test badge
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: python ci\github\maketestbadge.py ${{env.UNITTEST_REPORT_PATH}}
+      
+    - name: Deploy test badge to gist
+      uses: exuanbo/actions-deploy-gist@v1
+      if: github.event_name != 'pull_request'
+      with:
+        token: ${{ secrets.BADGES }}
+        gist_id: 58cf6c72c08e706335337d5ef9ca48e8
+        gist_file_name: ${{env.GIT_REPOSITORY}}.${{env.GIT_BRANCH}}.${{env.GITHUB_WORKFLOW}}.json
+        file_path: ./badge.json
+    
+    - name: Archive test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: unit-test-results
+        path: build\bin\${{env.Configuration}}\sa.tests.*.xml
+    
+    - name: Archive test logs
+      uses: actions/upload-artifact@v2
+      with:
+        name: unit-test-logs
+        path: build\bin\${{env.Configuration}}\*.log
+
+    - name: Get ShellAnything version
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        set /p SHELLANYTHING_VERSION=<"build\version.txt"
+        echo SHELLANYTHING_VERSION=%SHELLANYTHING_VERSION%
+        echo SHELLANYTHING_VERSION=%SHELLANYTHING_VERSION%>> %GITHUB_ENV%
+    
+    - name: Archive installation packages
+      uses: actions/upload-artifact@v2
+      with:
+        name: Installation packages.
+        path: build/ShellAnything-${{env.SHELLANYTHING_VERSION}}-*.*
