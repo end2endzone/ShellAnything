@@ -165,21 +165,21 @@ namespace shellanything
     info.lpFile = pathW.c_str();
 
     //Print execute values in the logs
-    LOG(INFO) << "Exec: '" << path << "'.";
+    LOG(INFO) << "Path: " << path;
     if (!verb.empty())
     {
       info.lpVerb = verbW.c_str(); // Verb
-      LOG(INFO) << "Verb: '" << verb << "'.";
+      LOG(INFO) << "Verb: " << verb;
     }
     if (!arguments.empty())
     {
       info.lpParameters = argumentsW.c_str(); // Arguments
-      LOG(INFO) << "Arguments: '" << arguments << "'.";
+      LOG(INFO) << "Arguments: " << arguments;
     }
     if (!basedir.empty())
     {
       info.lpDirectory = basedirW.c_str(); // Default directory
-      LOG(INFO) << "Basedir: '" << basedir << "'.";
+      LOG(INFO) << "Basedir: " << basedir;
     }
 
     //Execute and get the pid
@@ -247,14 +247,14 @@ namespace shellanything
     }
 
     //Print execute values in the logs
-    LOG(INFO) << "Exec: '" << path << "'.";
+    LOG(INFO) << "Path: " << path;
     if (!arguments.empty())
     {
-      LOG(INFO) << "Arguments: '" << arguments << "'.";
+      LOG(INFO) << "Arguments: " << arguments;
     }
     if (!basedir.empty())
     {
-      LOG(INFO) << "Basedir: '" << basedir << "'.";
+      LOG(INFO) << "Basedir: " << basedir;
     }
 
     //Execute and get the pid
