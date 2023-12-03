@@ -44,7 +44,7 @@ namespace shellanything
   LoggerHelper::~LoggerHelper()
   {
     // Log the streamed content to the actual logger
-    ILogger * logger = LoggerManager::GetInstance().GetLogger();;
+    ILogger * logger = App::GetInstance().GetLogger();;
 
     if (logger)
     {

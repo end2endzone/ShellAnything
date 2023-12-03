@@ -22,35 +22,50 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "LoggerManager.h"
-#include <string.h>
+#ifndef SA_APP_H
+#define SA_APP_H
+
+#include "ILogger.h"
 
 namespace shellanything
 {
-  LoggerManager::LoggerManager() :
-    mLogger(NULL)
+  /// <summary>
+  /// Manages the system's current ILogger instance.
+  /// </summary>
+  class SHELLANYTHING_EXPORT App
   {
-  }
+  public:
+    static App& GetInstance();
+  private:
+    App();
+    ~App();
 
-  LoggerManager::~LoggerManager()
-  {
-  }
+    // Disable copy constructor and copy operator
+    App(const App&);
+    App& operator=(const App&);
 
-  LoggerManager& LoggerManager::GetInstance()
-  {
-    static LoggerManager _instance;
-    return _instance;
-  }
+  public:
 
-  void LoggerManager::SetLogger(ILogger* logger)
-  {
-    mLogger = logger;
-  }
+    /// <summary>
+    /// Set the current application logger.
+    /// </summary>
+    /// <remarks>
+    /// If a logger instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="logger">A valid instance of a ILogger.</param>
+    void SetLogger(ILogger* logger);
 
-  ILogger* LoggerManager::GetLogger()
-  {
-    return mLogger;
-  }
+    /// <summary>
+    /// Get the current application logger
+    /// </summary>
+    /// <returns>Returns a pointer to an ILogger instance. Returns NULL if no logger is set.</returns>
+    ILogger* GetLogger();
+
+  private:
+    ILogger * mLogger;
+  };
 
 
 } //namespace shellanything
+
+#endif //SA_APP_H

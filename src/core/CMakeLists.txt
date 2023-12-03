@@ -8,6 +8,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
+  ${CMAKE_SOURCE_DIR}/src/core/App.h
   ${CMAKE_SOURCE_DIR}/src/core/BaseAction.h
   ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
@@ -16,7 +17,6 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
   ${CMAKE_SOURCE_DIR}/src/core/ILogger.h
   ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
-  ${CMAKE_SOURCE_DIR}/src/core/LoggerManager.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
   ${CMAKE_SOURCE_DIR}/src/core/Validator.h
 )
@@ -36,6 +36,7 @@ add_library(sa.core SHARED
   ActionPrompt.cpp
   ActionProperty.cpp
   ActionStop.cpp
+  App.cpp
   BaseAction.cpp
   Configuration.cpp
   ConfigManager.cpp
@@ -50,7 +51,6 @@ add_library(sa.core SHARED
   Icon.cpp
   ILogger.cpp
   LoggerHelper.cpp
-  LoggerManager.cpp
   InputBox.h
   InputBox.cpp
   IntList.h

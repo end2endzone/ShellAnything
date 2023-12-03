@@ -26,7 +26,7 @@
 #define SA_LOGGER_HELPER_H
 
 #include "ILogger.h"
-#include "LoggerManager.h"
+#include "App.h"
 #include <ostream>
 #include <sstream>
 

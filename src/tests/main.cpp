@@ -48,7 +48,7 @@
 #include "Workspace.h"
 
 #include "ILogger.h"
-#include "LoggerManager.h"
+#include "App.h"
 #include "LoggerHelper.h"
 #include "LoggerGlog.h"
 
@@ -120,8 +120,8 @@ int main(int argc, char** argv)
 
   // Setup an active logger in ShellAnything's core.
   shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();
-  shellanything::LoggerManager& lm = shellanything::LoggerManager::GetInstance();
-  lm.SetLogger(glog_logger);
+  shellanything::App& sa_app = shellanything::App::GetInstance();
+  sa_app.SetLogger(glog_logger);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
