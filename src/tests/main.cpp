@@ -72,7 +72,7 @@ int SetTestPreferedRootDirectory()
   {
     const char* message = "Failed to find a writable directory to use for tests";
 
-    LOG(ERROR) << message;
+    SA_LOG(ERROR) << message;
     printf(message);
     printf("\n");
 
@@ -99,7 +99,7 @@ int SetTestPreferedRootDirectory()
 
   shellanything::Workspace::SetPreferedRootDirectoryUtf8(root_dir.c_str());
   printf("Using test directory: '%s'.\n", root_dir.c_str());
-  LOG(INFO) << "Using test directory: '" << root_dir << "'.";
+  SA_LOG(INFO) << "Using test directory: '" << root_dir << "'.";
 
   return 0;
 }
@@ -147,8 +147,8 @@ int main(int argc, char** argv)
     return exit_code;
   }
 
-  LOG(INFO) << "Starting unit tests";
-  LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+  SA_LOG(INFO) << "Starting unit tests";
+  SA_LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
   //define path for xml output report
   std::string outputXml = "xml:";
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
 
   int wResult = RUN_ALL_TESTS(); //Find and run all tests
 
-  LOG(INFO) << __FUNCTION__ << "() - END";
+  SA_LOG(INFO) << __FUNCTION__ << "() - END";
 
   // Shutdown Google's logging library.
   google::ShutdownGoogleLogging();
