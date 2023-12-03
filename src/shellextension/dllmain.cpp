@@ -353,12 +353,12 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     if (!app.IsTestingEnvironment())
     {
-      // Initialize Google's logging library.
-      glog::InitGlog();
-
       //Issue #124. Define property 'application.path'.
       std::string dll_path = GetCurrentModulePathUtf8();
       shellanything::PropertyManager::SetApplicationPath(dll_path);
+
+      // Initialize Google's logging library.
+      glog::InitGlog();
     }
 
     LogEnvironment();

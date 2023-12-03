@@ -346,7 +346,8 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(app.GetLogDirectory());
+  std::string log_dir = app.GetLogDirectory();
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();

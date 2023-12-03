@@ -113,6 +113,10 @@ int main(int argc, char** argv)
 
   shellanything::App& app = shellanything::App::GetInstance();
 
+  //Issue #124. Define property 'application.path'.
+  std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
+  shellanything::PropertyManager::SetApplicationPath(exec_path);
+
   // Initialize Google's logging library.
   glog::InitGlog();
 
@@ -127,10 +131,6 @@ int main(int argc, char** argv)
   //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
   std::string log_dir = app.GetLogDirectory();
   printf("Using log directory: '%s'.\n", log_dir.c_str());
-
-  //Issue #124. Define property 'application.path'.
-  std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
-  shellanything::PropertyManager::SetApplicationPath(exec_path);
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
