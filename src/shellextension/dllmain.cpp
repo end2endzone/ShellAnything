@@ -345,6 +345,8 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   if (IsRegsvr32Process())
     return 1;
 
+  shellanything::App& app = shellanything::App::GetInstance();
+
   if (dwReason == DLL_PROCESS_ATTACH)
   {
     ATTACH_HOOK_DEBUGGING;
@@ -353,7 +355,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     DisableThreadLibraryCalls((HMODULE)hInstance);
 
-    if (!shellanything::IsTestingEnvironment())
+    if (!app.IsTestingEnvironment())
     {
       // Initialize Google's logging library.
       shellanything::InitLogger();
@@ -370,7 +372,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {
-    if (!shellanything::IsTestingEnvironment())
+    if (!app.IsTestingEnvironment())
     {
       // Shutdown Google's logging library.
       google::ShutdownGoogleLogging();

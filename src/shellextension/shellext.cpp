@@ -323,6 +323,7 @@ void LogEnvironment()
 
 void InitConfigManager()
 {
+  shellanything::App& app = shellanything::App::GetInstance();
   shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
 
   static const std::string app_name = "ShellAnything";
@@ -345,7 +346,7 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(app.GetLogDirectory());
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();

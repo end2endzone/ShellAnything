@@ -27,6 +27,8 @@
 
 #include "ILogger.h"
 
+#include <string>
+
 namespace shellanything
 {
   /// <summary>
@@ -60,6 +62,24 @@ namespace shellanything
     /// </summary>
     /// <returns>Returns a pointer to an ILogger instance. Returns NULL if no logger is set.</returns>
     ILogger* GetLogger();
+
+    /// <summary>
+    /// Test if application is loaded in a test environment (main's tests executable).
+    /// </summary>
+    /// <returns>Returns true if application is loaded in a test environment. Returns false otherwise.</returns>
+    bool IsTestingEnvironment();
+
+    /// <summary>
+    /// Get the application's log directory. The returned directory has write access.
+    /// </summary>
+    /// <returns>Returns the path of the directory that should be used by the logging framework.</returns>
+    std::string GetLogDirectory();
+
+    /// <summary>
+    /// Test if the given directory is valid for logging.
+    /// </summary>
+    /// <returns>Returns true if the directory is valid for logging. Returns false otherwise.</returns>
+    bool IsValidLogDirectory(const std::string& path);
 
   private:
     ILogger * mLogger;

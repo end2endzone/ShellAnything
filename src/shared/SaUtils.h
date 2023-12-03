@@ -39,4 +39,10 @@ std::string GetCurrentModulePath();
 /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
 std::string GetCurrentModulePathUtf8();
 
+/// <summary>
+/// Test if a directory has write access.
+/// </summary>
+/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
+bool HasDirectoryWriteAccess(const std::string& path);
+
 #endif //SA_UTILS_H

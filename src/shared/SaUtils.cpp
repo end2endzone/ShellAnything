@@ -27,6 +27,7 @@
 #include "rapidassist/errors.h"
 #include "rapidassist/unicode.h"
 #include "rapidassist/strings.h"
+#include "rapidassist/filesystem.h"
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h> //for MAX_PATH
@@ -109,4 +110,30 @@ std::string GetCurrentModulePathUtf8()
     path = ra::unicode::UnicodeToUtf8(buffer);
   }
   return path;
+}
+
+//Test if a directory allow write access to the current user.
+//Note: the only way to detect if write access is available is to actually write a file
+bool HasDirectoryWriteAccess(const std::string& path)
+{
+  //Check if the directory already exists
+  if (!ra::filesystem::DirectoryExists(path.c_str()))
+    return false; //Directory not found. Denied write access.
+
+  //Generate a random filename to use as a "temporary file".
+  std::string filename = ra::filesystem::GetTemporaryFileName();
+
+  //Try to create a file. This will validate that we have write access to the directory.
+  std::string file_path = path + ra::filesystem::GetPathSeparatorStr() + filename;
+  static const std::string data = __FUNCTION__;
+  bool file_created = ra::filesystem::WriteFile(file_path, data);
+  if (!file_created)
+    return false; //Write is denied
+
+  //Write is granted
+
+  //Cleaning up
+  bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
+
+  return true;
 }

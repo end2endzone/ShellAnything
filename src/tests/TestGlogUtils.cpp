@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestGlogUtils.h"
+#include "App.h"
 #include "GlogUtils.h"
 #include "SaUtils.h"
 
@@ -43,7 +44,8 @@ static const std::wstring EMPTY_WIDE_STRING;
 
 std::string GetLogDirectorySafe()
 {
-  std::string log_dir = shellanything::GetLogDirectory();
+  shellanything::App& app = shellanything::App::GetInstance();
+  std::string log_dir = app.GetLogDirectory();
   printf("Using log directory '%s'.\n", log_dir.c_str());
 
   //verify if the directory is available
@@ -108,7 +110,8 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestGlogUtils, testTestingEnvironment)
     {
-      bool testing = IsTestingEnvironment();
+      shellanything::App& app = shellanything::App::GetInstance();
+      bool testing = app.IsTestingEnvironment();
 
       ASSERT_TRUE(testing);
     }

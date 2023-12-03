@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestIcon.h"
+#include "App.h"
 #include "Icon.h"
 #include "SelectionContext.h"
 #include "PropertyManager.h"
@@ -118,6 +119,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestIcon, testMultipleResolveFailures) // issue #98
     {
+      shellanything::App& app = shellanything::App::GetInstance();
       static const std::string UNKNOWN_FILE_EXTENSION = "foobar123456789";
 
       Icon icon;
@@ -143,7 +145,7 @@ namespace shellanything
       }
 
       //get log files content
-      std::string log_dir = GetLogDirectory();
+      std::string log_dir = app.GetLogDirectory();
       ra::strings::StringVector files;
       bool find_success = ra::filesystem::FindFiles(files, log_dir.c_str());
       ASSERT_TRUE(find_success);

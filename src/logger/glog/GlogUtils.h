@@ -48,11 +48,7 @@ namespace shellanything
   SA_GLOG_EXPORT GLOG_DATETIME GetFileDateTime(const std::string& path);
   SA_GLOG_EXPORT std::string GetLogDestination(int level);
   SA_GLOG_EXPORT std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id);
-  SA_GLOG_EXPORT bool HasDirectoryWriteAccess(const std::string& path);
-  SA_GLOG_EXPORT std::string GetLogDirectory();
   SA_GLOG_EXPORT bool IsLogFile(const std::string& path);
-  SA_GLOG_EXPORT bool IsTestingEnvironment();
-
   SA_GLOG_EXPORT void DeletePreviousLogs(int max_age_seconds);
   SA_GLOG_EXPORT void DeletePreviousLogs();
   SA_GLOG_EXPORT void InitLogger();

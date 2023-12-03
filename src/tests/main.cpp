@@ -115,6 +115,8 @@ int main(int argc, char** argv)
     return shellanything::ProcessCommandLineEntryPoints(argc, argv);
   }
 
+  shellanything::App& app = shellanything::App::GetInstance();
+
   // Initialize Google's logging library.
   shellanything::InitLogger();
 
@@ -136,7 +138,7 @@ int main(int argc, char** argv)
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(app.GetLogDirectory());
   pmgr.SetProperty("log.directory", prop_log_directory);
 
   int exit_code = SetTestPreferedRootDirectory();
@@ -152,7 +154,7 @@ int main(int argc, char** argv)
 
   //define path for xml output report
   std::string outputXml = "xml:";
-  if (!shellanything::HasDirectoryWriteAccess("."))
+  if (!HasDirectoryWriteAccess("."))
   {
     //Issue #60 - Unit tests cannot execute from installation directory.
     //Output report in same directory as the log files
