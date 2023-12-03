@@ -43,7 +43,7 @@ target_link_libraries(sa.logger.glog
 
 # Define files that will be part of the installation package.
 install(TARGETS sa.logger.glog
-        EXPORT sa-glog-targets
+        EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
