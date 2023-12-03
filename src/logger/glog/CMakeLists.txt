@@ -1,6 +1,7 @@
 add_library(sa.logger.glog SHARED
   LoggerGlog.cpp
   LoggerGlog.h
+  dllmain.cpp
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
