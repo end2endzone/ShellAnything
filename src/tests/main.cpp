@@ -47,6 +47,11 @@
 #include "PropertyManager.h"
 #include "Workspace.h"
 
+#include "ILogger.h"
+#include "LoggerManager.h"
+#include "LoggerHelper.h"
+#include "LoggerGlog.h"
+
 using namespace ra;
 
 int SetTestPreferedRootDirectory()
@@ -112,6 +117,11 @@ int main(int argc, char** argv)
 
   // Initialize Google's logging library.
   shellanything::InitLogger();
+
+  // Setup an active logger in ShellAnything's core.
+  shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();
+  shellanything::LoggerManager& lm = shellanything::LoggerManager::GetInstance();
+  lm.SetLogger(glog_logger);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.

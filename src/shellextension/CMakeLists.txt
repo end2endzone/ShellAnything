@@ -33,6 +33,8 @@ target_include_directories(sa.shellextension
     libmagic
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/logger/glog
+    ${CMAKE_BINARY_DIR}/src/logger/glog
 )
 
 # Define linking dependencies.
@@ -40,6 +42,7 @@ target_link_libraries(sa.shellextension
   PRIVATE
     sa.core
     sa.shared
+    sa.logger.glog
     rapidassist
     glog::glog
     libmagic
