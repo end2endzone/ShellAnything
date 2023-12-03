@@ -56,6 +56,7 @@
 #include <glog/logging.h>
 #pragma warning( pop )
 
+using namespace shellanything::logging;
 
 //Declarations
 UINT        g_cRefDll = 0;            // Reference counter of this DLL
@@ -358,7 +359,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     if (!app.IsTestingEnvironment())
     {
       // Initialize Google's logging library.
-      shellanything::InitLogger();
+      glog::InitLogger();
 
       //Issue #124. Define property 'application.path'.
       std::string dll_path = GetCurrentModulePathUtf8();

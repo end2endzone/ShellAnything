@@ -24,6 +24,7 @@
 
 #include "GlogUtils.h"
 #include "App.h"
+#include "ErrorManager.h"
 #include "SaUtils.h"
 
 #pragma warning( push )
@@ -43,6 +44,10 @@ char      g_Path[4096];             // Path to this DLL.
 char* g_argv[] = { g_Path, "" };  // For google::InitGoogleLogging(g_argv[0])
 
 namespace shellanything
+{
+namespace logging
+{
+namespace glog
 {
   extern void ShowErrorMessage(const std::string& title, const std::string& message);
 
@@ -323,4 +328,6 @@ namespace shellanything
     google::InitGoogleLogging(g_argv[0]);
   }
 
+} //namespace glog
+} //namespace logging
 } //namespace shellanything

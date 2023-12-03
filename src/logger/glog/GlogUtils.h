@@ -31,6 +31,10 @@
 
 namespace shellanything
 {
+namespace logging
+{
+namespace glog
+{
   struct GLOG_DATETIME
   {
     int year;
@@ -53,6 +57,8 @@ namespace shellanything
   SA_GLOG_EXPORT void DeletePreviousLogs();
   SA_GLOG_EXPORT void InitLogger();
 
+} //namespace glog
+} //namespace logging
 } //namespace shellanything
 
 #endif //SA_GLOG_UTILS_H

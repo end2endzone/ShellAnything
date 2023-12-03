@@ -53,6 +53,7 @@
 #include "LoggerGlog.h"
 
 using namespace ra;
+using namespace shellanything::logging;
 
 int SetTestPreferedRootDirectory()
 {
@@ -118,7 +119,7 @@ int main(int argc, char** argv)
   shellanything::App& app = shellanything::App::GetInstance();
 
   // Initialize Google's logging library.
-  shellanything::InitLogger();
+  glog::InitLogger();
 
   // Setup an active logger in ShellAnything's core.
   shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();

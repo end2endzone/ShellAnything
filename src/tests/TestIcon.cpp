@@ -30,6 +30,8 @@
 #include "GlogUtils.h"
 #include "rapidassist/filesystem.h"
 
+using namespace shellanything::logging;
+
 namespace shellanything
 {
   namespace test
@@ -56,7 +58,7 @@ namespace shellanything
     {
       //delete all previous log to be able to identify the current log file
       static const int MAX_AGE_SECONDS = -1;
-      DeletePreviousLogs(MAX_AGE_SECONDS);
+      glog::DeletePreviousLogs(MAX_AGE_SECONDS);
     }
     //--------------------------------------------------------------------------------------------------
     void TestIcon::TearDown()
@@ -152,7 +154,7 @@ namespace shellanything
       for (size_t i = 0; i < files.size(); i++)
       {
         const std::string& path = files[i];
-        if (IsLogFile(path))
+        if (glog::IsLogFile(path))
         {
           std::string content;
           bool read = ra::filesystem::ReadTextFile(path, content);
