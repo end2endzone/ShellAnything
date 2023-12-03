@@ -26,11 +26,7 @@
 
 #include "CContextMenu.h"
 #include "CClassFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "ErrorManager.h"
 #include "Win32Registry.h"
@@ -61,14 +57,14 @@ HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
 
 void DllAddRef(void)
 {
-  LOG(INFO) << __FUNCTION__ << "(), new";
+  SA_LOG(INFO) << __FUNCTION__ << "(), new";
 
   InterlockedIncrement(&g_cRefDll);
 }
 
 void DllRelease(void)
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete";
+  SA_LOG(INFO) << __FUNCTION__ << "(), delete";
 
   InterlockedDecrement(&g_cRefDll);
 }
@@ -77,7 +73,7 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
 {
   std::string clsid_str = GuidToInterfaceName(clsid);
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
+  SA_LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
   // Always set out parameter to NULL, validating it first.
   if (!ppv)
@@ -99,17 +95,17 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
   }
 
   if (hr == CLASS_E_CLASSNOTAVAILABLE)
-    LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
+    SA_LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
   else if (FAILED(hr))
-    LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    SA_LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
   else
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   return hr;
 }
 
 STDAPI DllCanUnloadNow(void)
 {
-  LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
+  SA_LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
@@ -117,10 +113,10 @@ STDAPI DllCanUnloadNow(void)
 
   if (0 == ulRefCount)
   {
-    LOG(INFO) << __FUNCTION__ << "() -> Yes";
+    SA_LOG(INFO) << __FUNCTION__ << "() -> Yes";
     return S_OK;
   }
-  LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
+  SA_LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
   return S_FALSE;
 }
 
