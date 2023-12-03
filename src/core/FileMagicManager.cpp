@@ -33,13 +33,7 @@
 
 #include "FileMagicManager.h"
 #include "ErrorManager.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
-
+#include "LoggerHelper.h"
 
 std::string GetMGCPath()
 {
@@ -61,7 +55,7 @@ std::string GetMGCPath()
       "\n" +
       ra::strings::Format("0x%08x", error_code) + ": " + desc;
 
-    LOG(ERROR) << "File magic error: " << message << ".";
+    SA_LOG(ERROR) << "File magic error: " << message << ".";
 
     return std::string();
   }
@@ -85,7 +79,7 @@ namespace shellanything
     if (magic_cookie == NULL)
     {
       std::string message = "Failed to open magic library";
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
       return;
     }
 
@@ -96,7 +90,7 @@ namespace shellanything
 
       std::string message = "Failed to load magic file '" + path + "'. ";
       message += magic_error(magic_cookie);
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
 
       return;
     }
@@ -122,7 +116,7 @@ namespace shellanything
     {
       std::string message = "Failed to get mime type of file '" + path + "'. ";
       message += magic_error(magic_cookie);
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
 
       return std::string();
     }
@@ -140,7 +134,7 @@ namespace shellanything
     {
       std::string message = "Failed to get description of file '" + path + "'. ";
       message += magic_error(magic_cookie);
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
 
       return std::string();
     }
@@ -158,7 +152,7 @@ namespace shellanything
     {
       std::string message = "Failed to get extension of file '" + path + "'. ";
       message += magic_error(magic_cookie);
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
 
       return std::string();
     }
@@ -176,7 +170,7 @@ namespace shellanything
     {
       std::string message = "Failed to get character set of file '" + path + "'. ";
       message += magic_error(magic_cookie);
-      LOG(ERROR) << "File magic error: " << message << ".";
+      SA_LOG(ERROR) << "File magic error: " << message << ".";
 
       return std::string();
     }

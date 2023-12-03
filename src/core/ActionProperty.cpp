@@ -26,13 +26,9 @@
 #include "PropertyManager.h"
 #include "libexprtk.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/strings.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -136,8 +132,8 @@ namespace shellanything
       int evaluated = EvaluateDouble(exprtk.c_str(), &result, error, ERROR_SIZE);
       if (!evaluated)
       {
-        LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
-        LOG(WARNING) << "Exprtk error: " << error << "'.";
+        SA_LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+        SA_LOG(WARNING) << "Exprtk error: " << error << "'.";
         return false;
       }
 
@@ -146,7 +142,7 @@ namespace shellanything
     }
 
     //debug
-    LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+    SA_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
 
     pmgr.SetProperty(name, value);
 

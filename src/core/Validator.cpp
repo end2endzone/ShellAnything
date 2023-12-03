@@ -30,14 +30,10 @@
 #include "Configuration.h"
 #include "DriveClass.h"
 #include "Wildcard.h"
+#include "LoggerHelper.h"
 #include "libexprtk.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 namespace shellanything
 {
@@ -609,7 +605,7 @@ namespace shellanything
     }
     else
     {
-      LOG(WARNING) << "Unknown class '" << class_ << "'.";
+      SA_LOG(WARNING) << "Unknown class '" << class_ << "'.";
     }
 
     return true;
@@ -774,8 +770,8 @@ namespace shellanything
     int evaluated = EvaluateBoolean(exprtk.c_str(), &result, error, ERROR_SIZE);
     if (!evaluated)
     {
-      LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
-      LOG(WARNING) << "Exprtk error: " << error << "'.";
+      SA_LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+      SA_LOG(WARNING) << "Exprtk error: " << error << "'.";
       return false;
     }
 

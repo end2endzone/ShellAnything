@@ -127,7 +127,6 @@ target_include_directories(sa.core
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     ${CMAKE_SOURCE_DIR}/src/libexprtk
@@ -139,7 +138,6 @@ add_dependencies(sa.core libexprtk sa.shared)
 target_link_libraries(sa.core
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     sa.shared

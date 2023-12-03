@@ -23,12 +23,9 @@
  *********************************************************************************/
 
 #include "Registry.h"
-#include <set>
+#include "LoggerHelper.h"
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include <set>
 
 namespace shellanything
 {
@@ -90,7 +87,7 @@ namespace shellanything
     const std::string& name = factory->GetName();
     if (GetActionFactoryFromName(name))
     {
-      LOG(WARNING) << "An action factory already exists for the action named '" << name << "', this factory will be ignored.";
+      SA_LOG(WARNING) << "An action factory already exists for the action named '" << name << "', this factory will be ignored.";
     }
     else
       mActionFactories[name] = factory;
@@ -117,7 +114,7 @@ namespace shellanything
       const std::string& name = names[i];
       if (GetAttributeValidatorFromName(name))
       {
-        LOG(WARNING) << "An attribute validator already exists for the attribute '" << name << "', this validator will be ignored.";
+        SA_LOG(WARNING) << "An attribute validator already exists for the attribute '" << name << "', this validator will be ignored.";
       }
       else
         mAttributeValidators[name] = validator;

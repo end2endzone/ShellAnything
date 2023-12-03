@@ -26,13 +26,9 @@
 #include "PropertyManager.h"
 #include "Win32Clipboard.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/unicode.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -113,7 +109,7 @@ namespace shellanything
     Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
 
     //debug
-    LOG(INFO) << "Setting clipboard to '" << value << "'.";
+    SA_LOG(INFO) << "Setting clipboard to '" << value << "'.";
 
     //set clipboard value
     bool result = clipboard.SetTextUtf8(value);

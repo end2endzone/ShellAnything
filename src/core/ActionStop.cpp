@@ -27,11 +27,7 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
 #include "ObjectFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -121,9 +117,9 @@ namespace shellanything
 
     //update the property
     if (validated)
-      LOG(INFO) << "ActionStop: Validation is successful.";
+      SA_LOG(INFO) << "ActionStop: Validation is successful.";
     else
-      LOG(INFO) << "ActionStop: Validation has failed.";
+      SA_LOG(INFO) << "ActionStop: Validation has failed.";
 
     return validated;
   }

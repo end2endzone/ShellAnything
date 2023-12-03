@@ -28,11 +28,7 @@
 #include "rapidassist/unicode.h"
 #include "PropertyManager.h"
 #include "ObjectFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
  //#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
@@ -141,7 +137,7 @@ namespace shellanything
     //is path a file?
     if (ra::filesystem::FileExistsUtf8(path.c_str()))
     {
-      LOG(INFO) << "Open file '" << path << "'.";
+      SA_LOG(INFO) << "Open file '" << path << "'.";
       uint32_t pId = ra::process::OpenDocumentUtf8(path);
       return pId != ra::process::INVALID_PROCESS_ID;
     }
@@ -149,7 +145,7 @@ namespace shellanything
     //is path a directory?
     if (ra::filesystem::DirectoryExistsUtf8(path.c_str()))
     {
-      LOG(INFO) << "Open directory '" << path << "'.";
+      SA_LOG(INFO) << "Open directory '" << path << "'.";
       bool success = OpenPathGeneric(path);
       return success;
     }
@@ -158,12 +154,12 @@ namespace shellanything
     std::wstring wide_path = ra::unicode::Utf8ToUnicode(path);
     if (IsValidURL(NULL, wide_path.c_str(), 0) == S_OK)
     {
-      LOG(INFO) << "Open url '" << path << "'.";
+      SA_LOG(INFO) << "Open url '" << path << "'.";
       bool success = OpenPathGeneric(path);
       return success;
     }
 
-    LOG(ERROR) << "Unable to open '" << path << "'.";
+    SA_LOG(ERROR) << "Unable to open '" << path << "'.";
     return false; //file not found
   }
 
