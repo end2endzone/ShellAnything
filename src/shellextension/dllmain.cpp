@@ -51,11 +51,6 @@
 
 #include "shellext.h"
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
 using namespace shellanything::logging;
 
 //Declarations
@@ -359,7 +354,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     if (!app.IsTestingEnvironment())
     {
       // Initialize Google's logging library.
-      glog::InitLogger();
+      glog::InitGlog();
 
       //Issue #124. Define property 'application.path'.
       std::string dll_path = GetCurrentModulePathUtf8();
@@ -376,7 +371,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     if (!app.IsTestingEnvironment())
     {
       // Shutdown Google's logging library.
-      google::ShutdownGoogleLogging();
+      glog::ShutdownGlog();
     }
   }
   return 1;

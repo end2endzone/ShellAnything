@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   shellanything::App& app = shellanything::App::GetInstance();
 
   // Initialize Google's logging library.
-  glog::InitLogger();
+  glog::InitGlog();
 
   // Setup an active logger in ShellAnything's core.
   shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();

@@ -259,7 +259,7 @@ namespace glog
     DeletePreviousLogs(MAX_SECONDS_OLD);
   }
 
-  void InitLogger()
+  void InitGlog()
   {
     shellanything::App& app = shellanything::App::GetInstance();
 
@@ -327,6 +327,12 @@ namespace glog
     //https://codeyarns.com/2017/10/26/how-to-install-and-use-glog/
     google::InitGoogleLogging(g_argv[0]);
   }
+
+  void ShutdownGlog()
+  {
+    google::ShutdownGoogleLogging();
+  }
+
 
 } //namespace glog
 } //namespace logging

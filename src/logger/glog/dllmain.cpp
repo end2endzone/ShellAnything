@@ -45,7 +45,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     //if (!shellanything::IsTestingEnvironment())
     //{
     //  // Initialize Google's logging library.
-    //  shellanything::InitLogger();
+    //  shellanything::InitGlog();
     //}
   }
   else if (dwReason == DLL_PROCESS_DETACH)

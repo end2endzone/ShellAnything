@@ -55,7 +55,9 @@ namespace glog
   SA_GLOG_EXPORT bool IsLogFile(const std::string& path);
   SA_GLOG_EXPORT void DeletePreviousLogs(int max_age_seconds);
   SA_GLOG_EXPORT void DeletePreviousLogs();
-  SA_GLOG_EXPORT void InitLogger();
+  SA_GLOG_EXPORT void InitGlog();
+  SA_GLOG_EXPORT void ShutdownGlog();
+
 
 } //namespace glog
 } //namespace logging
