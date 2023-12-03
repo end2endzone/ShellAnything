@@ -125,7 +125,6 @@ target_include_directories(sa.tests
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
-    glog::glog
     libmagic
     ${CMAKE_SOURCE_DIR}/src/libexprtk
     ${CMAKE_SOURCE_DIR}/src/shared
@@ -146,7 +145,6 @@ target_link_libraries(sa.tests
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist
-    glog::glog
     libexprtk
     libmagic
 )

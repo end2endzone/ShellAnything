@@ -29,7 +29,6 @@ target_include_directories(sa.shellextension
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     libmagic
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/core
@@ -44,7 +43,6 @@ target_link_libraries(sa.shellextension
     sa.shared
     sa.logger.glog
     rapidassist
-    glog::glog
     libmagic
 )
 

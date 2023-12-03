@@ -28,11 +28,6 @@
 
 #include <gtest/gtest.h>
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/cli.h"
@@ -130,7 +125,7 @@ int main(int argc, char** argv)
   //Create log directory under the current executable.
   //When running tests from a developer environment, the log directory is expected to have write access.
   //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
-  std::string log_dir = fLS::FLAGS_log_dir;
+  std::string log_dir = app.GetLogDirectory();
   printf("Using log directory: '%s'.\n", log_dir.c_str());
 
   //Issue #124. Define property 'application.path'.
@@ -139,14 +134,14 @@ int main(int argc, char** argv)
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(app.GetLogDirectory());
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
   pmgr.SetProperty("log.directory", prop_log_directory);
 
   int exit_code = SetTestPreferedRootDirectory();
   if (exit_code != 0)
   {
     // Shutdown Google's logging library.
-    google::ShutdownGoogleLogging();
+    glog::ShutdownGlog();
     return exit_code;
   }
 
@@ -177,7 +172,7 @@ int main(int argc, char** argv)
   SA_LOG(INFO) << __FUNCTION__ << "() - END";
 
   // Shutdown Google's logging library.
-  google::ShutdownGoogleLogging();
+  glog::ShutdownGlog();
 
   return wResult; // returns 0 if all the tests are successful, or 1 otherwise
 }
