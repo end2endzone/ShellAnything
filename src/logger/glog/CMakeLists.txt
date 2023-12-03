@@ -1,7 +1,9 @@
 add_library(sa.logger.glog SHARED
+  dllmain.cpp
+  GlogUtils.cpp
+  GlogUtils.h
   LoggerGlog.cpp
   LoggerGlog.h
-  dllmain.cpp
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
@@ -26,6 +28,7 @@ target_include_directories(sa.logger.glog
     glog::glog
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_BINARY_DIR}/src/logger/glog
+    ${CMAKE_SOURCE_DIR}/src/shared
 )
 
 # Define linking dependencies.
@@ -35,6 +38,7 @@ target_link_libraries(sa.logger.glog
     rapidassist
     glog::glog
     sa.core
+    sa.shared
 )
 
 # Define files that will be part of the installation package.

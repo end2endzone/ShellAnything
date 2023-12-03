@@ -25,6 +25,7 @@
 #ifndef SA_GLOG_UTILS_H
 #define SA_GLOG_UTILS_H
 
+#include "sa_glog_export.h"
 #include <string>
 #include <stdint.h>
 
@@ -40,21 +41,21 @@ namespace shellanything
     int second; // [0,59]
   };
 
-  const GLOG_DATETIME& GetInvalidLogDateTime();
-  int DateTimeToSeconds(const GLOG_DATETIME& dt);
-  int GetDateTimeDiff(const GLOG_DATETIME& dt1, const GLOG_DATETIME& dt2);
-  int GetLogFileAge(const std::string& path);
-  GLOG_DATETIME GetFileDateTime(const std::string& path);
-  std::string GetLogDestination(int level);
-  std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id);
-  bool HasDirectoryWriteAccess(const std::string& path);
-  std::string GetLogDirectory();
-  bool IsLogFile(const std::string& path);
-  bool IsTestingEnvironment();
+  SA_GLOG_EXPORT const GLOG_DATETIME& GetInvalidLogDateTime();
+  SA_GLOG_EXPORT int DateTimeToSeconds(const GLOG_DATETIME& dt);
+  SA_GLOG_EXPORT int GetDateTimeDiff(const GLOG_DATETIME& dt1, const GLOG_DATETIME& dt2);
+  SA_GLOG_EXPORT int GetLogFileAge(const std::string& path);
+  SA_GLOG_EXPORT GLOG_DATETIME GetFileDateTime(const std::string& path);
+  SA_GLOG_EXPORT std::string GetLogDestination(int level);
+  SA_GLOG_EXPORT std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id);
+  SA_GLOG_EXPORT bool HasDirectoryWriteAccess(const std::string& path);
+  SA_GLOG_EXPORT std::string GetLogDirectory();
+  SA_GLOG_EXPORT bool IsLogFile(const std::string& path);
+  SA_GLOG_EXPORT bool IsTestingEnvironment();
 
-  void DeletePreviousLogs(int max_age_seconds);
-  void DeletePreviousLogs();
-  void InitLogger();
+  SA_GLOG_EXPORT void DeletePreviousLogs(int max_age_seconds);
+  SA_GLOG_EXPORT void DeletePreviousLogs();
+  SA_GLOG_EXPORT void InitLogger();
 
 } //namespace shellanything
 

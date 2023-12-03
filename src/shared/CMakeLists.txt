@@ -1,8 +1,6 @@
 add_library(sa.shared STATIC
   BitmapCache.h	
   BitmapCache.cpp
-  GlogUtils.h
-  GlogUtils.cpp
   SaUtils.h
   SaUtils.cpp
   Win32Registry.h
