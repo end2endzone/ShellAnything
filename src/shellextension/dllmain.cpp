@@ -51,6 +51,12 @@
 
 #include "shellext.h"
 
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
+
+
 //Declarations
 UINT        g_cRefDll = 0;            // Reference counter of this DLL
 HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
