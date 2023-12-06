@@ -22,27 +22,53 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_UTILS_H
-#define SA_UTILS_H
+#ifndef SA_LOGGER_HELPER_H
+#define SA_LOGGER_HELPER_H
 
-#include <string>
+#include "ILogger.h"
+#include "App.h"
+#include <ostream>
+#include <sstream>
 
- /// <summary>
- /// Get the current module path. This file must be included only in DLL and not static libraries.
- /// </summary>
- /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePath();
+namespace shellanything
+{
 
-/// <summary>
-/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePathUtf8();
+  /// <summary>
+  /// Helper class for logging
+  /// </summary>
+  class SHELLANYTHING_EXPORT LoggerHelper
+  {
+  public:
+    LoggerHelper(ILogger::LOG_LEVEL level);
+    LoggerHelper(const char * filename, int line, ILogger::LOG_LEVEL level);
+    virtual ~LoggerHelper();
 
-/// <summary>
-/// Test if a directory has write access.
-/// </summary>
-/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
-bool HasDirectoryWriteAccess(const std::string& path);
+    /// <summary>
+    /// Allow streaming any object/variable that can be streamed to std::stringstream.
+    /// </summary>
+    template<class Any>
+    LoggerHelper& operator<<(const Any& any)
+    {
+      mSS << any;
+      return (*this);
+    }
 
-#endif //SA_UTILS_H
+    /// <summary>
+    /// Allow streaming specialized functions such as std::endl
+    /// </summary>
+    LoggerHelper& operator<<(std::ostream& (*f)(std::ostream&));
+
+  private:
+    ILogger::LOG_LEVEL mLevel;
+    const char* mFilename;
+    int mLine;
+    std::stringstream mSS;
+  };
+
+  #ifndef SA_LOG
+  #define SA_LOG(expr) (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILogger::LOG_LEVEL_##expr))
+  #endif
+
+} //namespace shellanything
+
+#endif //SA_ACTION_PROMPT_H

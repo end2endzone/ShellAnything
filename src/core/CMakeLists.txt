@@ -8,12 +8,15 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
+  ${CMAKE_SOURCE_DIR}/src/core/App.h
   ${CMAKE_SOURCE_DIR}/src/core/BaseAction.h
   ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
+  ${CMAKE_SOURCE_DIR}/src/core/ILogger.h
+  ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
   ${CMAKE_SOURCE_DIR}/src/core/Validator.h
 )
@@ -33,6 +36,7 @@ add_library(sa.core SHARED
   ActionPrompt.cpp
   ActionProperty.cpp
   ActionStop.cpp
+  App.cpp
   BaseAction.cpp
   Configuration.cpp
   ConfigManager.cpp
@@ -45,6 +49,8 @@ add_library(sa.core SHARED
   IAttributeValidator.h
   IAttributeValidator.cpp
   Icon.cpp
+  ILogger.cpp
+  LoggerHelper.cpp
   InputBox.h
   InputBox.cpp
   IntList.h
@@ -121,7 +127,6 @@ target_include_directories(sa.core
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     ${CMAKE_SOURCE_DIR}/src/libexprtk
@@ -133,7 +138,6 @@ add_dependencies(sa.core libexprtk sa.shared)
 target_link_libraries(sa.core
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     sa.shared

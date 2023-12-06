@@ -28,12 +28,9 @@
 #include "rapidassist/filesystem_utf8.h"
 #include "PropertyManager.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include <windows.h>
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -165,21 +162,21 @@ namespace shellanything
     info.lpFile = pathW.c_str();
 
     //Print execute values in the logs
-    LOG(INFO) << "Path: " << path;
+    SA_LOG(INFO) << "Path: " << path;
     if (!verb.empty())
     {
       info.lpVerb = verbW.c_str(); // Verb
-      LOG(INFO) << "Verb: " << verb;
+      SA_LOG(INFO) << "Verb: " << verb;
     }
     if (!arguments.empty())
     {
       info.lpParameters = argumentsW.c_str(); // Arguments
-      LOG(INFO) << "Arguments: " << arguments;
+      SA_LOG(INFO) << "Arguments: " << arguments;
     }
     if (!basedir.empty())
     {
       info.lpDirectory = basedirW.c_str(); // Default directory
-      LOG(INFO) << "Basedir: " << basedir;
+      SA_LOG(INFO) << "Basedir: " << basedir;
     }
 
     //Execute and get the pid
@@ -191,7 +188,7 @@ namespace shellanything
     success = (pId != ra::process::INVALID_PROCESS_ID);
     if (success)
     {
-      LOG(INFO) << "Process created. PID=" << pId;
+      SA_LOG(INFO) << "Process created. PID=" << pId;
     }
 
     return success;
@@ -238,23 +235,23 @@ namespace shellanything
     //warn the user if basedir was modified
     if (basedir_missing && !basedir.empty())
     {
-      LOG(INFO) << "Warning: 'basedir' not specified. Setting basedir to '" << basedir << "'.";
+      SA_LOG(INFO) << "Warning: 'basedir' not specified. Setting basedir to '" << basedir << "'.";
     }
 
     if (basedir.empty())
     {
-      LOG(WARNING) << "attribute 'basedir' not specified.";
+      SA_LOG(WARNING) << "attribute 'basedir' not specified.";
     }
 
     //Print execute values in the logs
-    LOG(INFO) << "Path: " << path;
+    SA_LOG(INFO) << "Path: " << path;
     if (!arguments.empty())
     {
-      LOG(INFO) << "Arguments: " << arguments;
+      SA_LOG(INFO) << "Arguments: " << arguments;
     }
     if (!basedir.empty())
     {
-      LOG(INFO) << "Basedir: " << basedir;
+      SA_LOG(INFO) << "Basedir: " << basedir;
     }
 
     //Execute and get the pid
@@ -271,7 +268,7 @@ namespace shellanything
     bool success = (pId != ra::process::INVALID_PROCESS_ID);
     if (success)
     {
-      LOG(INFO) << "Process created. PID=" << pId;
+      SA_LOG(INFO) << "Process created. PID=" << pId;
     }
 
     return success;

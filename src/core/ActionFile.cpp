@@ -27,11 +27,7 @@
 #include "rapidassist/unicode.h"
 #include "PropertyManager.h"
 #include "ObjectFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -125,7 +121,7 @@ namespace shellanything
     const std::string encoding = pmgr.Expand(mEncoding);
 
     //debug
-    LOG(INFO) << "Writing file '" << path << "'.";
+    SA_LOG(INFO) << "Writing file '" << path << "'.";
 
     //validate encoding
     const std::string tmp = ra::strings::Uppercase(encoding);
@@ -134,7 +130,7 @@ namespace shellanything
     bool is_utf8 = (tmp == "UTF-8" || tmp == "UTF8");
     if (!is_ansi && !is_unicode && !is_utf8)
     {
-      LOG(ERROR) << "Unknown encoding attribute '" << encoding << "'.";
+      SA_LOG(ERROR) << "Unknown encoding attribute '" << encoding << "'.";
       return false;
     }
 
@@ -158,13 +154,13 @@ namespace shellanything
       write_ok = ra::filesystem::WriteFileUtf8(path, text);
     if (!write_ok)
     {
-      LOG(ERROR) << "Failed writing content to file '" << path << "'.";
+      SA_LOG(ERROR) << "Failed writing content to file '" << path << "'.";
       return false;
     }
 
     //get write size
     uint32_t write_size = ra::filesystem::GetFileSizeUtf8(path.c_str());
-    LOG(INFO) << "Wrote " << write_size << " bytes to file '" << path << "'.";
+    SA_LOG(INFO) << "Wrote " << write_size << " bytes to file '" << path << "'.";
 
     return true;
   }

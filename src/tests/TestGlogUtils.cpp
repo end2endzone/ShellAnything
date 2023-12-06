@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestGlogUtils.h"
+#include "App.h"
 #include "GlogUtils.h"
 #include "SaUtils.h"
 
@@ -41,9 +42,12 @@
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
 
+using namespace shellanything::logging;
+
 std::string GetLogDirectorySafe()
 {
-  std::string log_dir = shellanything::GetLogDirectory();
+  shellanything::App& app = shellanything::App::GetInstance();
+  std::string log_dir = app.GetLogDirectory();
   printf("Using log directory '%s'.\n", log_dir.c_str());
 
   //verify if the directory is available
@@ -78,7 +82,7 @@ namespace shellanything
     std::string CreateFakeLog(int level, const std::string& date, const std::string& time, uint32_t process_id)
     {
       std::string log_dir = GetLogDirectorySafe();
-      std::string filename = GetLogFilename(level, date, time, process_id);
+      std::string filename = glog::GetLogFilename(level, date, time, process_id);
 
       std::string path = log_dir + "\\" + filename;
 
@@ -108,7 +112,8 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestGlogUtils, testTestingEnvironment)
     {
-      bool testing = IsTestingEnvironment();
+      shellanything::App& app = shellanything::App::GetInstance();
+      bool testing = app.IsTestingEnvironment();
 
       ASSERT_TRUE(testing);
     }
@@ -135,11 +140,11 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestGlogUtils, testGetLogDateTime)
     {
-      GLOG_DATETIME invalid_dt = GetInvalidLogDateTime();
+      glog::GLOG_DATETIME invalid_dt = glog::GetInvalidLogDateTime();
 
       //test from filename
       {
-        GLOG_DATETIME dt = GetFileDateTime("sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
+        glog::GLOG_DATETIME dt = glog::GetFileDateTime("sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
 
         ASSERT_EQ(2019, dt.year);
         ASSERT_EQ(05, dt.month);
@@ -151,7 +156,7 @@ namespace shellanything
 
       //test from file path
       {
-        GLOG_DATETIME dt = GetFileDateTime("C:\\Users\\JohnSmith\\ShellAnything\\Logs\\sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
+        glog::GLOG_DATETIME dt = glog::GetFileDateTime("C:\\Users\\JohnSmith\\ShellAnything\\Logs\\sa.shellextension-d.dll.MYPCNAME.JohnSmith.log.INFO.20190503-180615.14920.log");
 
         ASSERT_EQ(2019, dt.year);
         ASSERT_EQ(05, dt.month);
@@ -189,7 +194,7 @@ namespace shellanything
       ASSERT_TRUE(ra::filesystem::FileExists(file4.c_str()));
 
       //act
-      shellanything::DeletePreviousLogs();
+      glog::DeletePreviousLogs();
 
       //assert the "old" files were deleted
       ASSERT_FALSE(ra::filesystem::FileExists(file1.c_str()));

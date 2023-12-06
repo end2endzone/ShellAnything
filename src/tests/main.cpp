@@ -28,11 +28,6 @@
 
 #include <gtest/gtest.h>
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
 #include "rapidassist/testing.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/cli.h"
@@ -47,7 +42,13 @@
 #include "PropertyManager.h"
 #include "Workspace.h"
 
+#include "ILogger.h"
+#include "App.h"
+#include "LoggerHelper.h"
+#include "LoggerGlog.h"
+
 using namespace ra;
+using namespace shellanything::logging;
 
 int SetTestPreferedRootDirectory()
 {
@@ -67,7 +68,7 @@ int SetTestPreferedRootDirectory()
   {
     const char* message = "Failed to find a writable directory to use for tests";
 
-    LOG(ERROR) << message;
+    SA_LOG(ERROR) << message;
     printf(message);
     printf("\n");
 
@@ -94,7 +95,7 @@ int SetTestPreferedRootDirectory()
 
   shellanything::Workspace::SetPreferedRootDirectoryUtf8(root_dir.c_str());
   printf("Using test directory: '%s'.\n", root_dir.c_str());
-  LOG(INFO) << "Using test directory: '" << root_dir << "'.";
+  SA_LOG(INFO) << "Using test directory: '" << root_dir << "'.";
 
   return 0;
 }
@@ -110,39 +111,46 @@ int main(int argc, char** argv)
     return shellanything::ProcessCommandLineEntryPoints(argc, argv);
   }
 
-  // Initialize Google's logging library.
-  shellanything::InitLogger();
-
-  //Issue #60 - Unit tests cannot execute from installation directory.
-  //Create log directory under the current executable.
-  //When running tests from a developer environment, the log directory is expected to have write access.
-  //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
-  std::string log_dir = fLS::FLAGS_log_dir;
-  printf("Using log directory: '%s'.\n", log_dir.c_str());
+  shellanything::App& app = shellanything::App::GetInstance();
 
   //Issue #124. Define property 'application.path'.
   std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
   shellanything::PropertyManager::SetApplicationPath(exec_path);
 
+  // Initialize Google's logging library.
+  glog::InitGlog();
+
+  // Setup an active logger in ShellAnything's core.
+  shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();
+  shellanything::App& sa_app = shellanything::App::GetInstance();
+  sa_app.SetLogger(glog_logger);
+
+  //Issue #60 - Unit tests cannot execute from installation directory.
+  //Create log directory under the current executable.
+  //When running tests from a developer environment, the log directory is expected to have write access.
+  //If unit tests are executed from the installation directory, the log directory under the current executable is denied write access.
+  std::string log_dir = app.GetLogDirectory();
+  printf("Using log directory: '%s'.\n", log_dir.c_str());
+
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
   pmgr.SetProperty("log.directory", prop_log_directory);
 
   int exit_code = SetTestPreferedRootDirectory();
   if (exit_code != 0)
   {
     // Shutdown Google's logging library.
-    google::ShutdownGoogleLogging();
+    glog::ShutdownGlog();
     return exit_code;
   }
 
-  LOG(INFO) << "Starting unit tests";
-  LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+  SA_LOG(INFO) << "Starting unit tests";
+  SA_LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
   //define path for xml output report
   std::string outputXml = "xml:";
-  if (!shellanything::HasDirectoryWriteAccess("."))
+  if (!HasDirectoryWriteAccess("."))
   {
     //Issue #60 - Unit tests cannot execute from installation directory.
     //Output report in same directory as the log files
@@ -161,10 +169,10 @@ int main(int argc, char** argv)
 
   int wResult = RUN_ALL_TESTS(); //Find and run all tests
 
-  LOG(INFO) << __FUNCTION__ << "() - END";
+  SA_LOG(INFO) << __FUNCTION__ << "() - END";
 
   // Shutdown Google's logging library.
-  google::ShutdownGoogleLogging();
+  glog::ShutdownGlog();
 
   return wResult; // returns 0 if all the tests are successful, or 1 otherwise
 }

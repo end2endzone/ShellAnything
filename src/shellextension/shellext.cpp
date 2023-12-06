@@ -26,11 +26,6 @@
 #include "stdafx.h"
 #include "shellext.h"
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
 #include "ErrorManager.h"
 #include "Win32Registry.h"
 #include "Win32Utils.h"
@@ -51,8 +46,7 @@
 
 #include "ConfigManager.h"
 #include "PropertyManager.h"
-#include "SaUtils.h"
-#include "Win32Utils.h"
+#include "LoggerHelper.h"
 
 #include <assert.h>
 
@@ -265,7 +259,7 @@ void InstallDefaultConfigurations(const std::string& config_dir)
   };
   static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
 
-  LOG(INFO) << "First application launch. Installing default configurations files.";
+  SA_LOG(INFO) << "First application launch. Installing default configurations files.";
 
   for (size_t i = 0; i < num_files; i++)
   {
@@ -273,62 +267,63 @@ void InstallDefaultConfigurations(const std::string& config_dir)
     std::string source_path = app_dir + "\\configurations\\" + filename;
     std::string target_path = config_dir + "\\" + filename;
 
-    LOG(INFO) << "Installing configuration file: " << target_path;
+    SA_LOG(INFO) << "Installing configuration file: " << target_path;
     bool installed = ra::filesystem::CopyFileUtf8(source_path, target_path);
     if (!installed)
     {
-      LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
+      SA_LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
     }
   }
 }
 
 void LogEnvironment()
 {
-  LOG(INFO) << "Enabling logging";
+  SA_LOG(INFO) << "Enabling logging";
 
   int windows_major = 0, windows_minor = 0;
   Win32Utils::GetWindowsVersion(windows_major, windows_minor);
-  LOG(INFO) << "Windows version " << windows_major << "." << windows_minor << "\n";
-  LOG(INFO) << "Windows product name: " << Win32Utils::GetWindowsProductName() << "\n";
+  SA_LOG(INFO) << "Windows version " << windows_major << "." << windows_minor << "\n";
+  SA_LOG(INFO) << "Windows product name: " << Win32Utils::GetWindowsProductName() << "\n";
 
-  LOG(INFO) << "Process id: " << ra::strings::ToString(ra::process::GetCurrentProcessId());
-  LOG(INFO) << "Thread id: " << ra::strings::ToString((uint32_t)GetCurrentThreadId());
-  LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
-  LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
+  SA_LOG(INFO) << "Process id: " << ra::strings::ToString(ra::process::GetCurrentProcessId());
+  SA_LOG(INFO) << "Thread id: " << ra::strings::ToString((uint32_t)GetCurrentThreadId());
+  SA_LOG(INFO) << "DLL path: " << GetCurrentModulePathUtf8();
+  SA_LOG(INFO) << "EXE path: " << ra::process::GetCurrentProcessPathUtf8().c_str();
 
-  LOG(INFO) << "System metrics:";
-  LOG(INFO) << "SM_CXSCREEN    : " << GetSystemMetrics(SM_CXSCREEN);
-  LOG(INFO) << "SM_CYSCREEN    : " << GetSystemMetrics(SM_CYSCREEN);
-  LOG(INFO) << "SM_CXSMICON    : " << GetSystemMetrics(SM_CXSMICON);
-  LOG(INFO) << "SM_CYSMICON    : " << GetSystemMetrics(SM_CYSMICON);
-  LOG(INFO) << "SM_CXICON      : " << GetSystemMetrics(SM_CXICON);
-  LOG(INFO) << "SM_CYICON      : " << GetSystemMetrics(SM_CYICON);
+  SA_LOG(INFO) << "System metrics:";
+  SA_LOG(INFO) << "SM_CXSCREEN    : " << GetSystemMetrics(SM_CXSCREEN);
+  SA_LOG(INFO) << "SM_CYSCREEN    : " << GetSystemMetrics(SM_CYSCREEN);
+  SA_LOG(INFO) << "SM_CXSMICON    : " << GetSystemMetrics(SM_CXSMICON);
+  SA_LOG(INFO) << "SM_CYSMICON    : " << GetSystemMetrics(SM_CYSMICON);
+  SA_LOG(INFO) << "SM_CXICON      : " << GetSystemMetrics(SM_CXICON);
+  SA_LOG(INFO) << "SM_CYICON      : " << GetSystemMetrics(SM_CYICON);
 
   bool monitor_dpi_aware = Win32Utils::IsMonitorDpiAwarenessEnabled();
-  LOG(INFO) << "Process is monitor DPI aware : " << ra::strings::ToString(monitor_dpi_aware);
-  LOG(INFO) << "System DPI     : " << Win32Utils::GetSystemDPI();
-  LOG(INFO) << "System Scaling : " << Win32Utils::GetSystemScalingPercent() << "%";
+  SA_LOG(INFO) << "Process is monitor DPI aware : " << ra::strings::ToString(monitor_dpi_aware);
+  SA_LOG(INFO) << "System DPI     : " << Win32Utils::GetSystemDPI();
+  SA_LOG(INFO) << "System Scaling : " << Win32Utils::GetSystemScalingPercent() << "%";
 
   // Print information about monitor and their scaling
   int monitor_count = Win32Utils::GetMonitorCount();
-  LOG(INFO) << "System monitor count : " << monitor_count;
+  SA_LOG(INFO) << "System monitor count : " << monitor_count;
   for (int i = 0; i < monitor_count; i++)
   {
     int dpi = Win32Utils::GetMonitorDPI(i);
     int scaling = Win32Utils::GetMonitorScalingPercent(i);
-    LOG(INFO) << "Monitor " << i << " is scaled to " << scaling << "% (dpi " << dpi << ")";
+    SA_LOG(INFO) << "Monitor " << i << " is scaled to " << scaling << "% (dpi " << dpi << ")";
   }
 
-  LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
-  LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
-  LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();
-  LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
-  LOG(INFO) << "IID_IContextMenu2 : " << GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
-  LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
+  SA_LOG(INFO) << "IID_IUnknown      : " << GuidToString(IID_IUnknown).c_str();
+  SA_LOG(INFO) << "IID_IClassFactory : " << GuidToString(IID_IClassFactory).c_str();
+  SA_LOG(INFO) << "IID_IShellExtInit : " << GuidToString(IID_IShellExtInit).c_str();
+  SA_LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
+  SA_LOG(INFO) << "IID_IContextMenu2 : " << GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
+  SA_LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
 }
 
 void InitConfigManager()
 {
+  shellanything::App& app = shellanything::App::GetInstance();
   shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
 
   static const std::string app_name = "ShellAnything";
@@ -337,8 +332,8 @@ void InitConfigManager()
   //get home directory of the user
   std::string home_dir = ra::user::GetHomeDirectoryUtf8();
   std::string config_dir = home_dir + "\\" + app_name;
-  LOG(INFO) << "HOME   directory : " << home_dir.c_str();
-  LOG(INFO) << "Config directory : " << config_dir.c_str();
+  SA_LOG(INFO) << "HOME   directory : " << home_dir.c_str();
+  SA_LOG(INFO) << "Config directory : " << config_dir.c_str();
 
   bool first_run = IsFirstApplicationRun(app_name, app_version);
   if (first_run)
@@ -351,7 +346,8 @@ void InitConfigManager()
   cmgr.AddSearchPath(config_dir);
   cmgr.Refresh();
 
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(shellanything::GetLogDirectory());
+  std::string log_dir = app.GetLogDirectory();
+  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
 
   //define global properties
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();

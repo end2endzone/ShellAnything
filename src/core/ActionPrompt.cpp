@@ -28,11 +28,7 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
 #include "ObjectFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -171,14 +167,14 @@ namespace shellanything
     std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
     //debug
-    LOG(INFO) << "Prompt: '" << title << "' ?";
+    SA_LOG(INFO) << "Prompt: '" << title << "' ?";
 
     if (IsOkQuestion())
     {
       int result = MessageBoxW(parent_window, title_utf16.c_str(), caption_utf16.c_str(), MB_OK | MB_ICONINFORMATION);
       if (result == IDCANCEL)
       {
-        LOG(INFO) << "Prompt: user has cancelled the action.";
+        SA_LOG(INFO) << "Prompt: user has cancelled the action.";
         return false;
       }
     }
@@ -195,7 +191,7 @@ namespace shellanything
         break;
       default:
       case IDCANCEL:
-        LOG(INFO) << "Prompt: user has cancelled the action.";
+        SA_LOG(INFO) << "Prompt: user has cancelled the action.";
         return false;
       };
     }
@@ -206,7 +202,7 @@ namespace shellanything
       bool result = box.DoModal(caption_utf16, title_utf16);
       if (!result)
       {
-        LOG(INFO) << "Prompt: user has cancelled the action.";
+        SA_LOG(INFO) << "Prompt: user has cancelled the action.";
         return false;
       }
 
@@ -216,7 +212,7 @@ namespace shellanything
     }
 
     //update the property
-    LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'.";
+    SA_LOG(INFO) << "Prompt: setting property '" << name << "' to value '" << answer << "'.";
     pmgr.SetProperty(name, answer);
 
     return true;

@@ -27,13 +27,9 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/unicode.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include "Windows.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -131,7 +127,7 @@ namespace shellanything
     std::wstring caption_utf16 = ra::unicode::Utf8ToUnicode(caption);
 
     //debug
-    LOG(INFO) << "Message, caption: '" << caption << "', title: '" << title << "'.";
+    SA_LOG(INFO) << "Message, caption: '" << caption << "', title: '" << title << "'.";
 
     //validate icon
     UINT icon_flags = MB_OK;
@@ -151,7 +147,7 @@ namespace shellanything
     }
     else
     {
-      LOG(ERROR) << "Unknown icon attribute '" << icon << "'.";
+      SA_LOG(ERROR) << "Unknown icon attribute '" << icon << "'.";
       return false;
     }
 

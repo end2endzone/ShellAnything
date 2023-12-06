@@ -27,16 +27,12 @@
 #include "CClassFactory.h"
 #include "CContextMenu.h"
 #include "shellext.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 // Constructeur de l'interface IClassFactory:
 CClassFactory::CClassFactory()
 {
-  LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
 #if SA_QUERYINTERFACE_IMPL == 0
   m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
@@ -51,7 +47,7 @@ CClassFactory::CClassFactory()
 // Destructeur de l'interface IClassFactory:
 CClassFactory::~CClassFactory()
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
 
   // Decrement the dll's reference counter.
   DllRelease();
@@ -60,7 +56,7 @@ CClassFactory::~CClassFactory()
 HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
   HRESULT hr = E_NOINTERFACE;
 
@@ -93,9 +89,9 @@ HRESULT STDMETHODCALLTYPE CClassFactory::QueryInterface(REFIID riid, LPVOID FAR*
 #endif
 
   if (SUCCEEDED(hr))
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   else
-    LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    SA_LOG(WARNING) << __FUNCTION__ << "(), unknown interface " << riid_str;
   return hr;
 }
 
@@ -123,7 +119,7 @@ ULONG STDMETHODCALLTYPE CClassFactory::Release()
 HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << riid_str << " this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), pUnkOuter=" << pUnkOuter << ", riid=" << riid_str << " this=" << ToHexString(this);
 
 #if SA_QUERYINTERFACE_IMPL == 0
   // Always set out parameter to NULL, validating it first.
@@ -159,15 +155,15 @@ HRESULT STDMETHODCALLTYPE CClassFactory::CreateInstance(LPUNKNOWN pUnkOuter, REF
 #endif
 
   if (SUCCEEDED(hr))
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   else
-    LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
+    SA_LOG(ERROR) << __FUNCTION__ << "(), failed creating interface " << riid_str;
   return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CClassFactory::LockServer(BOOL bLock)
 {
-  LOG(INFO) << __FUNCTION__ << "(), bLock=" << (int)bLock << " this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), bLock=" << (int)bLock << " this=" << ToHexString(this);
 
   //https://docs.microsoft.com/en-us/windows/desktop/api/unknwnbase/nf-unknwnbase-iclassfactory-lockserver
   //https://docs.microsoft.com/en-us/windows/desktop/api/combaseapi/nf-combaseapi-colockobjectexternal

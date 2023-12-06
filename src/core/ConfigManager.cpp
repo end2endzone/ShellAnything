@@ -24,14 +24,10 @@
 
 #include "ConfigManager.h"
 #include "Menu.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 namespace shellanything
 {
@@ -60,7 +56,7 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    LOG(INFO) << __FUNCTION__ << "()";
+    SA_LOG(INFO) << __FUNCTION__ << "()";
 
     //validate existing configurations
     Configuration::ConfigurationPtrList existing = GetConfigurations();
@@ -75,13 +71,13 @@ namespace shellanything
       if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
-        LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
+        SA_LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
       }
       else
       {
         //file is missing or current configuration is out of date
         //forget about existing config
-        LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
+        SA_LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
         DeleteChild(config);
       }
     }
@@ -91,7 +87,7 @@ namespace shellanything
     {
       const std::string& path = mPaths[i];
 
-      LOG(INFO) << "Searching configuration files in directory '" << path << "'";
+      SA_LOG(INFO) << "Searching configuration files in directory '" << path << "'";
 
       //search files in each directory
       ra::strings::StringVector files;
@@ -107,7 +103,7 @@ namespace shellanything
             //is this file already loaded ?
             if (!IsConfigFileLoaded(file_path))
             {
-              LOG(INFO) << "Found new configuration file '" << file_path << "'";
+              SA_LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
               //parse the file
               std::string error;
@@ -115,7 +111,7 @@ namespace shellanything
               if (config == NULL)
               {
                 //log an error message
-                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
+                SA_LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
               }
               else
               {
@@ -128,7 +124,7 @@ namespace shellanything
             }
             else
             {
-              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
+              SA_LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
             }
           }
         }
@@ -136,7 +132,7 @@ namespace shellanything
       else
       {
         //log an error message
-        LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
+        SA_LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
       }
     }
   }

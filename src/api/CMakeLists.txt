@@ -53,7 +53,6 @@ target_include_directories(sa.api
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     ${CMAKE_SOURCE_DIR}/src/core
 )
 
@@ -62,7 +61,6 @@ add_dependencies(sa.api sa.core)
 target_link_libraries(sa.api
   PRIVATE
     rapidassist
-    glog::glog
     sa.core
 )
 

@@ -25,17 +25,13 @@
 #include "Configuration.h"
 #include "SelectionContext.h"
 #include "ActionProperty.h"
+#include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
-#include "ObjectFactory.h"
 
 #include "tinyxml2.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -248,7 +244,7 @@ namespace shellanything
           bool loaded = plugin->Load();
           if (!loaded)
           {
-            LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin is disabled.";
+            SA_LOG(WARNING) << "The plugin file '" << plugin->GetPath() << "' has failed to load, the plugin is disabled.";
           }
 
           //add the new plugin to the current configuration (even if loading failed)
@@ -363,7 +359,7 @@ namespace shellanything
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
       //configuration have default properties assigned
-      LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+      SA_LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
       const shellanything::IAction::ActionPtrList& actions = mDefaults->GetActions();
 
@@ -382,7 +378,7 @@ namespace shellanything
       SelectionContext empty_context;
       for (size_t i = 0; i < properties.size(); i++)
       {
-        LOG(INFO) << __FUNCTION__ << "(), executing property " << (i + 1) << " of " << properties.size() << ".";
+        SA_LOG(INFO) << __FUNCTION__ << "(), executing property " << (i + 1) << " of " << properties.size() << ".";
         const shellanything::ActionProperty* action_property = properties[i];
         if (action_property)
         {
@@ -391,7 +387,7 @@ namespace shellanything
         }
       }
 
-      LOG(INFO) << __FUNCTION__ << "(), execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
+      SA_LOG(INFO) << __FUNCTION__ << "(), execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
     }
   }
 

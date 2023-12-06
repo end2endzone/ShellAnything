@@ -22,45 +22,57 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_GLOG_UTILS_H
-#define SA_GLOG_UTILS_H
+#ifndef SA_ILOGGER_H
+#define SA_ILOGGER_H
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
-#include <string>
-#include <stdint.h>
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 
 namespace shellanything
 {
-  struct GLOG_DATETIME
+  /// <summary>
+  /// Abstract logger class.
+  /// </summary>
+  class SHELLANYTHING_EXPORT ILogger
   {
-    int year;
-    int month;  // [1,12]
-    int day;    // [1,31]
-    int hour;   // [0,23]
-    int minute; // [0,59]
-    int second; // [0,59]
+  public:
+    ILogger();
+    virtual ~ILogger();
+
+  private:
+    // Disable and copy constructor, dtor and copy operator
+    ILogger(const ILogger&);
+    ILogger& operator=(const ILogger&);
+  public:
+
+    enum LOG_LEVEL
+    {
+      LOG_LEVEL_DEBUG,
+      LOG_LEVEL_INFO,
+      LOG_LEVEL_WARNING,
+      LOG_LEVEL_ERROR,
+      LOG_LEVEL_FATAL,
+    };
+
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="filename">The originating source code file name.</param>
+    /// <param name="line">The line number that producing this message.</param>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const char* filename, int line, const LOG_LEVEL & level, const char* message) = 0;
+
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const LOG_LEVEL & level, const char* message) = 0;
+
   };
 
-  const GLOG_DATETIME& GetInvalidLogDateTime();
-  int DateTimeToSeconds(const GLOG_DATETIME& dt);
-  int GetDateTimeDiff(const GLOG_DATETIME& dt1, const GLOG_DATETIME& dt2);
-  int GetLogFileAge(const std::string& path);
-  GLOG_DATETIME GetFileDateTime(const std::string& path);
-  std::string GetLogDestination(int level);
-  std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id);
-  bool HasDirectoryWriteAccess(const std::string& path);
-  std::string GetLogDirectory();
-  bool IsLogFile(const std::string& path);
-  bool IsTestingEnvironment();
-
-  void DeletePreviousLogs(int max_age_seconds);
-  void DeletePreviousLogs();
-  void InitLogger();
 
 } //namespace shellanything
 
-#endif //SA_GLOG_UTILS_H
+#endif //SA_IACTION_H

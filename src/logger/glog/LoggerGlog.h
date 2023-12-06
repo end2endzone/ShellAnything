@@ -22,27 +22,47 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_UTILS_H
-#define SA_UTILS_H
+#ifndef SA_LOGGER_GLOG_H
+#define SA_LOGGER_GLOG_H
 
-#include <string>
+#include "sa_glog_export.h"
+#include "ILogger.h"
 
- /// <summary>
- /// Get the current module path. This file must be included only in DLL and not static libraries.
- /// </summary>
- /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePath();
+namespace shellanything
+{
+  /// <summary>
+  /// Abstract logger class.
+  /// </summary>
+  class SA_GLOG_EXPORT LoggerGlog : public virtual ILogger
+  {
+  public:
+    LoggerGlog();
+    virtual ~LoggerGlog();
 
-/// <summary>
-/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePathUtf8();
+  private:
+    // Disable and copy constructor, dtor and copy operator
+    LoggerGlog(const LoggerGlog&);
+    LoggerGlog& operator=(const LoggerGlog&);
+  public:
 
-/// <summary>
-/// Test if a directory has write access.
-/// </summary>
-/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
-bool HasDirectoryWriteAccess(const std::string& path);
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="filename">The originating source code file name.</param>
+    /// <param name="line">The line number that producing this message.</param>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const char* filename, int line, const ILogger::LOG_LEVEL & level, const char* message);
 
-#endif //SA_UTILS_H
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const ILogger::LOG_LEVEL & level, const char* message);
+
+  };
+
+} //namespace shellanything
+
+#endif //SA_LOGGER_GLOG_H

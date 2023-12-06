@@ -125,11 +125,12 @@ target_include_directories(sa.tests
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
-    glog::glog
     libmagic
     ${CMAKE_SOURCE_DIR}/src/libexprtk
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/logger/glog
+    ${CMAKE_BINARY_DIR}/src/logger/glog
 )
 
 # Define linking dependencies.
@@ -140,10 +141,10 @@ target_link_libraries(sa.tests
     sa.core
     sa.api
     sa.shellextension
+    sa.logger.glog
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist
-    glog::glog
     libexprtk
     libmagic
 )

@@ -22,27 +22,17 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_UTILS_H
-#define SA_UTILS_H
+#include "ILogger.h"
 
-#include <string>
+namespace shellanything
+{
 
- /// <summary>
- /// Get the current module path. This file must be included only in DLL and not static libraries.
- /// </summary>
- /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePath();
+  ILogger::ILogger()
+  {
+  }
 
-/// <summary>
-/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePathUtf8();
+  ILogger::~ILogger()
+  {
+  }
 
-/// <summary>
-/// Test if a directory has write access.
-/// </summary>
-/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
-bool HasDirectoryWriteAccess(const std::string& path);
-
-#endif //SA_UTILS_H
+} //namespace shellanything

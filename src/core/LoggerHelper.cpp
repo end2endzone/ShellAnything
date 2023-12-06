@@ -22,27 +22,54 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_UTILS_H
-#define SA_UTILS_H
-
+#include "LoggerHelper.h"
 #include <string>
 
- /// <summary>
- /// Get the current module path. This file must be included only in DLL and not static libraries.
- /// </summary>
- /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePath();
+namespace shellanything
+{
+  LoggerHelper::LoggerHelper(ILogger::LOG_LEVEL level) :
+    mFilename(NULL),
+    mLine(0),
+    mLevel(level)
+  {
+  }
 
-/// <summary>
-/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePathUtf8();
+  LoggerHelper::LoggerHelper(const char* filename, int line, ILogger::LOG_LEVEL level) :
+    mFilename(filename),
+    mLine(line),
+    mLevel(level)
+  {
+  }
 
-/// <summary>
-/// Test if a directory has write access.
-/// </summary>
-/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
-bool HasDirectoryWriteAccess(const std::string& path);
+  LoggerHelper::~LoggerHelper()
+  {
+    // Log the streamed content to the actual logger
+    ILogger * logger = App::GetInstance().GetLogger();;
 
-#endif //SA_UTILS_H
+    if (logger)
+    {
+      // Get a copy of the streamed content
+      std::string str_copy = mSS.str();
+
+      // Do we have the orignial filename and line number of the loged content?
+      if (mFilename)
+      {
+        logger->LogMessage(mFilename, mLine, mLevel, str_copy.c_str());
+      }
+      else
+      {
+        logger->LogMessage(mFilename, mLine, mLevel, str_copy.c_str());
+      }
+    }
+  }
+
+  LoggerHelper& LoggerHelper::operator<<(std::ostream& (*f)(std::ostream&))
+  {
+    if (f == std::endl)
+    {
+      mSS << '\n';
+    }
+    return *this;
+  }
+
+} //namespace shellanything

@@ -23,16 +23,12 @@
  *********************************************************************************/
 
 #include "TestShellExtension.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/filesystem.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/process.h"
 #include "rapidassist/timing.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include <windows.h>
 #include <comdef.h>
@@ -174,7 +170,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestShellExtension, testDefaultDllCanUnloadNow)
     {
-      LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+      SA_LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
       std::string path = GetShellExtensionDllPath();
       ASSERT_TRUE(ra::filesystem::FileExists(path.c_str())) << "File not found: '" << path << "'.";
@@ -188,12 +184,12 @@ namespace shellanything
       //assert ok to unload the dll of no classes was instanciated
       ASSERT_EQ(S_OK, lib_handler.DllCanUnloadNow());
 
-      LOG(INFO) << __FUNCTION__ << "() - END";
+      SA_LOG(INFO) << __FUNCTION__ << "() - END";
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestShellExtension, testGetClassFactory)
     {
-      LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+      SA_LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
       std::string path = GetShellExtensionDllPath();
       ASSERT_TRUE(ra::filesystem::FileExists(path.c_str())) << "File not found: '" << path << "'.";
@@ -227,12 +223,12 @@ namespace shellanything
       ASSERT_EQ(S_OK, lib_handler.DllCanUnloadNow());
       int a = 0;
 
-      LOG(INFO) << __FUNCTION__ << "() - END";
+      SA_LOG(INFO) << __FUNCTION__ << "() - END";
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestShellExtension, testCreateInstance)
     {
-      LOG(INFO) << __FUNCTION__ << "() - BEGIN";
+      SA_LOG(INFO) << __FUNCTION__ << "() - BEGIN";
 
       std::string path = GetShellExtensionDllPath();
       ASSERT_TRUE(ra::filesystem::FileExists(path.c_str())) << "File not found: '" << path << "'.";
@@ -269,7 +265,7 @@ namespace shellanything
       ASSERT_EQ(S_OK, lib_handler.DllCanUnloadNow());
       int a = 0;
 
-      LOG(INFO) << __FUNCTION__ << "() - END";
+      SA_LOG(INFO) << __FUNCTION__ << "() - END";
     }
     //--------------------------------------------------------------------------------------------------
 

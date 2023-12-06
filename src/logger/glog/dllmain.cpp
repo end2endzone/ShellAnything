@@ -22,27 +22,39 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_UTILS_H
-#define SA_UTILS_H
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+#endif //WIN32_LEAN_AND_MEAN
 
-#include <string>
+#include <Windows.h>
 
- /// <summary>
- /// Get the current module path. This file must be included only in DLL and not static libraries.
- /// </summary>
- /// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePath();
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
 
-/// <summary>
-/// Get the current module path encoded in UTF-8. This file must be included only in DLL and not static libraries.
-/// </summary>
-/// <returns>Returns the path of the current DLL if successful. Returns an empty string on error.</returns>
-std::string GetCurrentModulePathUtf8();
+ //Declarations
+HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
 
-/// <summary>
-/// Test if a directory has write access.
-/// </summary>
-/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
-bool HasDirectoryWriteAccess(const std::string& path);
+extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
+{
+  if (dwReason == DLL_PROCESS_ATTACH)
+  {
+    g_hmodDll = hInstance;
 
-#endif //SA_UTILS_H
+    //if (!shellanything::IsTestingEnvironment())
+    //{
+    //  // Initialize Google's logging library.
+    //  shellanything::InitGlog();
+    //}
+  }
+  else if (dwReason == DLL_PROCESS_DETACH)
+  {
+    //if (!shellanything::IsTestingEnvironment())
+    //{
+    //  // Shutdown Google's logging library.
+    //  google::ShutdownGoogleLogging();
+    //}
+  }
+  return 1;
+}
