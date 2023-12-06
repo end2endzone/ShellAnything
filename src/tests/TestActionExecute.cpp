@@ -55,7 +55,8 @@ namespace shellanything
 
       // On Windows 10, calc.exe launches Calculator which is an application in the Microsoft App Store.
       //The executable path is something similar to C:\Program Files\WindowsApps\Microsoft.WindowsCalculator_10.2103.8.0_x64__8wbfmf6g6wwcr\Calculator.exe
-      system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%Calculator.exe'\" DELETE >NUL 2>NUL");
+      system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%Calculator.exe'\"    DELETE >NUL 2>NUL");
+      system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%CalculatorApp.exe'\" DELETE >NUL 2>NUL");
     }
 
     //--------------------------------------------------------------------------------------------------
