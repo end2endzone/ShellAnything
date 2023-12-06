@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "PropertyManager.h"
+#include "App.h"
 #include "SaUtils.h"
 #include "SelectionContext.h"
 
@@ -39,8 +40,6 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
   const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
-
-  std::string PropertyManager::application_path;
 
   PropertyManager::PropertyManager()
   {
@@ -204,16 +203,6 @@ namespace shellanything
     return output;
   }
 
-  const std::string& PropertyManager::GetApplicationPath()
-  {
-    return application_path;
-  }
-
-  void PropertyManager::SetApplicationPath(const std::string& value)
-  {
-    application_path = value;
-  }
-
   void PropertyManager::SplitAndExpand(const std::string& input_value, const char* separator, StringList& output_list)
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
@@ -274,6 +263,8 @@ namespace shellanything
 
   void PropertyManager::RegisterDefaultProperties()
   {
+    shellanything::App& app = shellanything::App::GetInstance();
+
     //define global properties
     std::string prop_core_module_path = GetCurrentModulePathUtf8();
     std::string prop_application_directory = ra::filesystem::GetParentPath(prop_core_module_path);
@@ -287,7 +278,7 @@ namespace shellanything
     //   GetCurrentModulePathUtf8() returns the path of sa.core.dll. Not sa.tests.exe or sa.shellextension.dll.
     //   GetCurrentProcessPath() would return the path of explorer.exe when the shell extension is loaded.
     //
-    std::string prop_application_path = PropertyManager::GetApplicationPath();
+    std::string prop_application_path = app.GetApplicationPath();
     
     SetProperty("application.path", prop_application_path);
     SetProperty("application.directory", prop_application_directory);

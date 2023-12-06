@@ -49,6 +49,18 @@ namespace shellanything
   public:
 
     /// <summary>
+    /// Gets the path of the current application or module running ShellAnything. Must be set manually by the application.
+    /// </summary>
+    /// <returns>Returns the value of the path. Returns an empty string if never set.</returns>
+    const std::string& GetApplicationPath();
+
+    /// <summary>
+    /// Sets the path of the current application or module running ShellAnything. Must be set manually by the application.
+    /// </summary>
+    /// <param name="value">The value of the path.</param>
+    void SetApplicationPath(const std::string& value);
+
+    /// <summary>
     /// Set the current application logger.
     /// </summary>
     /// <remarks>
@@ -82,6 +94,7 @@ namespace shellanything
     bool IsValidLogDirectory(const std::string& path);
 
   private:
+    std::string mApplicationPath;
     ILogger * mLogger;
   };
 

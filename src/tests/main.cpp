@@ -115,15 +115,14 @@ int main(int argc, char** argv)
 
   //Issue #124. Define property 'application.path'.
   std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
-  shellanything::PropertyManager::SetApplicationPath(exec_path);
+  app.SetApplicationPath(exec_path);
 
   // Initialize Google's logging library.
   glog::InitGlog();
 
   // Setup an active logger in ShellAnything's core.
   shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();
-  shellanything::App& sa_app = shellanything::App::GetInstance();
-  sa_app.SetLogger(glog_logger);
+  app.SetLogger(glog_logger);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.

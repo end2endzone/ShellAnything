@@ -50,6 +50,16 @@ namespace shellanything
     return _instance;
   }
 
+  const std::string& App::GetApplicationPath()
+  {
+    return mApplicationPath;
+  }
+
+  void App::SetApplicationPath(const std::string& value)
+  {
+    mApplicationPath = value;
+  }
+
   void App::SetLogger(ILogger* logger)
   {
     mLogger = logger;

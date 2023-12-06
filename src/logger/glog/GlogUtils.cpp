@@ -24,7 +24,6 @@
 
 #include "GlogUtils.h"
 #include "App.h"
-#include "PropertyManager.h"
 #include "ErrorManager.h"
 #include "SaUtils.h"
 
@@ -162,7 +161,6 @@ namespace glog
   std::string GetLogDestination(int level)
   {
     shellanything::App& app = shellanything::App::GetInstance();
-    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
 
     //For issue #7 - Change the default filename format for log files
     //NATIVE FORMAT:  sa.shellextension-d.dll.MYCOMPUTERNAME.johnsmith.log.INFO.20180120-124422.8732.log
@@ -170,7 +168,7 @@ namespace glog
 
     // The function google::SetLogDestination() is expecting a full path (including the destination directory)
 
-    const std::string & app_path = pmgr.GetApplicationPath();
+    const std::string & app_path = app.GetApplicationPath();
     std::string app_filename = ra::filesystem::GetFilename(app_path.c_str());
 
     std::string path;
@@ -188,9 +186,8 @@ namespace glog
   std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id)
   {
     shellanything::App& app = shellanything::App::GetInstance();
-    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
 
-    const std::string& app_path = pmgr.GetApplicationPath();
+    const std::string& app_path = app.GetApplicationPath();
     std::string app_filename = ra::filesystem::GetFilename(app_path.c_str());
 
     std::string filename;
@@ -213,9 +210,8 @@ namespace glog
   bool IsLogFile(const std::string& path)
   {
     shellanything::App& app = shellanything::App::GetInstance();
-    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
 
-    const std::string& app_path = pmgr.GetApplicationPath();
+    const std::string& app_path = app.GetApplicationPath();
     std::string app_filename = ra::filesystem::GetFilename(app_path.c_str());
 
     //validate that 'path' contains the dll filename
