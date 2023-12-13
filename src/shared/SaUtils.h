@@ -45,4 +45,13 @@ std::string GetCurrentModulePathUtf8();
 /// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
 bool HasDirectoryWriteAccess(const std::string& path);
 
+/// <summary>
+/// Returns true if the application is run for the first time.
+/// Note, for Windows users, the implementation is based on registry keys in HKEY_CURRENT_USER\Software\name\version.
+/// </summary>
+/// <param name="name">The name of the application.</param>
+/// <param name="version">The version of the application.</param>
+/// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
+bool IsFirstApplicationRun(const std::string& name, const std::string& version);
+
 #endif //SA_UTILS_H

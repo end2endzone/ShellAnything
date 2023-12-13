@@ -33,6 +33,8 @@
 #include <windows.h> //for MAX_PATH
 #include "rapidassist/undef_windows_macros.h"
 
+#include "Win32Registry.h"
+
  //External declarations
 static const std::string  EMPTY_STRING;
 static const std::wstring EMPTY_WIDE_STRING;
@@ -136,4 +138,41 @@ bool HasDirectoryWriteAccess(const std::string& path)
   bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
 
   return true;
+}
+
+bool IsFirstApplicationRun(const std::string& name, const std::string& version)
+{
+  std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
+  if (!Win32Registry::CreateKey(key.c_str(), NULL))
+  {
+    // unable to get to the application's key.
+    // assume it is not the first run.
+    return false;
+  }
+
+  static const char* FIRST_RUN_VALUE_NAME = "first_run";
+
+  // try to read the value
+  Win32Registry::MemoryBuffer value;
+  Win32Registry::REGISTRY_TYPE value_type;
+  if (!Win32Registry::GetValue(key.c_str(), FIRST_RUN_VALUE_NAME, value_type, value))
+  {
+    // the registry value is not found.
+    // assume the application is run for the first time.
+
+    // update the flag to "false" for the next call
+    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+
+    return true;
+  }
+
+  bool first_run = ra::strings::ParseBoolean(value);
+
+  if (first_run)
+  {
+    //update the flag to "false"
+    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
+  }
+
+  return first_run;
 }

@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
   shellanything::App& app = shellanything::App::GetInstance();
 
-  //Issue #124. Define property 'application.path'.
+  //Define application's main executable path.
   std::string exec_path = ra::process::GetCurrentProcessPathUtf8();
   app.SetApplicationPath(exec_path);
 
@@ -131,10 +131,8 @@ int main(int argc, char** argv)
   std::string log_dir = app.GetLogDirectory();
   printf("Using log directory: '%s'.\n", log_dir.c_str());
 
-  //define global properties
-  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
-  pmgr.SetProperty("log.directory", prop_log_directory);
+  // Setup and starting application
+  app.Start();
 
   int exit_code = SetTestPreferedRootDirectory();
   if (exit_code != 0)

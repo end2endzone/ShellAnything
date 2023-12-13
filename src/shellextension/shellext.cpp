@@ -106,43 +106,6 @@ std::string ToHexString(void* value)
   return buffer;
 }
 
-bool IsFirstApplicationRun(const std::string& name, const std::string& version)
-{
-  std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());
-  if (!Win32Registry::CreateKey(key.c_str(), NULL))
-  {
-    // unable to get to the application's key.
-    // assume it is not the first run.
-    return false;
-  }
-
-  static const char* FIRST_RUN_VALUE_NAME = "first_run";
-
-  // try to read the value
-  Win32Registry::MemoryBuffer value;
-  Win32Registry::REGISTRY_TYPE value_type;
-  if (!Win32Registry::GetValue(key.c_str(), FIRST_RUN_VALUE_NAME, value_type, value))
-  {
-    // the registry value is not found.
-    // assume the application is run for the first time.
-
-    // update the flag to "false" for the next call
-    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
-
-    return true;
-  }
-
-  bool first_run = ra::strings::ParseBoolean(value);
-
-  if (first_run)
-  {
-    //update the flag to "false"
-    Win32Registry::SetValue(key.c_str(), FIRST_RUN_VALUE_NAME, "false"); //don't look at the write result
-  }
-
-  return first_run;
-}
-
 template <class T> class FlagDescriptor
 {
 public:
@@ -243,39 +206,6 @@ std::string GetGetCommandStringFlags(UINT flags)
   return flags_str;
 }
 
-void InstallDefaultConfigurations(const std::string& config_dir)
-{
-  std::string app_path = GetCurrentModulePathUtf8();
-  std::string app_dir = ra::filesystem::GetParentPath(app_path);
-
-  static const char* default_files[] = {
-    "default.xml",
-    "Microsoft Office 2003.xml",
-    "Microsoft Office 2007.xml",
-    "Microsoft Office 2010.xml",
-    "Microsoft Office 2013.xml",
-    "Microsoft Office 2016.xml",
-    "shellanything.xml",
-  };
-  static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
-
-  SA_LOG(INFO) << "First application launch. Installing default configurations files.";
-
-  for (size_t i = 0; i < num_files; i++)
-  {
-    const char* filename = default_files[i];
-    std::string source_path = app_dir + "\\configurations\\" + filename;
-    std::string target_path = config_dir + "\\" + filename;
-
-    SA_LOG(INFO) << "Installing configuration file: " << target_path;
-    bool installed = ra::filesystem::CopyFileUtf8(source_path, target_path);
-    if (!installed)
-    {
-      SA_LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
-    }
-  }
-}
-
 void LogEnvironment()
 {
   SA_LOG(INFO) << "Enabling logging";
@@ -319,41 +249,6 @@ void LogEnvironment()
   SA_LOG(INFO) << "IID_IContextMenu  : " << GuidToString(IID_IContextMenu).c_str();
   SA_LOG(INFO) << "IID_IContextMenu2 : " << GuidToString(IID_IContextMenu2).c_str();  //{000214f4-0000-0000-c000-000000000046}
   SA_LOG(INFO) << "IID_IContextMenu3 : " << GuidToString(IID_IContextMenu3).c_str();  //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
-}
-
-void InitConfigManager()
-{
-  shellanything::App& app = shellanything::App::GetInstance();
-  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
-
-  static const std::string app_name = "ShellAnything";
-  static const std::string app_version = SHELLANYTHING_VERSION;
-
-  //get home directory of the user
-  std::string home_dir = ra::user::GetHomeDirectoryUtf8();
-  std::string config_dir = home_dir + "\\" + app_name;
-  SA_LOG(INFO) << "HOME   directory : " << home_dir.c_str();
-  SA_LOG(INFO) << "Config directory : " << config_dir.c_str();
-
-  bool first_run = IsFirstApplicationRun(app_name, app_version);
-  if (first_run)
-  {
-    InstallDefaultConfigurations(config_dir);
-  }
-
-  //setup ConfigManager to read files from config_dir
-  cmgr.ClearSearchPath();
-  cmgr.AddSearchPath(config_dir);
-  cmgr.Refresh();
-
-  std::string log_dir = app.GetLogDirectory();
-  std::string prop_log_directory = ra::unicode::AnsiToUtf8(log_dir);
-
-  //define global properties
-  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  pmgr.SetProperty("log.directory", prop_log_directory);
-  pmgr.SetProperty("config.directory", config_dir);
-  pmgr.SetProperty("home.directory", home_dir);
 }
 
 void DebugHook(const char* fname)

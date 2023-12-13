@@ -359,12 +359,12 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
       // Initialize Google's logging library.
       glog::InitGlog();
+
+      // Setup and starting application
+      app.Start();
+
+      LogEnvironment();
     }
-
-    LogEnvironment();
-
-    // Initialize the configuration manager
-    InitConfigManager();
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {

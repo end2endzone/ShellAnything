@@ -88,13 +88,43 @@ namespace shellanything
     std::string GetLogDirectory();
 
     /// <summary>
+    /// Get the application's configurations directory.
+    /// </summary>
+    /// <returns>Returns the path of the directory of the user's Configuration Files.</returns>
+    std::string GetConfigurationsDirectory();
+
+    /// <summary>
     /// Test if the given directory is valid for logging.
     /// </summary>
     /// <returns>Returns true if the directory is valid for logging. Returns false otherwise.</returns>
     bool IsValidLogDirectory(const std::string& path);
 
+    /// <summary>
+    /// Initialize and start the application ready for usage.
+    /// </summary>
+    /// <returns>Returns true if init and start has succeeded. Returns false otherwise.</returns>
+    bool Start();
+
+  private:
+    /// <summary>
+    /// Install the original configuration files to the specified destination directory.
+    /// </summary>
+    /// <param name="dest_dir">The destination directory.</param>
+    void InstallDefaultConfigurations(const std::string& dest_dir);
+
+    /// <summary>
+    /// Initialize the Configuration Manager to the user's stall the original configuration files to the specified destination directory.
+    /// </summary>
+    void InitConfigManager();
+
+    /// <summary>
+    /// Setup default properties for the application.
+    /// </summary>
+    void SetupGlobalProperties();
+
   private:
     std::string mApplicationPath;
+
     ILogger * mLogger;
   };
 

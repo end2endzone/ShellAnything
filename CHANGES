@@ -1,5 +1,6 @@
 Changes for 0.9.0
 
+* Fixed issue #111: Move code from the shell extension to the core.
 * Fixed issue #126: Remove single quote characters surrounding values in ActionExecute logs.
 * Fixed issue #127: Question Prompt action does not accept answers longer than the visual textbox.
 * Fixed issue #132: Delete deprecated NSIS installer references.

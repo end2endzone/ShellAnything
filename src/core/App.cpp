@@ -23,11 +23,19 @@
  *********************************************************************************/
 
 #include "App.h"
+#include "LoggerHelper.h"
+#include "ConfigManager.h"
+#include "PropertyManager.h"
 
 #include "rapidassist/process.h"
 #include "rapidassist/user.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/user_utf8.h"
+#include "rapidassist/unicode.h"
+
+#include "shellanything/version.h"
 
 #include "SaUtils.h"
 
@@ -35,6 +43,10 @@
 
 namespace shellanything
 {
+  static const std::string app_name = "ShellAnything";
+  static const std::string app_version = SHELLANYTHING_VERSION;
+
+
   App::App() :
     mLogger(NULL)
   {
@@ -58,6 +70,10 @@ namespace shellanything
   void App::SetApplicationPath(const std::string& value)
   {
     mApplicationPath = value;
+
+    //Issue #124. Define property 'application.path'.
+    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+    pmgr.SetProperty("application.path", mApplicationPath);
   }
 
   void App::SetLogger(ILogger* logger)
@@ -128,6 +144,23 @@ namespace shellanything
     return log_dir;
   }
 
+  std::string App::GetConfigurationsDirectory()
+  {
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string config_dir = home_dir + "\\" + app_name;
+    return config_dir;
+  }
+
+  bool App::Start()
+  {
+    SetupGlobalProperties();
+
+    InitConfigManager();
+
+    return true;
+  }
+
   bool App::IsValidLogDirectory(const std::string& path)
   {
     //Issue #60 - Unit tests cannot execute from installation directory.
@@ -148,6 +181,78 @@ namespace shellanything
 
     //Write to directory is granted.
     return true;
+  }
+
+  void App::InstallDefaultConfigurations(const std::string& dest_dir)
+  {
+    std::string app_path = GetCurrentModulePathUtf8();
+    std::string app_dir = ra::filesystem::GetParentPath(app_path);
+
+    static const char* default_files[] = {
+      "default.xml",
+      "Microsoft Office 2003.xml",
+      "Microsoft Office 2007.xml",
+      "Microsoft Office 2010.xml",
+      "Microsoft Office 2013.xml",
+      "Microsoft Office 2016.xml",
+      "shellanything.xml",
+    };
+    static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
+
+    SA_LOG(INFO) << "Installing default configurations files.";
+
+    // Copy default files one by one to the user's directory
+    for (size_t i = 0; i < num_files; i++)
+    {
+      const char* filename = default_files[i];
+      std::string source_path = app_dir + "\\configurations\\" + filename;
+      std::string target_path = dest_dir + "\\" + filename;
+
+      SA_LOG(INFO) << "Installing configuration file: " << target_path;
+      bool installed = ra::filesystem::CopyFileUtf8(source_path, target_path);
+      if (!installed)
+      {
+        SA_LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
+      }
+    }
+  }
+
+  void App::InitConfigManager()
+  {
+    shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
+
+    std::string config_dir = GetConfigurationsDirectory();
+
+    bool first_run = IsFirstApplicationRun(app_name, app_version);
+    if (first_run)
+    {
+      SA_LOG(INFO) << "First application launch.";
+      InstallDefaultConfigurations(config_dir);
+    }
+
+    //setup ConfigManager to read files from config_dir
+    cmgr.ClearSearchPath();
+    cmgr.AddSearchPath(config_dir);
+    cmgr.Refresh();
+  }
+
+  void App::SetupGlobalProperties()
+  {
+    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string config_dir = GetConfigurationsDirectory();
+    std::string log_dir = ra::unicode::AnsiToUtf8(GetLogDirectory());
+
+    SA_LOG(INFO) << "HOME   directory : " << home_dir.c_str();
+    SA_LOG(INFO) << "Config directory : " << config_dir.c_str();
+    SA_LOG(INFO) << "LOG    directory : " << log_dir.c_str();
+
+    //define global properties
+    pmgr.SetProperty("home.directory", home_dir);
+    pmgr.SetProperty("config.directory", config_dir);
+    pmgr.SetProperty("log.directory", log_dir);
   }
 
 } //namespace shellanything
