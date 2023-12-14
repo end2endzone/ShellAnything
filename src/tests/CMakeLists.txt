@@ -89,6 +89,8 @@ add_executable(sa.tests
   TestWin32Registry.h
   TestPropertyManager.cpp
   TestPropertyManager.h
+  TestSaUtils.cpp
+  TestSaUtils.h
   TestShellExtension.cpp
   TestShellExtension.h
   TestUnicode.cpp
