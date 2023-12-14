@@ -984,6 +984,70 @@ The `exprtk` attribute uses the *exprtk library* to parse the expression. For mo
 
 
 
+#### file attribute: ####
+
+The `file` attribute defines the path of a file who's content is used as a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+
+For example, the following sets the property `myprogram.config` to the content of an application ini file :
+```xml
+<property name="myprogram.config.content" file="c:\myprogram\config.ini" />
+```
+
+When combined with other elements, the _file_ attribute allows advanced use case and property manipulation.
+
+For example :
+
+***Copy and paste text files*** :
+```xml
+<menu name="File content">
+  <menu name="Copy as text">
+    <visibility maxfiles="1" maxfolders="0" />
+    <actions>
+      <!-- Store the file's content and file name as properties -->
+      <property name="copypaste.file.content" file="${selection.path}" />
+      <property name="copypaste.file.name" value="${selection.filename}" />
+    </actions>
+  </menu>
+  <menu name="Paste">
+    <visibility properties="copypaste.file.content" />
+    <actions>
+      <!-- Generate a file from properties -->
+      <file path="${selection.path}\${copypaste.file.name}">${copypaste.file.content}</file>
+      <property name="copypaste.file.content" value="" />
+    </actions>
+  </menu>
+</menu>
+```
+
+***Capture execution output*** :
+```xml
+<menu name="Capture exec output">
+  <actions>
+    <exec path="cmd.exe" arguments="/C dir /b &quot;%USERPROFILE%\Documents&quot;> &quot;${temp}\command_output.txt&quot;" />
+    <property name="files" file="${temp}\command_output.txt" />
+  </actions>
+</menu>
+```
+
+**Note:**
+To specifiy how much to read from the file, see the `filesize` attribute. By default, a maximum of ***10 KB*** can be read from a file. To read more than that, one must manually specify the `filesize` attribute.
+
+
+
+#### filesize attribute: ####
+
+The `filesize` attribute defines the how many bytes the `file` attribute should read from the file. The special value `0` can be use to read the whole file with no limit.
+
+For example, the following sets the property `myprogram.bigfile.header` by reading the first 10 bytes of a data file :
+```xml
+<property name="myprogram.bigfile.header" file="${temp}bigfile.dat" filesize="10" />
+```
+
+**Note:**
+If not specified, a maximum of ***10 KB*** can be read from a file.
+
+
+
 ### &lt;file&gt; action ###
 
 The &lt;file&gt; element is used to create a text file on disk. The content of the file is specified between the opening and closing tags of the &lt;file&gt; element. The &lt;file&gt; element supports dynamic properties and can be used to create default configuration files or create support files for the menu.
