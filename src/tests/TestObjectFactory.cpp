@@ -678,16 +678,20 @@ namespace shellanything
 
       //ASSERT a multiple menus are available
       Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-      ASSERT_EQ(3, menus.size());
+      ASSERT_EQ(5, menus.size());
 
       //Assert all menus have a property element as the first action
       ActionProperty* property00 = GetFirstActionProperty(menus[00]);
       ActionProperty* property01 = GetFirstActionProperty(menus[01]);
       ActionProperty* property02 = GetFirstActionProperty(menus[02]);
+      ActionProperty* property03 = GetFirstActionProperty(menus[03]);
+      ActionProperty* property04 = GetFirstActionProperty(menus[04]);
 
       ASSERT_TRUE(property00 != NULL);
       ASSERT_TRUE(property01 != NULL);
       ASSERT_TRUE(property02 != NULL);
+      ASSERT_TRUE(property03 != NULL);
+      ASSERT_TRUE(property04 != NULL);
 
       //Assert menu #0 have a name and a value parsed
       static const std::string EMPTY_STRING;
@@ -705,6 +709,14 @@ namespace shellanything
       std::string property02_exprtk = property02->GetExprtk();
       ASSERT_EQ(std::string(""), property02_value);
       ASSERT_EQ(std::string(""), property02_exprtk);
+
+      //Assert menu #3 have a file attribute parsed
+      std::string property03_file = property03->GetFile();
+      ASSERT_EQ(std::string("c:\\foo\\bar.txt"), property03_file);
+
+      //Assert menu #4 have a filesize attribute parsed
+      std::string property04_filesize = property04->GetFileSize();
+      ASSERT_EQ(std::string("13"), property04_filesize);
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
