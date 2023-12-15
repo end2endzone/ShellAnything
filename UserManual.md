@@ -1012,7 +1012,7 @@ For example :
     <visibility properties="copypaste.file.content" />
     <actions>
       <!-- Generate a file from properties -->
-      <file path="${selection.path}\${copypaste.file.name}">${copypaste.file.content}</file>
+      <file path="${selection.path}\${copypaste.file.name}" encoding="utf8">${copypaste.file.content}</file>
       <property name="copypaste.file.content" value="" />
     </actions>
   </menu>
