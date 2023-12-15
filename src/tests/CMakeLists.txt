@@ -5,6 +5,7 @@ find_package(libmagic REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCopyFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandIdsInvalid.xml
@@ -35,6 +36,61 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
 )
 
+set(HEADER_AND_SOURCE_TEST_FILES ""
+  TestActionExecute.cpp
+  TestActionExecute.h
+  TestActionFile.cpp
+  TestActionFile.h
+  TestActionProperty.cpp
+  TestActionProperty.h
+  TestActionStop.cpp
+  TestActionStop.h
+  TestBitmapCache.cpp
+  TestBitmapCache.h
+  TestConfigManager.cpp
+  TestConfigManager.h
+  TestConfiguration.cpp
+  TestConfiguration.h
+  TestDemoSamples.cpp
+  TestDemoSamples.h
+  TestGlogUtils.cpp
+  TestGlogUtils.h
+  TestIcon.cpp
+  TestIcon.h
+  TestInputBox.cpp
+  TestInputBox.h
+  TestLibExprtk.cpp
+  TestLibExprtk.h
+  TestMenu.cpp
+  TestMenu.h
+  TestObjectFactory.cpp
+  TestObjectFactory.h
+  TestPropertyManager.cpp
+  TestPropertyManager.h
+  TestSaUtils.cpp
+  TestSaUtils.h
+  TestSelectionContext.cpp
+  TestSelectionContext.h
+  TestShellExtension.cpp
+  TestShellExtension.h
+  TestUnicode.cpp
+  TestUnicode.h
+  TestValidator.cpp
+  TestValidator.h
+  TestWildcard.cpp
+  TestWildcard.h
+  TestWin32Clipboard.cpp
+  TestWin32Clipboard.h
+  TestWin32Registry.cpp
+  TestWin32Registry.cpp
+  TestWin32Registry.h
+  TestWin32Registry.h
+  TestWin32Utils.cpp
+  TestWin32Utils.h
+  TestWorkspace.cpp
+  TestWorkspace.h
+)
+
 if(SHELLANYTHING_BUILD_PLUGINS)
   set(PLUGINS_TEST_FILES ""
     TestPlugins.cpp
@@ -50,69 +106,21 @@ add_executable(sa.tests
   ${SHELLANYTHING_CONFIG_HEADER}
   ${CONFIGURATION_TEST_FILES}
   ${PLUGINS_TEST_FILES}
+  ${HEADER_AND_SOURCE_TEST_FILES}
+  ArgumentsHandler.cpp
+  ArgumentsHandler.h
   LockFile.cpp
   LockFile.h
   main.cpp
-  ArgumentsHandler.cpp
-  ArgumentsHandler.h
-  TestActionExecute.cpp
-  TestActionExecute.h
-  TestActionFile.cpp
-  TestActionFile.h
-  TestActionProperty.cpp
-  TestActionProperty.h
-  TestActionStop.cpp
-  TestActionStop.h
-  TestBitmapCache.cpp
-  TestBitmapCache.h
-  TestConfigManager.cpp
-  TestConfigManager.h
-  TestConfiguration.cpp
-  TestConfiguration.h
-  TestSelectionContext.cpp
-  TestSelectionContext.h
-  TestDemoSamples.cpp
-  TestDemoSamples.h
-  TestGlogUtils.cpp
-  TestGlogUtils.h
-  TestIcon.cpp
-  TestIcon.h
-  TestInputBox.cpp
-  TestInputBox.h
-  TestLibExprtk.cpp
-  TestLibExprtk.h
-  TestMenu.cpp
-  TestMenu.h
-  TestObjectFactory.cpp
-  TestObjectFactory.h
-  TestWin32Registry.cpp
-  TestWin32Registry.h
-  TestPropertyManager.cpp
-  TestPropertyManager.h
-  TestSaUtils.cpp
-  TestSaUtils.h
-  TestShellExtension.cpp
-  TestShellExtension.h
-  TestUnicode.cpp
-  TestUnicode.h
-  TestValidator.cpp
-  TestValidator.h
-  TestWildcard.h
-  TestWildcard.cpp
-  TestWin32Clipboard.cpp
-  TestWin32Clipboard.h
-  TestWin32Registry.cpp
-  TestWin32Registry.h
-  TestWin32Utils.cpp
-  TestWin32Utils.h
-  TestWorkspace.cpp
-  TestWorkspace.h
+  QuickLoader.cpp
+  QuickLoader.h
   Workspace.cpp
   Workspace.h
 )
 
 # Group external files as filter for Visual Studio
-source_group("Test Configuration Files"             FILES ${CONFIGURATION_TEST_FILES})
+source_group("Test Data Files"          FILES ${CONFIGURATION_TEST_FILES})
+source_group("Test Source Files"        FILES ${HEADER_AND_SOURCE_TEST_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)

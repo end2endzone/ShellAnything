@@ -34,6 +34,7 @@
 #include "rapidassist/undef_windows_macros.h"
 
 #include "Workspace.h"
+#include "QuickLoader.h"
 
 namespace shellanything
 {
@@ -467,13 +468,21 @@ namespace shellanything
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
 
-      //Define the path for a generated file
-      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
-      std::string test_name = ra::testing::GetTestQualifiedName();
-      test_name += ".dat";
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
-      //Generate a small filename
-      std::string file_path = workspace.GetFullPathUtf8(test_name.c_str());
+      //Find expected menus.
+      Menu* menu_copy = loader.FindMenuByName("Copy as text");
+      Menu* menu_paste = loader.FindMenuByName("Paste");
+      ASSERT_TRUE(menu_copy != NULL);
+      ASSERT_TRUE(menu_paste != NULL);
+
+      //Generate a small filename in the workspace for the selection context.
+      std::string file_name = ra::testing::GetTestQualifiedName() + ".txt";
+      std::string file_path = workspace.GetFullPathUtf8(file_name.c_str());
       bool file_created = CreateSampleFile(file_path.c_str(), 75);
       ASSERT_TRUE(file_created);
 
@@ -482,49 +491,21 @@ namespace shellanything
       StringList elements;
       elements.push_back(file_path);
       c.SetElements(elements);
-
       c.RegisterProperties();
 
-      shellanything::IActionFactory* property_factory = shellanything::ActionProperty::NewFactory();
-      shellanything::IActionFactory* file_factory = shellanything::ActionFile::NewFactory();
+      // Execute "copy"
+      bool executed = loader.ExecuteActions(menu_copy, c);
+      ASSERT_TRUE(executed);
 
-      //execute the action, copy the file into a property
-      std::string error1, error2;
-      IAction* copy1 = property_factory->ParseFromXml("<property name=\"copypaste.file.content\" file=\"${selection.path}\" />", error1);
-      IAction* copy2 = property_factory->ParseFromXml("<property name=\"copypaste.file.name\" value=\"${selection.filename}\" />", error2);
-      ASSERT_TRUE(copy1 != NULL) << error1;
-      ASSERT_TRUE(copy2 != NULL) << error2;
-
-      bool executed1 = copy1->Execute(c);
-      bool executed2 = copy2->Execute(c);
-      ASSERT_TRUE(executed1);
-      ASSERT_TRUE(executed2);
-
-      //simulate use has right click a directory
+      //simulate user has right click a directory (change selection to a directory)
       elements.clear();
       elements.push_back(workspace.GetBaseDirectory());
       c.SetElements(elements);
-
       c.RegisterProperties();
 
-      //execute the action, paste a property as a file
-      IAction* paste1 = file_factory->ParseFromXml("<file path=\"${selection.path}\\${copypaste.file.name}.copy.txt\" encoding=\"utf8\">${copypaste.file.content}</file>", error1);
-      IAction* paste2 = property_factory->ParseFromXml("<property name=\"copypaste.file.content\" value=\"\" />", error2);
-      ASSERT_TRUE(paste1 != NULL) << error1;
-      ASSERT_TRUE(paste2 != NULL) << error2;
-
-      executed1 = paste1->Execute(c);
-      executed2 = paste2->Execute(c);
-      ASSERT_TRUE(executed1);
-      ASSERT_TRUE(executed2);
-
-      //Cleanup
-      delete copy1;
-      delete copy2;
-      delete paste1;
-      delete paste2;
-      delete property_factory;
-      delete file_factory;
+      // Execute "paste"
+      executed = loader.ExecuteActions(menu_paste, c);
+      ASSERT_TRUE(executed);
 
       //Assert a new file copy was generated
       std::string expected_file_path = file_path + ".copy.txt";

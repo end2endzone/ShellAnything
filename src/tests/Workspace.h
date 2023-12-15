@@ -34,7 +34,6 @@ namespace shellanything
   /// Create a temporary workspace directory for storing test files.
   /// The workspace directory is deleted when the class is destroyed.
   /// </summary>
-  /// <returns>Returns 0 when the function succeed. Returns a non zero values otherwise.</returns>
   class Workspace
   {
   public:

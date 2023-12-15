@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="File content">
+      <menu name="Copy as text">
+        <visibility maxfiles="1" maxfolders="0" />
+        <actions>
+          <!-- Store the file's content and file name as properties -->
+          <property name="copypaste.file.content" file="${selection.path}" />
+          <property name="copypaste.file.name" value="${selection.filename}" />
+        </actions>
+      </menu>
+    
+      <menu name="Paste">
+        <visibility properties="copypaste.file.content" />
+        <actions>
+          <!-- Generate a file from properties -->
+          <file path="${selection.path}\${copypaste.file.name}.copy.txt" encoding="utf8">${copypaste.file.content}</file>
+          <property name="copypaste.file.content" value="" />
+        </actions>
+      </menu>
+    </menu>
+  </shell>
+</root>
