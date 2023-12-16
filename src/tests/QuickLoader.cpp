@@ -59,12 +59,13 @@ namespace shellanything
   {
     if (!mWorkspace)
       return false;
+    std::string workspace_dir = mWorkspace->GetBaseDirectory();
+    if (workspace_dir.empty())
+      return true;
 
     //Delete the configurations which source files are deleted
     ConfigManager& cmgr = ConfigManager::GetInstance();
     cmgr.Refresh();
-
-    std::string workspace_dir = mWorkspace->GetBaseDirectory();
 
     // For each files in workspace directory...
     ra::strings::StringVector files;
@@ -149,70 +150,6 @@ namespace shellanything
 
     // Import the file into the current workspace and load it.
     return ImportAndLoadConfigurationFile(config_file_path);
-  }
-
-  Menu* QuickLoader::FindMenuByName(const std::string& name, bool expands)
-  {
-    PropertyManager& pmgr = PropertyManager::GetInstance();
-    ConfigManager& cmgr = ConfigManager::GetInstance();
-    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
-
-    // For each configuration
-    for (size_t i = 0; i < configs.size(); i++)
-    {
-      Configuration* config = configs[i];
-
-      // For each menus in configuration
-      Menu::MenuPtrList menus = config->GetMenus();
-      for (size_t j = 0; j < menus.size(); j++)
-      {
-        Menu* menu = menus[j];
-
-        // For each sub menus in menu
-        Menu::MenuPtrList submenus = menu->GetSubMenus();
-        for (size_t k = 0; k < submenus.size(); k++)
-        {
-          Menu* submenu = submenus[k];
-
-          // Get the sub menu and and expand it if requested.
-          std::string submenu_name = submenu->GetName();
-          if (expands)
-          {
-            std::string expanded = pmgr.Expand(submenu_name);
-            submenu_name = expanded;
-          }
-
-          // Check for a match.
-          if (name == submenu_name)
-          {
-            return submenu;
-          }
-        }
-      }
-    }
-
-    return NULL;
-  }
-
-  bool QuickLoader::ExecuteActions(const Menu* menu, const SelectionContext& context)
-  {
-    //execute actions
-    const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
-    for (size_t i = 0; i < actions.size(); i++)
-    {
-      const shellanything::IAction* action = actions[i];
-      if (action)
-      {
-        bool success = action->Execute(context);
-        if (!success)
-        {
-          //stop executing the next actions
-          return false;
-        }
-      }
-    }
-
-    return true;
   }
 
 } //namespace shellanything

@@ -163,6 +163,22 @@ namespace shellanything
     return NULL;
   }
 
+  Menu* ConfigManager::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  {
+    //for each child
+    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    for (size_t i = 0; i < configurations.size(); i++)
+    {
+      Configuration* config = configurations[i];
+      Menu* match = config->FindMenuByName(name, flags);
+      if (match)
+        return match;
+    }
+
+    return NULL;
+  }
+
+
   uint32_t ConfigManager::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t nextCommandId = first_command_id;

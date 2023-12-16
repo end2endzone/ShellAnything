@@ -73,21 +73,6 @@ namespace shellanything
     /// <returns>Returns true if the configuration file was loaded. Returns false otherwise.</returns>
     bool LoadCurrentTestConfigurationFile();
 
-    /// <summary>
-    /// Finds a loaded Menu pointer by a given name. The first menu that matches is returned.
-    /// </summary>
-    /// <param name="name">The name of the menu.</param>
-    /// <param name="expand">The should the menu name be expanded before comparing with the given name.</param>
-    /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
-    Menu* FindMenuByName(const std::string& name, bool expands = false);
-
-    /// <summary>
-    /// Executes all action of the given menu.
-    /// </summary>
-    /// <param name="menu">The menu to execute all actions.</param>
-    /// <returns>Returns true when all menu action was executed succesfully. Returns false otherwise.</returns>
-    bool ExecuteActions(const Menu* menu, const SelectionContext& context);
-
   private:
     Workspace* mWorkspace;
   };

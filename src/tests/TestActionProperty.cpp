@@ -27,6 +27,8 @@
 #include "ActionProperty.h"
 #include "ActionFile.h"
 #include "PropertyManager.h"
+#include "ConfigManager.h"
+#include "ActionManager.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
@@ -462,6 +464,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestActionProperty, testCopyFile)
     {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
       PropertyManager& pmgr = PropertyManager::GetInstance();
 
       //Creating a temporary workspace for the test execution.
@@ -475,8 +478,8 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Find expected menus.
-      Menu* menu_copy = loader.FindMenuByName("Copy as text");
-      Menu* menu_paste = loader.FindMenuByName("Paste");
+      Menu* menu_copy = cmgr.FindMenuByName("Copy as text");
+      Menu* menu_paste = cmgr.FindMenuByName("Paste");
       ASSERT_TRUE(menu_copy != NULL);
       ASSERT_TRUE(menu_paste != NULL);
 
@@ -494,7 +497,7 @@ namespace shellanything
       c.RegisterProperties();
 
       // Execute "copy"
-      bool executed = loader.ExecuteActions(menu_copy, c);
+      bool executed = ActionManager::Execute(menu_copy, c);
       ASSERT_TRUE(executed);
 
       //simulate user has right click a directory (change selection to a directory)
@@ -504,7 +507,7 @@ namespace shellanything
       c.RegisterProperties();
 
       // Execute "paste"
-      executed = loader.ExecuteActions(menu_paste, c);
+      executed = ActionManager::Execute(menu_paste, c);
       ASSERT_TRUE(executed);
 
       //Assert a new file copy was generated

@@ -24,7 +24,9 @@
 
 #include "TestConfigManager.h"
 #include "Workspace.h"
+#include "QuickLoader.h"
 #include "ConfigManager.h"
+#include "PropertyManager.h"
 #include "SelectionContext.h"
 
 #include "rapidassist/testing.h"
@@ -534,6 +536,120 @@ namespace shellanything
       ASSERT_EQ(Menu::INVALID_COMMAND_ID, option1_3->GetCommandId());
       ASSERT_EQ(Menu::INVALID_COMMAND_ID, option1_2_1->GetCommandId());
       ASSERT_EQ(Menu::INVALID_COMMAND_ID, option1_2_1_1->GetCommandId());
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestConfigManager, testFindMenuByName)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Find root menus.
+      Menu* menu0 = cmgr.FindMenuByName("menu0");
+      Menu* menu1 = cmgr.FindMenuByName("menu1");
+      Menu* menu2 = cmgr.FindMenuByName("menu2");
+
+      //ASSERT all menus were found
+      ASSERT_TRUE(menu0 != NULL);
+      ASSERT_TRUE(menu1 != NULL);
+      ASSERT_TRUE(menu2 != NULL);
+
+      //Find sub menus
+      Menu* menu1a = cmgr.FindMenuByName("menu1a");
+      Menu* menu1b = cmgr.FindMenuByName("menu1b");
+      Menu* menu1bb = cmgr.FindMenuByName("menu1bb");
+
+      //ASSERT all menus were found
+      ASSERT_TRUE(menu1a != NULL);
+      ASSERT_TRUE(menu1b != NULL);
+      ASSERT_TRUE(menu1bb != NULL);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestConfigManager, testFindMenuByNameExpanding)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Define mandatory properties
+      pmgr.SetProperty("foo", "Lorem");
+      pmgr.SetProperty("bar", "ipsum");
+      pmgr.SetProperty("baz", "dolor");
+      pmgr.SetProperty("amy", "sit");
+      pmgr.SetProperty("leo", "amet");
+
+      //Find menus.
+      FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_EXPANDS;
+      Menu* menu0 = cmgr.FindMenuByName("Lorem", flags);
+      Menu* menu1 = cmgr.FindMenuByName("ipsum", flags);
+      Menu* menu2 = cmgr.FindMenuByName("dolor", flags);
+      Menu* menu3 = cmgr.FindMenuByName("sit", flags);
+      Menu* menu4 = cmgr.FindMenuByName("amet", flags);
+
+      //ASSERT all menus were found
+      ASSERT_TRUE(menu0 != NULL);
+      ASSERT_TRUE(menu1 != NULL);
+      ASSERT_TRUE(menu2 != NULL);
+      ASSERT_TRUE(menu3 != NULL);
+      ASSERT_TRUE(menu4 != NULL);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestConfigManager, testFindMenuByNameCaseInsensitive)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Find menus.
+      FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_CASE_INSENSITIVE;
+      Menu* menu0 = cmgr.FindMenuByName("Shmi Skywalker", flags);
+      Menu* menu1 = cmgr.FindMenuByName("anakin skywalker", flags);
+      Menu* menu2 = cmgr.FindMenuByName("LUKE SKYWALKER", flags);
+      Menu* menu3 = cmgr.FindMenuByName("LeIa OrGaNa", flags);
+      Menu* menu4 = cmgr.FindMenuByName("Ben SOLO", flags);
+
+      //ASSERT all menus were found
+      ASSERT_TRUE(menu0 != NULL);
+      ASSERT_TRUE(menu1 != NULL);
+      ASSERT_TRUE(menu2 != NULL);
+      ASSERT_TRUE(menu3 != NULL);
+      ASSERT_TRUE(menu4 != NULL);
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

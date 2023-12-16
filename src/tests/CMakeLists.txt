@@ -12,6 +12,9 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testClear.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testDetectNewFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFileModifications.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFindMenuByName.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFindMenuByNameCaseInsensitive.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFindMenuByNameExpanding.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testParentWithoutChildren.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfiguration.testLoadProperties.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testGetParent.xml

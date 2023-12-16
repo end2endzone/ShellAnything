@@ -420,6 +420,21 @@ namespace shellanything
     return NULL;
   }
 
+  Menu* Configuration::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  {
+    //for each child
+    Menu::MenuPtrList children = GetMenus();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+      Menu* child = children[i];
+      Menu* match = child->FindMenuByName(name, flags);
+      if (match)
+        return match;
+    }
+
+    return NULL;
+  }
+
   uint32_t Configuration::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t nextCommandId = first_command_id;
