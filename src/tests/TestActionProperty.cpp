@@ -518,6 +518,55 @@ namespace shellanything
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testCaptureOutput)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Find expected menus.
+      Menu* menu = cmgr.FindMenuByName("Capture output");
+      ASSERT_TRUE(menu != NULL);
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      bool executed = ActionManager::Execute(menu, c);
+      ASSERT_TRUE(executed);
+
+      //Assert a new file copy was generated
+      std::string expected_file_path = pmgr.Expand("${env.TEMP}\\command_output.txt");
+      ASSERT_TRUE(ra::filesystem::FileExists(expected_file_path.c_str()));
+
+      // Read from the file itself
+      std::string data;
+      bool file_read = ra::filesystem::ReadFile(expected_file_path, data);
+      ASSERT_TRUE(file_read);
+
+      //Assert the property value matches the content of the file
+      ASSERT_TRUE(pmgr.HasProperty("files"));
+      std::string property_files = pmgr.GetProperty("files");
+
+      ASSERT_EQ(property_files, data);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
 
   } //namespace test
 } //namespace shellanything

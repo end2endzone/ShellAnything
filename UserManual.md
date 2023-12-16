@@ -1023,8 +1023,8 @@ For example :
 ```xml
 <menu name="Capture exec output">
   <actions>
-    <exec path="cmd.exe" arguments="/C dir /b &quot;%USERPROFILE%\Documents&quot;> &quot;${temp}\command_output.txt&quot;" />
-    <property name="files" file="${temp}\command_output.txt" />
+    <exec path="cmd.exe" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${env.TEMP}\command_output.txt&quot;" />
+    <property name="files" file="${env.TEMP}\command_output.txt" />
   </actions>
 </menu>
 ```
