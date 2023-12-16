@@ -30,6 +30,8 @@
 #include "Icon.h"
 #include "Validator.h"
 #include "IAction.h"
+#include "Enums.h"
+
 #include <string>
 #include <vector>
 #include <stdint.h>
@@ -190,6 +192,14 @@ namespace shellanything
     /// <param name="command_id">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
     Menu* FindMenuByCommandId(const uint32_t& command_id);
+
+    /// <summary>
+    /// Finds a loaded Menu pointer by a given name. The first menu that matches the given name is returned.
+    /// </summary>
+    /// <param name="name">The name of the menu.</param>
+    /// <param name="flags">The flags for searching by name.</param>
+    /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
+    Menu* FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_NONE);
 
     /// <summary>
     /// Assign unique command id to this menus and submenus.

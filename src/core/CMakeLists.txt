@@ -3,6 +3,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionClipboard.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionExecute.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionFile.h
+  ${CMAKE_SOURCE_DIR}/src/core/ActionManager.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionMessage.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionOpen.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
@@ -31,6 +32,7 @@ add_library(sa.core SHARED
   ActionClipboard.cpp
   ActionExecute.cpp
   ActionFile.cpp
+  ActionManager.cpp
   ActionMessage.cpp
   ActionOpen.cpp
   ActionPrompt.cpp
@@ -66,6 +68,7 @@ add_library(sa.core SHARED
   Validator.cpp
   DriveClass.h
   DriveClass.cpp
+  Enums.h
   ErrorManager.h
   ErrorManager.cpp
   PropertyManager.h

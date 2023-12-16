@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+ 
+    <menu name="${foo}">
+      <menu name="${bar}">
+        <menu name="${baz}">
+          <menu name="${amy}">
+            <menu name="${leo}">
+            </menu>
+          </menu>
+        </menu>
+      </menu>
+    </menu>
+
+  </shell>
+</root>

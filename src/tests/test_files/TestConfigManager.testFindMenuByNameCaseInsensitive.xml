@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="Shmi Skywalker">
+      <menu name="Anakin Skywalker">
+        <menu name="Luke Skywalker">
+        </menu>
+        <menu name="Leia Organa">
+          <menu name="Ben Solo">
+          </menu>
+        </menu>
+      </menu>
+    </menu>
+
+  </shell>
+</root>

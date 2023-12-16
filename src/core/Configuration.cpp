@@ -295,12 +295,26 @@ namespace shellanything
     std::string file_extension = ra::filesystem::GetFileExtention(path);
     file_extension = ra::strings::Uppercase(file_extension);
 
-    if (file_extension == "XML")
-    {
-      return true;
-    }
+    if (file_extension != "XML")
+      return false;
 
-    return false;
+    // Peek at the file for known xml elements
+    std::string data;
+    bool peeked = ra::filesystem::PeekFileUtf8(path, 1024 * 1024, data);
+    if (!peeked)
+      return false;
+
+    // Search for element <root>
+    size_t root_element_pos = data.find("<root>");
+    if (root_element_pos == std::string::npos)
+      return false;
+
+    // Search for element <shell>
+    size_t shell_element_pos = data.find("<shell>", root_element_pos);
+    if (root_element_pos == std::string::npos)
+      return false;
+
+    return true;
   }
 
   const std::string& Configuration::GetFilePath() const
@@ -399,6 +413,21 @@ namespace shellanything
     {
       Menu* child = children[i];
       Menu* match = child->FindMenuByCommandId(command_id);
+      if (match)
+        return match;
+    }
+
+    return NULL;
+  }
+
+  Menu* Configuration::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  {
+    //for each child
+    Menu::MenuPtrList children = GetMenus();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+      Menu* child = children[i];
+      Menu* match = child->FindMenuByName(name, flags);
       if (match)
         return match;
     }

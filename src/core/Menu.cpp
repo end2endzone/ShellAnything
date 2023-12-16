@@ -24,6 +24,9 @@
 
 #include "Menu.h"
 #include "Unicode.h"
+#include "PropertyManager.h"
+
+#include "rapidassist/strings.h"
 
 namespace shellanything
 {
@@ -267,6 +270,41 @@ namespace shellanything
     {
       Menu* child = children[i];
       Menu* match = child->FindMenuByCommandId(command_id);
+      if (match)
+        return match;
+    }
+
+    return NULL;
+  }
+
+  Menu* Menu::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  {
+    // Get the menu name and expand it if requested.
+    std::string menu_name = mName;
+    if (flags & FIND_BY_NAME_EXPANDS)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      std::string expanded = pmgr.Expand(mName);
+      menu_name = expanded;
+    }
+
+    // Is it this menu?
+    if (menu_name == name)
+      return this;
+    else if (flags & FIND_BY_NAME_CASE_INSENSITIVE)
+    {
+      std::string u_menu_name = ra::strings::Uppercase(menu_name);
+      std::string u_name = ra::strings::Uppercase(name);
+      if (u_menu_name == u_name)
+        return this;
+    }
+
+    //for each child
+    Menu::MenuPtrList children = GetSubMenus();
+    for (size_t i = 0; i < children.size(); i++)
+    {
+      Menu* child = children[i];
+      Menu* match = child->FindMenuByName(name, flags);
       if (match)
         return match;
     }

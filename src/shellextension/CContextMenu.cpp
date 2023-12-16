@@ -28,6 +28,7 @@
 #include "shellext.h"
 
 #include "ErrorManager.h"
+#include "ActionManager.h"
 #include "Win32Registry.h"
 #include "Win32Utils.h"
 #include "GlogUtils.h"
@@ -446,46 +447,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
     return E_INVALIDARG;
   }
 
-  //compute the visual menu title
-  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title = pmgr.Expand(menu->GetName());
+  //found a menu match, execute menu actions
+  bool success = shellanything::ActionManager::Execute(menu, m_Context);
 
-  //found a menu match, execute menu action
-  SA_LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
-
-  //execute actions
-  const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
-  for (size_t i = 0; i < actions.size(); i++)
-  {
-    SA_LOG(INFO) << __FUNCTION__ << "(), executing action " << (i + 1) << " of " << actions.size() << ".";
-    const shellanything::IAction* action = actions[i];
-    if (action)
-    {
-      ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
-      bool success = action->Execute(m_Context);
-
-      if (!success)
-      {
-        //try to get an error message from win32
-        ra::errors::errorcode_t dwError = ra::errors::GetLastErrorCode();
-        if (dwError)
-        {
-          std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-          SA_LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed: " << error_message;
-        }
-        else
-        {
-          //simply log an error
-          SA_LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed.";
-        }
-
-        //stop executing the next actions
-        i = actions.size();
-      }
-    }
-  }
-
-  SA_LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "' completed.";
   return S_OK;
 }
 

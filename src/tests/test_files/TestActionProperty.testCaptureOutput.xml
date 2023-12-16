@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="Capture output">
+      <actions>
+        <exec path="cmd.exe" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${env.TEMP}\command_output.txt&quot;" />
+        <property name="files" file="${env.TEMP}\command_output.txt" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>
