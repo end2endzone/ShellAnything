@@ -28,6 +28,7 @@
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
 #include "SaUtils.h"
+#include "Win32Registry.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -39,6 +40,16 @@ namespace shellanything
 {
   const std::string ActionProperty::XML_ELEMENT_NAME = "property";
   const size_t ActionProperty::DEFAULT_MAX_FILE_SIZE = 10240;
+
+  void append_optional_null(std::string& value)
+  {
+    if (value.empty())
+      return;
+    const char* data = value.data();
+    char last = data[value.size()];
+    if (last != '\0')
+      value.append(1, '\0');
+  }
 
   class ActionPropertyFactory : public virtual IActionFactory
   {
@@ -112,6 +123,13 @@ namespace shellanything
         action->SetFileSize(tmp_str);
       }
 
+      //parse registrykey
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "registrykey", true, true, tmp_str, error))
+      {
+        action->SetRegistryKey(tmp_str);
+      }
+
       //done parsing
       return action;
     }
@@ -139,6 +157,7 @@ namespace shellanything
     std::string exprtk = pmgr.Expand(mExprtk);
     std::string file = pmgr.Expand(mFile);
     std::string filesize = pmgr.Expand(mFileSize);
+    std::string regisrykey = pmgr.Expand(mRegistryKey);
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!exprtk.empty())
@@ -158,6 +177,57 @@ namespace shellanything
 
       // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
       value = ra::strings::ToString(result);
+    }
+
+    // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!regisrykey.empty())
+    {
+      Win32Registry::REGISTRY_TYPE key_type;
+      Win32Registry::MemoryBuffer key_value;
+      bool key_found = false;
+
+      if (!key_found)
+      {
+        // Search for a registry key and value that matches regisrykey.
+        // Split as a key path and key name.
+        std::string key_path = ra::filesystem::GetParentPath(regisrykey.c_str());
+        std::string key_name = ra::filesystem::GetFilename(regisrykey.c_str());
+        key_found = Win32Registry::GetValue(key_path.c_str(), key_name.c_str(), key_type, key_value);
+      }
+
+      if (!key_found)
+      {
+        // Search for a registry key default that matches regisrykey.
+        key_found = Win32Registry::GetDefaultKeyValue(regisrykey.c_str(), key_type, key_value);
+      }
+
+      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+      if (key_found)
+      {
+        switch (key_type)
+        {
+        case Win32Registry::REGISTRY_TYPE_STRING:
+          value = key_value;
+          break;
+        case Win32Registry::REGISTRY_TYPE_BINARY:
+          // Properties must end with '\0' to be printable
+          append_optional_null(key_value);
+          value = key_value;
+          break;
+        case Win32Registry::REGISTRY_TYPE_UINT32:
+          {
+            uint32_t* tmp32 = (uint32_t*)key_value.data();
+            value = ra::strings::ToString(*tmp32);
+          }
+          break;
+        case Win32Registry::REGISTRY_TYPE_UINT64:
+          {
+            uint64_t* tmp64 = (uint64_t*)key_value.data();
+            value = ra::strings::ToString(*tmp64);
+          }
+          break;
+        }
+      }
     }
 
     // If file is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
@@ -282,6 +352,16 @@ namespace shellanything
   void ActionProperty::SetFileSize(const std::string& value)
   {
     mFileSize = value;
+  }
+
+  const std::string& ActionProperty::GetRegistryKey() const
+  {
+    return mRegistryKey;
+  }
+
+  void ActionProperty::SetRegistryKey(const std::string& value)
+  {
+    mRegistryKey = value;
   }
 
 } //namespace shellanything
