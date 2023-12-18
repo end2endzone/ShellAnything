@@ -1048,6 +1048,45 @@ If not specified, a maximum of ***10 KB*** can be read from a file.
 
 
 
+#### registrykey attribute: ####
+
+The `registrykey` attribute defines the path to a [Windows Registry Key](https://en.wikipedia.org/wiki/Windows_Registry) or _Registry Value_ that is used to set a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+
+For example, the following sets the property `apps.7zip.dir` to the installation directory of [7-zip](https://www.7-zip.org/) :
+```xml
+<property name="apps.7zip.dir" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path64" />
+```
+
+This method allows to create generic configuration file that can be used by everyone.
+
+For example :
+
+***Open video files with VLC*** :
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <!-- Detect VLC executable path and install directory from the registry -->
+      <!-- The property `apps.vlc.exe` is set only if the path in Windows Registry is found. -->
+      <property name="apps.vlc.exe" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\VideoLAN\VLC" />
+      <property name="apps.vlc.dir" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\VideoLAN\VLC\InstallDir" />
+    </default>
+
+    <menu name="Open with VLC">
+      <icon path="${apps.vlc.exe}" index="0" />
+      <!-- Show the menu only if VLC is installed on the system (found in the registry). -->
+      <visibility properties="apps.vlc.exe" maxfiles="1" maxfolders="0" fileextensions="mp4;mkv" />
+      <actions>
+        <exec path="${apps.vlc.exe}" arguments="${selection.path}" />
+      </actions>
+    </menu>
+  </shell>
+</root>
+```
+
+
+
 ### &lt;file&gt; action ###
 
 The &lt;file&gt; element is used to create a text file on disk. The content of the file is specified between the opening and closing tags of the &lt;file&gt; element. The &lt;file&gt; element supports dynamic properties and can be used to create default configuration files or create support files for the menu.

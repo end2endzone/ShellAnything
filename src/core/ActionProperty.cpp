@@ -228,6 +228,11 @@ namespace shellanything
           break;
         }
       }
+      else
+      {
+        SA_LOG(WARNING) << "Failed evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
+      }
     }
 
     // If file is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
