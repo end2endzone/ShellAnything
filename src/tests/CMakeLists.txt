@@ -146,6 +146,8 @@ target_include_directories(sa.tests
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/logger/glog
     ${CMAKE_BINARY_DIR}/src/logger/glog
+    ${CMAKE_SOURCE_DIR}/src/windows
+    ${CMAKE_BINARY_DIR}/src/windows
 )
 
 # Define linking dependencies.
@@ -157,6 +159,7 @@ target_link_libraries(sa.tests
     sa.api
     sa.shellextension
     sa.logger.glog
+    sa.windows
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist

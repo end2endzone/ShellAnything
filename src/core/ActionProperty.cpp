@@ -28,7 +28,6 @@
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
 #include "SaUtils.h"
-#include "Win32Registry.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -40,16 +39,6 @@ namespace shellanything
 {
   const std::string ActionProperty::XML_ELEMENT_NAME = "property";
   const size_t ActionProperty::DEFAULT_MAX_FILE_SIZE = 10240;
-
-  void append_optional_null(std::string& value)
-  {
-    if (value.empty())
-      return;
-    const char* data = value.data();
-    char last = data[value.size()];
-    if (last != '\0')
-      value.append(1, '\0');
-  }
 
   class ActionPropertyFactory : public virtual IActionFactory
   {
@@ -182,51 +171,19 @@ namespace shellanything
     // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!regisrykey.empty())
     {
-      Win32Registry::REGISTRY_TYPE key_type;
-      Win32Registry::MemoryBuffer key_value;
-      bool key_found = false;
-
-      if (!key_found)
+      IRegistryService* registry = App::GetInstance().GetRegistry();
+      if (registry == NULL)
       {
-        // Search for a registry key and value that matches regisrykey.
-        // Split as a key path and key name.
-        std::string key_path = ra::filesystem::GetParentPath(regisrykey.c_str());
-        std::string key_name = ra::filesystem::GetFilename(regisrykey.c_str());
-        key_found = Win32Registry::GetValue(key_path.c_str(), key_name.c_str(), key_type, key_value);
+        SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
       }
 
-      if (!key_found)
+      // Query for an existing registry key
+      std::string key_value;
+      if (registry->GetRegistryKeyAsString(regisrykey, key_value))
       {
-        // Search for a registry key default that matches regisrykey.
-        key_found = Win32Registry::GetDefaultKeyValue(regisrykey.c_str(), key_type, key_value);
-      }
-
-      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
-      if (key_found)
-      {
-        switch (key_type)
-        {
-        case Win32Registry::REGISTRY_TYPE_STRING:
-          value = key_value;
-          break;
-        case Win32Registry::REGISTRY_TYPE_BINARY:
-          // Properties must end with '\0' to be printable
-          append_optional_null(key_value);
-          value = key_value;
-          break;
-        case Win32Registry::REGISTRY_TYPE_UINT32:
-          {
-            uint32_t* tmp32 = (uint32_t*)key_value.data();
-            value = ra::strings::ToString(*tmp32);
-          }
-          break;
-        case Win32Registry::REGISTRY_TYPE_UINT64:
-          {
-            uint64_t* tmp64 = (uint64_t*)key_value.data();
-            value = ra::strings::ToString(*tmp64);
-          }
-          break;
-        }
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = key_value;
       }
       else
       {

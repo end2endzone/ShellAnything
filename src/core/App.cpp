@@ -86,6 +86,16 @@ namespace shellanything
     return mLogger;
   }
 
+  void App::SetRegistry(IRegistryService* instance)
+  {
+    mRegistry = instance;
+  }
+
+  IRegistryService* App::GetRegistry()
+  {
+    return mRegistry;
+  }
+
   bool App::IsTestingEnvironment()
   {
     std::string process_path = ra::process::GetCurrentProcessPath();

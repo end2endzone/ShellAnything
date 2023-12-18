@@ -46,6 +46,7 @@
 #include "App.h"
 #include "LoggerHelper.h"
 #include "LoggerGlog.h"
+#include "RegistryService.h"
 
 using namespace ra;
 using namespace shellanything::logging;
@@ -121,8 +122,12 @@ int main(int argc, char** argv)
   glog::InitGlog();
 
   // Setup an active logger in ShellAnything's core.
-  shellanything::ILogger* glog_logger = new shellanything::LoggerGlog();
-  app.SetLogger(glog_logger);
+  shellanything::ILogger* logger = new shellanything::LoggerGlog();
+  app.SetLogger(logger);
+
+  // Setup an active registry service in ShellAnything's core.
+  shellanything::IRegistryService* registry = new shellanything::RegistryService();
+  app.SetRegistry(registry);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.

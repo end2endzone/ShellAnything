@@ -33,6 +33,9 @@
 #include "Win32Utils.h"
 #include "GlogUtils.h"
 
+#include "LoggerGlog.h"
+#include "RegistryService.h"
+
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -359,6 +362,14 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
       // Initialize Google's logging library.
       glog::InitGlog();
+
+      // Setup an active logger in ShellAnything's core.
+      shellanything::ILogger* logger = new shellanything::LoggerGlog();
+      app.SetLogger(logger);
+
+      // Setup an active registry service in ShellAnything's core.
+      shellanything::IRegistryService* registry = new shellanything::RegistryService();
+      app.SetRegistry(registry);
 
       // Setup and starting application
       app.Start();
