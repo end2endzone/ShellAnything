@@ -112,6 +112,13 @@ namespace shellanything
         action->SetFileSize(tmp_str);
       }
 
+      //parse registrykey
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "registrykey", true, true, tmp_str, error))
+      {
+        action->SetRegistryKey(tmp_str);
+      }
+
       //done parsing
       return action;
     }
@@ -139,6 +146,7 @@ namespace shellanything
     std::string exprtk = pmgr.Expand(mExprtk);
     std::string file = pmgr.Expand(mFile);
     std::string filesize = pmgr.Expand(mFileSize);
+    std::string regisrykey = pmgr.Expand(mRegistryKey);
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!exprtk.empty())
@@ -158,6 +166,30 @@ namespace shellanything
 
       // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
       value = ra::strings::ToString(result);
+    }
+
+    // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!regisrykey.empty())
+    {
+      IRegistryService* registry = App::GetInstance().GetRegistry();
+      if (registry == NULL)
+      {
+        SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
+      }
+
+      // Query for an existing registry key
+      std::string key_value;
+      if (registry->GetRegistryKeyAsString(regisrykey, key_value))
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = key_value;
+      }
+      else
+      {
+        SA_LOG(WARNING) << "Failed evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
+      }
     }
 
     // If file is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
@@ -282,6 +314,16 @@ namespace shellanything
   void ActionProperty::SetFileSize(const std::string& value)
   {
     mFileSize = value;
+  }
+
+  const std::string& ActionProperty::GetRegistryKey() const
+  {
+    return mRegistryKey;
+  }
+
+  void ActionProperty::SetRegistryKey(const std::string& value)
+  {
+    mRegistryKey = value;
   }
 
 } //namespace shellanything

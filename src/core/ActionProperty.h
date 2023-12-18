@@ -114,12 +114,23 @@ namespace shellanything
     /// </summary>
     void SetFileSize(const std::string& value);
 
+    /// <summary>
+    /// Getter for the 'registrykey' parameter.
+    /// </summary>
+    const std::string& GetRegistryKey() const;
+
+    /// <summary>
+    /// Setter for the 'registrykey' parameter.
+    /// </summary>
+    void SetRegistryKey(const std::string& value);
+
   private:
     std::string mName;
     std::string mValue;
     std::string mExprtk;
     std::string mFile;
     std::string mFileSize;
+    std::string mRegistryKey;
   };
 
 

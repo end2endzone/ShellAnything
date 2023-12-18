@@ -26,6 +26,7 @@
 #define SA_APP_H
 
 #include "ILogger.h"
+#include "IRegistryService.h"
 
 #include <string>
 
@@ -74,6 +75,21 @@ namespace shellanything
     /// </summary>
     /// <returns>Returns a pointer to an ILogger instance. Returns NULL if no logger is set.</returns>
     ILogger* GetLogger();
+
+    /// <summary>
+    /// Set the current application registry service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetRegistry(IRegistryService* instance);
+
+    /// <summary>
+    /// Get the current application registry service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IRegistryService* GetRegistry();
 
     /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
@@ -126,6 +142,7 @@ namespace shellanything
     std::string mApplicationPath;
 
     ILogger * mLogger;
+    IRegistryService* mRegistry;
   };
 
 

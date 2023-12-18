@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <!-- Read string `C:\Program Files\7-Zip\` -->
+        <property name="test1" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path" />
+      </actions>
+    </menu>
+    
+    <menu name="menu2">
+      <actions>
+        <!-- Read string `1` -->
+        <property name="test2" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers" />
+      </actions>
+    </menu>
+    
+    <menu name="menu3">
+      <actions>
+        <!-- Read string `Microsoft Windows Property System` -->
+        <property name="test3" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\PropertySystem" />
+      </actions>
+    </menu>
+    
+    <menu name="menu4">
+      <actions>
+        <!-- Read 32bit value `0x66` -->
+        <property name="test4" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\LastTaskOperationHandle" />
+      </actions>
+    </menu>
+
+    <menu name="menu5">
+      <actions>
+        <!-- Read BINARY `0x06 0x02 0x50 0x01 0x1e 0x1c ...` -->
+        <property name="test5" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\SusClientIdValidation" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

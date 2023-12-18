@@ -7,6 +7,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCaptureOutput.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCopyFile.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testRegistryKey.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandIdsInvalid.xml
@@ -145,6 +146,8 @@ target_include_directories(sa.tests
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/logger/glog
     ${CMAKE_BINARY_DIR}/src/logger/glog
+    ${CMAKE_SOURCE_DIR}/src/windows
+    ${CMAKE_BINARY_DIR}/src/windows
 )
 
 # Define linking dependencies.
@@ -156,6 +159,7 @@ target_link_libraries(sa.tests
     sa.api
     sa.shellextension
     sa.logger.glog
+    sa.windows
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist

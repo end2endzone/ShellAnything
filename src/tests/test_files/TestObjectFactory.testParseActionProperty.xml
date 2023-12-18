@@ -35,6 +35,13 @@
         <property name="foo" file="c:\foo\bar.txt" filesize="13" />
       </actions>
     </menu>
+    
+    <menu name="menu05">
+      <actions>
+        <!--basic registrykey usage-->
+        <property name="foo" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path" />
+      </actions>
+    </menu>
 
   </shell>
 </root>
