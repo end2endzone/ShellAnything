@@ -16,7 +16,8 @@ Build:
 
 | Service | Build | Tests |
 |----|-------|-------|
-| AppVeyor | [![Build status](https://img.shields.io/appveyor/ci/end2endzone/ShellAnything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything) | [![Tests status](https://img.shields.io/appveyor/tests/end2endzone/shellanything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master/tests) |
+| AppVeyor, Visual Studio 2019 | [![Build status](https://img.shields.io/appveyor/ci/end2endzone/ShellAnything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything) | [![Tests status](https://img.shields.io/appveyor/tests/end2endzone/shellanything/master.svg?logo=appveyor)](https://ci.appveyor.com/project/end2endzone/shellanything/branch/master/tests) |
+| Github Actions, Windows Server 2019 | [![Build on Windows](https://github.com/end2endzone/ShellAnything/actions/workflows/build_windows.yml/badge.svg)](https://github.com/end2endzone/ShellAnything/actions/workflows/build_windows.yml) | [![Tests on Windows](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/end2endzone/58cf6c72c08e706335337d5ef9ca48e8/raw/ShellAnything.master.Windows.json)](https://github.com/end2endzone/ShellAnything/actions/workflows/build_windows.yml) |
 
 
 Statistics:
