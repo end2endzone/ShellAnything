@@ -54,7 +54,7 @@ jobs:
       shell: cmd
       run: call ci\github\list_services_status.bat
 
-    - name: List main registry keys for debugging
+    - name: List Windows registry keys for debugging
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: call ci\github\list_registry_keys.bat
