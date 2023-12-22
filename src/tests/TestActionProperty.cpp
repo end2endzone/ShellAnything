@@ -33,6 +33,7 @@
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
+#include "rapidassist/random.h"
 #include "rapidassist/undef_windows_macros.h"
 
 #include "Workspace.h"
@@ -534,6 +535,11 @@ namespace shellanything
       ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
+      //Generate a random filename for the command output.
+      std::string command_output_file_name = "command_output_file." + ra::random::GetRandomString(5) + ".txt";
+      std::string command_output_file_path = workspace.GetFullPathUtf8(command_output_file_name.c_str());
+      pmgr.SetProperty("command_output_file", command_output_file_path);
+
       //Find expected menus.
       Menu* menu = cmgr.FindMenuByName("Capture output");
       ASSERT_TRUE(menu != NULL);
@@ -550,12 +556,11 @@ namespace shellanything
       ASSERT_TRUE(executed);
 
       //Assert a new file copy was generated
-      std::string expected_file_path = pmgr.Expand("${env.TEMP}\\command_output.txt");
-      ASSERT_TRUE(ra::filesystem::FileExists(expected_file_path.c_str()));
+      ASSERT_TRUE(ra::filesystem::FileExists(command_output_file_path.c_str()));
 
       // Read from the file itself
       std::string data;
-      bool file_read = ra::filesystem::ReadFile(expected_file_path, data);
+      bool file_read = ra::filesystem::ReadFile(command_output_file_path, data);
       ASSERT_TRUE(file_read);
 
       //Assert the property value matches the content of the file
