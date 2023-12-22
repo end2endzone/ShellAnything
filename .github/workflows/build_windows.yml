@@ -54,6 +54,11 @@ jobs:
       shell: cmd
       run: call ci\github\list_services_status.bat
 
+    - name: List main registry keys for debugging
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\list_registry_keys.bat
+
     - name: Deploy 'tests not available' badge before building
       uses: exuanbo/actions-deploy-gist@v1
       if: github.event_name != 'pull_request'
