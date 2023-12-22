@@ -603,6 +603,8 @@ namespace shellanything
         "test3",
         "test4",
         "test5",
+        "test6",
+        "test7",
       };
       static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
       for (size_t i = 0; i < properties_count; i++)
