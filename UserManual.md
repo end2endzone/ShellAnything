@@ -707,7 +707,7 @@ For example, the following launch the Windows Calculator:
 
 The `arguments` attribute defines the launching command line parameters sent to the application specified in the `path` attribute. The attribute is optional.
 
-For example, the following launche `notepad.exe` and open the `License.txt` document :
+For example, the following launch `notepad.exe` and open the `License.txt` document :
 ```xml
 <exec path="C:\Windows\notepad.exe" arguments="C:\Program Files\7-Zip\License.txt" />
 ```
@@ -718,9 +718,50 @@ For example, the following launche `notepad.exe` and open the `License.txt` docu
 
 The `basedir` attribute defines the directory to use as `current directory` when launching the application specified in the `path` attribute. The attribute is optional.
 
-For example, the following launche `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
+For example, the following launch `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
 ```xml
 <exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
+```
+
+
+
+#### wait attribute: ####
+
+The `wait` attribute tell the system to wait for the process to complete and exit before executing the next action. The attribute must be set to `true`, `yes`, `ok`, `on` or `1` to enable the feature. See property `system.true` to allows for more values. The attribute is optional.
+
+For example, the following launch `cmd.exe` and list files and directories recursively. When all files are printed, the file `foobar.txt` is opened in notepad :
+```xml
+<exec path="cmd.exe" wait="true" arguments="/C dir /s /b C:\*.*" />
+<exec path="C:\Windows\notepad.exe" arguments="foobar.txt" />
+```
+
+**Note:**
+It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_.
+
+When combined with other elements, the `wait` attribute allows advanced use case.
+
+For example :
+
+***Base a following action on the result of the first*** :
+```xml
+<!--
+Search recursively for directories under C:\ which contains the word ` and ` and store matches in file `%TEMP%\matches.txt`.
+Tell ShellAnything to wait until the search is complete before proceeding to the next action. -->
+<exec path="cmd.exe" wait="true" arguments="/C dir /ad /s /b C:\*.* | findstr /C:&quot; and &quot;>&quot;${env.TEMP}\matches.txt&quot;" />
+
+<!-- When the search is complete, open the result list in notepad. -->
+<exec path="C:\Windows\notepad.exe" arguments="&quot;${env.TEMP}\matches.txt&quot;" />
+```
+
+
+
+#### timeout attribute: ####
+
+The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
+
+For example, the following launch `cmd.exe` and list files and directories recursively in `C:\`. The list of files are stored in file `${env.TEMP}\files_in_c_drive.txt`. For stability reason, if the listing takes more than 60 seconds, ShellAnything stops waiting for _cmd.exe_ to exit and resume normal operation :
+```xml
+<exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
 ```
 
 

@@ -26,5 +26,17 @@
       </actions>
     </menu>
  
+    <menu name="menu04">
+      <actions>
+        <exec path="foo.exe" arguments="bar" wait="true" />
+      </actions>
+    </menu>
+ 
+    <menu name="menu05">
+      <actions>
+        <exec path="foo.exe" arguments="bar" wait="true" timeout="5" />
+      </actions>
+    </menu>
+ 
   </shell>
 </root>

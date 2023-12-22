@@ -26,6 +26,10 @@
 #include "SelectionContext.h"
 #include "ActionExecute.h"
 #include "PropertyManager.h"
+#include "ConfigManager.h"
+#include "ActionManager.h"
+#include "Workspace.h"
+#include "QuickLoader.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/user.h"
@@ -283,6 +287,94 @@ namespace shellanything
 
       bool executed = ae.Execute(c);
       ASSERT_TRUE(executed);
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionExecute, testWaitInfinite)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get first menu.
+      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ASSERT_EQ(1, configs.size());
+      Menu::MenuPtrList menus = configs[0]->GetMenus();
+      ASSERT_EQ(1, menus.size());
+      Menu* menu = menus[0];
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      uint64_t time_start = ra::timing::GetMillisecondsCounterU64();
+      bool executed = ActionManager::Execute(menu, c);
+      ASSERT_TRUE(executed);
+      uint64_t time_end = ra::timing::GetMillisecondsCounterU64();
+      uint64_t time_elapsed = time_end - time_start;
+
+      //Assert elapsed time is around 10 seconds
+      static const double time_expected = 10000.0;
+      ASSERT_NEAR(time_expected, (double)time_elapsed, 2000.0);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionExecute, testWaitTimeout)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get first menu.
+      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ASSERT_EQ(1, configs.size());
+      Menu::MenuPtrList menus = configs[0]->GetMenus();
+      ASSERT_EQ(1, menus.size());
+      Menu* menu = menus[0];
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      uint64_t time_start = ra::timing::GetMillisecondsCounterU64();
+      bool executed = ActionManager::Execute(menu, c);
+      //ASSERT_TRUE(executed); // the action should fail because of a timeout
+      uint64_t time_end = ra::timing::GetMillisecondsCounterU64();
+      uint64_t time_elapsed = time_end - time_start;
+
+      //Assert elapsed time is around 10 seconds
+      static const double time_expected = 10000.0;
+      ASSERT_NEAR(time_expected, (double)time_elapsed, 2000.0);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
     //--------------------------------------------------------------------------------------------------
 

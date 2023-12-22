@@ -99,6 +99,26 @@ namespace shellanything
     /// </summary>
     void SetVerb(const std::string& verb);
 
+    /// <summary>
+    /// Getter for the 'wait' parameter.
+    /// </summary>
+    const std::string& GetWait() const;
+
+    /// <summary>
+    /// Setter for the 'wait' parameter.
+    /// </summary>
+    void SetWait(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'timeout' parameter.
+    /// </summary>
+    const std::string& GetTimeout() const;
+
+    /// <summary>
+    /// Setter for the 'timeout' parameter.
+    /// </summary>
+    void SetTimeout(const std::string& value);
+
   private:
     /// <summary>
     /// Execute an application with ShellExecuteEx method.
@@ -116,11 +136,20 @@ namespace shellanything
     /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
     virtual bool ExecuteProcess(const SelectionContext& context) const;
 
+    /// <summary>
+    /// Wait for the process to exit, if required.
+    /// </summary> 
+    /// <param name="pId">The process id created from ExecuteVerb() or ExecuteProcess().</param>
+    /// <returns>Returns true if the wait process exit was not required or if the wait was required and succeed. Returns false otherwise.</returns>
+    virtual bool WaitForExit(uint32_t pId) const;
+
   private:
     std::string mPath;
     std::string mBaseDir;
     std::string mArguments;
     std::string mVerb;
+    std::string mWait;
+    std::string mTimeout;
   };
 
 } //namespace shellanything

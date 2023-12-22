@@ -412,18 +412,22 @@ namespace shellanything
 
       //ASSERT all menus are available
       Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
-      ASSERT_EQ(4, menus.size());
+      ASSERT_EQ(6, menus.size());
 
       //Assert all menus have a file element as the first action
       ActionExecute* exec00 = GetFirstActionExecute(menus[00]);
       ActionExecute* exec01 = GetFirstActionExecute(menus[01]);
       ActionExecute* exec02 = GetFirstActionExecute(menus[02]);
       ActionExecute* exec03 = GetFirstActionExecute(menus[03]);
+      ActionExecute* exec04 = GetFirstActionExecute(menus[04]);
+      ActionExecute* exec05 = GetFirstActionExecute(menus[05]);
 
       ASSERT_TRUE(exec00 != NULL);
       ASSERT_TRUE(exec01 != NULL);
       ASSERT_TRUE(exec02 != NULL);
       ASSERT_TRUE(exec03 != NULL);
+      ASSERT_TRUE(exec04 != NULL);
+      ASSERT_TRUE(exec05 != NULL);
 
       //Assert menu00 attributes
       ASSERT_EQ("C:\\Windows\\System32\\calc.exe", exec00->GetPath());
@@ -443,6 +447,12 @@ namespace shellanything
       //Assert menu03 attributes
       //<!-- missing path attribute --> <exec arguments="C:\Windows\System32\drivers\etc\hosts" verb="runas" />
       ASSERT_EQ("", exec03->GetPath());
+
+      //Assert menu04 attributes
+      ASSERT_EQ("true", exec04->GetWait());
+
+      //Assert menu05 attributes
+      ASSERT_EQ("5", exec05->GetTimeout());
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

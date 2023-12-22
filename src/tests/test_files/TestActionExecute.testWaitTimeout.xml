@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="expected_exec_timeout">
+      <actions>
+        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 30&quot;" wait="true" timeout="10" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

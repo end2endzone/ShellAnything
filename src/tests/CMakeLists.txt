@@ -5,6 +5,8 @@ find_package(libmagic REQUIRED)
 
 set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/samples.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionExecute.testWaitTimeout.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionExecute.testWaitInfinite.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCaptureOutput.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCopyFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testRegistryKey.xml
