@@ -67,6 +67,8 @@ namespace shellanything
     ConfigManager& cmgr = ConfigManager::GetInstance();
     cmgr.Refresh();
 
+    std::cout << "Deleting configuration files in workspace directory '" << workspace_dir << "'." << std::endl;
+
     // For each files in workspace directory...
     ra::strings::StringVector files;
     ra::filesystem::FindFilesUtf8(files, workspace_dir.c_str());
@@ -81,7 +83,7 @@ namespace shellanything
         bool deleted = ra::filesystem::DeleteFileUtf8(file_path.c_str());
         if (!deleted)
         {
-          std::cout << "Failed deleting file '" << file_path << "'.";
+          std::cout << "Failed deleting file '" << file_path << "'." << std::endl;
           return false;
         }
       }
@@ -90,10 +92,24 @@ namespace shellanything
     //Now that all configuration files are deleted, refresh again
     cmgr.Refresh();
 
-    //Check that no files are loaded
-    size_t count = cmgr.GetConfigurations().size();
+    //Check that no files from the wprkspace are loaded
+    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    size_t loaded_count = configs.size();
+    if (loaded_count > 0)
+    {
+      for (size_t i = 0; i < loaded_count; i++)
+      {
+        Configuration* config = configs[i];
+        const std::string & config_file_path = config->GetFilePath();
+        if (config_file_path.find(workspace_dir) != std::string::npos)
+        {
+          std::cout << "Found a configuration file that is still loaded: '" << config_file_path << "'." << std::endl;
+          return false;
+        }
+      }
+    }
 
-    return (count == 0);
+    return true;
   }
 
   bool QuickLoader::ImportAndLoadConfigurationFile(const std::string& path)
@@ -126,6 +142,7 @@ namespace shellanything
 
     //Setup ConfigManager to read files from workspace
     cmgr.ClearSearchPath();
+    cmgr.Clear();
     cmgr.AddSearchPath(workspace_dir);
     cmgr.Refresh();
 

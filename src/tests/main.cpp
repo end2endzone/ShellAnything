@@ -47,6 +47,7 @@
 #include "LoggerHelper.h"
 #include "LoggerGlog.h"
 #include "RegistryService.h"
+#include "ConfigManager.h"
 
 using namespace ra;
 using namespace shellanything::logging;
@@ -139,6 +140,13 @@ int main(int argc, char** argv)
   // Setup and starting application
   app.Start();
 
+  // Clear official Configuration Files directory from unit test scope.
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
+  cmgr.ClearSearchPath(); // remove official Configuration Files directory from seached directories.
+  cmgr.Clear(); // remove all preloaded configurations.
+  cmgr.Refresh();
+
+  // Setup Workspace class root directory
   int exit_code = SetTestPreferedRootDirectory();
   if (exit_code != 0)
   {
