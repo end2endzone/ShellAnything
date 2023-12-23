@@ -86,7 +86,7 @@ namespace shellanything
     mWorkspace = workspace;
   }
 
-  std::string Workspace::GetBaseDirectory() const
+  const std::string& Workspace::GetBaseDirectory() const
   {
     return mWorkspace;
   }
@@ -242,6 +242,13 @@ namespace shellanything
     source.insert(0, mWorkspace);
 
     return source;
+  }
+
+  bool Workspace::IsEmpty() const
+  {
+    ra::strings::StringVector files;
+    ra::filesystem::FindFilesUtf8(files, mWorkspace.c_str(), 0);
+    return files.empty();
   }
 
   void Workspace::SetPreferedRootDirectoryUtf8(const char* path)

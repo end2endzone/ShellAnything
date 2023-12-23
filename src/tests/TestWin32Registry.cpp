@@ -147,6 +147,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       static const char* file_extensions[] = {
         "application", "avi",
@@ -261,6 +262,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       static const char* file_extension = "sdf";
 

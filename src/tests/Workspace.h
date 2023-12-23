@@ -60,7 +60,7 @@ namespace shellanything
     /// Get the base directory of the current workspace.
     /// </summary>
     /// <returns>Returns the base directory of the current workspace. Returns an empty string if the workspace was not properly created.</returns>
-    std::string GetBaseDirectory() const;
+    const std::string& GetBaseDirectory() const;
 
     /// <summary>
     /// Import a directory into the workspace.
@@ -93,6 +93,12 @@ namespace shellanything
     /// <param name="path">A relative path in the workspace. The given path does not have to be an existing file or directory within the workspace.</param>
     /// <returns>Returns the absolute path from the given relative path.</returns>
     std::string GetFullPathUtf8(const char* path) const;
+
+    /// <summary>
+    /// Test is the workspace is empty or if does contains at least one file.
+    /// </summary>
+    /// <returns>Returns true if the workspace does not contains any files. Returns false otherwise.</returns>
+    bool IsEmpty() const;
 
     /// <summary>
     /// Set the prefered location for a base directory.
