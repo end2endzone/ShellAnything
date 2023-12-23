@@ -382,19 +382,23 @@ namespace shellanything
     //at this step the <menu> is valid
     Menu* menu = new Menu();
 
+    ElementPtrList elements; //temporary xml element containers
+
     //parse separator
     std::string menu_separator;
     bool have_separator = ParseAttribute(element, "separator", true, true, menu_separator, error);
     bool separator_parsed = false;
     if (have_separator)
     {
+      bool is_valid_separator = false;
+
       //try to parse this menu separator as a boolean
       bool is_horizontal_separator = false;
       separator_parsed = ra::strings::Parse(menu_separator, is_horizontal_separator);
       if (separator_parsed && is_horizontal_separator)
       {
         menu->SetSeparator(true);
-        return menu;
+        is_valid_separator = true;
       }
 
       //try to parse as a string
@@ -402,11 +406,46 @@ namespace shellanything
       if (menu_separator == "horizontal")
       {
         menu->SetSeparator(true);
-        return menu;
+        is_valid_separator = true;
       }
       else if (menu_separator == "vertical" || menu_separator == "column")
       {
         menu->SetColumnSeparator(true);
+        is_valid_separator = true;
+      }
+
+      //find <validity> node under <menu>
+      elements = GetChildNodes(element, NODE_VALIDITY);
+      for (size_t i = 0; i < elements.size(); i++)
+      {
+        Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+        if (validator == NULL)
+        {
+          delete menu;
+          return NULL;
+        }
+
+        //add the new validator
+        menu->AddValidity(validator);
+      }
+
+      //find <visibility> node under <menu>
+      elements = GetChildNodes(element, NODE_VISIBILITY);
+      for (size_t i = 0; i < elements.size(); i++)
+      {
+        Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
+        if (validator == NULL)
+        {
+          delete menu;
+          return NULL;
+        }
+
+        //add the new validator
+        menu->AddVisibility(validator);
+      }
+
+      if (is_valid_separator)
+      {
         return menu;
       }
     }
@@ -446,8 +485,6 @@ namespace shellanything
         menu->SetNameMaxLength(maxlength);
       }
     }
-
-    ElementPtrList elements; //temporary xml element containers
 
     //find <validity> node under <menu>
     elements = GetChildNodes(element, NODE_VALIDITY);
