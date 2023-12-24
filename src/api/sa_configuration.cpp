@@ -23,7 +23,7 @@
  *********************************************************************************/
 
 #include "shellanything/sa_configuration.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "sa_private_casting.h"
 #include "sa_string_private.h"
 
@@ -42,7 +42,7 @@ sa_error_t sa_configuration_load_file_buffer(const char* path, char* error_buffe
     return SA_ERROR_INVALID_ARGUMENTS;
 
   std::string tmp_error;
-  shellanything::Configuration* config = shellanything::Configuration::LoadFile(path, tmp_error);
+  shellanything::ConfigFile* config = shellanything::ConfigFile::LoadFile(path, tmp_error);
 
   // Check for error
   if (config == NULL)
@@ -62,7 +62,7 @@ sa_error_t sa_configuration_load_file_string(const char* path, sa_string_t* erro
     return SA_ERROR_INVALID_ARGUMENTS;
 
   std::string tmp_error;
-  shellanything::Configuration* config = shellanything::Configuration::LoadFile(path, tmp_error);
+  shellanything::ConfigFile* config = shellanything::ConfigFile::LoadFile(path, tmp_error);
 
   // Check for error
   if (config == NULL)
@@ -80,7 +80,7 @@ sa_boolean sa_configuration_is_valid_config_file(const char* path)
 {
   if (path == NULL)
     return 0;
-  bool valid = shellanything::Configuration::IsValidConfigFile(path);
+  bool valid = shellanything::ConfigFile::IsValidConfigFile(path);
   if (valid)
     return 1;
   return 0;

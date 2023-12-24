@@ -32,7 +32,7 @@
 #include "SelectionContext.h"
 #include "Icon.h"
 #include "Menu.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "Validator.h"
 #include "PropertyStore.h"
 
@@ -58,10 +58,10 @@ shellanything::Menu* AS_CLASS_MENU(sa_menu_t* object);
 sa_menu_immutable_t         AS_TYPE_MENU(const shellanything::Menu* object);
 sa_menu_t                   AS_TYPE_MENU(shellanything::Menu* object);
 
-const shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_immutable_t* object);
-shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_t* object);
-sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::Configuration* object);
-sa_configuration_t                  AS_TYPE_CONFIGURATION(shellanything::Configuration* object);
+const shellanything::ConfigFile* AS_CLASS_CONFIGURATION(sa_configuration_immutable_t* object);
+shellanything::ConfigFile* AS_CLASS_CONFIGURATION(sa_configuration_t* object);
+sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::ConfigFile* object);
+sa_configuration_t                  AS_TYPE_CONFIGURATION(shellanything::ConfigFile* object);
 
 const shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_immutable_t* object);
 shellanything::Validator* AS_CLASS_VALIDATOR(sa_validator_t* object);

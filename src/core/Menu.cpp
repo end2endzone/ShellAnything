@@ -35,7 +35,7 @@ namespace shellanything
 
   Menu::Menu() :
     mParentMenu(NULL),
-    mParentConfiguration(NULL),
+    mParentConfigFile(NULL),
     mNameMaxLength(DEFAULT_NAME_MAX_LENGTH),
     mSeparator(false),
     mColumnSeparator(false),
@@ -95,19 +95,19 @@ namespace shellanything
     mParentMenu = menu;
   }
 
-  Configuration* Menu::GetParentConfiguration()
+  ConfigFile* Menu::GetParentConfigFile()
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  const Configuration* Menu::GetParentConfiguration() const
+  const ConfigFile* Menu::GetParentConfigFile() const
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  void Menu::SetParentConfiguration(Configuration* configuration)
+  void Menu::SetParentConfigFile(ConfigFile* config_file)
   {
-    mParentConfiguration = configuration;
+    mParentConfigFile = config_file;
   }
 
   bool Menu::IsSeparator() const

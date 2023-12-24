@@ -33,7 +33,7 @@ namespace shellanything
 {
 
   /// <summary>
-  /// The DefaultSettings class defines the default values when a configuration .
+  /// The DefaultSettings class defines the default values for a ConfigFile.
   /// </summary>
   class SHELLANYTHING_EXPORT DefaultSettings
   {

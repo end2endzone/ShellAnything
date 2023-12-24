@@ -25,7 +25,7 @@
 #include "TestConfiguration.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "Menu.h"
 #include "ActionExecute.h"
 
@@ -39,7 +39,7 @@ namespace shellanything
 {
   namespace test
   {
-    static const Configuration* INVALID_CONFIGURATION = NULL;
+    static const ConfigFile* INVALID_CONFIGURATION = NULL;
 
     std::string BuildConfigurationFileWithEncoding(const std::string& encoding)
     {
@@ -65,7 +65,7 @@ namespace shellanything
     TEST_F(TestConfiguration, testDefault)
     {
       //fake the implementation
-      Configuration* config = new Configuration();
+      ConfigFile* config = new ConfigFile();
       config->SetFilePath("C:\\Users\\MartyMcfly\\Documents\\ShellAnything\\default.xml");
 
       // <menu name="Command line from here...">
@@ -134,7 +134,7 @@ namespace shellanything
       {
         const std::string path = files[i];
         ASSERT_TRUE(ra::filesystem::FileExists(path.c_str())) << "File '" << path.c_str() << "' is not found.";
-        ASSERT_TRUE(shellanything::Configuration::IsValidConfigFile(path)) << "The file '" << path.c_str() << "' is not a valid configuration file.";
+        ASSERT_TRUE(shellanything::ConfigFile::IsValidConfigFile(path)) << "The file '" << path.c_str() << "' is not a valid configuration file.";
       }
     }
     //--------------------------------------------------------------------------------------------------
@@ -148,14 +148,14 @@ namespace shellanything
       bool copied = ra::filesystem::CopyFileUtf8(source_path, target_path);
       ASSERT_TRUE(copied) << "Failed to copy file '" << source_path << "' to '" << target_path << "'.";
 
-      ASSERT_TRUE(shellanything::Configuration::IsValidConfigFile(target_path)) << "The file '" << target_path.c_str() << "' is not a valid configuration file.";
+      ASSERT_TRUE(shellanything::ConfigFile::IsValidConfigFile(target_path)) << "The file '" << target_path.c_str() << "' is not a valid configuration file.";
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestConfiguration, testLoadFile)
     {
       const std::string path = "configurations/default.xml";
       std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
-      Configuration* config = Configuration::LoadFile(path, error_message);
+      ConfigFile* config = ConfigFile::LoadFile(path, error_message);
 
       ASSERT_TRUE(error_message.empty()) << "error_message=" << error_message;
       ASSERT_NE(INVALID_CONFIGURATION, config);
@@ -177,7 +177,7 @@ namespace shellanything
       ASSERT_TRUE(copied) << "Failed to copy file '" << source_path << "' to '" << target_path << "'.";
 
       std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
-      Configuration* config = Configuration::LoadFile(target_path, error_message);
+      ConfigFile* config = ConfigFile::LoadFile(target_path, error_message);
 
       ASSERT_TRUE(error_message.empty()) << "error_message=" << error_message;
       ASSERT_NE(INVALID_CONFIGURATION, config);
@@ -213,7 +213,7 @@ namespace shellanything
 
           //load this config
           std::string error_message;
-          Configuration* config = Configuration::LoadFile(path, error_message);
+          ConfigFile* config = ConfigFile::LoadFile(path, error_message);
 
           //build error description message, if required
           std::string failure_desc;
@@ -252,7 +252,7 @@ namespace shellanything
 
           //load this config
           std::string error_message;
-          Configuration* config = Configuration::LoadFile(path, error_message);
+          ConfigFile* config = ConfigFile::LoadFile(path, error_message);
 
           //build error description message, if required
           std::string failure_desc;
@@ -294,7 +294,7 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
       //ASSERT that properties was applied

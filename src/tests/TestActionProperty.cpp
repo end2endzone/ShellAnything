@@ -596,11 +596,11 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get all menus.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
       //ASSERT a single menu is available
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_GT(menus.size(), 1);
 
       //Clear properties

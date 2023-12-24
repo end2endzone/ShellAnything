@@ -38,7 +38,7 @@
 
 namespace shellanything
 {
-  class Configuration; // For Set/GetParentConfiguration()
+  class ConfigFile; // For Set/GetParentConfiguration()
 
   /// <summary>
   /// The Menu class defines a displayed menu option.
@@ -85,17 +85,17 @@ namespace shellanything
     void SetParentMenu(Menu* menu);
 
     /// <summary>
-    /// Get the parent configuration.
+    /// Get the parent ConfigFile.
     /// </summary>
-    /// <returns>Returns a pointer to the parent configuration. Returns NULL if the object has no parent configuration.</returns>
-    Configuration* GetParentConfiguration();
-    const Configuration* GetParentConfiguration() const;
+    /// <returns>Returns a pointer to the parent ConfigFile. Returns NULL if the object has no parent ConfigFile.</returns>
+    ConfigFile* GetParentConfigFile();
+    const ConfigFile* GetParentConfigFile() const;
 
     /// <summary>
-    /// Set the parent configuration.
+    /// Set the parent ConfigFile.
     /// </summary>
-    /// <param name="configuration">The parent of this menu</param>
-    void SetParentConfiguration(Configuration* configuration);
+    /// <param name="config_file">The parent of this menu</param>
+    void SetParentConfigFile(ConfigFile* config_file);
 
     /// <summary>
     /// Returns true of the menu is a separator.
@@ -298,7 +298,7 @@ namespace shellanything
 
   private:
     Menu* mParentMenu;
-    Configuration* mParentConfiguration;
+    ConfigFile* mParentConfigFile;
     Icon mIcon;
     Validator::ValidatorPtrList mValidities;
     Validator::ValidatorPtrList mVisibilities;

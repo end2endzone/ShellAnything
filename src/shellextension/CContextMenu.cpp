@@ -271,11 +271,11 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
   //for each configuration
   shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+  shellanything::ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
   UINT insert_pos = 0;
   for (size_t i = 0; i < configs.size(); i++)
   {
-    shellanything::Configuration* config = configs[i];
+    shellanything::ConfigFile* config = configs[i];
     if (config)
     {
       //for each menu child

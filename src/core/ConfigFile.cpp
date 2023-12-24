@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "SelectionContext.h"
 #include "ActionProperty.h"
 #include "ObjectFactory.h"
@@ -47,7 +47,7 @@ using namespace tinyxml2;
 
 namespace shellanything
 {
-  static Configuration* gUpdatingConfiguration = NULL;
+  static ConfigFile* gUpdatingConfigFile = NULL;
 
   std::string GetXmlEncoding(XMLDocument& doc, std::string& error)
   {
@@ -96,28 +96,28 @@ namespace shellanything
     return encoding;
   }
 
-  Configuration::Configuration() :
+  ConfigFile::ConfigFile() :
     mFileModifiedDate(0),
     mDefaults(NULL)
   {
   }
 
-  Configuration::~Configuration()
+  ConfigFile::~ConfigFile()
   {
     DeleteChildren();
   }
 
-  Configuration* Configuration::GetUpdatingConfiguration()
+  ConfigFile* ConfigFile::GetUpdatingConfigFile()
   {
-    return gUpdatingConfiguration;
+    return gUpdatingConfigFile;
   }
 
-  void Configuration::SetUpdatingConfiguration(Configuration* configuration)
+  void ConfigFile::SetUpdatingConfigFile(ConfigFile* config_file)
   {
-    gUpdatingConfiguration = configuration;
+    gUpdatingConfigFile = config_file;
   }
 
-  Configuration* Configuration::LoadFile(const std::string& path, std::string& error)
+  ConfigFile* ConfigFile::LoadFile(const std::string& path, std::string& error)
   {
     error = "";
 
@@ -208,7 +208,7 @@ namespace shellanything
       return NULL;
     }
 
-    Configuration* config = new Configuration();
+    ConfigFile* config = new ConfigFile();
     config->SetFilePath(path);
     config->SetFileModifiedDate(file_modified_date);
 
@@ -290,7 +290,7 @@ namespace shellanything
     return config;
   }
 
-  bool Configuration::IsValidConfigFile(const std::string& path)
+  bool ConfigFile::IsValidConfigFile(const std::string& path)
   {
     std::string file_extension = ra::filesystem::GetFileExtention(path);
     file_extension = ra::strings::Uppercase(file_extension);
@@ -317,29 +317,29 @@ namespace shellanything
     return true;
   }
 
-  const std::string& Configuration::GetFilePath() const
+  const std::string& ConfigFile::GetFilePath() const
   {
     return mFilePath;
   }
 
-  void Configuration::SetFilePath(const std::string& file_path)
+  void ConfigFile::SetFilePath(const std::string& file_path)
   {
     mFilePath = file_path;
   }
 
-  const uint64_t& Configuration::GetFileModifiedDate() const
+  const uint64_t& ConfigFile::GetFileModifiedDate() const
   {
     return mFileModifiedDate;
   }
 
-  void Configuration::SetFileModifiedDate(const uint64_t& file_modified_date)
+  void ConfigFile::SetFileModifiedDate(const uint64_t& file_modified_date)
   {
     mFileModifiedDate = file_modified_date;
   }
 
-  void Configuration::Update(const SelectionContext& context)
+  void ConfigFile::Update(const SelectionContext& context)
   {
-    SetUpdatingConfiguration(this);
+    SetUpdatingConfigFile(this);
 
     //run callbacks of each plugins
     //for each plugins
@@ -365,10 +365,10 @@ namespace shellanything
       child->Update(context);
     }
 
-    SetUpdatingConfiguration(NULL);
+    SetUpdatingConfigFile(NULL);
   }
 
-  void Configuration::ApplyDefaultSettings()
+  void ConfigFile::ApplyDefaultSettings()
   {
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
@@ -405,7 +405,7 @@ namespace shellanything
     }
   }
 
-  Menu* Configuration::FindMenuByCommandId(const uint32_t& command_id)
+  Menu* ConfigFile::FindMenuByCommandId(const uint32_t& command_id)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
@@ -420,7 +420,7 @@ namespace shellanything
     return NULL;
   }
 
-  Menu* Configuration::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  Menu* ConfigFile::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
   {
     //for each child
     Menu::MenuPtrList children = GetMenus();
@@ -435,7 +435,7 @@ namespace shellanything
     return NULL;
   }
 
-  uint32_t Configuration::AssignCommandIds(const uint32_t& first_command_id)
+  uint32_t ConfigFile::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t nextCommandId = first_command_id;
 
@@ -450,23 +450,23 @@ namespace shellanything
     return nextCommandId;
   }
 
-  void Configuration::AddPlugin(Plugin* plugin)
+  void ConfigFile::AddPlugin(Plugin* plugin)
   {
     mPlugins.push_back(plugin);
-    plugin->SetParentConfiguration(this);
+    plugin->SetParentConfigFile(this);
   }
 
-  const Plugin::PluginPtrList& Configuration::GetPlugins() const
+  const Plugin::PluginPtrList& ConfigFile::GetPlugins() const
   {
     return mPlugins;
   }
 
-  Menu::MenuPtrList Configuration::GetMenus()
+  Menu::MenuPtrList ConfigFile::GetMenus()
   {
     return mMenus;
   }
 
-  void Configuration::SetDefaultSettings(DefaultSettings* defaults)
+  void ConfigFile::SetDefaultSettings(DefaultSettings* defaults)
   {
     if (mDefaults)
       delete mDefaults;
@@ -474,18 +474,18 @@ namespace shellanything
     mDefaults = defaults;
   }
 
-  const DefaultSettings* Configuration::GetDefaultSettings() const
+  const DefaultSettings* ConfigFile::GetDefaultSettings() const
   {
     return mDefaults;
   }
 
-  void Configuration::AddMenu(Menu* menu)
+  void ConfigFile::AddMenu(Menu* menu)
   {
     mMenus.push_back(menu);
-    menu->SetParentConfiguration(this);
+    menu->SetParentConfigFile(this);
   }
 
-  void Configuration::DeleteChildren()
+  void ConfigFile::DeleteChildren()
   {
     // Delete menus
     for (size_t i = 0; i < mMenus.size(); i++)
@@ -508,7 +508,7 @@ namespace shellanything
     mPlugins.clear();
   }
 
-  void Configuration::DeleteChild(Menu* menu)
+  void ConfigFile::DeleteChild(Menu* menu)
   {
     delete menu;
   }

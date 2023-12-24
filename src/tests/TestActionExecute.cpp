@@ -306,7 +306,7 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get first menu.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
       Menu::MenuPtrList menus = configs[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
@@ -351,7 +351,7 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get first menu.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
       Menu::MenuPtrList menus = configs[0]->GetMenus();
       ASSERT_EQ(1, menus.size());

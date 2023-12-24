@@ -77,7 +77,7 @@ namespace shellanything
       const std::string& file_path = files[i];
 
       // Is that a Configuration File?
-      if (Configuration::IsValidConfigFile(file_path))
+      if (ConfigFile::IsValidConfigFile(file_path))
       {
         // Yes, delete it
         bool deleted = ra::filesystem::DeleteFileUtf8(file_path.c_str());
@@ -93,13 +93,13 @@ namespace shellanything
     cmgr.Refresh();
 
     //Check that no files from the wprkspace are loaded
-    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
     size_t loaded_count = configs.size();
     if (loaded_count > 0)
     {
       for (size_t i = 0; i < loaded_count; i++)
       {
-        Configuration* config = configs[i];
+        ConfigFile* config = configs[i];
         const std::string & config_file_path = config->GetFilePath();
         if (config_file_path.find(workspace_dir) != std::string::npos)
         {
@@ -147,7 +147,7 @@ namespace shellanything
     cmgr.Refresh();
 
     //Check the file is loaded
-    Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+    ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
     size_t count = configs.size();
 
     return (count == 1);
