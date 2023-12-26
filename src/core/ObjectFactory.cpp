@@ -25,7 +25,7 @@
 #include "ObjectFactory.h"
 
 #include "PropertyManager.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "Menu.h"
 #include "Validator.h"
 #include "ActionClipboard.h"

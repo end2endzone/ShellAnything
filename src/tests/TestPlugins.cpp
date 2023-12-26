@@ -39,7 +39,7 @@ namespace shellanything
 {
   namespace test
   {
-    static const Configuration* INVALID_CONFIGURATION = NULL;
+    static const ConfigFile* INVALID_CONFIGURATION = NULL;
 
     //--------------------------------------------------------------------------------------------------
     void TestPlugins::SetUp()
@@ -49,10 +49,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //Delete the source file of all remaining Configuration instance
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       for (size_t i = 0; i < configs.size(); i++)
       {
-        Configuration* config = configs[i];
+        ConfigFile* config = configs[i];
         if (config)
         {
           const std::string& file_path = config->GetFilePath();
@@ -64,7 +64,7 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT that no files are loaded
-      ASSERT_EQ(0, cmgr.GetConfigurations().size());
+      ASSERT_EQ(0, cmgr.GetConfigFiles().size());
     }
     //--------------------------------------------------------------------------------------------------
     void TestPlugins::TearDown()
@@ -74,10 +74,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //Delete the source file of all remaining Configuration instance
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       for (size_t i = 0; i < configs.size(); i++)
       {
-        Configuration* config = configs[i];
+        ConfigFile* config = configs[i];
         if (config)
         {
           const std::string& file_path = config->GetFilePath();
@@ -90,7 +90,7 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT that no files are loaded
-      ASSERT_EQ(0, cmgr.GetConfigurations().size());
+      ASSERT_EQ(0, cmgr.GetConfigFiles().size());
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestPlugins, testProcess)
@@ -100,6 +100,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -116,10 +117,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -129,7 +130,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(4, menus.size());
       Menu* menu0 = menus[0];
       Menu* menu1 = menus[1];
@@ -246,6 +247,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -262,10 +264,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -275,7 +277,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
       Menu* menu0 = menus[0];
       ASSERT_TRUE(menu0 != NULL);
@@ -346,6 +348,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -362,10 +365,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -375,7 +378,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
       Menu* menu0 = menus[0];
       ASSERT_TRUE(menu0 != NULL);
@@ -475,6 +478,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -491,10 +495,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -504,7 +508,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(4, menus.size());
       Menu* menu0 = menus[0];
       Menu* menu1 = menus[1];
@@ -555,6 +559,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -575,10 +580,10 @@ namespace shellanything
       cmgr.Refresh();
       
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -588,7 +593,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
       Menu* menu0 = menus[0];
       ASSERT_TRUE(menu0 != NULL);
@@ -603,7 +608,7 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the configuration is unloaded
-      configs = cmgr.GetConfigurations();
+      configs = cmgr.GetConfigFiles();
       ASSERT_EQ(0, configs.size());
 
       //ASSERT that plugin's property status was removed (during termination)
@@ -635,6 +640,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -651,10 +657,10 @@ namespace shellanything
       cmgr.Refresh();
 
       //ASSERT the file is loaded
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      Configuration* config0 = cmgr.GetConfigurations()[0];
+      ConfigFile* config0 = cmgr.GetConfigFiles()[0];
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -664,7 +670,7 @@ namespace shellanything
       }
 
       //Get menus
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
       Menu* menu0 = menus[0];
       ASSERT_TRUE(menu0 != NULL);
@@ -732,7 +738,7 @@ namespace shellanything
       cmgr.Refresh();
 
       //assert the configuration is unloaded
-      configs = cmgr.GetConfigurations();
+      configs = cmgr.GetConfigFiles();
       ASSERT_EQ(0, configs.size());
 
       //assert that all actions were "destroyed"

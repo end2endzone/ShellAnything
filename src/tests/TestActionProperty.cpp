@@ -268,6 +268,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Define the path for a generated file
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -318,6 +319,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Define the path for a generated file
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -368,6 +370,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Define the path for a generated file
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -419,6 +422,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Define the path for a generated file
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -471,6 +475,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Load the test Configuration File that matches this test name.
       QuickLoader loader;
@@ -528,6 +533,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Load the test Configuration File that matches this test name.
       QuickLoader loader;
@@ -581,6 +587,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Load the test Configuration File that matches this test name.
       QuickLoader loader;
@@ -589,11 +596,11 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get all menus.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
       //ASSERT a single menu is available
-      Menu::MenuPtrList menus = cmgr.GetConfigurations()[0]->GetMenus();
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
       ASSERT_GT(menus.size(), 1);
 
       //Clear properties

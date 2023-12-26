@@ -27,7 +27,7 @@
 #include <limits>
 #include "Validator.h"
 #include "PropertyManager.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "DriveClass.h"
 #include "Wildcard.h"
 #include "LoggerHelper.h"
@@ -410,8 +410,8 @@ namespace shellanything
         return false;
     }
 
-    //check if we are updating a Configuration.
-    Configuration* updating_config = Configuration::GetUpdatingConfiguration();
+    //check if we are updating a ConfigFile.
+    ConfigFile* updating_config = ConfigFile::GetUpdatingConfigFile();
     if (updating_config != NULL)
     {
       const Plugin::PluginPtrList& config_plugins = updating_config->GetPlugins();

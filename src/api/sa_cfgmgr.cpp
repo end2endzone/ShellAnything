@@ -31,7 +31,7 @@ using namespace shellanything;
 
 size_t sa_cfgmgr_get_configuration_count()
 {
-  Configuration::ConfigurationPtrList configs = ConfigManager::GetInstance().GetConfigurations();
+  ConfigFile::ConfigFilePtrList configs = ConfigManager::GetInstance().GetConfigFiles();
   size_t count = configs.size();
   return count;
 }
@@ -40,10 +40,10 @@ sa_error_t sa_cfgmgr_get_configuration_element(size_t index, sa_configuration_t*
 {
   if (configuration == NULL)
     return SA_ERROR_INVALID_ARGUMENTS;
-  Configuration::ConfigurationPtrList configs = ConfigManager::GetInstance().GetConfigurations();
+  ConfigFile::ConfigFilePtrList configs = ConfigManager::GetInstance().GetConfigFiles();
   if (configs.empty() || index > (configs.size() - 1))
     return SA_ERROR_VALUE_OUT_OF_BOUNDS;
-  shellanything::Configuration* config_element = configs[index];
+  shellanything::ConfigFile* config_element = configs[index];
   *configuration = AS_TYPE_CONFIGURATION(config_element);
   return SA_ERROR_SUCCESS;
 }

@@ -59,7 +59,7 @@ namespace shellanything
   }
 
   Plugin::Plugin() :
-    mParentConfiguration(NULL),
+    mParentConfigFile(NULL),
     mLoaded(false),
     mEntryPoints(new Plugin::ENTRY_POINTS)
   {
@@ -97,19 +97,19 @@ namespace shellanything
     return (*this);
   }
 
-  Configuration* Plugin::GetParentConfiguration()
+  ConfigFile* Plugin::GetParentConfigFile()
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  const Configuration* Plugin::GetParentConfiguration() const
+  const ConfigFile* Plugin::GetParentConfigFile() const
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  void Plugin::SetParentConfiguration(Configuration* configuration)
+  void Plugin::SetParentConfigFile(ConfigFile* config_file)
   {
-    mParentConfiguration = configuration;
+    mParentConfigFile = config_file;
   }
 
   const std::string& Plugin::GetPath() const

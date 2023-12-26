@@ -297,6 +297,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Load the test Configuration File that matches this test name.
       QuickLoader loader;
@@ -305,7 +306,7 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get first menu.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
       Menu::MenuPtrList menus = configs[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
@@ -341,6 +342,7 @@ namespace shellanything
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
 
       //Load the test Configuration File that matches this test name.
       QuickLoader loader;
@@ -349,7 +351,7 @@ namespace shellanything
       ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
 
       //Get first menu.
-      Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
       Menu::MenuPtrList menus = configs[0]->GetMenus();
       ASSERT_EQ(1, menus.size());
