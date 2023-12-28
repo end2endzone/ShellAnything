@@ -76,12 +76,12 @@ namespace shellanything
     pmgr.SetProperty("application.path", mApplicationPath);
   }
 
-  void App::SetLogger(ILogger* logger)
+  void App::SetLogger(ILoggerService* logger)
   {
     mLogger = logger;
   }
 
-  ILogger* App::GetLogger()
+  ILoggerService* App::GetLogger()
   {
     return mLogger;
   }

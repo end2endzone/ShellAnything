@@ -22,57 +22,53 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_ILOGGER_H
-#define SA_ILOGGER_H
+#include "GlogLoggerService.h"
 
-#include "shellanything/export.h"
-#include "shellanything/config.h"
+#pragma warning( push )
+#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
+#include <glog/logging.h>
+#pragma warning( pop )
 
 namespace shellanything
 {
-  /// <summary>
-  /// Abstract logger class.
-  /// </summary>
-  class SHELLANYTHING_EXPORT ILogger
+
+  inline ::google::LogSeverity to_severity(const ILoggerService::LOG_LEVEL& level)
   {
-  public:
-    ILogger();
-    virtual ~ILogger();
-
-  private:
-    // Disable and copy constructor, dtor and copy operator
-    ILogger(const ILogger&);
-    ILogger& operator=(const ILogger&);
-  public:
-
-    enum LOG_LEVEL
+    switch (level)
     {
-      LOG_LEVEL_DEBUG,
-      LOG_LEVEL_INFO,
-      LOG_LEVEL_WARNING,
-      LOG_LEVEL_ERROR,
-      LOG_LEVEL_FATAL,
+    default:
+    case ILoggerService::LOG_LEVEL_DEBUG:
+    case ILoggerService::LOG_LEVEL_INFO:
+      return ::google::GLOG_INFO;
+      break;
+    case ILoggerService::LOG_LEVEL_WARNING:
+      return ::google::GLOG_WARNING;
+      break;
+    case ILoggerService::LOG_LEVEL_ERROR:
+      return ::google::GLOG_ERROR;
+      break;
+    case ILoggerService::LOG_LEVEL_FATAL:
+      return ::google::GLOG_FATAL;
+      break;
     };
+  }
 
-    /// <summary>
-    /// Send a message to this logger.
-    /// </summary>
-    /// <param name="filename">The originating source code file name.</param>
-    /// <param name="line">The line number that producing this message.</param>
-    /// <param name="level">The log level of the message.</param>
-    /// <param name="message">The actual message.</param>
-    virtual void LogMessage(const char* filename, int line, const LOG_LEVEL & level, const char* message) = 0;
+  GlogLoggerService::GlogLoggerService()
+  {
+  }
 
-    /// <summary>
-    /// Send a message to this logger.
-    /// </summary>
-    /// <param name="level">The log level of the message.</param>
-    /// <param name="message">The actual message.</param>
-    virtual void LogMessage(const LOG_LEVEL & level, const char* message) = 0;
+  GlogLoggerService::~GlogLoggerService()
+  {
+  }
 
-  };
+  void GlogLoggerService::LogMessage(const char* filename, int line, const ILoggerService::LOG_LEVEL& level, const char* message)
+  {
+    ::google::LogMessage(filename, line, to_severity(level)).stream() << message;
+  }
 
+  void GlogLoggerService::LogMessage(const ILoggerService::LOG_LEVEL& level, const char* message)
+  {
+    ::google::LogMessage(__FILE__, __LINE__, to_severity(level)).stream() << message;
+  }
 
 } //namespace shellanything
-
-#endif //SA_IACTION_H

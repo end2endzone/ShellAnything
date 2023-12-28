@@ -25,7 +25,7 @@
 #ifndef SA_APP_H
 #define SA_APP_H
 
-#include "ILogger.h"
+#include "ILoggerService.h"
 #include "IRegistryService.h"
 
 #include <string>
@@ -68,13 +68,13 @@ namespace shellanything
     /// If a logger instance is already set, the caller must properly destroy the old instance.
     /// </remarks>
     /// <param name="logger">A valid instance of a ILogger.</param>
-    void SetLogger(ILogger* logger);
+    void SetLogger(ILoggerService* logger);
 
     /// <summary>
     /// Get the current application logger
     /// </summary>
     /// <returns>Returns a pointer to an ILogger instance. Returns NULL if no logger is set.</returns>
-    ILogger* GetLogger();
+    ILoggerService* GetLogger();
 
     /// <summary>
     /// Set the current application registry service.
@@ -141,7 +141,7 @@ namespace shellanything
   private:
     std::string mApplicationPath;
 
-    ILogger * mLogger;
+    ILoggerService * mLogger;
     IRegistryService* mRegistry;
   };
 

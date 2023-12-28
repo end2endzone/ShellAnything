@@ -22,53 +22,56 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_LOGGER_HELPER_H
-#define SA_LOGGER_HELPER_H
+#ifndef SA_ILOGGER_SERVICE_H
+#define SA_ILOGGER_SERVICE_H
 
-#include "ILoggerService.h"
-#include "App.h"
-#include <ostream>
-#include <sstream>
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 
 namespace shellanything
 {
-
   /// <summary>
-  /// Helper class for logging
+  /// Abstract logger class.
   /// </summary>
-  class SHELLANYTHING_EXPORT LoggerHelper
+  class SHELLANYTHING_EXPORT ILoggerService
   {
   public:
-    LoggerHelper(ILoggerService::LOG_LEVEL level);
-    LoggerHelper(const char * filename, int line, ILoggerService::LOG_LEVEL level);
-    virtual ~LoggerHelper();
-
-    /// <summary>
-    /// Allow streaming any object/variable that can be streamed to std::stringstream.
-    /// </summary>
-    template<class Any>
-    LoggerHelper& operator<<(const Any& any)
-    {
-      mSS << any;
-      return (*this);
-    }
-
-    /// <summary>
-    /// Allow streaming specialized functions such as std::endl
-    /// </summary>
-    LoggerHelper& operator<<(std::ostream& (*f)(std::ostream&));
+    ILoggerService();
+    virtual ~ILoggerService();
 
   private:
-    ILoggerService::LOG_LEVEL mLevel;
-    const char* mFilename;
-    int mLine;
-    std::stringstream mSS;
-  };
+    // Disable and copy constructor, dtor and copy operator
+    ILoggerService(const ILoggerService&);
+    ILoggerService& operator=(const ILoggerService&);
+  public:
 
-  #ifndef SA_LOG
-  #define SA_LOG(expr) (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILoggerService::LOG_LEVEL_##expr))
-  #endif
+    enum LOG_LEVEL
+    {
+      LOG_LEVEL_DEBUG,
+      LOG_LEVEL_INFO,
+      LOG_LEVEL_WARNING,
+      LOG_LEVEL_ERROR,
+      LOG_LEVEL_FATAL,
+    };
+
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="filename">The originating source code file name.</param>
+    /// <param name="line">The line number that producing this message.</param>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const char* filename, int line, const LOG_LEVEL & level, const char* message) = 0;
+
+    /// <summary>
+    /// Send a message to this logger.
+    /// </summary>
+    /// <param name="level">The log level of the message.</param>
+    /// <param name="message">The actual message.</param>
+    virtual void LogMessage(const LOG_LEVEL & level, const char* message) = 0;
+
+  };
 
 } //namespace shellanything
 
-#endif //SA_ACTION_PROMPT_H
+#endif //SA_ILOGGER_SERVICE_H

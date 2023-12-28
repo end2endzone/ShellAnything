@@ -22,27 +22,27 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_LOGGER_GLOG_H
-#define SA_LOGGER_GLOG_H
+#ifndef SA_GLOG_LOGGER_SERVICE_H
+#define SA_GLOG_LOGGER_SERVICE_H
 
 #include "sa_glog_export.h"
-#include "ILogger.h"
+#include "ILoggerService.h"
 
 namespace shellanything
 {
   /// <summary>
   /// Abstract logger class.
   /// </summary>
-  class SA_GLOG_EXPORT LoggerGlog : public virtual ILogger
+  class SA_GLOG_EXPORT GlogLoggerService : public virtual ILoggerService
   {
   public:
-    LoggerGlog();
-    virtual ~LoggerGlog();
+    GlogLoggerService();
+    virtual ~GlogLoggerService();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    LoggerGlog(const LoggerGlog&);
-    LoggerGlog& operator=(const LoggerGlog&);
+    GlogLoggerService(const GlogLoggerService&);
+    GlogLoggerService& operator=(const GlogLoggerService&);
   public:
 
     /// <summary>
@@ -52,17 +52,17 @@ namespace shellanything
     /// <param name="line">The line number that producing this message.</param>
     /// <param name="level">The log level of the message.</param>
     /// <param name="message">The actual message.</param>
-    virtual void LogMessage(const char* filename, int line, const ILogger::LOG_LEVEL & level, const char* message);
+    virtual void LogMessage(const char* filename, int line, const ILoggerService::LOG_LEVEL & level, const char* message);
 
     /// <summary>
     /// Send a message to this logger.
     /// </summary>
     /// <param name="level">The log level of the message.</param>
     /// <param name="message">The actual message.</param>
-    virtual void LogMessage(const ILogger::LOG_LEVEL & level, const char* message);
+    virtual void LogMessage(const ILoggerService::LOG_LEVEL & level, const char* message);
 
   };
 
 } //namespace shellanything
 
-#endif //SA_LOGGER_GLOG_H
+#endif //SA_GLOG_LOGGER_SERVICE_H

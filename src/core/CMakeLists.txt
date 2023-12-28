@@ -16,7 +16,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
-  ${CMAKE_SOURCE_DIR}/src/core/ILogger.h
+  ${CMAKE_SOURCE_DIR}/src/core/ILoggerService.h
   ${CMAKE_SOURCE_DIR}/src/core/IRegistryService.h
   ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
@@ -52,7 +52,7 @@ add_library(sa.core SHARED
   IAttributeValidator.h
   IAttributeValidator.cpp
   Icon.cpp
-  ILogger.cpp
+  ILoggerService.cpp
   IRegistryService.cpp
   LoggerHelper.cpp
   InputBox.h

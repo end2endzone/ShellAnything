@@ -27,14 +27,14 @@
 
 namespace shellanything
 {
-  LoggerHelper::LoggerHelper(ILogger::LOG_LEVEL level) :
+  LoggerHelper::LoggerHelper(ILoggerService::LOG_LEVEL level) :
     mFilename(NULL),
     mLine(0),
     mLevel(level)
   {
   }
 
-  LoggerHelper::LoggerHelper(const char* filename, int line, ILogger::LOG_LEVEL level) :
+  LoggerHelper::LoggerHelper(const char* filename, int line, ILoggerService::LOG_LEVEL level) :
     mFilename(filename),
     mLine(line),
     mLevel(level)
@@ -44,7 +44,7 @@ namespace shellanything
   LoggerHelper::~LoggerHelper()
   {
     // Log the streamed content to the actual logger
-    ILogger * logger = App::GetInstance().GetLogger();;
+    ILoggerService * logger = App::GetInstance().GetLogger();;
 
     if (logger)
     {

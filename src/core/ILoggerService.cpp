@@ -22,53 +22,17 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "LoggerGlog.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "ILoggerService.h"
 
 namespace shellanything
 {
 
-  inline ::google::LogSeverity to_severity(const ILogger::LOG_LEVEL& level)
-  {
-    switch (level)
-    {
-    default:
-    case ILogger::LOG_LEVEL_DEBUG:
-    case ILogger::LOG_LEVEL_INFO:
-      return ::google::GLOG_INFO;
-      break;
-    case ILogger::LOG_LEVEL_WARNING:
-      return ::google::GLOG_WARNING;
-      break;
-    case ILogger::LOG_LEVEL_ERROR:
-      return ::google::GLOG_ERROR;
-      break;
-    case ILogger::LOG_LEVEL_FATAL:
-      return ::google::GLOG_FATAL;
-      break;
-    };
-  }
-
-  LoggerGlog::LoggerGlog()
+  ILoggerService::ILoggerService()
   {
   }
 
-  LoggerGlog::~LoggerGlog()
+  ILoggerService::~ILoggerService()
   {
-  }
-
-  void LoggerGlog::LogMessage(const char* filename, int line, const ILogger::LOG_LEVEL& level, const char* message)
-  {
-    ::google::LogMessage(filename, line, to_severity(level)).stream() << message;
-  }
-
-  void LoggerGlog::LogMessage(const ILogger::LOG_LEVEL& level, const char* message)
-  {
-    ::google::LogMessage(__FILE__, __LINE__, to_severity(level)).stream() << message;
   }
 
 } //namespace shellanything

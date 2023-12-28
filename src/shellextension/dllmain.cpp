@@ -33,7 +33,7 @@
 #include "Win32Utils.h"
 #include "GlogUtils.h"
 
-#include "LoggerGlog.h"
+#include "GlogLoggerService.h"
 #include "RegistryService.h"
 
 #include "rapidassist/undef_windows_macros.h"
@@ -364,7 +364,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       glog::InitGlog();
 
       // Setup an active logger in ShellAnything's core.
-      shellanything::ILogger* logger = new shellanything::LoggerGlog();
+      shellanything::ILoggerService* logger = new shellanything::GlogLoggerService();
       app.SetLogger(logger);
 
       // Setup an active registry service in ShellAnything's core.

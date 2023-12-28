@@ -42,10 +42,10 @@
 #include "PropertyManager.h"
 #include "Workspace.h"
 
-#include "ILogger.h"
+#include "ILoggerService.h"
 #include "App.h"
 #include "LoggerHelper.h"
-#include "LoggerGlog.h"
+#include "GlogLoggerService.h"
 #include "RegistryService.h"
 #include "ConfigManager.h"
 
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   glog::InitGlog();
 
   // Setup an active logger in ShellAnything's core.
-  shellanything::ILogger* logger = new shellanything::LoggerGlog();
+  shellanything::ILoggerService* logger = new shellanything::GlogLoggerService();
   app.SetLogger(logger);
 
   // Setup an active registry service in ShellAnything's core.
