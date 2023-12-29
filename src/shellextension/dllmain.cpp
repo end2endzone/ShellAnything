@@ -369,11 +369,11 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
       // Setup an active logger in ShellAnything's core.
       logger_service = new shellanything::GlogLoggerService();
-      app.SetLogger(logger_service);
+      app.SetLoggerService(logger_service);
 
       // Setup an active registry service in ShellAnything's core.
       registry_service = new shellanything::RegistryService();
-      app.SetRegistry(registry_service);
+      app.SetRegistryService(registry_service);
 
       // Setup an active registry service in ShellAnything's core.
       clipboard_service = new shellanything::ClipboardService();

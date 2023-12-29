@@ -33,7 +33,8 @@
 namespace shellanything
 {
   /// <summary>
-  /// Abstract registry handling class.
+  /// Abstract registry service class.
+  /// Used to decouple the core from Windows Operating System API.
   /// </summary>
   class SHELLANYTHING_EXPORT IRegistryService
   {
@@ -56,7 +57,6 @@ namespace shellanything
     virtual bool GetRegistryKeyAsString(const std::string& path, std::string& value) = 0;
 
   };
-
 
 } //namespace shellanything
 

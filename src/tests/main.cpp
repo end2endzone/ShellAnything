@@ -125,11 +125,11 @@ int main(int argc, char** argv)
 
   // Setup an active logger service in ShellAnything's core.
   shellanything::ILoggerService* logger_service = new shellanything::GlogLoggerService();
-  app.SetLogger(logger_service);
+  app.SetLoggerService(logger_service);
 
   // Setup an active registry service in ShellAnything's core.
   shellanything::IRegistryService* registry_service = new shellanything::RegistryService();
-  app.SetRegistry(registry_service);
+  app.SetRegistryService(registry_service);
 
   // Setup an active registry service in ShellAnything's core.
   shellanything::IClipboardService* clipboard_service = new shellanything::ClipboardService();

@@ -85,22 +85,22 @@ namespace shellanything
     mClipboard = NULL;
   }
 
-  void App::SetLogger(ILoggerService* logger)
+  void App::SetLoggerService(ILoggerService* logger)
   {
     mLogger = logger;
   }
 
-  ILoggerService* App::GetLogger()
+  ILoggerService* App::GetLoggerService()
   {
     return mLogger;
   }
 
-  void App::SetRegistry(IRegistryService* instance)
+  void App::SetRegistryService(IRegistryService* instance)
   {
     mRegistry = instance;
   }
 
-  IRegistryService* App::GetRegistry()
+  IRegistryService* App::GetRegistryService()
   {
     return mRegistry;
   }

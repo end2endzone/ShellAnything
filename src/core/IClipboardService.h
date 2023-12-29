@@ -34,6 +34,7 @@ namespace shellanything
 {
   /// <summary>
   /// Abstract clipboard service class.
+  /// Used to decouple the core from Windows Operating System API.
   /// </summary>
   class SHELLANYTHING_EXPORT IClipboardService
   {

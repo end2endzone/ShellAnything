@@ -74,13 +74,13 @@ namespace shellanything
     /// If a logger instance is already set, the caller must properly destroy the old instance.
     /// </remarks>
     /// <param name="logger">A valid instance of a ILogger.</param>
-    void SetLogger(ILoggerService* logger);
+    void SetLoggerService(ILoggerService* logger);
 
     /// <summary>
     /// Get the current application logger
     /// </summary>
     /// <returns>Returns a pointer to an ILogger instance. Returns NULL if no logger is set.</returns>
-    ILoggerService* GetLogger();
+    ILoggerService* GetLoggerService();
 
     /// <summary>
     /// Set the current application registry service.
@@ -89,13 +89,13 @@ namespace shellanything
     /// If a service instance is already set, the caller must properly destroy the old instance.
     /// </remarks>
     /// <param name="instance">A valid instance of a the service.</param>
-    void SetRegistry(IRegistryService* instance);
+    void SetRegistryService(IRegistryService* instance);
 
     /// <summary>
     /// Get the current application registry service.
     /// </summary>
     /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
-    IRegistryService* GetRegistry();
+    IRegistryService* GetRegistryService();
 
     /// <summary>
     /// Set the current application clipboard service.
