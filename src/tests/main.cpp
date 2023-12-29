@@ -47,6 +47,7 @@
 #include "LoggerHelper.h"
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
+#include "ClipboardService.h"
 #include "ConfigManager.h"
 
 using namespace ra;
@@ -122,13 +123,17 @@ int main(int argc, char** argv)
   // Initialize Google's logging library.
   glog::InitGlog();
 
-  // Setup an active logger in ShellAnything's core.
-  shellanything::ILoggerService* logger = new shellanything::GlogLoggerService();
-  app.SetLogger(logger);
+  // Setup an active logger service in ShellAnything's core.
+  shellanything::ILoggerService* logger_service = new shellanything::GlogLoggerService();
+  app.SetLogger(logger_service);
 
   // Setup an active registry service in ShellAnything's core.
-  shellanything::IRegistryService* registry = new shellanything::RegistryService();
-  app.SetRegistry(registry);
+  shellanything::IRegistryService* registry_service = new shellanything::RegistryService();
+  app.SetRegistry(registry_service);
+
+  // Setup an active registry service in ShellAnything's core.
+  shellanything::IClipboardService* clipboard_service = new shellanything::ClipboardService();
+  app.SetClipboardService(clipboard_service);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
@@ -183,6 +188,15 @@ int main(int argc, char** argv)
 
   // Shutdown Google's logging library.
   glog::ShutdownGlog();
+
+  // Destroy services
+  app.ClearServices();
+  delete clipboard_service;
+  delete registry_service;
+  delete logger_service;
+  clipboard_service = NULL;
+  registry_service = NULL;
+  logger_service = NULL;
 
   return wResult; // returns 0 if all the tests are successful, or 1 otherwise
 }

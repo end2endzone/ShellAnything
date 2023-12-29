@@ -16,6 +16,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
+  ${CMAKE_SOURCE_DIR}/src/core/IClipboardService.h
   ${CMAKE_SOURCE_DIR}/src/core/ILoggerService.h
   ${CMAKE_SOURCE_DIR}/src/core/IRegistryService.h
   ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
@@ -52,6 +53,7 @@ add_library(sa.core SHARED
   IAttributeValidator.h
   IAttributeValidator.cpp
   Icon.cpp
+  IClipboardService.cpp
   ILoggerService.cpp
   IRegistryService.cpp
   LoggerHelper.cpp
@@ -80,8 +82,6 @@ add_library(sa.core SHARED
   Registry.h
   Registry.cpp
   StringList.h
-  Win32Clipboard.h
-  Win32Clipboard.cpp
   Wildcard.cpp
   Wildcard.h
 )

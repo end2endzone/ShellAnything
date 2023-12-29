@@ -71,6 +71,11 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_FALSE_DEFAULT_VALUE;
 
+    /// <summary>
+    /// Name of the property that defines the clipboard content.
+    /// </summary>
+    static const std::string SYSTEM_CLIPBOARD_PROPERTY_NAME;
+
   public:
 
     /// <summary>
@@ -160,10 +165,20 @@ namespace shellanything
     /// <param name="output_list">The list of expanded values</param>
     static void ExpandAndSplit(const std::string& value, const char* separator, StringList& output_list);
 
+    /// <summary>
+    /// Register or update the list of 'dynamic' properties.
+    /// </summary>
+    void RegisterDynamicProperties();
+
+    /// <summary>
+    /// Unregister the list of 'dynamic' properties created by UpdateDynamicProperties().
+    /// </summary>
+    void UnregisterDynamicProperties();
+
   private:
 
     void RegisterEnvironmentVariables();
-    void RegisterDefaultProperties();
+    void RegisterFixedAndDefaultProperties();
     PropertyStore properties;
   };
 

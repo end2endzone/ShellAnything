@@ -35,6 +35,7 @@
 
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
+#include "ClipboardService.h"
 
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/strings.h"
@@ -59,6 +60,9 @@ using namespace shellanything::logging;
 //Declarations
 UINT        g_cRefDll = 0;            // Reference counter of this DLL
 HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
+shellanything::ILoggerService* logger_service = NULL;
+shellanything::IRegistryService* registry_service = NULL;
+shellanything::IClipboardService* clipboard_service = NULL;
 
 void DllAddRef(void)
 {
@@ -364,12 +368,16 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       glog::InitGlog();
 
       // Setup an active logger in ShellAnything's core.
-      shellanything::ILoggerService* logger = new shellanything::GlogLoggerService();
-      app.SetLogger(logger);
+      logger_service = new shellanything::GlogLoggerService();
+      app.SetLogger(logger_service);
 
       // Setup an active registry service in ShellAnything's core.
-      shellanything::IRegistryService* registry = new shellanything::RegistryService();
-      app.SetRegistry(registry);
+      registry_service = new shellanything::RegistryService();
+      app.SetRegistry(registry_service);
+
+      // Setup an active registry service in ShellAnything's core.
+      clipboard_service = new shellanything::ClipboardService();
+      app.SetClipboardService(clipboard_service);
 
       // Setup and starting application
       app.Start();
@@ -383,6 +391,15 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     {
       // Shutdown Google's logging library.
       glog::ShutdownGlog();
+
+      // Destroy services
+      app.ClearServices();
+      delete clipboard_service;
+      delete registry_service;
+      delete logger_service;
+      clipboard_service = NULL;
+      registry_service = NULL;
+      logger_service = NULL;
     }
   }
   return 1;

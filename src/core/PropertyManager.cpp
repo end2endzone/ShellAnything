@@ -26,6 +26,7 @@
 #include "App.h"
 #include "SaUtils.h"
 #include "SelectionContext.h"
+#include "LoggerHelper.h"
 
 #include "shellanything/version.h"
 
@@ -40,11 +41,12 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
   const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
+  const std::string PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME = "clipboard";
 
   PropertyManager::PropertyManager()
   {
     RegisterEnvironmentVariables();
-    RegisterDefaultProperties();
+    RegisterFixedAndDefaultProperties();
   }
 
   PropertyManager::~PropertyManager()
@@ -61,7 +63,7 @@ namespace shellanything
   {
     properties.Clear();
     RegisterEnvironmentVariables();
-    RegisterDefaultProperties();
+    RegisterFixedAndDefaultProperties();
   }
 
   void PropertyManager::ClearProperty(const std::string& name)
@@ -242,6 +244,30 @@ namespace shellanything
     }
   }
 
+  void PropertyManager::RegisterDynamicProperties()
+  {
+    // Remove existing dynamic properties.
+    UnregisterDynamicProperties();
+
+    // Try to read the clipboard's value.
+    IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+    if (clipboard)
+    {
+      std::string clipboard_value;
+      bool clipboard_read = clipboard->GetClipboardText(clipboard_value);
+      if (clipboard_read)
+      {
+        // Set as property.
+        SetProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME, clipboard_value);
+      }
+    }
+  }
+
+  void PropertyManager::UnregisterDynamicProperties()
+  {
+    ClearProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME);
+  }
+
   void PropertyManager::RegisterEnvironmentVariables()
   {
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
@@ -261,7 +287,7 @@ namespace shellanything
     }
   }
 
-  void PropertyManager::RegisterDefaultProperties()
+  void PropertyManager::RegisterFixedAndDefaultProperties()
   {
     shellanything::App& app = shellanything::App::GetInstance();
 

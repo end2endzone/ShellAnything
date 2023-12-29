@@ -27,6 +27,7 @@
 
 #include "ILoggerService.h"
 #include "IRegistryService.h"
+#include "IClipboardService.h"
 
 #include <string>
 
@@ -62,6 +63,11 @@ namespace shellanything
     void SetApplicationPath(const std::string& value);
 
     /// <summary>
+    /// Clear all services. Note that existing service instances are not destroyed.
+    /// </summary>
+    void ClearServices();
+
+    /// <summary>
     /// Set the current application logger.
     /// </summary>
     /// <remarks>
@@ -90,6 +96,21 @@ namespace shellanything
     /// </summary>
     /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
     IRegistryService* GetRegistry();
+
+    /// <summary>
+    /// Set the current application clipboard service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetClipboardService(IClipboardService* instance);
+
+    /// <summary>
+    /// Get the current application clipboard service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IClipboardService* GetClipboardService();
 
     /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
@@ -143,6 +164,7 @@ namespace shellanything
 
     ILoggerService * mLogger;
     IRegistryService* mRegistry;
+    IClipboardService* mClipboard;
   };
 
 

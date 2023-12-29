@@ -24,6 +24,11 @@
 
 #include "TestPropertyManager.h"
 #include "PropertyManager.h"
+#include "IClipboardService.h"
+#include "App.h"
+
+#include "rapidassist/testing.h"
+#include "rapidassist/random.h"
 
 namespace shellanything
 {
@@ -329,6 +334,35 @@ namespace shellanything
       ASSERT_TRUE(pmgr.HasProperty(env_var_name));
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPropertyManager, testRegisterDynamicProperties)
+    {
+      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+      ASSERT_TRUE(clipboard != NULL);
+
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      // Generate a random value for testing.
+      std::string random_value = ra::testing::GetTestQualifiedName();
+      random_value += ra::random::GetRandomString(10);
+
+      // Update the clipboard
+      ASSERT_TRUE(clipboard->SetClipboardText(random_value));
+
+      // Act
+      pmgr.RegisterDynamicProperties();
+
+      // Assert existance of a clipboard property.
+      ASSERT_TRUE(pmgr.HasProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME));
+
+      std::string clipboard_value = pmgr.GetProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME);
+      ASSERT_EQ(random_value, clipboard_value);
+
+      // Act
+      pmgr.UnregisterDynamicProperties();
+
+      // Assert no clipboard property.
+      ASSERT_FALSE(pmgr.HasProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME));
+    }
 
   } //namespace test
 } //namespace shellanything
