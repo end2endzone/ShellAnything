@@ -24,7 +24,6 @@
 
 #include "ActionClipboard.h"
 #include "PropertyManager.h"
-#include "Win32Clipboard.h"
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
 
@@ -105,14 +104,22 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string value = pmgr.Expand(mValue);
 
-    //get clipboard handler
-    Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
+    IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+    if (clipboard == NULL)
+    {
+      SA_LOG(ERROR) << "No Clipboard service configured for reading or writing to the clipboard.";
+      return false;
+    }
 
     //debug
     SA_LOG(INFO) << "Setting clipboard to '" << value << "'.";
 
     //set clipboard value
-    bool result = clipboard.SetTextUtf8(value);
+    bool result = clipboard->SetClipboardText(value);
+    if (!result)
+    {
+      SA_LOG(WARNING) << "Failed setting clipboard to '" << value << "'.";
+    }
 
     return result;
   }

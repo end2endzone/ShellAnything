@@ -29,6 +29,8 @@
 #include "PropertyManager.h"
 #include "ConfigManager.h"
 #include "ActionManager.h"
+#include "App.h"
+#include "IClipboardService.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
@@ -520,6 +522,59 @@ namespace shellanything
       std::string expected_file_path = file_path + ".copy.txt";
       ASSERT_TRUE(ra::filesystem::FileExists(expected_file_path.c_str()));
       ASSERT_TRUE(ra::testing::IsFileEquals(expected_file_path.c_str(), file_path.c_str()));
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testLiveProperties)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      // Set clipboard to an invalid value to detect if the exec action have actually set the clipboard.
+      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+      ASSERT_TRUE(clipboard != NULL);
+      ASSERT_TRUE(clipboard->SetClipboardText("The exec actions have not changed the clipboard!"));
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      // Delete previous run properties
+      pmgr.ClearProperty("character1");
+      pmgr.ClearProperty("character2");
+      pmgr.ClearProperty("character3");
+
+      //Find expected menus.
+      Menu* menu = cmgr.FindMenuByName("Test");
+      ASSERT_TRUE(menu != NULL);
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      bool executed = ActionManager::Execute(menu, c);
+      ASSERT_TRUE(executed);
+
+      //Assert new properties were set.
+      ASSERT_TRUE(pmgr.HasProperty("character1"));
+      ASSERT_TRUE(pmgr.HasProperty("character2"));
+      ASSERT_TRUE(pmgr.HasProperty("character3"));
+      ASSERT_EQ(pmgr.GetProperty("character1"), "Luke");
+      ASSERT_EQ(pmgr.GetProperty("character2"), "Leia");
+      ASSERT_EQ(pmgr.GetProperty("character3"), "Han");
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

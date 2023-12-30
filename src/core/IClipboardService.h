@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_IREGISTRY_SERVICE_H
-#define SA_IREGISTRY_SERVICE_H
+#ifndef SA_ICLIPBOARD_SERVICE_H
+#define SA_ICLIPBOARD_SERVICE_H
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
@@ -33,31 +33,51 @@
 namespace shellanything
 {
   /// <summary>
-  /// Abstract registry service class.
+  /// Abstract clipboard service class.
   /// Used to decouple the core from Windows Operating System API.
   /// </summary>
-  class SHELLANYTHING_EXPORT IRegistryService
+  class SHELLANYTHING_EXPORT IClipboardService
   {
   public:
-    IRegistryService();
-    virtual ~IRegistryService();
+    IClipboardService(); 
+    virtual ~IClipboardService();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    IRegistryService(const IRegistryService&);
-    IRegistryService& operator=(const IRegistryService&);
+    IClipboardService(const IClipboardService&);
+    IClipboardService& operator=(const IClipboardService&);
   public:
 
     /// <summary>
-    /// Get a registry key as a string.
+    /// Get the content of the clipboard as a string.
     /// </summary>
-    /// <param name="path">The path to a registry key or a registry value.</param>
+    /// <remarks>
+    /// WARNING:
+    ///   Do not add logging in this implementation for security concerns.
+    ///   This is mandatory to prevent leaking secret values or passwords into the logs.
+    ///   The caller is responsible for logging an error if false is returned.
+    ///   If an error occurs in the implementation, the caller will have to log a generic "operation has failed" kind of log.
+    /// </remarks>
     /// <param name="value">The output value to store the result.</param>
-    /// <returns>Returns true if the registry key/value is found. Returns false otherwise.</returns>
-    virtual bool GetRegistryKeyAsString(const std::string& path, std::string& value) = 0;
+    /// <returns>Returns true if the clipboard can be get as a string. Returns false otherwise.</returns>
+    virtual bool GetClipboardText(std::string& value) = 0;
+
+    /// <summary>
+    /// Set the content of the clipboard as a string.
+    /// </summary>
+    /// <remarks>
+    /// WARNING:
+    ///   Do not add logging in this implementation for security concerns.
+    ///   This is mandatory to prevent leaking secret values or passwords into the logs.
+    ///   The caller is responsible for logging an error if false is returned.
+    ///   If an error occurs in the implementation, the caller will have to log a generic "operation has failed" kind of log.
+    /// </remarks>
+    /// <param name="value">The value to store in the clipboard.</param>
+    /// <returns>Returns true if the clipboard can be set as a string. Returns false otherwise.</returns>
+    virtual bool SetClipboardText(const std::string& value) = 0;
 
   };
 
 } //namespace shellanything
 
-#endif //SA_IREGISTRY_SERVICE_H
+#endif //SA_ICLIPBOARD_SERVICE_H

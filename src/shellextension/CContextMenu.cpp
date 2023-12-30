@@ -537,6 +537,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   shellanything::StringList files;
 
   // Cleanup
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
   m_Context.UnregisterProperties(); //Unregister the previous context properties
   m_Context.SetElements(files);
   m_IsBackGround = false;

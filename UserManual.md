@@ -40,6 +40,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Property expansion](#property-expansion)
   * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
+  * [Live properties](#live-properties)
   * [Selection-based properties](#selection-based-properties)
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
@@ -811,6 +812,9 @@ For example, the following opens the default JPEG viewer to view following image
 
 The &lt;clipboard&gt; element is used to change the value of the [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525) to a new value. The &lt;clipboard&gt; element must be added under the &lt;actions&gt; element.
 
+**Note:**
+To read or reference the clipboard content, see [Live properties](#live-properties) section.
+
 The &lt;clipboard&gt; elements have the following attributes:
 
 
@@ -1303,6 +1307,20 @@ Environment variables properties are encoded in utf-8.
 
 
 
+## Live properties ##
+
+The application provides _live_ properties which are defined automatically by the property system. Think of live properties as properties that are always updated in real time. Live properties can not be set manually as their value will be automatically updated when referenced by the property system. They usually map to the state of a feature of the Operating System.
+
+The following table defines the list of live properties and their utility:
+
+| Property  | Description                                                                                                         |
+|-----------|---------------------------------------------------------------------------------------------------------------------|
+| clipboard | Matches the content of [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525). |
+
+These properties are encoded in utf-8.
+
+
+
 ## Selection-based properties ##
 
 The application provides a list of dynamic properties. The values of these properties will change based on the user selection when a user right-click files or folders.
@@ -1450,7 +1468,7 @@ The result can then be used to:
 * Copy the commands to the clipboard:
 
 ```xml
-<clipboard  value="attrib -r -a -s -h &quot;${selection.filename}&quot;"  />
+<clipboard value="attrib -r -a -s -h &quot;${selection.filename}&quot;" />
 ```
 
 * Create a batch file which content is the commands:
@@ -1459,7 +1477,6 @@ The result can then be used to:
 attrib -r -a -s -h &quot;${selection.filename}&quot;
 </file>
 ```
-
 
 
 

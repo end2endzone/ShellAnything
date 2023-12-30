@@ -32,6 +32,7 @@ namespace shellanything
 {
   /// <summary>
   /// Abstract logger class.
+  /// Used to decouple the core from the current logging framework.
   /// </summary>
   class SHELLANYTHING_EXPORT ILoggerService
   {

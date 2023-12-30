@@ -22,8 +22,8 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_IREGISTRY_SERVICE_H
-#define SA_IREGISTRY_SERVICE_H
+#ifndef SA_ILIVE_PROPERTY_H
+#define SA_ILIVE_PROPERTY_H
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
@@ -33,31 +33,35 @@
 namespace shellanything
 {
   /// <summary>
-  /// Abstract registry service class.
-  /// Used to decouple the core from Windows Operating System API.
+  /// Abstract interface for defining a Property which value is resolved as needed.
   /// </summary>
-  class SHELLANYTHING_EXPORT IRegistryService
+  class SHELLANYTHING_EXPORT ILiveProperty
   {
   public:
-    IRegistryService();
-    virtual ~IRegistryService();
+    ILiveProperty();
+    virtual ~ILiveProperty();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    IRegistryService(const IRegistryService&);
-    IRegistryService& operator=(const IRegistryService&);
+    ILiveProperty(const ILiveProperty&);
+    ILiveProperty& operator=(const ILiveProperty&);
   public:
 
     /// <summary>
-    /// Get a registry key as a string.
+    /// Get the name of the live property.
     /// </summary>
-    /// <param name="path">The path to a registry key or a registry value.</param>
-    /// <param name="value">The output value to store the result.</param>
-    /// <returns>Returns true if the registry key/value is found. Returns false otherwise.</returns>
-    virtual bool GetRegistryKeyAsString(const std::string& path, std::string& value) = 0;
+    /// <returns>Returns the name of the dynamic property.</returns>
+    virtual const std::string& GetName() const = 0;
+
+    /// <summary>
+    /// Get the value of the property.
+    /// </summary>
+    /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
+    virtual std::string GetProperty() const = 0;
 
   };
 
+
 } //namespace shellanything
 
-#endif //SA_IREGISTRY_SERVICE_H
+#endif //SA_ILIVE_PROPERTY_H

@@ -22,42 +22,45 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_IREGISTRY_SERVICE_H
-#define SA_IREGISTRY_SERVICE_H
-
-#include "shellanything/export.h"
-#include "shellanything/config.h"
-
-#include <string>
+#include "ClipboardService.h"
+#include "Win32Clipboard.h"
 
 namespace shellanything
 {
-  /// <summary>
-  /// Abstract registry service class.
-  /// Used to decouple the core from Windows Operating System API.
-  /// </summary>
-  class SHELLANYTHING_EXPORT IRegistryService
+  ClipboardService::ClipboardService()
   {
-  public:
-    IRegistryService();
-    virtual ~IRegistryService();
+  }
 
-  private:
-    // Disable and copy constructor, dtor and copy operator
-    IRegistryService(const IRegistryService&);
-    IRegistryService& operator=(const IRegistryService&);
-  public:
+  ClipboardService::~ClipboardService()
+  {
+  }
 
-    /// <summary>
-    /// Get a registry key as a string.
-    /// </summary>
-    /// <param name="path">The path to a registry key or a registry value.</param>
-    /// <param name="value">The output value to store the result.</param>
-    /// <returns>Returns true if the registry key/value is found. Returns false otherwise.</returns>
-    virtual bool GetRegistryKeyAsString(const std::string& path, std::string& value) = 0;
+  bool ClipboardService::GetClipboardText(std::string& value)
+  {
+    //get clipboard handler
+    Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
 
-  };
+    // WARNING:
+    // Do not add logging in this implementation for security concerns.
+    // This is mandatory to prevent leaking secret values or passwords into the logs.
+
+    //get clipboard value
+    bool result = clipboard.GetAsTextUtf8(value);
+    return result;
+  }
+
+  bool ClipboardService::SetClipboardText(const std::string& value)
+  {
+    //get clipboard handler
+    Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
+
+    // WARNING:
+    // Do not add logging in this implementation for security concerns.
+    // This is mandatory to prevent leaking secret values or passwords into the logs.
+    
+    //set clipboard value
+    bool result = clipboard.SetTextUtf8(value);
+    return result;
+  }
 
 } //namespace shellanything
-
-#endif //SA_IREGISTRY_SERVICE_H

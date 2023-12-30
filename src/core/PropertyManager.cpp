@@ -26,6 +26,7 @@
 #include "App.h"
 #include "SaUtils.h"
 #include "SelectionContext.h"
+#include "LoggerHelper.h"
 
 #include "shellanything/version.h"
 
@@ -40,15 +41,18 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
   const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
+  const std::string PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME = "clipboard";
 
   PropertyManager::PropertyManager()
   {
     RegisterEnvironmentVariables();
-    RegisterDefaultProperties();
+    RegisterFixedAndDefaultProperties();
+    RegisterLiveProperties();
   }
 
   PropertyManager::~PropertyManager()
   {
+    ClearLiveProperties();
   }
 
   PropertyManager& PropertyManager::GetInstance()
@@ -61,7 +65,7 @@ namespace shellanything
   {
     properties.Clear();
     RegisterEnvironmentVariables();
-    RegisterDefaultProperties();
+    RegisterFixedAndDefaultProperties();
   }
 
   void PropertyManager::ClearProperty(const std::string& name)
@@ -72,29 +76,63 @@ namespace shellanything
   bool PropertyManager::HasProperty(const std::string& name) const
   {
     bool found = properties.HasProperty(name);
+    if (!found)
+      found = (GetLiveProperty(name) != NULL);
     return found;
   }
 
   bool PropertyManager::HasProperties(const StringList& properties_) const
   {
-    bool found = properties.HasProperties(properties_);
-    return found;
+    for (size_t i = 0; i < properties_.size(); i++)
+    {
+      const std::string& name = properties_[i];
+      if (!HasProperty(name))
+        return false;
+    }
+    return true;
   }
 
   void PropertyManager::SetProperty(const std::string& name, const std::string& value)
   {
+    // Prevent polluting the PropertyStore with live property names
+    bool found = (GetLiveProperty(name) != NULL);
+    if (found)
+      return;
+
     properties.SetProperty(name, value);
   }
 
-  const std::string& PropertyManager::GetProperty(const std::string& name) const
+  std::string PropertyManager::GetProperty(const std::string& name) const
   {
-    const std::string& value = properties.GetProperty(name);
-    return value;
+    // Search within exiting properties
+    bool found = properties.HasProperty(name);
+    if (found)
+    {
+      const std::string& value = properties.GetProperty(name);
+      return value;
+    }
+
+    // Search within live properties
+    const ILiveProperty* p = GetLiveProperty(name);
+    if (p)
+    {
+      std::string value = p->GetProperty();
+      return value;
+    }
+
+    static std::string EMPTY_VALUE;
+    return EMPTY_VALUE;
   }
 
   void PropertyManager::FindMissingProperties(const StringList& input_names, StringList& output_names) const
   {
-    properties.FindMissingProperties(input_names, output_names);
+    output_names.clear();
+    for (size_t i = 0; i < input_names.size(); i++)
+    {
+      const std::string& name = input_names[i];
+      if (!HasProperty(name))
+        output_names.push_back(name);
+    }
   }
 
   inline bool IsPropertyReference(const std::string& token_open, const std::string& token_close, const std::string& value, size_t offset, std::string& name)
@@ -203,6 +241,85 @@ namespace shellanything
     return output;
   }
 
+  void PropertyManager::AddLiveProperty(ILiveProperty* instance)
+  {
+    if (!instance)
+      return;
+    const std::string& name = instance->GetName();
+    live_properties[name] = instance;
+  }
+
+  const ILiveProperty* PropertyManager::GetLiveProperty(const std::string& name) const
+  {
+    LivePropertyMap::const_iterator propertyIt = live_properties.find(name);
+    bool found = (propertyIt != live_properties.end());
+    if (found)
+    {
+      const ILiveProperty* instance = propertyIt->second;
+      return instance;
+    }
+
+    return NULL;
+  }
+
+  class ClipboardLiveProperty : public virtual ILiveProperty
+  {
+  public:
+
+    virtual const std::string& GetName() const
+    {
+      return PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME;
+    }
+
+    virtual std::string GetProperty() const
+    {
+      // Try to read the clipboard's value.
+      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+      if (clipboard)
+      {
+        std::string clipboard_value;
+        bool clipboard_read = clipboard->GetClipboardText(clipboard_value);
+        if (clipboard_read)
+        {
+          return clipboard_value;
+        }
+      }
+
+      static std::string EMPTY_VALUE;
+      return EMPTY_VALUE;
+    }
+  };
+
+  void PropertyManager::RegisterLiveProperties()
+  {
+    // Check if a live property instance already exists
+    if (GetLiveProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME) == NULL)
+    {
+      AddLiveProperty(new ClipboardLiveProperty());
+    }
+  }
+
+  void PropertyManager::ClearLiveProperty(const std::string& name)
+  {
+    LivePropertyMap::const_iterator propertyIt = live_properties.find(name);
+    bool found = (propertyIt != live_properties.end());
+    if (found)
+    {
+      live_properties.erase(propertyIt);
+    }
+  }
+
+  void PropertyManager::ClearLiveProperties()
+  {
+    for (LivePropertyMap::const_iterator it = live_properties.begin(); it != live_properties.end(); ++it)
+    {
+      const std::string& key = (it->first);
+      const ILiveProperty* instance = (it->second);
+      delete instance;
+    }
+    live_properties.clear();
+  }
+
   void PropertyManager::SplitAndExpand(const std::string& input_value, const char* separator, StringList& output_list)
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
@@ -261,7 +378,7 @@ namespace shellanything
     }
   }
 
-  void PropertyManager::RegisterDefaultProperties()
+  void PropertyManager::RegisterFixedAndDefaultProperties()
   {
     shellanything::App& app = shellanything::App::GetInstance();
 

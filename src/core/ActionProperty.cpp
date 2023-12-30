@@ -171,7 +171,7 @@ namespace shellanything
     // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!regisrykey.empty())
     {
-      IRegistryService* registry = App::GetInstance().GetRegistry();
+      IRegistryService* registry = App::GetInstance().GetRegistryService();
       if (registry == NULL)
       {
         SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << regisrykey << "'.";

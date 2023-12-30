@@ -48,7 +48,9 @@ namespace shellanything
 
 
   App::App() :
-    mLogger(NULL)
+    mLogger(NULL),
+    mRegistry(NULL),
+    mClipboard(NULL)
   {
   }
 
@@ -76,24 +78,41 @@ namespace shellanything
     pmgr.SetProperty("application.path", mApplicationPath);
   }
 
-  void App::SetLogger(ILoggerService* logger)
+  void App::ClearServices()
+  {
+    mLogger = NULL;
+    mRegistry = NULL;
+    mClipboard = NULL;
+  }
+
+  void App::SetLoggerService(ILoggerService* logger)
   {
     mLogger = logger;
   }
 
-  ILoggerService* App::GetLogger()
+  ILoggerService* App::GetLoggerService()
   {
     return mLogger;
   }
 
-  void App::SetRegistry(IRegistryService* instance)
+  void App::SetRegistryService(IRegistryService* instance)
   {
     mRegistry = instance;
   }
 
-  IRegistryService* App::GetRegistry()
+  IRegistryService* App::GetRegistryService()
   {
     return mRegistry;
+  }
+
+  void App::SetClipboardService(IClipboardService* instance)
+  {
+    mClipboard = instance;
+  }
+
+  IClipboardService* App::GetClipboardService()
+  {
+    return mClipboard;
   }
 
   bool App::IsTestingEnvironment()
