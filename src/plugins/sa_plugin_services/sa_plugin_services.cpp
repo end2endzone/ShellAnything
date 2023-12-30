@@ -42,6 +42,26 @@ extern "C" {
 
 static const char* PLUGIN_NAME_IDENTIFIER = "sa_plugin_services";
 
+void get_service_last_error(DWORD * error_code, char ** buffer, size_t * buffer_size)
+{
+  //Get the error message ID, if any.
+  (*error_code) = ::GetLastError();
+
+  LPSTR messageBuffer = nullptr;
+
+  //Ask Win32 to give us the string version of that message ID.
+  //The parameters we pass in, tell Win32 to create the buffer that holds the message for us (because we don't yet know how long the message string will be).
+  size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                               NULL, (*error_code), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+  //Copy the error message into the output buffer.
+  *buffer = _strdup(messageBuffer);
+  *buffer_size = size;
+
+  //Free the Win32's string's buffer.
+  LocalFree(messageBuffer);
+}
+
 const char* get_service_status(const char* name)
 {
   SC_HANDLE hService, hSCManager;
@@ -60,6 +80,17 @@ const char* get_service_status(const char* name)
   hService = OpenService(hSCManager, name, SERVICE_QUERY_STATUS);
   if (!hService)
   {
+    // Get a description of the error.
+    char* error_desc = NULL;
+    size_t error_desc_size = 0;
+    DWORD win32_error_code = 0;
+    get_service_last_error(&win32_error_code, &error_desc, &error_desc_size);
+
+    // Print a nice logging message
+    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "Failed openning service '%s'. Error: 0x%x, %s.", name, win32_error_code, error_desc);
+
+    // Cleanup
+    free(error_desc);
     CloseServiceHandle(hSCManager);
     return EMPTY_STATUS;
   }
@@ -69,6 +100,17 @@ const char* get_service_status(const char* name)
                                 &dwBytesNeeded);
   if (result == 0)
   {
+    // Get a description of the error.
+    char* error_desc = NULL;
+    size_t error_desc_size = 0;
+    DWORD win32_error_code = 0;
+    get_service_last_error(&win32_error_code, &error_desc, &error_desc_size);
+
+    // Print a nice logging message
+    sa_logging_print_format(SA_LOG_LEVEL_WARNING, PLUGIN_NAME_IDENTIFIER, "QueryServiceStatusEx has failed for service '%s'. Error: 0x%x, %s.", name, win32_error_code, error_desc);
+
+    // Cleanup
+    free(error_desc);
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCManager);
     return EMPTY_STATUS;

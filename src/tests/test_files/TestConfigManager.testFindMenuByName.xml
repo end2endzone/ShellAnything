@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="menu0">
+    </menu>
+ 
+    <menu name="menu1">
+      <menu name="menu1a">
+      </menu>
+      <menu name="menu1b">
+        <menu name="menu1bb">
+        </menu>
+      </menu>
+    </menu>
+ 
+    <menu name="menu2">
+    </menu>
+ 
+  </shell>
+</root>

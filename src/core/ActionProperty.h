@@ -42,6 +42,11 @@ namespace shellanything
     virtual ~ActionProperty();
 
     /// <summary>
+    /// Default maximum number of bytes for reading a property from a file.
+    /// </summary>
+    static const size_t DEFAULT_MAX_FILE_SIZE;
+
+    /// <summary>
     /// Name of the xml element for this action.
     /// </summary>
     static const std::string XML_ELEMENT_NAME;
@@ -89,10 +94,43 @@ namespace shellanything
     /// </summary>
     void SetExprtk(const std::string& exprtk);
 
+    /// <summary>
+    /// Getter for the 'file' parameter.
+    /// </summary>
+    const std::string& GetFile() const;
+
+    /// <summary>
+    /// Setter for the 'file' parameter.
+    /// </summary>
+    void SetFile(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'filesize' parameter.
+    /// </summary>
+    const std::string& GetFileSize() const;
+
+    /// <summary>
+    /// Setter for the 'filesize' parameter.
+    /// </summary>
+    void SetFileSize(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'registrykey' parameter.
+    /// </summary>
+    const std::string& GetRegistryKey() const;
+
+    /// <summary>
+    /// Setter for the 'registrykey' parameter.
+    /// </summary>
+    void SetRegistryKey(const std::string& value);
+
   private:
     std::string mName;
     std::string mValue;
     std::string mExprtk;
+    std::string mFile;
+    std::string mFileSize;
+    std::string mRegistryKey;
   };
 
 

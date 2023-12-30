@@ -30,65 +30,67 @@
 #include "Menu.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"
+#include "Enums.h"
+
 #include <stdint.h>
 
 namespace shellanything
 {
 
   /// <summary>
-  /// A configuration holds mutiple Menu instances.
+  /// A ConfigFile holds mutiple Menu instances.
   /// </summary>
-  class SHELLANYTHING_EXPORT Configuration
+  class SHELLANYTHING_EXPORT ConfigFile
   {
   public:
     /// <summary>
-    /// A list of Configuration pointer.
+    /// A list of ConfigFile pointer.
     /// </summary>
-    typedef std::vector<Configuration*> ConfigurationPtrList;
+    typedef std::vector<ConfigFile*> ConfigFilePtrList;
 
-    Configuration();
-    virtual ~Configuration();
+    ConfigFile();
+    virtual ~ConfigFile();
 
   private:
     // Disable copy constructor and copy operator
-    Configuration(const Configuration&);
-    Configuration& operator=(const Configuration&);
+    ConfigFile(const ConfigFile&);
+    ConfigFile& operator=(const ConfigFile&);
   public:
 
     /// <summary>
-    /// Get the configuration pointer that is currently updating.
+    /// Get the ConfigFile pointer that is currently updating.
     /// </summary>
-    /// <returns>Returns the configuration pointer that is currently updating. Returns NULL if no configuration is updating.</returns>
-    static Configuration* GetUpdatingConfiguration();
+    /// <returns>Returns the ConfigFile pointer that is currently updating. Returns NULL if no configuration is updating.</returns>
+    static ConfigFile* GetUpdatingConfigFile();
 
     /// <summary>
-    /// Set the configuration pointer that is currently updating.
+    /// Set the ConfigFile pointer that is currently updating.
     /// </summary>
-    /// <param name="configuration">The current updating configuration</param>
-    static void SetUpdatingConfiguration(Configuration* configuration);
+    /// <param name="config_file">The current updating ConfigFile</param>
+    static void SetUpdatingConfigFile(ConfigFile* config_file);
 
     /// <summary>
-    /// Load a configuration file.
+    /// Load a Configuration File.
     /// </summary>
     /// <param name="path">The file path to load</param>
     /// <param name="error">The error desription if the file cannot be loaded.</param>
     /// <returns>Returns a valid Configuration pointer if the file can be loaded. Returns NULL otherwise.</returns>
-    static Configuration* LoadFile(const std::string& path, std::string& error);
+    static ConfigFile* LoadFile(const std::string& path, std::string& error);
 
     /// <summary>
-    /// Detect if a given file is a valid configuration file.
+    /// Detect if a given file is a valid Configuration File.
     /// </summary>
     /// <param name="path">The file path to load</param>
-    /// <returns>Returns true if the file is a valid configuration file. Returns false otherwise.</returns>
+    /// <returns>Returns true if the file is a valid Configuration File. Returns false otherwise.</returns>
     static bool IsValidConfigFile(const std::string& path);
 
     /// <summary>
-    /// Returns the file path of this configuration.
+    /// Returns the file path of this ConfigFile.
     /// </summary>
     const std::string& GetFilePath() const;
 
     /// <summary>
-    /// Set the file path of this configuration.
+    /// Set the file path of this ConfigFile.
     /// </summary>
     void SetFilePath(const std::string& file_path);
 
@@ -119,6 +121,14 @@ namespace shellanything
     /// <param name="command_id">The search command id value.</param>
     /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
     Menu* FindMenuByCommandId(const uint32_t& command_id);
+
+    /// <summary>
+    /// Finds a loaded Menu pointer by a given name. The first menu that matches the given name is returned.
+    /// </summary>
+    /// <param name="name">The name of the menu.</param>
+    /// <param name="flags">The flags for searching by name.</param>
+    /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
+    Menu* FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_NONE);
 
     /// <summary>
     /// Assign unique command ids to all menus loaded by the configuration manager.
@@ -156,7 +166,7 @@ namespace shellanything
     const DefaultSettings* GetDefaultSettings() const;
 
     /// <summary>
-    /// Add a Menu to this Configuration. The Configuration takes ownership of the Menu.
+    /// Add a Menu to this ConfigFile. The ConfigFile takes ownership of the Menu.
     /// </summary>
     /// <param name="menu">The Menu to add.</param>
     void AddMenu(Menu* menu);

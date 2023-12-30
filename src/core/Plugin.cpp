@@ -26,11 +26,7 @@
 #include "Plugin.h"
 #include "PropertyManager.h"
 #include "Validator.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/errors.h"
@@ -63,7 +59,7 @@ namespace shellanything
   }
 
   Plugin::Plugin() :
-    mParentConfiguration(NULL),
+    mParentConfigFile(NULL),
     mLoaded(false),
     mEntryPoints(new Plugin::ENTRY_POINTS)
   {
@@ -101,19 +97,19 @@ namespace shellanything
     return (*this);
   }
 
-  Configuration* Plugin::GetParentConfiguration()
+  ConfigFile* Plugin::GetParentConfigFile()
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  const Configuration* Plugin::GetParentConfiguration() const
+  const ConfigFile* Plugin::GetParentConfigFile() const
   {
-    return mParentConfiguration;
+    return mParentConfigFile;
   }
 
-  void Plugin::SetParentConfiguration(Configuration* configuration)
+  void Plugin::SetParentConfigFile(ConfigFile* config_file)
   {
-    mParentConfiguration = configuration;
+    mParentConfigFile = config_file;
   }
 
   const std::string& Plugin::GetPath() const
@@ -182,7 +178,7 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
 
-    LOG(INFO) << "Loading plugin '" << path << "'.";
+    SA_LOG(INFO) << "Loading plugin '" << path << "'.";
     HMODULE hModule = LoadLibrary(path.c_str());
 
     // Check for a debug plugin. This is specific to ShellAnything's plugins.
@@ -204,7 +200,7 @@ namespace shellanything
     {
       ra::errors::errorcode_t error_code = ra::errors::GetLastErrorCode();
       std::string error_str = ra::errors::GetErrorCodeDescription(error_code);
-      LOG(ERROR) << "Error code " << ra::strings::Format("0x%x", error_code) << ", " << error_str;
+      SA_LOG(ERROR) << "Error code " << ra::strings::Format("0x%x", error_code) << ", " << error_str;
       return false;
     }
 
@@ -213,7 +209,7 @@ namespace shellanything
     if (initialize_func == NULL)
     {
       FreeLibrary(hModule);
-      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_INITIALIZE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      SA_LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_INITIALIZE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
       return false;
     }
 
@@ -221,7 +217,7 @@ namespace shellanything
     if (terminate_func == NULL)
     {
       FreeLibrary(hModule);
-      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_TERMINATE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      SA_LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_TERMINATE_FUNCTION_NAME) << "' in plugin '" << path << "'.";
       return false;
     }
 
@@ -229,7 +225,7 @@ namespace shellanything
     if (register_func == NULL)
     {
       FreeLibrary(hModule);
-      LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_REGISTER_FUNCTION_NAME) << "' in plugin '" << path << "'.";
+      SA_LOG(ERROR) << "Missing entry point '" << xstr(SA_PLUGIN_REGISTER_FUNCTION_NAME) << "' in plugin '" << path << "'.";
       return false;
     }
 
@@ -245,7 +241,7 @@ namespace shellanything
     if (initialized_error != SA_ERROR_SUCCESS)
     {
       const char* initialized_error_str = sa_error_get_error_description(initialized_error);
-      LOG(WARNING) << "The plugin '" << path << "' has failed to initialize. Error code: " << ra::strings::Format("0x%x", initialized_error) << ", " << initialized_error_str;
+      SA_LOG(WARNING) << "The plugin '" << path << "' has failed to initialize. Error code: " << ra::strings::Format("0x%x", initialized_error) << ", " << initialized_error_str;
       gLoadingPlugin = NULL;
       return false;
     }
@@ -253,7 +249,7 @@ namespace shellanything
     if (register_error != SA_ERROR_SUCCESS)
     {
       const char* register_error_str = sa_error_get_error_description(register_error);
-      LOG(WARNING) << "The plugin '" << path << "' has failed to register a service. Error code: " << ra::strings::Format("0x%x", register_error) << ", " << register_error_str;
+      SA_LOG(WARNING) << "The plugin '" << path << "' has failed to register a service. Error code: " << ra::strings::Format("0x%x", register_error) << ", " << register_error_str;
       gLoadingPlugin = NULL;
       return false;
     }
@@ -275,7 +271,7 @@ namespace shellanything
       IAttributeValidator* validator = mRegistry.GetAttributeValidatorFromName(condition);
       if (validator == NULL)
       {
-        LOG(WARNING) << "The plugin '" << path << "' is declaring condition '" << condition << "' but did not registered any validator function.";
+        SA_LOG(WARNING) << "The plugin '" << path << "' is declaring condition '" << condition << "' but did not registered any validator function.";
       }
     }
 
@@ -296,7 +292,7 @@ namespace shellanything
     if (terminate_error != SA_ERROR_SUCCESS)
     {
       const char* terminate_error_str = sa_error_get_error_description(terminate_error);
-      LOG(ERROR) << "The plugin '" << mPath << "' has failed to terminate. Error code: " << ra::strings::Format("0x%x", terminate_error) << ", " << terminate_error_str;
+      SA_LOG(ERROR) << "The plugin '" << mPath << "' has failed to terminate. Error code: " << ra::strings::Format("0x%x", terminate_error) << ", " << terminate_error_str;
 
       success = false;
     }

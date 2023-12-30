@@ -1,8 +1,6 @@
 add_library(sa.shared STATIC
   BitmapCache.h	
   BitmapCache.cpp
-  GlogUtils.h
-  GlogUtils.cpp
   SaUtils.h
   SaUtils.cpp
   Win32Registry.h
@@ -20,7 +18,6 @@ target_include_directories(sa.shared
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     ${CMAKE_SOURCE_DIR}/src/core
 )
 
@@ -30,5 +27,4 @@ target_link_libraries(sa.shared
     ${PTHREAD_LIBRARIES}
     ${GTEST_LIBRARIES}
     rapidassist
-    glog::glog
 )

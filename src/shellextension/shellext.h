@@ -43,23 +43,23 @@ std::string GuidToInterfaceName(GUID guid);
 std::string GetProcessContextDesc();
 std::string ToHexString(void* value);
 
-/// <summary>
-/// Returns true if the application is run for the first time.
-/// Note, for Windows users, the implementation is based on registry keys in HKEY_CURRENT_USER\Software\name\version.
-/// </summary>
-/// <param name="name">The name of the application.</param>
-/// <param name="version">The version of the application.</param>
-/// <returns>Returns true if the application is run for the first time. Returns false otherwise.</returns>
-bool IsFirstApplicationRun(const std::string& name, const std::string& version);
-
 std::string GetQueryContextMenuFlags(UINT flags);
 std::string GetGetCommandStringFlags(UINT flags);
 
-void InstallDefaultConfigurations(const std::string& config_dir);
-
 void LogEnvironment();
-void InitConfigManager();
 
 void DebugHook(const char* fname);
+
+/// <summary>
+/// Detect if the process loading the shell extension is Windows File Explorer.
+/// </summary>
+/// <returns>Returns true if the loading process is Windows File Explorer. Returns false otherwise.</returns>
+bool IsFileExplorerProcess();
+
+/// <summary>
+/// Detect if the process loading the shell extension is Windows regsvr32 application.
+/// </summary>
+/// <returns>Returns true if the loading process is Windows regsvr32 application. Returns false otherwise.</returns>
+bool IsRegsvr32Process();
 
 #endif //SA_SHELLEXTENSION_H

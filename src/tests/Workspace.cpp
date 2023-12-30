@@ -30,12 +30,13 @@
 
 namespace shellanything
 {
+  std::string Workspace::sRootDirectory;
 
   Workspace::Workspace()
   {
-    std::string temp_dir = ra::filesystem::GetTemporaryDirectoryUtf8();
+    std::string root_dir = (!sRootDirectory.empty() ? sRootDirectory : ra::filesystem::GetTemporaryDirectoryUtf8());
     std::string test_name = ra::testing::GetTestQualifiedName();
-    std::string workspace_dir = temp_dir + "\\" + test_name;
+    std::string workspace_dir = root_dir + "\\" + test_name;
 
     Init(workspace_dir.c_str());
   }
@@ -85,7 +86,7 @@ namespace shellanything
     mWorkspace = workspace;
   }
 
-  std::string Workspace::GetBaseDirectory() const
+  const std::string& Workspace::GetBaseDirectory() const
   {
     return mWorkspace;
   }
@@ -120,6 +121,10 @@ namespace shellanything
     for (size_t i = 0; i < files.size(); i++)
     {
       const std::string& source_file = files[i];
+
+      // Check that values returned by FindFilesUtf8() are actually files and not directories.
+      if (ra::filesystem::DirectoryExistsUtf8(source_file.c_str()))
+        continue;
 
       //Remove the parent path of the source directory to make the file paths relative to the parent directory.
       std::string target_relative = source_file;
@@ -237,6 +242,23 @@ namespace shellanything
     source.insert(0, mWorkspace);
 
     return source;
+  }
+
+  bool Workspace::IsEmpty() const
+  {
+    ra::strings::StringVector files;
+    ra::filesystem::FindFilesUtf8(files, mWorkspace.c_str(), 0);
+    return files.empty();
+  }
+
+  void Workspace::SetPreferedRootDirectoryUtf8(const char* path)
+  {
+    sRootDirectory = path;
+  }
+
+  std::string Workspace::GetPreferedRootDirectoryUtf8()
+  {
+    return sRootDirectory;
   }
 
 } //namespace shellanything

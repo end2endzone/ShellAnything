@@ -34,7 +34,6 @@ namespace shellanything
   /// Create a temporary workspace directory for storing test files.
   /// The workspace directory is deleted when the class is destroyed.
   /// </summary>
-  /// <returns>Returns 0 when the function succeed. Returns a non zero values otherwise.</returns>
   class Workspace
   {
   public:
@@ -61,7 +60,7 @@ namespace shellanything
     /// Get the base directory of the current workspace.
     /// </summary>
     /// <returns>Returns the base directory of the current workspace. Returns an empty string if the workspace was not properly created.</returns>
-    std::string GetBaseDirectory() const;
+    const std::string& GetBaseDirectory() const;
 
     /// <summary>
     /// Import a directory into the workspace.
@@ -95,10 +94,30 @@ namespace shellanything
     /// <returns>Returns the absolute path from the given relative path.</returns>
     std::string GetFullPathUtf8(const char* path) const;
 
+    /// <summary>
+    /// Test is the workspace is empty or if does contains at least one file.
+    /// </summary>
+    /// <returns>Returns true if the workspace does not contains any files. Returns false otherwise.</returns>
+    bool IsEmpty() const;
+
+    /// <summary>
+    /// Set the prefered location for a base directory.
+    /// </summary>
+    /// <param name="path">An absolute path to define as the prefered location for a base directory.</param>
+    static void SetPreferedRootDirectoryUtf8(const char* path);
+
+    /// <summary>
+    /// Get the prefered location set for a base directory.
+    /// </summary>
+    /// <param name="path">An absolute path to define as the prefered location for a base directory.</param>
+    /// <returns>Returns the absolute path from the given relative path.</returns>
+    static std::string GetPreferedRootDirectoryUtf8();
+
   private:
     void Init(const char* workspace);
 
   private:
+    static std::string sRootDirectory;
     std::string mWorkspace;
   };
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu separator="true" />
+	
+    <menu name="Issue #117, end2endzone">  
+	  <menu name="alarm_clock-16-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-16-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-16-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-16-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-16-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-16-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-20-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-20-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-20-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-20-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-20-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-20-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-24-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-24-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-24-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-24-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-24-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-24-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-32-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-32-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-32-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-32-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-32-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-32-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-40-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-40-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-40-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-40-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-40-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-40-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-48-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-48-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-48-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-48-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-48-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-48-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-64-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-64-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-64-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-64-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-64-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-64-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-96-8bpp-indexed-1ba-uncompressed.ico" ><icon path="${config.directory}\issue117\alarm_clock-96-8bpp-indexed-1ba-uncompressed.ico"  index="0" /></menu>
+	  <menu name="alarm_clock-96-24bpp-1ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-96-24bpp-1ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-96-32bpp-8ba-uncompressed.ico"        ><icon path="${config.directory}\issue117\alarm_clock-96-32bpp-8ba-uncompressed.ico"         index="0" /></menu>
+	  <menu name="alarm_clock-128-8bpp-indexed-1ba-uncompressed.ico"><icon path="${config.directory}\issue117\alarm_clock-128-8bpp-indexed-1ba-uncompressed.ico" index="0" /></menu>
+	  <menu name="alarm_clock-128-24bpp-1ba-uncompressed.ico"       ><icon path="${config.directory}\issue117\alarm_clock-128-24bpp-1ba-uncompressed.ico"        index="0" /></menu>
+	  <menu name="alarm_clock-128-32bpp-8ba-uncompressed.ico"       ><icon path="${config.directory}\issue117\alarm_clock-128-32bpp-8ba-uncompressed.ico"        index="0" /></menu>
+	  <menu name="alarm_clock-256-8bpp-indexed-1ba-compressed.ico"  ><icon path="${config.directory}\issue117\alarm_clock-256-8bpp-indexed-1ba-compressed.ico"   index="0" /></menu>
+	  <menu name="alarm_clock-256-24bpp-1ba-compressed.ico"         ><icon path="${config.directory}\issue117\alarm_clock-256-24bpp-1ba-compressed.ico"          index="0" /></menu>
+	  <menu name="alarm_clock-256-32bpp-8ba-compressed.ico"         ><icon path="${config.directory}\issue117\alarm_clock-256-32bpp-8ba-compressed.ico"          index="0" /></menu>
+	  <menu name="alarm_clock-all-compressed.ico"                   ><icon path="${config.directory}\issue117\alarm_clock-all-compressed.ico"                    index="0" /></menu>
+	  <menu name="alarm_clock-all-uncompressed.ico"                 ><icon path="${config.directory}\issue117\alarm_clock-all-uncompressed.ico"                  index="0" /></menu>
+    </menu>
+	
+    <menu separator="true" />
+  </shell>
+</root>	

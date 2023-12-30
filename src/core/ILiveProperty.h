@@ -22,45 +22,46 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_GLOG_UTILS_H
-#define SA_GLOG_UTILS_H
+#ifndef SA_ILIVE_PROPERTY_H
+#define SA_ILIVE_PROPERTY_H
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "shellanything/export.h"
+#include "shellanything/config.h"
 
 #include <string>
-#include <stdint.h>
 
 namespace shellanything
 {
-  struct GLOG_DATETIME
+  /// <summary>
+  /// Abstract interface for defining a Property which value is resolved as needed.
+  /// </summary>
+  class SHELLANYTHING_EXPORT ILiveProperty
   {
-    int year;
-    int month;  // [1,12]
-    int day;    // [1,31]
-    int hour;   // [0,23]
-    int minute; // [0,59]
-    int second; // [0,59]
+  public:
+    ILiveProperty();
+    virtual ~ILiveProperty();
+
+  private:
+    // Disable and copy constructor, dtor and copy operator
+    ILiveProperty(const ILiveProperty&);
+    ILiveProperty& operator=(const ILiveProperty&);
+  public:
+
+    /// <summary>
+    /// Get the name of the live property.
+    /// </summary>
+    /// <returns>Returns the name of the dynamic property.</returns>
+    virtual const std::string& GetName() const = 0;
+
+    /// <summary>
+    /// Get the value of the property.
+    /// </summary>
+    /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
+    virtual std::string GetProperty() const = 0;
+
   };
 
-  const GLOG_DATETIME& GetInvalidLogDateTime();
-  int DateTimeToSeconds(const GLOG_DATETIME& dt);
-  int GetDateTimeDiff(const GLOG_DATETIME& dt1, const GLOG_DATETIME& dt2);
-  int GetLogFileAge(const std::string& path);
-  GLOG_DATETIME GetFileDateTime(const std::string& path);
-  std::string GetLogDestination(int level);
-  std::string GetLogFilename(int level, const std::string& date, const std::string& time, uint32_t process_id);
-  bool HasDirectoryWriteAccess(const std::string& path);
-  std::string GetLogDirectory();
-  bool IsLogFile(const std::string& path);
-  bool IsTestingEnvironment();
-
-  void DeletePreviousLogs(int max_age_seconds);
-  void DeletePreviousLogs();
-  void InitLogger();
 
 } //namespace shellanything
 
-#endif //SA_GLOG_UTILS_H
+#endif //SA_ILIVE_PROPERTY_H

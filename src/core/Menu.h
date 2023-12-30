@@ -30,13 +30,15 @@
 #include "Icon.h"
 #include "Validator.h"
 #include "IAction.h"
+#include "Enums.h"
+
 #include <string>
 #include <vector>
 #include <stdint.h>
 
 namespace shellanything
 {
-  class Configuration; // For Set/GetParentConfiguration()
+  class ConfigFile; // For Set/GetParentConfiguration()
 
   /// <summary>
   /// The Menu class defines a displayed menu option.
@@ -83,17 +85,17 @@ namespace shellanything
     void SetParentMenu(Menu* menu);
 
     /// <summary>
-    /// Get the parent configuration.
+    /// Get the parent ConfigFile.
     /// </summary>
-    /// <returns>Returns a pointer to the parent configuration. Returns NULL if the object has no parent configuration.</returns>
-    Configuration* GetParentConfiguration();
-    const Configuration* GetParentConfiguration() const;
+    /// <returns>Returns a pointer to the parent ConfigFile. Returns NULL if the object has no parent ConfigFile.</returns>
+    ConfigFile* GetParentConfigFile();
+    const ConfigFile* GetParentConfigFile() const;
 
     /// <summary>
-    /// Set the parent configuration.
+    /// Set the parent ConfigFile.
     /// </summary>
-    /// <param name="configuration">The parent of this menu</param>
-    void SetParentConfiguration(Configuration* configuration);
+    /// <param name="config_file">The parent of this menu</param>
+    void SetParentConfigFile(ConfigFile* config_file);
 
     /// <summary>
     /// Returns true of the menu is a separator.
@@ -192,6 +194,14 @@ namespace shellanything
     Menu* FindMenuByCommandId(const uint32_t& command_id);
 
     /// <summary>
+    /// Finds a loaded Menu pointer by a given name. The first menu that matches the given name is returned.
+    /// </summary>
+    /// <param name="name">The name of the menu.</param>
+    /// <param name="flags">The flags for searching by name.</param>
+    /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
+    Menu* FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_NONE);
+
+    /// <summary>
     /// Assign unique command id to this menus and submenus.
     /// </summary>
     /// <param name="first_command_id">The first command id available.</param>
@@ -288,7 +298,7 @@ namespace shellanything
 
   private:
     Menu* mParentMenu;
-    Configuration* mParentConfiguration;
+    ConfigFile* mParentConfigFile;
     Icon mIcon;
     Validator::ValidatorPtrList mValidities;
     Validator::ValidatorPtrList mVisibilities;

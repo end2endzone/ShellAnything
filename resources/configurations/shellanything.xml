@@ -105,6 +105,18 @@
         </menu>
         
       </menu>
+
+      <menu name="More configurations files...">
+        <icon path="C:\Windows\system32\shell32.dll" index="69" />
+        <actions>
+          <open path="${application.directory}\configurations" />
+        </actions>
+      </menu>
+
+      <menu name="Version ${application.version}">
+        <icon path="${application.path}" index="0" />
+      </menu>
+	  
     </menu>
     
     <menu separator="true" />

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <!-- Read string (REG_SZ) `C:\Program Files\7-Zip\` -->
+        <property name="test1" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path" />
+      </actions>
+    </menu>
+    
+    <menu name="menu2">
+      <actions>
+        <!-- Read string (REG_SZ) `1` -->
+        <property name="test2" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers" />
+      </actions>
+    </menu>
+    
+    <menu name="menu3">
+      <actions>
+        <!-- Read string (REG_SZ) `Microsoft Windows Property System` -->
+        <property name="test3" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\PropertySystem" />
+      </actions>
+    </menu>
+    
+    <menu name="menu4">
+      <actions>
+        <!-- Read 32bit (REG_DWORD) value `0x2` -->
+        <property name="test4" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\ProductType" />
+      </actions>
+    </menu>
+    
+    <menu name="menu5">
+      <actions>
+        <!-- Read expandable string (REG_EXPAND_SZ) value `@%ProgramFiles%\Windows Defender\EppManifest.dll,-1000` -->
+        <property name="test5" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\ProductLocalizedName" />
+      </actions>
+    </menu>
+
+    <menu name="menu6">
+      <actions>
+        <!-- Read BINARY (REG_BINARY) value `0x08 0x74 0x4C 0xF6 0x41 0x33 0xDA 0x01 ...` -->
+        <property name="test6" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\InstallTime" />
+      </actions>
+    </menu>
+
+    <menu name="menu7">
+      <actions>
+        <!-- Read 64bit `0x18c8742d6dc` -->
+        <property name="test7" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\OobeCompleteTimeStamp" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

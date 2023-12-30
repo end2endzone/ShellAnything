@@ -25,16 +25,53 @@
 #include "TestActionProperty.h"
 #include "SelectionContext.h"
 #include "ActionProperty.h"
+#include "ActionFile.h"
 #include "PropertyManager.h"
+#include "ConfigManager.h"
+#include "ActionManager.h"
+#include "App.h"
+#include "IClipboardService.h"
 
 #include "rapidassist/strings.h"
+#include "rapidassist/filesystem.h"
+#include "rapidassist/testing.h"
+#include "rapidassist/random.h"
+#include "rapidassist/undef_windows_macros.h"
 
-#include <Windows.h>
+#include "Workspace.h"
+#include "QuickLoader.h"
 
 namespace shellanything
 {
   namespace test
   {
+    bool CreateSampleFile(const char* path, size_t size)
+    {
+      FILE* f = fopen(path, "wb");
+      if (!f)
+        return false;
+      //size_t total_size = 0;
+      size_t write_size = 0;
+
+      static const std::string buffer = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const size_t buffer_size = buffer.size();
+
+      // Try to write as much full blocks as possible
+      while (write_size + buffer_size < size)
+      {
+        write_size += fwrite(buffer.c_str(), 1, buffer_size, f);
+      }
+
+      // Write 1 byte as a time until file is full.
+      while (write_size < size)
+      {
+        static const char* single_char_buffer = ".";
+        write_size += fwrite(single_char_buffer, 1, 1, f);
+      }
+
+      fclose(f);
+      return true;
+    }
 
     //--------------------------------------------------------------------------------------------------
     void TestActionProperty::SetUp()
@@ -226,6 +263,446 @@ namespace shellanything
       ASSERT_EQ(std::string("6"), actual_value);
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testPropertyFileReadFullFile)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Define the path for a generated file
+      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+      std::string test_name = ra::testing::GetTestQualifiedName();
+      test_name += ".dat";
+
+      //Generate a small filename
+      std::string file_path = workspace.GetFullPathUtf8(test_name.c_str());
+      bool file_created = CreateSampleFile(file_path.c_str(), 7);
+      ASSERT_TRUE(file_created);
+
+      const std::string property_name = "foo";
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      // Clear pre existing property
+      pmgr.ClearProperty(property_name);
+
+      //execute the action
+      ActionProperty ap;
+      ap.SetName(property_name);
+      ap.SetFile(file_path);
+
+      bool executed = ap.Execute(c);
+      ASSERT_TRUE(executed);
+
+      //Assert property is set
+      ASSERT_TRUE(pmgr.HasProperty(property_name));
+      std::string actual_value = pmgr.GetProperty(property_name);
+      size_t actual_size = actual_value.size();
+      ASSERT_EQ(7, actual_size);
+      ASSERT_EQ(std::string("......."), actual_value);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testPropertyFileReadFileUpToDefaultSize)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Define the path for a generated file
+      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+      std::string test_name = ra::testing::GetTestQualifiedName();
+      test_name += ".dat";
+
+      //Generate a small filename
+      std::string file_path = workspace.GetFullPathUtf8(test_name.c_str());
+      bool file_created = CreateSampleFile(file_path.c_str(), 1024*1024);
+      ASSERT_TRUE(file_created);
+
+      const std::string property_name = "foo";
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      // Clear pre existing property
+      pmgr.ClearProperty(property_name);
+
+      //execute the action
+      ActionProperty ap;
+      ap.SetName(property_name);
+      ap.SetFile(file_path);
+
+      bool executed = ap.Execute(c);
+      ASSERT_TRUE(executed);
+
+      //Assert property is set
+      ASSERT_TRUE(pmgr.HasProperty(property_name));
+      std::string actual_value = pmgr.GetProperty(property_name);
+      size_t actual_size = actual_value.size();
+      ASSERT_EQ(ActionProperty::DEFAULT_MAX_FILE_SIZE, actual_size);
+      //ASSERT_EQ(std::string("......."), actual_value);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testPropertyFileSize32)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Define the path for a generated file
+      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+      std::string test_name = ra::testing::GetTestQualifiedName();
+      test_name += ".dat";
+
+      //Generate a small filename
+      std::string file_path = workspace.GetFullPathUtf8(test_name.c_str());
+      bool file_created = CreateSampleFile(file_path.c_str(), 1024*1024);
+      ASSERT_TRUE(file_created);
+
+      const std::string property_name = "foo";
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      // Clear pre existing property
+      pmgr.ClearProperty(property_name);
+
+      //execute the action
+      ActionProperty ap;
+      ap.SetName(property_name);
+      ap.SetFile(file_path);
+      ap.SetFileSize("32");
+
+      bool executed = ap.Execute(c);
+      ASSERT_TRUE(executed);
+
+      //Assert property is set
+      ASSERT_TRUE(pmgr.HasProperty(property_name));
+      std::string actual_value = pmgr.GetProperty(property_name);
+      size_t actual_size = actual_value.size();
+      ASSERT_EQ(32, actual_size);
+      ASSERT_EQ(std::string("0123456789abcdefghijklmnopqrstuv"), actual_value);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testPropertyFileSize0)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Define the path for a generated file
+      static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
+      std::string test_name = ra::testing::GetTestQualifiedName();
+      test_name += ".dat";
+
+      //Generate a small filename
+      std::string file_path = workspace.GetFullPathUtf8(test_name.c_str());
+      bool file_created = CreateSampleFile(file_path.c_str(), 1024 * 1024);
+      ASSERT_TRUE(file_created);
+
+      const std::string property_name = "foo";
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      // Clear pre existing property
+      pmgr.ClearProperty(property_name);
+
+      //execute the action
+      ActionProperty ap;
+      ap.SetName(property_name);
+      ap.SetFile(file_path);
+      ap.SetFileSize("0");
+
+      bool executed = ap.Execute(c);
+      ASSERT_TRUE(executed);
+
+      //Assert property is set
+      ASSERT_TRUE(pmgr.HasProperty(property_name));
+      std::string actual_value = pmgr.GetProperty(property_name);
+      size_t actual_size = actual_value.size();
+      ASSERT_EQ(1024 * 1024, actual_size);
+      //ASSERT_EQ(std::string(""), actual_value);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testCopyFile)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Find expected menus.
+      Menu* menu_copy = cmgr.FindMenuByName("Copy as text");
+      Menu* menu_paste = cmgr.FindMenuByName("Paste");
+      ASSERT_TRUE(menu_copy != NULL);
+      ASSERT_TRUE(menu_paste != NULL);
+
+      //Generate a small filename in the workspace for the selection context.
+      std::string file_name = ra::testing::GetTestQualifiedName() + ".txt";
+      std::string file_path = workspace.GetFullPathUtf8(file_name.c_str());
+      bool file_created = CreateSampleFile(file_path.c_str(), 75);
+      ASSERT_TRUE(file_created);
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back(file_path);
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute "copy"
+      bool executed = ActionManager::Execute(menu_copy, c);
+      ASSERT_TRUE(executed);
+
+      //simulate user has right click a directory (change selection to a directory)
+      elements.clear();
+      elements.push_back(workspace.GetBaseDirectory());
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute "paste"
+      executed = ActionManager::Execute(menu_paste, c);
+      ASSERT_TRUE(executed);
+
+      //Assert a new file copy was generated
+      std::string expected_file_path = file_path + ".copy.txt";
+      ASSERT_TRUE(ra::filesystem::FileExists(expected_file_path.c_str()));
+      ASSERT_TRUE(ra::testing::IsFileEquals(expected_file_path.c_str(), file_path.c_str()));
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testLiveProperties)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      // Set clipboard to an invalid value to detect if the exec action have actually set the clipboard.
+      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+      ASSERT_TRUE(clipboard != NULL);
+      ASSERT_TRUE(clipboard->SetClipboardText("The exec actions have not changed the clipboard!"));
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      // Delete previous run properties
+      pmgr.ClearProperty("character1");
+      pmgr.ClearProperty("character2");
+      pmgr.ClearProperty("character3");
+
+      //Find expected menus.
+      Menu* menu = cmgr.FindMenuByName("Test");
+      ASSERT_TRUE(menu != NULL);
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      bool executed = ActionManager::Execute(menu, c);
+      ASSERT_TRUE(executed);
+
+      //Assert new properties were set.
+      ASSERT_TRUE(pmgr.HasProperty("character1"));
+      ASSERT_TRUE(pmgr.HasProperty("character2"));
+      ASSERT_TRUE(pmgr.HasProperty("character3"));
+      ASSERT_EQ(pmgr.GetProperty("character1"), "Luke");
+      ASSERT_EQ(pmgr.GetProperty("character2"), "Leia");
+      ASSERT_EQ(pmgr.GetProperty("character3"), "Han");
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testCaptureOutput)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Generate a random filename for the command output.
+      std::string command_output_file_name = "command_output_file." + ra::random::GetRandomString(5) + ".txt";
+      std::string command_output_file_path = workspace.GetFullPathUtf8(command_output_file_name.c_str());
+      pmgr.SetProperty("command_output_file", command_output_file_path);
+
+      //Find expected menus.
+      Menu* menu = cmgr.FindMenuByName("Capture output");
+      ASSERT_TRUE(menu != NULL);
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      bool executed = ActionManager::Execute(menu, c);
+      ASSERT_TRUE(executed);
+
+      //Assert a new file copy was generated
+      ASSERT_TRUE(ra::filesystem::FileExists(command_output_file_path.c_str()));
+
+      // Read from the file itself
+      std::string data;
+      bool file_read = ra::filesystem::ReadFile(command_output_file_path, data);
+      ASSERT_TRUE(file_read);
+
+      //Assert the property value matches the content of the file
+      ASSERT_TRUE(pmgr.HasProperty("files"));
+      std::string property_files = pmgr.GetProperty("files");
+
+      ASSERT_EQ(property_files, data);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testRegistryKey)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get all menus.
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
+      ASSERT_EQ(1, configs.size());
+
+      //ASSERT a single menu is available
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
+      ASSERT_GT(menus.size(), 1);
+
+      //Clear properties
+      static const char* properties[] = {
+        "test1",
+        "test2",
+        "test3",
+        "test4",
+        "test5",
+        "test6",
+        "test7",
+      };
+      static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        pmgr.ClearProperty(properties[i]);
+      }
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      for (size_t i = 0; i < menus.size(); i++)
+      {
+        Menu* menu = menus[i];
+        bool executed = ActionManager::Execute(menu, c);
+        ASSERT_TRUE(executed) << "Failed to execute actions of menu '" << menu->GetName() << "'.";
+      }
+
+      //ASSERT the properties were set
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        ASSERT_TRUE(pmgr.HasProperty(property_name)) << "Property not found: '" << property_name << "'.";
+      }
+
+      //ASSERT a single value
+      std::string test1 = pmgr.GetProperty("test1");
+      ASSERT_EQ("C:\\Program Files\\7-Zip\\", test1);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
 
   } //namespace test
 } //namespace shellanything

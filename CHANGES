@@ -1,6 +1,23 @@
+Changes for 0.9.0
+
+* Fixed issue #111: Move code from the shell extension to the core.
+* Fixed issue #126: Remove single quote characters surrounding values in ActionExecute logs.
+* Fixed issue #127: Question Prompt action does not accept answers longer than the visual textbox.
+* Fixed issue #129: Utilize clipboard contents as well as set them.
+* Fixed issue #130: Set a property value from the content of a file.
+* Fixed issue #132: Delete deprecated NSIS installer references.
+* Fixed issue #133: Support for Github's Actions for the project.
+* Fixed issue #134: Set a property value from a registry key.
+* Fixed issue #137: Library independent logging support.
+* Fixed issue #139: Wait for an <exec> action to complete before executing the next action.
+* Fixed issue #141: Separator visibility options.
+
+
 Changes for 0.8.0
 
 **NOTE:** The file name of Shellanything's shell extension is now `sa.shellextension.dll`. If you update from a previous version, make sure you unregister the previous shell extension (formally `shellext.dll`).
+**NOTE:** Deprecated support for Windows 7. Version 0.7 is the last version to support Windows 7.
+
 
 * Shellanything now features support for plugins (beta).
 * Now using GLOG (Google Logging Library) as a shared DLL instead of a static library.
@@ -12,7 +29,11 @@ Changes for 0.8.0
 * Fixed issue #101: Deprecate setup.exe installer in favor of the Windows Installer (*.msi).
 * Fixed issue #113: Upgrading from v0.7.0 to 0.8.0 installs at the wrong location.
 * Fixed issue #114: Implement sa_plugin_terminate() in the C API.
+* Fixed issue #117: Menu entries with icons that uses an icon file (.ico) does not work when scale is greater than 100%.
 * Fixed issue #118: Registry corruption while registering the extension.
+* Fixed issue #119: Disable logs when the shell extension is loaded by registry editor (regedit.exe).
+* Fixed issue #121: ShellAnything Errors out when opening a context on Google Docs/Sheets/etc.
+* Fixed issue #124: Property 'application.path' resolves to sa.core.dll instead of sa.shellextension.dll.
 
 
 Changes for 0.7.0

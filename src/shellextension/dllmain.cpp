@@ -26,16 +26,16 @@
 
 #include "CContextMenu.h"
 #include "CClassFactory.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "ErrorManager.h"
 #include "Win32Registry.h"
 #include "Win32Utils.h"
 #include "GlogUtils.h"
+
+#include "GlogLoggerService.h"
+#include "RegistryService.h"
+#include "ClipboardService.h"
 
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/strings.h"
@@ -55,20 +55,25 @@
 
 #include "shellext.h"
 
+using namespace shellanything::logging;
+
 //Declarations
 UINT        g_cRefDll = 0;            // Reference counter of this DLL
 HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
+shellanything::ILoggerService* logger_service = NULL;
+shellanything::IRegistryService* registry_service = NULL;
+shellanything::IClipboardService* clipboard_service = NULL;
 
 void DllAddRef(void)
 {
-  LOG(INFO) << __FUNCTION__ << "(), new";
+  SA_LOG(INFO) << __FUNCTION__ << "(), new";
 
   InterlockedIncrement(&g_cRefDll);
 }
 
 void DllRelease(void)
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete";
+  SA_LOG(INFO) << __FUNCTION__ << "(), delete";
 
   InterlockedDecrement(&g_cRefDll);
 }
@@ -77,7 +82,7 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
 {
   std::string clsid_str = GuidToInterfaceName(clsid);
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
+  SA_LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
   // Always set out parameter to NULL, validating it first.
   if (!ppv)
@@ -99,17 +104,17 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
   }
 
   if (hr == CLASS_E_CLASSNOTAVAILABLE)
-    LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
+    SA_LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
   else if (FAILED(hr))
-    LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    SA_LOG(ERROR) << __FUNCTION__ << "(), unknown interface " << riid_str;
   else
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   return hr;
 }
 
 STDAPI DllCanUnloadNow(void)
 {
-  LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
+  SA_LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
 
   ULONG ulRefCount = 0;
   ulRefCount = InterlockedIncrement(&g_cRefDll);
@@ -117,10 +122,10 @@ STDAPI DllCanUnloadNow(void)
 
   if (0 == ulRefCount)
   {
-    LOG(INFO) << __FUNCTION__ << "() -> Yes";
+    SA_LOG(INFO) << __FUNCTION__ << "() -> Yes";
     return S_OK;
   }
-  LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
+  SA_LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
   return S_FALSE;
 }
 
@@ -338,6 +343,13 @@ STDAPI DllUnregisterServer(void)
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+  // Skip log initializations and default configuration installation if process that is loading this dll is regsvr32.exe.
+  // Shell extension un/registration will not call a shell extension entry points and does not require logging support.
+  if (IsRegsvr32Process())
+    return 1;
+
+  shellanything::App& app = shellanything::App::GetInstance();
+
   if (dwReason == DLL_PROCESS_ATTACH)
   {
     ATTACH_HOOK_DEBUGGING;
@@ -346,23 +358,48 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
     DisableThreadLibraryCalls((HMODULE)hInstance);
 
-    if (!shellanything::IsTestingEnvironment())
+    if (!app.IsTestingEnvironment())
     {
+      //Issue #124. Define property 'application.path'.
+      std::string dll_path = GetCurrentModulePathUtf8();
+      app.SetApplicationPath(dll_path);
+
       // Initialize Google's logging library.
-      shellanything::InitLogger();
+      glog::InitGlog();
+
+      // Setup an active logger in ShellAnything's core.
+      logger_service = new shellanything::GlogLoggerService();
+      app.SetLoggerService(logger_service);
+
+      // Setup an active registry service in ShellAnything's core.
+      registry_service = new shellanything::RegistryService();
+      app.SetRegistryService(registry_service);
+
+      // Setup an active registry service in ShellAnything's core.
+      clipboard_service = new shellanything::ClipboardService();
+      app.SetClipboardService(clipboard_service);
+
+      // Setup and starting application
+      app.Start();
+
+      LogEnvironment();
     }
-
-    LogEnvironment();
-
-    // Initialize the configuration manager
-    InitConfigManager();
   }
   else if (dwReason == DLL_PROCESS_DETACH)
   {
-    if (!shellanything::IsTestingEnvironment())
+    if (!app.IsTestingEnvironment())
     {
       // Shutdown Google's logging library.
-      google::ShutdownGoogleLogging();
+      glog::ShutdownGlog();
+
+      // Destroy services
+      app.ClearServices();
+      delete clipboard_service;
+      delete registry_service;
+      delete logger_service;
+      clipboard_service = NULL;
+      registry_service = NULL;
+      logger_service = NULL;
     }
   }
   return 1;

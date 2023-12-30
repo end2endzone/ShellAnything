@@ -23,11 +23,14 @@
  *********************************************************************************/
 
 #include "TestIcon.h"
+#include "App.h"
 #include "Icon.h"
 #include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "GlogUtils.h"
 #include "rapidassist/filesystem.h"
+
+using namespace shellanything::logging;
 
 namespace shellanything
 {
@@ -55,7 +58,7 @@ namespace shellanything
     {
       //delete all previous log to be able to identify the current log file
       static const int MAX_AGE_SECONDS = -1;
-      DeletePreviousLogs(MAX_AGE_SECONDS);
+      glog::DeletePreviousLogs(MAX_AGE_SECONDS);
     }
     //--------------------------------------------------------------------------------------------------
     void TestIcon::TearDown()
@@ -118,6 +121,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestIcon, testMultipleResolveFailures) // issue #98
     {
+      shellanything::App& app = shellanything::App::GetInstance();
       static const std::string UNKNOWN_FILE_EXTENSION = "foobar123456789";
 
       Icon icon;
@@ -143,14 +147,14 @@ namespace shellanything
       }
 
       //get log files content
-      std::string log_dir = GetLogDirectory();
+      std::string log_dir = app.GetLogDirectory();
       ra::strings::StringVector files;
       bool find_success = ra::filesystem::FindFiles(files, log_dir.c_str());
       ASSERT_TRUE(find_success);
       for (size_t i = 0; i < files.size(); i++)
       {
         const std::string& path = files[i];
-        if (IsLogFile(path))
+        if (glog::IsLogFile(path))
         {
           std::string content;
           bool read = ra::filesystem::ReadTextFile(path, content);

@@ -36,6 +36,8 @@ add_subdirectory(libexprtk)
 add_subdirectory(core)
 add_subdirectory(shellextension)
 add_subdirectory(api)
+add_subdirectory(logger/glog)
+add_subdirectory(windows)
 
 if(SHELLANYTHING_BUILD_PLUGINS)
   add_subdirectory(plugins/sa_plugin_process)

@@ -24,15 +24,10 @@
 
 #include "ActionClipboard.h"
 #include "PropertyManager.h"
-#include "Win32Clipboard.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/unicode.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -109,14 +104,22 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string value = pmgr.Expand(mValue);
 
-    //get clipboard handler
-    Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
+    IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+    if (clipboard == NULL)
+    {
+      SA_LOG(ERROR) << "No Clipboard service configured for reading or writing to the clipboard.";
+      return false;
+    }
 
     //debug
-    LOG(INFO) << "Setting clipboard to '" << value << "'.";
+    SA_LOG(INFO) << "Setting clipboard to '" << value << "'.";
 
     //set clipboard value
-    bool result = clipboard.SetTextUtf8(value);
+    bool result = clipboard->SetClipboardText(value);
+    if (!result)
+    {
+      SA_LOG(WARNING) << "Failed setting clipboard to '" << value << "'.";
+    }
 
     return result;
   }

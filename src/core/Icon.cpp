@@ -26,11 +26,7 @@
 #include "SelectionContext.h"
 #include "PropertyManager.h"
 #include "Win32Registry.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "LoggerHelper.h"
 
 #include "rapidassist/strings.h"
 
@@ -95,7 +91,7 @@ namespace shellanything
       {
         //found the icon for the file extension
         //replace this menu's icon with the new information
-        LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
+        SA_LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
         mPath = resolved_icon.path;
         mIndex = resolved_icon.index;
         mFileExtension = "";
@@ -113,7 +109,7 @@ namespace shellanything
         const bool is_already_in_log = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
         if (!is_already_in_log)
         {
-          LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
+          SA_LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
 
           //remember this failure.
           mUnresolvedFileExtensions.insert(file_extension);

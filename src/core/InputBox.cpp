@@ -73,6 +73,7 @@ HFONT CreateInputBoxFont()
 
 CInputBox::CInputBox(HWND hParent) :
   m_hInstance(NULL),
+  m_prevEditProc(NULL),
   m_hWindowFont(NULL),
   m_hIcon(NULL),
   m_hParent(NULL),
@@ -288,7 +289,7 @@ inline CInputBox* GetInputBoxInstance(HWND hWnd)
 
 LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  //Get the inputbox saved when WM_CREATE message was processed
+  //Get the CInputBox instance saved when WM_CREATE message was processed.
   CInputBox* pInputBox = GetInputBoxInstance(hWnd);
 
   switch (uMsg)
@@ -334,7 +335,7 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     // textbox Answer
     HWND hTextBoxAnswer = CreateWindowEx(/*WS_EX_STATICEDGE*/ WS_EX_CLIENTEDGE,
                                          "EDIT", "",
-                                         WS_VISIBLE | WS_CHILD /*| WS_TABSTOP | ES_AUTOHSCROLL*/,
+                                         WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_NOHIDESEL,
                                          DEFAULT_HORIZONTAL_PADDING, client_height - DEFAULT_VERTICAL_PADDING - DEFAULT_TEXTBOX_HEIGHT, client_width - 2 * DEFAULT_HORIZONTAL_PADDING, DEFAULT_TEXTBOX_HEIGHT,
                                          hWnd,
                                          NULL,
@@ -342,6 +343,12 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                                          NULL);
     pInputBox->SetCtrl(CInputBox::TEXTBOX_ANSWER, hTextBoxAnswer);
     SendMessage(hTextBoxAnswer, WM_SETFONT, (WPARAM)hWindowFont, 0);
+
+    // Set our custom message handler function
+    if (!(pInputBox->m_prevEditProc = (WNDPROC)SetWindowLongPtrW(hTextBoxAnswer, GWLP_WNDPROC, (LONG_PTR)(&EditProc))))
+    {
+      return ERROR_NOT_SUPPORTED;
+    }
 
     //default value for anwser
     std::wstring default_text = pInputBox->GetTextUnicode();
@@ -488,10 +495,35 @@ LRESULT CALLBACK CInputBox::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     return (LRESULT)null_brush;
   }
   break;
+  case WM_SETFOCUS:
+  {
+    HWND focused_ctrl = GetFocus();
+    HWND thisWindow = pInputBox->GetWindow();
+
+    // When the window gets the focus, set the focus on the textbox answer.
+    HWND hTextBoxAnswer = pInputBox->GetCtrl(TEXTBOX_ANSWER);
+    SetFocus(hTextBoxAnswer);
+  }
+  break;
   default:
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
   }
   return 0;
+}
+
+LRESULT CALLBACK CInputBox::EditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  //Get the CInputBox instance saved when WM_CREATE message was processed.
+  HWND hMainWnd = GetParent(hWnd);
+  CInputBox* pInputBox = GetInputBoxInstance(hMainWnd);
+
+  if (uMsg == WM_CHAR && wParam == 1) // CTRL+A
+  {
+    SendMessage(hWnd, EM_SETSEL, 0, -1);
+    return 1;
+  }
+
+  return CallWindowProc(pInputBox->m_prevEditProc, hWnd, uMsg, wParam, lParam);
 }
 
 bool CInputBox::DoModal(const std::string& caption, const std::string& prompt)
@@ -594,19 +626,14 @@ bool CInputBox::DoModal(const std::wstring& caption, const std::wstring& prompt)
         result = true; //OK button
       }
       break;
-      case VK_TAB:
-      {
-        //Jump to the next focusable element
-        HWND focused_ctrl = GetFocus();
-        if (focused_ctrl == m_hTextBoxAnswer) SetFocus(m_hButtonOK);
-        if (focused_ctrl == m_hButtonOK) SetFocus(m_hButtonCancel);
-        if (focused_ctrl == m_hButtonCancel) SetFocus(m_hTextBoxAnswer);
-      }
-      break;
       };
     }
-    TranslateMessage(&msg);
-    DispatchMessageW(&msg);
+
+    if (!IsDialogMessage(m_hInputBox, &msg))
+    {
+      TranslateMessage(&msg);
+      DispatchMessageW(&msg);
+    }
   }
 
   return result;

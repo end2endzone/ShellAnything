@@ -30,7 +30,7 @@
 #include "Menu.h"
 #include "IAction.h"
 #include "Icon.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "Validator.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"

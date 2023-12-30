@@ -37,7 +37,7 @@ namespace shellanything
 {
 
   /// <summary>
-  /// Abstract action class.
+  /// Registry class for handling IActionFactory and IAttributeValidator instances.
   /// </summary>
   class SHELLANYTHING_EXPORT Registry
   {

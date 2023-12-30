@@ -5,7 +5,6 @@ project(ShellAnything)
 #Find optional packages.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(WIX)
-find_package(NSIS)
 find_package(GRIP)
 
 ##############################################################################################################################################
@@ -105,7 +104,7 @@ MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR:   " ${CMAKE_SYSTEM_PROCESSOR} )
 
 # Product version according to Semantic Versioning v2.0.0 https://semver.org/
 set(SHELLANYTHING_VERSION_MAJOR 0)
-set(SHELLANYTHING_VERSION_MINOR 8)
+set(SHELLANYTHING_VERSION_MINOR 9)
 set(SHELLANYTHING_VERSION_PATCH 0)
 set(SHELLANYTHING_VERSION ${SHELLANYTHING_VERSION_MAJOR}.${SHELLANYTHING_VERSION_MINOR}.${SHELLANYTHING_VERSION_PATCH})
 
@@ -123,6 +122,11 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/version.h.in ${SHELLANYTHING_VERSION_HEA
 set(SHELLANYTHING_CONFIG_HEADER ${CMAKE_BINARY_DIR}/include/shellanything/config.h)
 message("Generating ${SHELLANYTHING_CONFIG_HEADER}...")
 configure_file( ${CMAKE_SOURCE_DIR}/src/config.h.in ${SHELLANYTHING_CONFIG_HEADER} )
+
+# VERSION.TXT file
+set(SHELLANYTHING_VERSION_TXT ${CMAKE_BINARY_DIR}/VERSION.TXT)
+message("Generating ${SHELLANYTHING_VERSION_TXT}...")
+configure_file( ${CMAKE_SOURCE_DIR}/src/VERSION.TXT.in ${SHELLANYTHING_VERSION_TXT} )
 
 # Define installation directories
 set(SHELLANYTHING_INSTALL_ROOT_DIR     "/")
@@ -150,6 +154,14 @@ option(SHELLANYTHING_BUILD_PLUGINS "Build all ${PROJECT_NAME}'s plugins" OFF)
 if(NOT CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX "-d")
 endif()
+
+# Define EXEC_FILENAME_POSTFIX to accurately guess the end of filename of library/executable files
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(EXEC_FILENAME_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+else()
+  set(EXEC_FILENAME_POSTFIX "")
+endif()
+MESSAGE( STATUS "EXEC_FILENAME_POSTFIX:        " ${EXEC_FILENAME_POSTFIX} )
 
 # Prevents annoying warnings on MSVC
 if (WIN32)
@@ -358,6 +370,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/README.md
               ${CMAKE_BINARY_DIR}/${AUTHOR_FILENAME}
               ${CMAKE_BINARY_DIR}/${CHANGES_FILENAME}
               ${CMAKE_BINARY_DIR}/${LICENSE_FILENAME}
+              ${SHELLANYTHING_VERSION_TXT}
               DESTINATION ${SHELLANYTHING_INSTALL_ROOT_DIR})
 
 if (SHELLANYTHING_BUILD_DOC AND DOXYGEN_FOUND)

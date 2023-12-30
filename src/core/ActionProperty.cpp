@@ -26,13 +26,11 @@
 #include "PropertyManager.h"
 #include "libexprtk.h"
 #include "ObjectFactory.h"
+#include "LoggerHelper.h"
+#include "SaUtils.h"
 
 #include "rapidassist/strings.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
+#include "rapidassist/filesystem_utf8.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -40,6 +38,7 @@ using namespace tinyxml2;
 namespace shellanything
 {
   const std::string ActionProperty::XML_ELEMENT_NAME = "property";
+  const size_t ActionProperty::DEFAULT_MAX_FILE_SIZE = 10240;
 
   class ActionPropertyFactory : public virtual IActionFactory
   {
@@ -99,6 +98,27 @@ namespace shellanything
         action->SetExprtk(tmp_str);
       }
 
+      //parse file
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "file", true, true, tmp_str, error))
+      {
+        action->SetFile(tmp_str);
+      }
+
+      //parse filesize
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "filesize", true, true, tmp_str, error))
+      {
+        action->SetFileSize(tmp_str);
+      }
+
+      //parse registrykey
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "registrykey", true, true, tmp_str, error))
+      {
+        action->SetRegistryKey(tmp_str);
+      }
+
       //done parsing
       return action;
     }
@@ -124,6 +144,9 @@ namespace shellanything
     std::string name = pmgr.Expand(mName);
     std::string value = pmgr.Expand(mValue);
     std::string exprtk = pmgr.Expand(mExprtk);
+    std::string file = pmgr.Expand(mFile);
+    std::string filesize = pmgr.Expand(mFileSize);
+    std::string regisrykey = pmgr.Expand(mRegistryKey);
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!exprtk.empty())
@@ -136,8 +159,8 @@ namespace shellanything
       int evaluated = EvaluateDouble(exprtk.c_str(), &result, error, ERROR_SIZE);
       if (!evaluated)
       {
-        LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
-        LOG(WARNING) << "Exprtk error: " << error << "'.";
+        SA_LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+        SA_LOG(WARNING) << "Exprtk error: " << error << "'.";
         return false;
       }
 
@@ -145,8 +168,90 @@ namespace shellanything
       value = ra::strings::ToString(result);
     }
 
+    // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!regisrykey.empty())
+    {
+      IRegistryService* registry = App::GetInstance().GetRegistryService();
+      if (registry == NULL)
+      {
+        SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
+      }
+
+      // Query for an existing registry key
+      std::string key_value;
+      if (registry->GetRegistryKeyAsString(regisrykey, key_value))
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = key_value;
+      }
+      else
+      {
+        SA_LOG(WARNING) << "Failed evaluating registrykey expression '" << regisrykey << "'.";
+        return false;
+      }
+    }
+
+    // If file is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!file.empty())
+    {
+      // Validate input file
+      if (!ra::filesystem::FileExistsUtf8(file.c_str()))
+      {
+        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File not found!";
+        return false;
+      }
+      if (!ra::filesystem::HasFileReadAccessUtf8(file.c_str()))
+      {
+        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
+        return false;
+      }
+
+      // Define the maximum number of bytes to read.
+      size_t max_read_size = DEFAULT_MAX_FILE_SIZE;
+
+      // Did user specified a maximum number of bytes to read?
+      bool custom_file_size = false;
+      if (!filesize.empty())
+      {
+        size_t tmp_file_size = 0;
+        bool parsed = ra::strings::Parse(filesize, tmp_file_size);
+        if (!parsed)
+        {
+          SA_LOG(WARNING) << "Failed parsing filesize value '" << filesize << "'.";
+          return false;
+        }
+
+        custom_file_size = true;
+        max_read_size = tmp_file_size;
+      }
+
+      // Custom log entry
+      if (custom_file_size && max_read_size != 0)
+        SA_LOG(INFO) << "Setting property '" << name << "' from the first " << max_read_size << " bytes of file '" << file << "'.";
+      else
+        SA_LOG(INFO) << "Setting property '" << name << "' from file '" << file << "'.";
+
+      // Set max_read_size to infinite if set to special value 0.
+      if (max_read_size == 0)
+        max_read_size = (size_t)-1;
+
+      // Do the actual reading from the file.
+      bool file_read_success = ra::filesystem::PeekFileUtf8(file.c_str(), max_read_size, value);
+      if (!file_read_success)
+      {
+        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
+        return false;
+      }
+
+      SA_LOG(INFO) << "Read " << value.size() << " bytes from file '" << file << "'.";
+    }
+
     //debug
-    LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+    if (value.size() <= 512 && IsPrintableUtf8(value))
+      SA_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+    else
+      SA_LOG(INFO) << "Setting property '" << name << "' to a new unprintable value.";
 
     pmgr.SetProperty(name, value);
 
@@ -189,6 +294,36 @@ namespace shellanything
   void ActionProperty::SetExprtk(const std::string& exprtk)
   {
     mExprtk = exprtk;
+  }
+
+  const std::string& ActionProperty::GetFile() const
+  {
+    return mFile;
+  }
+
+  void ActionProperty::SetFile(const std::string& value)
+  {
+    mFile = value;
+  }
+
+  const std::string& ActionProperty::GetFileSize() const
+  {
+    return mFileSize;
+  }
+
+  void ActionProperty::SetFileSize(const std::string& value)
+  {
+    mFileSize = value;
+  }
+
+  const std::string& ActionProperty::GetRegistryKey() const
+  {
+    return mRegistryKey;
+  }
+
+  void ActionProperty::SetRegistryKey(const std::string& value)
+  {
+    mRegistryKey = value;
   }
 
 } //namespace shellanything

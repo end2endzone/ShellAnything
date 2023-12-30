@@ -27,12 +27,8 @@
 #include "CContextMenu.h"
 #include "shellext.h"
 
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
-
 #include "ErrorManager.h"
+#include "ActionManager.h"
 #include "Win32Registry.h"
 #include "Win32Utils.h"
 #include "GlogUtils.h"
@@ -42,6 +38,7 @@
 #include "ConfigManager.h"
 #include "PropertyManager.h"
 #include "SaUtils.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/strings.h"
@@ -78,7 +75,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
   if (!menu_visible)
   {
     menu->TruncateName(title);
-    LOG(INFO) << __FUNCTION__ << "(), skipped menu '" << title << "', not visible.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), skipped menu '" << title << "', not visible.";
     return;
   }
 
@@ -87,7 +84,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
   if (menu_command_id == shellanything::Menu::INVALID_COMMAND_ID)
   {
     menu->TruncateName(title);
-    LOG(ERROR) << __FUNCTION__ << "(), menu '" << title << "' have invalid command id.";
+    SA_LOG(ERROR) << __FUNCTION__ << "(), menu '" << title << "' have invalid command id.";
     return;
   }
 
@@ -156,28 +153,45 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
     HBITMAP hBitmap = m_BitmapCache.FindHandle(icon_filename, icon_index);
 
     //if nothing in cache, create a new one
-    if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+    if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE && !icon_filename.empty())
     {
-      HICON hIconLarge = NULL;
+      // #117 - ExtractIconEx() behavior is different when the monitor is scaled. A small and a large icon
+      // cannot always be extracted when scaling factor is greater than 1.0. The solution is to only extract a small icon.
+      // Small icons matches the size of a menu icon (16x16). A "large" (or larger) icon is not necessary.
+      // The size of a small icon is scaled to match the monitor scaling. For 300% scaling, menu icons are 48x48.
       HICON hIconSmall = NULL;
 
-      //
       std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(icon_filename);
-      UINT numIconInFile = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
-      UINT numIconLoaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, &hIconLarge, &hIconSmall, 1);
-      if (numIconLoaded >= 1)
+
+      //check how many icons the file contains
+      UINT num_icon_in_file = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
+      if (num_icon_in_file == 0)
+        SA_LOG(WARNING) << __FUNCTION__ << "(), File '" << icon_filename << "' does not contains an icon.";
+      else
       {
-        //Find the best icon
-        HICON hIcon = Win32Utils::GetBestIconForMenu(hIconLarge, hIconSmall);
+        //the file contains 1 or more icons, try to load a small one
+        UINT num_icon_loaded = 0;
+        if (num_icon_in_file >= 1)
+          num_icon_loaded = ExtractIconExW(icon_filename_wide.c_str(), icon_index, NULL, &hIconSmall, 1);
+        if (num_icon_in_file >= 1 && num_icon_loaded == 0)
+          SA_LOG(WARNING) << __FUNCTION__ << "(), Failed to load icon index " << icon_index << " from file '" << icon_filename << "'.";
+        else
+        {
+          SIZE menu_icon_size = Win32Utils::GetIconSize(hIconSmall);
+          // SA_LOG(INFO) << __FUNCTION__ << "(), Loaded icon " << icon_index << " from file '" << icon_filename << "' is " << menu_icon_size.cx << "x" << menu_icon_size.cy << ".";
 
-        //Convert the icon to a bitmap (with invisible background)
-        hBitmap = Win32Utils::CopyAsBitmap(hIcon);
+          //Convert the icon to a 32bpp bitmap with alpha channel (invisible background)
+          hBitmap = Win32Utils::CopyAsBitmap(hIconSmall);
+          if (hBitmap == shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+            SA_LOG(ERROR) << __FUNCTION__ << "(), Icon " << icon_index << " from file '" << icon_filename << "' has failed to convert to bitmap.";
 
-        DestroyIcon(hIconLarge);
-        DestroyIcon(hIconSmall);
+          if (hIconSmall != NULL)
+            DestroyIcon(hIconSmall);
 
-        //add the bitmap to the cache for future use
-        m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
+          //add the bitmap to the cache for future use
+          if (hBitmap != shellanything::BitmapCache::INVALID_BITMAP_HANDLE)
+            m_BitmapCache.AddHandle(icon_filename.c_str(), icon_index, hBitmap);
+        }
       }
     }
 
@@ -221,7 +235,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
   BOOL result = InsertMenuItemW(hMenu, insert_pos, TRUE, &menuinfo);
   insert_pos++; //next menu is below this one
 
-  LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::Format("%03d", insert_pos) << ", id=" << ra::strings::Format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
+  SA_LOG(INFO) << __FUNCTION__ << "(), insert.pos=" << ra::strings::Format("%03d", insert_pos) << ", id=" << ra::strings::Format("%06d", menuinfo.wID) << ", result=" << result << ", title=" << title;
 }
 
 void CContextMenu::BuildMenuTree(HMENU hMenu)
@@ -257,11 +271,11 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
   //for each configuration
   shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
-  shellanything::Configuration::ConfigurationPtrList configs = cmgr.GetConfigurations();
+  shellanything::ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
   UINT insert_pos = 0;
   for (size_t i = 0; i < configs.size(); i++)
   {
-    shellanything::Configuration* config = configs[i];
+    shellanything::ConfigFile* config = configs[i];
     if (config)
     {
       //for each menu child
@@ -279,7 +293,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
 
 CContextMenu::CContextMenu()
 {
-  LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), new instance " << ToHexString(this);
 
 #if SA_QUERYINTERFACE_IMPL == 0
   m_refCount = 0; // reference counter must be initialized to 0 even if we are actually creating an instance. A reference to this instance will be added when the instance will be queried by explorer.exe.
@@ -298,7 +312,7 @@ CContextMenu::CContextMenu()
 
 CContextMenu::~CContextMenu()
 {
-  LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
 
   // Decrement the dll's reference counter.
   DllRelease();
@@ -309,7 +323,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   std::string flags_str = GetQueryContextMenuFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")" << " this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), hMenu=0x" << ra::strings::Format("0x%08x", hMenu).c_str() << ",count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")" << " this=" << ToHexString(this);
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -330,7 +344,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   if (m_Context.GetElements().size() == 0)
   {
     //Don't know what to do with this
-    LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), skipped, nothing is selected.";
     return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0); //nothing inserted
   }
 
@@ -340,7 +354,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
     //Issue  #6 - Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
     //Issue #31 - Error in logs for CContextMenu::GetCommandString().
     //Using a static variable is a poor method for solving the issue but it is a "good enough" strategy.
-    LOG(INFO) << __FUNCTION__ << "(), skipped, QueryContextMenu() called twice and menu is already populated once.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), skipped, QueryContextMenu() called twice and menu is already populated once.";
     return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0); //nothing inserted
   }
 
@@ -352,7 +366,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   size_t num_selected_total = elements.size();
   int num_files = m_Context.GetNumFiles();
   int num_directories = m_Context.GetNumDirectories();
-  LOG(INFO) << __FUNCTION__ << "(), SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
+  SA_LOG(INFO) << __FUNCTION__ << "(), SelectionContext have " << num_selected_total << " element(s): " << num_files << " files and " << num_directories << " directories.";
 
   //Keep a reference the our first command id. We will need it when InvokeCommand is called.
   m_FirstCommandId = first_command_id;
@@ -376,12 +390,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   if (next_command_id != first_command_id)
     menu_last_command_id = next_command_id - 1;
   UINT num_menu_items = next_command_id - first_command_id;
-  LOG(INFO) << __FUNCTION__ << "(), Menu: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
+  SA_LOG(INFO) << __FUNCTION__ << "(), Menu: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
 
   //debug the constructed menu tree
 #ifdef _DEBUG
   std::string menu_tree = Win32Utils::GetMenuTree(hMenu, 2);
-  LOG(INFO) << __FUNCTION__ << "(), Menu tree:\n" << menu_tree.c_str();
+  SA_LOG(INFO) << __FUNCTION__ << "(), Menu tree:\n" << menu_tree.c_str();
 #endif
 
   HRESULT hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items);
@@ -412,7 +426,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
   else
     verb = pici->lpVerb;
 
-  LOG(INFO) << __FUNCTION__ << "(), pici->cbSize=" << struct_name << ", pici->fMask=" << pici->fMask << ", pici->lpVerb=" << verb << " this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), pici->cbSize=" << struct_name << ", pici->fMask=" << pici->fMask << ", pici->lpVerb=" << verb << " this=" << ToHexString(this);
 
   //validate
   if (!IS_INTRESOURCE(pici->lpVerb))
@@ -429,50 +443,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
   shellanything::Menu* menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for pici->lpVerb=" << verb;
+    SA_LOG(ERROR) << __FUNCTION__ << "(), unknown menu for pici->lpVerb=" << verb;
     return E_INVALIDARG;
   }
 
-  //compute the visual menu title
-  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
-  std::string title = pmgr.Expand(menu->GetName());
+  //found a menu match, execute menu actions
+  bool success = shellanything::ActionManager::Execute(menu, m_Context);
 
-  //found a menu match, execute menu action
-  LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "'...";
-
-  //execute actions
-  const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
-  for (size_t i = 0; i < actions.size(); i++)
-  {
-    LOG(INFO) << __FUNCTION__ << "(), executing action " << (i + 1) << " of " << actions.size() << ".";
-    const shellanything::IAction* action = actions[i];
-    if (action)
-    {
-      ra::errors::ResetLastErrorCode(); //reset win32 error code in case the action fails.
-      bool success = action->Execute(m_Context);
-
-      if (!success)
-      {
-        //try to get an error message from win32
-        ra::errors::errorcode_t dwError = ra::errors::GetLastErrorCode();
-        if (dwError)
-        {
-          std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed: " << error_message;
-        }
-        else
-        {
-          //simply log an error
-          LOG(ERROR) << __FUNCTION__ << "(), action #" << (i + 1) << " has failed.";
-        }
-
-        //stop executing the next actions
-        i = actions.size();
-      }
-    }
-  }
-
-  LOG(INFO) << __FUNCTION__ << "(), executing action(s) for menu '" << title.c_str() << "' completed.";
   return S_OK;
 }
 
@@ -482,7 +459,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
   // only show this log in verbose mode
-  //LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", cchMax=" << cchMax << " this=" << ToHexString(this) << ", flags=" << flags_hex << ":" << flags_str;
+  //SA_LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", cchMax=" << cchMax << " this=" << ToHexString(this) << ", flags=" << flags_hex << ":" << flags_str;
 
   UINT target_command_offset = (UINT)command_id; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
@@ -495,7 +472,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   shellanything::Menu* menu = cmgr.FindMenuByCommandId(target_command_id);
   if (menu == NULL)
   {
-    LOG(ERROR) << __FUNCTION__ << "(), unknown menu for command_id=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
+    SA_LOG(ERROR) << __FUNCTION__ << "(), unknown menu for command_id=" << target_command_offset << " m_FirstCommandId=" << m_FirstCommandId << " target_command_id=" << target_command_id;
     return E_INVALIDARG;
   }
 
@@ -546,13 +523,13 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   break;
   }
 
-  LOG(ERROR) << __FUNCTION__ << "(), unknown flags: " << flags;
+  SA_LOG(ERROR) << __FUNCTION__ << "(), unknown flags: " << flags;
   return S_FALSE;
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder << " this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << (void*)pIDFolder << " this=" << ToHexString(this);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);
@@ -560,6 +537,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   shellanything::StringList files;
 
   // Cleanup
+  shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
   m_Context.UnregisterProperties(); //Unregister the previous context properties
   m_Context.SetElements(files);
   m_IsBackGround = false;
@@ -567,7 +545,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   // Did we clicked on a folder's background or the desktop directory?
   if (pIDFolder)
   {
-    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on a background directory.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), User right-clicked on a background directory.";
 
     wchar_t szPath[2 * MAX_PATH] = { 0 };
 
@@ -576,19 +554,19 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       if (szPath[0] != '\0')
       {
         std::string path_utf8 = ra::unicode::UnicodeToUtf8(szPath);
-        LOG(INFO) << __FUNCTION__ << "(), Found directory '" << path_utf8 << "'.";
+        SA_LOG(INFO) << __FUNCTION__ << "(), Found directory '" << path_utf8 << "'.";
         m_IsBackGround = true;
         files.push_back(path_utf8);
       }
       else
       {
-        LOG(WARNING) << __FUNCTION__ << "(), found empty path in pIDFolder.";
+        SA_LOG(WARNING) << __FUNCTION__ << "(), found empty path in pIDFolder.";
         return E_INVALIDARG;
       }
     }
     else
     {
-      LOG(ERROR) << __FUNCTION__ << "(), SHGetPathFromIDList() has failed.";
+      SA_LOG(ERROR) << __FUNCTION__ << "(), SHGetPathFromIDList() has failed.";
       return E_INVALIDARG;
     }
   }
@@ -596,7 +574,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   // User clicked on one or more file or directory
   else if (pDataObj)
   {
-    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on selected files/directories.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), User right-clicked on selected files/directories.";
 
     FORMATETC fmt = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     STGMEDIUM stg = { TYMED_HGLOBAL };
@@ -605,7 +583,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     // The selected files are expected to be in HDROP format.
     if (FAILED(pDataObj->GetData(&fmt, &stg)))
     {
-      LOG(WARNING) << __FUNCTION__ << "(), selected files are not in HDROP format.";
+      SA_LOG(WARNING) << __FUNCTION__ << "(), selected files are not in HDROP format.";
       return E_INVALIDARG;
     }
 
@@ -614,12 +592,12 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
     if (NULL == hDropInfo)
     {
       ReleaseStgMedium(&stg);
-      LOG(ERROR) << __FUNCTION__ << "(), failed to get lock on selected files.";
+      SA_LOG(ERROR) << __FUNCTION__ << "(), failed to get lock on selected files.";
       return E_INVALIDARG;
     }
 
     UINT num_files = DragQueryFileW(hDropInfo, 0xFFFFFFFF, NULL, 0);
-    LOG(INFO) << __FUNCTION__ << "(), User right-clicked on " << num_files << " files/directories.";
+    SA_LOG(INFO) << __FUNCTION__ << "(), User right-clicked on " << num_files << " files/directories.";
 
     // For each files
     for (UINT i = 0; i < num_files; i++)
@@ -637,7 +615,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
       //add the new file
       std::string path_utf8 = ra::unicode::UnicodeToUtf8(path);
-      LOG(INFO) << __FUNCTION__ << "(), Found file/directory #" << ra::strings::Format("%03d", i) << ": '" << path_utf8 << "'.";
+      SA_LOG(INFO) << __FUNCTION__ << "(), Found file/directory #" << ra::strings::Format("%03d", i) << ": '" << path_utf8 << "'.";
       files.push_back(path_utf8);
     }
     GlobalUnlock(stg.hGlobal);
@@ -656,7 +634,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppv)
 {
   std::string riid_str = GuidToInterfaceName(riid);
-  LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
+  SA_LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
 
   HRESULT hr = E_NOINTERFACE;
 
@@ -676,7 +654,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
   //    IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)
   //    )
   //{
-  //  LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
+  //  SA_LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
   //  return E_NOINTERFACE;
   //}
 
@@ -703,9 +681,9 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* 
 #endif
 
   if (SUCCEEDED(hr))
-    LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
+    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
   else
-    LOG(INFO) << __FUNCTION__ << "(), unknown interface " << riid_str;
+    SA_LOG(INFO) << __FUNCTION__ << "(), unknown interface " << riid_str;
   return hr;
 }
 

@@ -17,7 +17,7 @@ version: "{branch} (#{build})"
 branches:
   only:
     - master
-    - feature-issue115
+    - /feature-issue.*/
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -60,7 +60,8 @@ matrix:
   fast_finish: true
 
 before_build:
-#- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\list_services_status.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\list_services_status.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\list_registry_keys.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_doxygen.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_googletest.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_tinyxml2.bat
@@ -96,4 +97,5 @@ test_script:
 
 artifacts:
 - path: .\build\bin\Release\sa.tests.*.release.xml
+- path: .\build\bin\Release\test_logs\*.log
 - path: .\build\shellanything-*-win*.*

@@ -23,13 +23,9 @@
  *********************************************************************************/
 
 #include "shellanything/sa_logging.h"
+#include "LoggerHelper.h"
 #include <stdarg.h> //for ...
 #include <string>
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 void sa_logging_print(sa_log_level_t level, const char* source_name, const char* message)
 {
@@ -38,16 +34,16 @@ void sa_logging_print(sa_log_level_t level, const char* source_name, const char*
     switch (level)
     {
     case SA_LOG_LEVEL_INFO:
-      LOG(INFO) << "[ " << source_name << " ]: " << message;
+      SA_LOG(INFO) << "[ " << source_name << " ]: " << message;
       break;
     case SA_LOG_LEVEL_WARNING:
-      LOG(WARNING) << "[ " << source_name << " ]: " << message;
+      SA_LOG(WARNING) << "[ " << source_name << " ]: " << message;
       break;
     case SA_LOG_LEVEL_ERROR:
-      LOG(ERROR) << "[ " << source_name << " ]: " << message;
+      SA_LOG(ERROR) << "[ " << source_name << " ]: " << message;
       break;
     case SA_LOG_LEVEL_FATAL:
-      LOG(FATAL) << "[ " << source_name << " ]: " << message;
+      SA_LOG(FATAL) << "[ " << source_name << " ]: " << message;
       break;
     };
   }
@@ -56,16 +52,16 @@ void sa_logging_print(sa_log_level_t level, const char* source_name, const char*
     switch (level)
     {
     case SA_LOG_LEVEL_INFO:
-      LOG(INFO) << message;
+      SA_LOG(INFO) << message;
       break;
     case SA_LOG_LEVEL_WARNING:
-      LOG(WARNING) << message;
+      SA_LOG(WARNING) << message;
       break;
     case SA_LOG_LEVEL_ERROR:
-      LOG(ERROR) << message;
+      SA_LOG(ERROR) << message;
       break;
     case SA_LOG_LEVEL_FATAL:
-      LOG(FATAL) << message;
+      SA_LOG(FATAL) << message;
       break;
     };
   }

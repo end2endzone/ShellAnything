@@ -24,14 +24,10 @@
 
 #include "ConfigManager.h"
 #include "Menu.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"
-
-#pragma warning( push )
-#pragma warning( disable: 4355 ) // glog\install_dir\include\glog/logging.h(1167): warning C4355: 'this' : used in base member initializer list
-#include <glog/logging.h>
-#pragma warning( pop )
 
 namespace shellanything
 {
@@ -60,13 +56,13 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    LOG(INFO) << __FUNCTION__ << "()";
+    SA_LOG(INFO) << __FUNCTION__ << "()";
 
     //validate existing configurations
-    Configuration::ConfigurationPtrList existing = GetConfigurations();
+    ConfigFile::ConfigFilePtrList existing = GetConfigFiles();
     for (size_t i = 0; i < existing.size(); i++)
     {
-      Configuration* config = existing[i];
+      ConfigFile* config = existing[i];
 
       //compare the file's date at the load time and the current date
       const std::string& file_path = config->GetFilePath();
@@ -75,13 +71,13 @@ namespace shellanything
       if (ra::filesystem::FileExistsUtf8(file_path.c_str()) && old_file_date == new_file_date)
       {
         //current configuration is up to date
-        LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
+        SA_LOG(INFO) << "Configuration file '" << file_path << "' is up to date.";
       }
       else
       {
         //file is missing or current configuration is out of date
         //forget about existing config
-        LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
+        SA_LOG(INFO) << "Configuration file '" << file_path << "' is missing or is not up to date. Deleting configuration.";
         DeleteChild(config);
       }
     }
@@ -91,7 +87,7 @@ namespace shellanything
     {
       const std::string& path = mPaths[i];
 
-      LOG(INFO) << "Searching configuration files in directory '" << path << "'";
+      SA_LOG(INFO) << "Searching configuration files in directory '" << path << "'";
 
       //search files in each directory
       ra::strings::StringVector files;
@@ -102,20 +98,20 @@ namespace shellanything
         for (size_t j = 0; j < files.size(); j++)
         {
           const std::string& file_path = files[j];
-          if (Configuration::IsValidConfigFile(file_path))
+          if (ConfigFile::IsValidConfigFile(file_path))
           {
             //is this file already loaded ?
             if (!IsConfigFileLoaded(file_path))
             {
-              LOG(INFO) << "Found new configuration file '" << file_path << "'";
+              SA_LOG(INFO) << "Found new configuration file '" << file_path << "'";
 
               //parse the file
               std::string error;
-              Configuration* config = Configuration::LoadFile(file_path, error);
+              ConfigFile* config = ConfigFile::LoadFile(file_path, error);
               if (config == NULL)
               {
                 //log an error message
-                LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
+                SA_LOG(ERROR) << "Failed loading configuration file '" << file_path << "'. Error=" << error << ".";
               }
               else
               {
@@ -128,7 +124,7 @@ namespace shellanything
             }
             else
             {
-              LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
+              SA_LOG(INFO) << "Skipped configuration file '" << file_path << "'. File is already loaded.";
             }
           }
         }
@@ -136,7 +132,7 @@ namespace shellanything
       else
       {
         //log an error message
-        LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
+        SA_LOG(ERROR) << "Failed searching for configuration files in directory '" << path << "'.";
       }
     }
   }
@@ -144,10 +140,10 @@ namespace shellanything
   void ConfigManager::Update(const SelectionContext& context)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();
     for (size_t i = 0; i < configurations.size(); i++)
     {
-      Configuration* config = configurations[i];
+      ConfigFile* config = configurations[i];
       config->Update(context);
     }
   }
@@ -155,10 +151,10 @@ namespace shellanything
   Menu* ConfigManager::FindMenuByCommandId(const uint32_t& command_id)
   {
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();
     for (size_t i = 0; i < configurations.size(); i++)
     {
-      Configuration* config = configurations[i];
+      ConfigFile* config = configurations[i];
       Menu* match = config->FindMenuByCommandId(command_id);
       if (match)
         return match;
@@ -167,22 +163,38 @@ namespace shellanything
     return NULL;
   }
 
+  Menu* ConfigManager::FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags)
+  {
+    //for each child
+    ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();
+    for (size_t i = 0; i < configurations.size(); i++)
+    {
+      ConfigFile* config = configurations[i];
+      Menu* match = config->FindMenuByName(name, flags);
+      if (match)
+        return match;
+    }
+
+    return NULL;
+  }
+
+
   uint32_t ConfigManager::AssignCommandIds(const uint32_t& first_command_id)
   {
     uint32_t nextCommandId = first_command_id;
 
     //for each child
-    Configuration::ConfigurationPtrList configurations = ConfigManager::GetConfigurations();
+    ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();
     for (size_t i = 0; i < configurations.size(); i++)
     {
-      Configuration* config = configurations[i];
+      ConfigFile* config = configurations[i];
       nextCommandId = config->AssignCommandIds(nextCommandId);
     }
 
     return nextCommandId;
   }
 
-  Configuration::ConfigurationPtrList ConfigManager::GetConfigurations()
+  ConfigFile::ConfigFilePtrList ConfigManager::GetConfigFiles()
   {
     return mConfigurations;
   }
@@ -201,7 +213,7 @@ namespace shellanything
   {
     for (size_t i = 0; i < mConfigurations.size(); i++)
     {
-      const Configuration* config = mConfigurations[i];
+      const ConfigFile* config = mConfigurations[i];
       if (config != NULL && config->GetFilePath() == path)
         return true;
     }
@@ -213,13 +225,13 @@ namespace shellanything
     // delete configurations
     for (size_t i = 0; i < mConfigurations.size(); i++)
     {
-      Configuration* config = mConfigurations[i];
+      ConfigFile* config = mConfigurations[i];
       delete config;
     }
     mConfigurations.clear();
   }
 
-  void ConfigManager::DeleteChild(Configuration* config)
+  void ConfigManager::DeleteChild(ConfigFile* config)
   {
     mConfigurations.erase(std::find(mConfigurations.begin(), mConfigurations.end(), config));
     delete config;

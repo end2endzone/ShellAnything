@@ -28,14 +28,15 @@
 #include "shellanything/export.h"
 #include "shellanything/config.h"
 #include "StringList.h"
-#include "Configuration.h"
+#include "ConfigFile.h"
 #include "SelectionContext.h"
+#include "Enums.h"
 
 namespace shellanything
 {
 
   /// <summary>
-  /// The ConfigManager holds mutiple Configuration instances.
+  /// The ConfigManager holds mutiple ConfigFile instances.
   /// </summary>
   class SHELLANYTHING_EXPORT ConfigManager
   {
@@ -52,15 +53,15 @@ namespace shellanything
     static ConfigManager& GetInstance();
 
     /// <summary>
-    /// Get the list of Configuration pointers handled by the manager
+    /// Get the list of ConfigFile pointers handled by the manager
     /// </summary>
-    Configuration::ConfigurationPtrList GetConfigurations();
+    ConfigFile::ConfigFilePtrList GetConfigFiles();
 
     /// <summary>
-    /// Returns true if the given path is a Configuration loaded by the manager.
+    /// Returns true if the given path is a ConfigFile loaded by the manager.
     /// </summary>
     /// <param name="path">The path of a Configuration file</param>
-    /// <returns>Returns true if the given path is a Configuration loaded by the manager. Returns false otherwise.</returns>
+    /// <returns>Returns true if the given path is a ConfigFile loaded by the manager. Returns false otherwise.</returns>
     bool IsConfigFileLoaded(const std::string& path) const;
 
     /// <summary>
@@ -90,6 +91,14 @@ namespace shellanything
     Menu* FindMenuByCommandId(const uint32_t& command_id);
 
     /// <summary>
+    /// Finds a loaded Menu pointer by a given name. The first menu that matches the given name is returned.
+    /// </summary>
+    /// <param name="name">The name of the menu.</param>
+    /// <param name="flags">The flags for searching by name.</param>
+    /// <returns>Returns a Menu pointer if a match is found. Returns NULL otherwise.</returns>
+    Menu* FindMenuByName(const std::string& name, FIND_BY_NAME_FLAGS flags = FIND_BY_NAME_NONE);
+
+    /// <summary>
     /// Assign unique command id to all menus loaded by the configuration manager.
     /// </summary>
     /// <param name="first_command_id">The first command id available.</param>
@@ -110,11 +119,11 @@ namespace shellanything
   private:
     //methods
     void DeleteChildren();
-    void DeleteChild(Configuration* config);
+    void DeleteChild(ConfigFile* config);
 
     //attributes
     StringList mPaths;
-    Configuration::ConfigurationPtrList mConfigurations;
+    ConfigFile::ConfigFilePtrList mConfigurations;
   };
 
 } //namespace shellanything

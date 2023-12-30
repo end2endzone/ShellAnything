@@ -40,6 +40,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Property expansion](#property-expansion)
   * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
+  * [Live properties](#live-properties)
   * [Selection-based properties](#selection-based-properties)
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
@@ -707,7 +708,7 @@ For example, the following launch the Windows Calculator:
 
 The `arguments` attribute defines the launching command line parameters sent to the application specified in the `path` attribute. The attribute is optional.
 
-For example, the following launche `notepad.exe` and open the `License.txt` document :
+For example, the following launch `notepad.exe` and open the `License.txt` document :
 ```xml
 <exec path="C:\Windows\notepad.exe" arguments="C:\Program Files\7-Zip\License.txt" />
 ```
@@ -718,9 +719,50 @@ For example, the following launche `notepad.exe` and open the `License.txt` docu
 
 The `basedir` attribute defines the directory to use as `current directory` when launching the application specified in the `path` attribute. The attribute is optional.
 
-For example, the following launche `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
+For example, the following launch `notepad.exe` and open the `License.txt` document from `7-Zip` installation directory :
 ```xml
 <exec path="C:\Windows\notepad.exe" basedir="C:\Program Files\7-Zip" arguments="License.txt" />
+```
+
+
+
+#### wait attribute: ####
+
+The `wait` attribute tell the system to wait for the process to complete and exit before executing the next action. The attribute must be set to `true`, `yes`, `ok`, `on` or `1` to enable the feature. See property `system.true` to allows for more values. The attribute is optional.
+
+For example, the following launch `cmd.exe` and list files and directories recursively. When all files are printed, the file `foobar.txt` is opened in notepad :
+```xml
+<exec path="cmd.exe" wait="true" arguments="/C dir /s /b C:\*.*" />
+<exec path="C:\Windows\notepad.exe" arguments="foobar.txt" />
+```
+
+**Note:**
+It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_.
+
+When combined with other elements, the `wait` attribute allows advanced use case.
+
+For example :
+
+***Base a following action on the result of the first*** :
+```xml
+<!--
+Search recursively for directories under C:\ which contains the word ` and ` and store matches in file `%TEMP%\matches.txt`.
+Tell ShellAnything to wait until the search is complete before proceeding to the next action. -->
+<exec path="cmd.exe" wait="true" arguments="/C dir /ad /s /b C:\*.* | findstr /C:&quot; and &quot;>&quot;${env.TEMP}\matches.txt&quot;" />
+
+<!-- When the search is complete, open the result list in notepad. -->
+<exec path="C:\Windows\notepad.exe" arguments="&quot;${env.TEMP}\matches.txt&quot;" />
+```
+
+
+
+#### timeout attribute: ####
+
+The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
+
+For example, the following launch `cmd.exe` and list files and directories recursively in `C:\`. The list of files are stored in file `${env.TEMP}\files_in_c_drive.txt`. For stability reason, if the listing takes more than 60 seconds, ShellAnything stops waiting for _cmd.exe_ to exit and resume normal operation :
+```xml
+<exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
 ```
 
 
@@ -769,6 +811,9 @@ For example, the following opens the default JPEG viewer to view following image
 ### &lt;clipboard&gt; action ###
 
 The &lt;clipboard&gt; element is used to change the value of the [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525) to a new value. The &lt;clipboard&gt; element must be added under the &lt;actions&gt; element.
+
+**Note:**
+To read or reference the clipboard content, see [Live properties](#live-properties) section.
 
 The &lt;clipboard&gt; elements have the following attributes:
 
@@ -984,6 +1029,109 @@ The `exprtk` attribute uses the *exprtk library* to parse the expression. For mo
 
 
 
+#### file attribute: ####
+
+The `file` attribute defines the path of a file who's content is used as a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+
+For example, the following sets the property `myprogram.config` to the content of an application ini file :
+```xml
+<property name="myprogram.config.content" file="c:\myprogram\config.ini" />
+```
+
+When combined with other elements, the _file_ attribute allows advanced use case and property manipulation.
+
+For example :
+
+***Copy and paste text files*** :
+```xml
+<menu name="File content">
+  <menu name="Copy as text">
+    <visibility maxfiles="1" maxfolders="0" />
+    <actions>
+      <!-- Store the file's content and file name as properties -->
+      <property name="copypaste.file.content" file="${selection.path}" />
+      <property name="copypaste.file.name" value="${selection.filename}" />
+    </actions>
+  </menu>
+  <menu name="Paste">
+    <visibility properties="copypaste.file.content" />
+    <actions>
+      <!-- Generate a file from properties -->
+      <file path="${selection.path}\${copypaste.file.name}.copy.txt" encoding="utf8">${copypaste.file.content}</file>
+      <property name="copypaste.file.content" value="" />
+    </actions>
+  </menu>
+</menu>
+```
+
+***Capture execution output*** :
+```xml
+<menu name="Capture exec output">
+  <actions>
+    <exec path="cmd.exe" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${env.TEMP}\command_output.txt&quot;" />
+    <property name="files" file="${env.TEMP}\command_output.txt" />
+  </actions>
+</menu>
+```
+
+**Note:**
+To specifiy how much to read from the file, see the `filesize` attribute. By default, a maximum of ***10 KB*** can be read from a file. To read more than that, one must manually specify the `filesize` attribute.
+
+
+
+#### filesize attribute: ####
+
+The `filesize` attribute defines the how many bytes the `file` attribute should read from the file. The special value `0` can be use to read the whole file with no limit.
+
+For example, the following sets the property `myprogram.bigfile.header` by reading the first 10 bytes of a data file :
+```xml
+<property name="myprogram.bigfile.header" file="${temp}bigfile.dat" filesize="10" />
+```
+
+**Note:**
+If not specified, a maximum of ***10 KB*** can be read from a file.
+
+
+
+#### registrykey attribute: ####
+
+The `registrykey` attribute defines the path to a [Windows Registry Key](https://en.wikipedia.org/wiki/Windows_Registry) or _Registry Value_ that is used to set a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+
+For example, the following sets the property `apps.7zip.dir` to the installation directory of [7-zip](https://www.7-zip.org/) :
+```xml
+<property name="apps.7zip.dir" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path64" />
+```
+
+This method allows to create generic configuration file that can be used by everyone.
+
+For example :
+
+***Open video files with VLC*** :
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <!-- Detect VLC executable path and install directory from the registry -->
+      <!-- The property `apps.vlc.exe` is set only if the path in Windows Registry is found. -->
+      <property name="apps.vlc.exe" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\VideoLAN\VLC" />
+      <property name="apps.vlc.dir" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\VideoLAN\VLC\InstallDir" />
+    </default>
+
+    <menu name="Open with VLC">
+      <icon path="${apps.vlc.exe}" index="0" />
+      <!-- Show the menu only if VLC is installed on the system (found in the registry). -->
+      <visibility properties="apps.vlc.exe" maxfiles="1" maxfolders="0" fileextensions="mp4;mkv" />
+      <actions>
+        <exec path="${apps.vlc.exe}" arguments="${selection.path}" />
+      </actions>
+    </menu>
+  </shell>
+</root>
+```
+
+
+
 ### &lt;file&gt; action ###
 
 The &lt;file&gt; element is used to create a text file on disk. The content of the file is specified between the opening and closing tags of the &lt;file&gt; element. The &lt;file&gt; element supports dynamic properties and can be used to create default configuration files or create support files for the menu.
@@ -1159,6 +1307,20 @@ Environment variables properties are encoded in utf-8.
 
 
 
+## Live properties ##
+
+The application provides _live_ properties which are defined automatically by the property system. Think of live properties as properties that are always updated in real time. Live properties can not be set manually as their value will be automatically updated when referenced by the property system. They usually map to the state of a feature of the Operating System.
+
+The following table defines the list of live properties and their utility:
+
+| Property  | Description                                                                                                         |
+|-----------|---------------------------------------------------------------------------------------------------------------------|
+| clipboard | Matches the content of [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525). |
+
+These properties are encoded in utf-8.
+
+
+
 ## Selection-based properties ##
 
 The application provides a list of dynamic properties. The values of these properties will change based on the user selection when a user right-click files or folders.
@@ -1306,7 +1468,7 @@ The result can then be used to:
 * Copy the commands to the clipboard:
 
 ```xml
-<clipboard  value="attrib -r -a -s -h &quot;${selection.filename}&quot;"  />
+<clipboard value="attrib -r -a -s -h &quot;${selection.filename}&quot;" />
 ```
 
 * Create a batch file which content is the commands:
@@ -1315,7 +1477,6 @@ The result can then be used to:
 attrib -r -a -s -h &quot;${selection.filename}&quot;
 </file>
 ```
-
 
 
 

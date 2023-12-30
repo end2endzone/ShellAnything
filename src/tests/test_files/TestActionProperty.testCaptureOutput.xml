@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="Capture output">
+      <actions>
+        <exec path="cmd.exe" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${command_output_file}&quot;" wait="true" timeout="10" />
+        <property name="files" file="${command_output_file}" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>

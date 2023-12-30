@@ -3,17 +3,24 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ActionClipboard.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionExecute.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionFile.h
+  ${CMAKE_SOURCE_DIR}/src/core/ActionManager.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionMessage.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionOpen.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionPrompt.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/ActionStop.h
+  ${CMAKE_SOURCE_DIR}/src/core/App.h
   ${CMAKE_SOURCE_DIR}/src/core/BaseAction.h
-  ${CMAKE_SOURCE_DIR}/src/core/Configuration.h
+  ${CMAKE_SOURCE_DIR}/src/core/ConfigFile.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
+  ${CMAKE_SOURCE_DIR}/src/core/ILiveProperty.h
+  ${CMAKE_SOURCE_DIR}/src/core/IClipboardService.h
+  ${CMAKE_SOURCE_DIR}/src/core/ILoggerService.h
+  ${CMAKE_SOURCE_DIR}/src/core/IRegistryService.h
+  ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
   ${CMAKE_SOURCE_DIR}/src/core/Validator.h
 )
@@ -28,13 +35,15 @@ add_library(sa.core SHARED
   ActionClipboard.cpp
   ActionExecute.cpp
   ActionFile.cpp
+  ActionManager.cpp
   ActionMessage.cpp
   ActionOpen.cpp
   ActionPrompt.cpp
   ActionProperty.cpp
   ActionStop.cpp
+  App.cpp
   BaseAction.cpp
-  Configuration.cpp
+  ConfigFile.cpp
   ConfigManager.cpp
   SelectionContext.cpp
   DefaultSettings.cpp
@@ -45,6 +54,11 @@ add_library(sa.core SHARED
   IAttributeValidator.h
   IAttributeValidator.cpp
   Icon.cpp
+  ILiveProperty.cpp
+  IClipboardService.cpp
+  ILoggerService.cpp
+  IRegistryService.cpp
+  LoggerHelper.cpp
   InputBox.h
   InputBox.cpp
   IntList.h
@@ -60,6 +74,7 @@ add_library(sa.core SHARED
   Validator.cpp
   DriveClass.h
   DriveClass.cpp
+  Enums.h
   ErrorManager.h
   ErrorManager.cpp
   PropertyManager.h
@@ -69,8 +84,6 @@ add_library(sa.core SHARED
   Registry.h
   Registry.cpp
   StringList.h
-  Win32Clipboard.h
-  Win32Clipboard.cpp
   Wildcard.cpp
   Wildcard.h
 )
@@ -121,7 +134,6 @@ target_include_directories(sa.core
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     ${CMAKE_SOURCE_DIR}/src/libexprtk
@@ -133,7 +145,6 @@ add_dependencies(sa.core libexprtk sa.shared)
 target_link_libraries(sa.core
   PRIVATE
     rapidassist
-    glog::glog
     libexprtk
     libmagic
     sa.shared

@@ -29,6 +29,7 @@
 #include "shellanything/config.h"
 #include "StringList.h"
 #include "PropertyStore.h"
+#include "ILiveProperty.h"
 #include <string>
 #include <map>
 
@@ -51,6 +52,11 @@ namespace shellanything
 
   public:
 
+    //------------------------
+    // Typedef
+    //------------------------
+    typedef std::map<std::string /*name*/, ILiveProperty * /*ptr*/> LivePropertyMap;
+
     /// <summary>
     /// Name of the property that defines the system true.
     /// </summary>
@@ -70,6 +76,11 @@ namespace shellanything
     /// Default value for the property 'SYSTEM_FALSE_PROPERTY_NAME'.
     /// </summary>
     static const std::string SYSTEM_FALSE_DEFAULT_VALUE;
+
+    /// <summary>
+    /// Name of the property that defines the clipboard content.
+    /// </summary>
+    static const std::string SYSTEM_CLIPBOARD_PROPERTY_NAME;
 
   public:
 
@@ -113,7 +124,7 @@ namespace shellanything
     /// </summary>
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns value of the property if the property is set. Returns an empty string otherwise.</returns>
-    const std::string& GetProperty(const std::string& name) const;
+    std::string GetProperty(const std::string& name) const;
 
     /// <summary>
     /// Find the list of properties which are not in the store.
@@ -145,6 +156,35 @@ namespace shellanything
     std::string ExpandOnce(const std::string& value) const;
 
     /// <summary>
+    /// Add a live property to the manager. The manager takes ownership of the instance.
+    /// </summary>
+    /// <param name="instance">The given instance to add.</param>
+    void AddLiveProperty(ILiveProperty* instance);
+
+    /// <summary>
+    /// Get a live property from the manager.
+    /// </summary>
+    /// <param name="name">The name of the property to get.</param>
+    /// <returns>Returns the instance of ILiveProperty if found. Returns NULL otherwise.</returns>
+    const ILiveProperty* GetLiveProperty(const std::string& name) const;
+
+    /// <summary>
+    /// Registers default live properties to the manager.
+    /// </summary>
+    void RegisterLiveProperties();
+
+    /// <summary>
+    /// Delete the live property with the given name.
+    /// </summary>
+    /// <param name="name">The name of the property to delete.</param>
+    void ClearLiveProperty(const std::string& name);
+
+    /// <summary>
+    /// Destroys any existing live properties in the manager.
+    /// </summary>
+    void ClearLiveProperties();
+
+    /// <summary>
     /// Split a given string that contains multiple joined values and then expand each values individually.
     /// </summary>
     /// <param name="value">The given joined value</param>
@@ -163,8 +203,9 @@ namespace shellanything
   private:
 
     void RegisterEnvironmentVariables();
-    void RegisterDefaultProperties();
+    void RegisterFixedAndDefaultProperties();
     PropertyStore properties;
+    LivePropertyMap live_properties;
   };
 
 } //namespace shellanything

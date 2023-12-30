@@ -92,19 +92,19 @@ sa_menu_t                   AS_TYPE_MENU(shellanything::Menu* object)
   sa_menu_t            my_type; my_type.opaque = (void*)(object); return my_type;
 }
 
-const shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_immutable_t* object)
+const shellanything::ConfigFile* AS_CLASS_CONFIGURATION(sa_configuration_immutable_t* object)
 {
-  return (const shellanything::Configuration*)(object->opaque);
+  return (const shellanything::ConfigFile*)(object->opaque);
 }
-shellanything::Configuration* AS_CLASS_CONFIGURATION(sa_configuration_t* object)
+shellanything::ConfigFile* AS_CLASS_CONFIGURATION(sa_configuration_t* object)
 {
-  return (shellanything::Configuration*)(object->opaque);
+  return (shellanything::ConfigFile*)(object->opaque);
 }
-sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::Configuration* object)
+sa_configuration_immutable_t        AS_TYPE_CONFIGURATION(const shellanything::ConfigFile* object)
 {
   sa_configuration_immutable_t  my_type; my_type.opaque = (void*)(object); return my_type;
 }
-sa_configuration_t                  AS_TYPE_CONFIGURATION(shellanything::Configuration* object)
+sa_configuration_t                  AS_TYPE_CONFIGURATION(shellanything::ConfigFile* object)
 {
   sa_configuration_t            my_type; my_type.opaque = (void*)(object); return my_type;
 }

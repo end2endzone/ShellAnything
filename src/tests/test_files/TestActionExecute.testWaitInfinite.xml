@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu">
+      <actions>
+        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 10&quot;" wait="true" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>
