@@ -174,7 +174,7 @@ namespace shellanything
     void RegisterLiveProperties();
 
     /// <summary>
-    /// Delete the given live property.
+    /// Delete the live property with the given name.
     /// </summary>
     /// <param name="name">The name of the property to delete.</param>
     void ClearLiveProperty(const std::string& name);
