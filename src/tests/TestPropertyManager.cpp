@@ -82,6 +82,9 @@ namespace shellanything
       //test unknown property
       ASSERT_FALSE(pmgr.HasProperty("unknown"));
       ASSERT_EQ("", pmgr.GetProperty("unknown"));
+
+      //test live properties
+      ASSERT_TRUE(pmgr.HasProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME));
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestPropertyManager, testExpandDefault)
@@ -101,6 +104,9 @@ namespace shellanything
     TEST_F(TestPropertyManager, testExpandUnknownProperties)
     {
       PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      pmgr.ClearProperty("color");
+      pmgr.ClearProperty("characteristics");
 
       pmgr.SetProperty("animal", "fox");
 
@@ -334,7 +340,7 @@ namespace shellanything
       ASSERT_TRUE(pmgr.HasProperty(env_var_name));
     }
     //--------------------------------------------------------------------------------------------------
-    TEST_F(TestPropertyManager, testRegisterDynamicProperties)
+    TEST_F(TestPropertyManager, testRegisterLiveProperties)
     {
       IClipboardService* clipboard = App::GetInstance().GetClipboardService();
       ASSERT_TRUE(clipboard != NULL);
@@ -349,7 +355,7 @@ namespace shellanything
       ASSERT_TRUE(clipboard->SetClipboardText(random_value));
 
       // Act
-      pmgr.RegisterDynamicProperties();
+      pmgr.RegisterLiveProperties();
 
       // Assert existance of a clipboard property.
       ASSERT_TRUE(pmgr.HasProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME));
@@ -358,10 +364,36 @@ namespace shellanything
       ASSERT_EQ(random_value, clipboard_value);
 
       // Act
-      pmgr.UnregisterDynamicProperties();
+      pmgr.ClearLiveProperties();
 
       // Assert no clipboard property.
       ASSERT_FALSE(pmgr.HasProperty(PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME));
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPropertyManager, testLivePropertyClipboardAutoUpdate)
+    {
+      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
+      ASSERT_TRUE(clipboard != NULL);
+
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      const std::string text = "${" + PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME + "}";
+
+      // Act
+      ASSERT_TRUE(clipboard->SetClipboardText("str1"));
+      std::string str1 = pmgr.Expand(text);
+      ASSERT_TRUE(clipboard->SetClipboardText("str2"));
+      std::string str2 = pmgr.Expand(text);
+      ASSERT_TRUE(clipboard->SetClipboardText("str3"));
+      std::string str3 = pmgr.Expand(text);
+
+      // Assert.
+      ASSERT_EQ(str1, "str1");
+      ASSERT_EQ(str2, "str2");
+      ASSERT_EQ(str3, "str3");
     }
 
   } //namespace test

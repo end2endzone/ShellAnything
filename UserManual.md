@@ -40,7 +40,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Property expansion](#property-expansion)
   * [Using properties](#using-properties)
   * [Environment variables](#environment-variables)
-  * [Dynamic properties](#dynamic-properties)
+  * [Live properties](#live-properties)
   * [Selection-based properties](#selection-based-properties)
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
@@ -813,7 +813,7 @@ For example, the following opens the default JPEG viewer to view following image
 The &lt;clipboard&gt; element is used to change the value of the [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525) to a new value. The &lt;clipboard&gt; element must be added under the &lt;actions&gt; element.
 
 **Note:**
-To read or reference the clipboard content, see [Dynamic properties](#dynamic-properties) section.
+To read or reference the clipboard content, see [Live properties](#live-properties) section.
 
 The &lt;clipboard&gt; elements have the following attributes:
 
@@ -1307,11 +1307,11 @@ Environment variables properties are encoded in utf-8.
 
 
 
-## Dynamic properties ##
+## Live properties ##
 
-The application provides dynamic properties which are defined automatically.
+The application provides _live_ properties which are defined automatically by the property system. Think of live properties as properties that are always updated in real time. Live properties can not be set manually as their value will be automatically updated when referenced by the property system. They usually map to the state of a feature of the Operating System.
 
-The following table defines the list of dynamic properties and their utility:
+The following table defines the list of live properties and their utility:
 
 | Property  | Description                                                                                                         |
 |-----------|---------------------------------------------------------------------------------------------------------------------|

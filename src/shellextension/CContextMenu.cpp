@@ -540,7 +540,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
   m_Context.UnregisterProperties(); //Unregister the previous context properties
   m_Context.SetElements(files);
-  pmgr.UnregisterDynamicProperties();
   m_IsBackGround = false;
 
   // Did we clicked on a folder's background or the desktop directory?
@@ -628,7 +627,6 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 
   //Register the current context properties so that menus can display the right caption
   m_Context.RegisterProperties();
-  pmgr.RegisterDynamicProperties();
 
   return S_OK;
 }
