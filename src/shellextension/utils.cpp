@@ -24,7 +24,7 @@
 
 
 #include "stdafx.h"
-#include "shellext.h"
+#include "utils.h"
 
 #include "ErrorManager.h"
 #include "Win32Registry.h"

@@ -26,7 +26,7 @@
 
 #include "CClassFactory.h"
 #include "CContextMenu.h"
-#include "shellext.h"
+#include "utils.h"
 #include "LoggerHelper.h"
 
 // Constructeur de l'interface IClassFactory:

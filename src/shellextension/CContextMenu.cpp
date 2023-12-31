@@ -25,7 +25,7 @@
 #include "stdafx.h"
 
 #include "CContextMenu.h"
-#include "shellext.h"
+#include "utils.h"
 
 #include "ErrorManager.h"
 #include "ActionManager.h"

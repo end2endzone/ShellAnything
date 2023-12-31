@@ -53,7 +53,7 @@
 #include "PropertyManager.h"
 #include "SaUtils.h"
 
-#include "shellext.h"
+#include "utils.h"
 
 using namespace shellanything::logging;
 

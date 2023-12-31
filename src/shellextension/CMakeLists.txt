@@ -13,11 +13,11 @@ add_library(sa.shellextension SHARED
   CCriticalSection.cpp
   CCriticalSection.h
   dllmain.cpp
-  shellext.cpp
-  shellext.h
   shellext.def
   stdafx.h
   targetver.h
+  utils.cpp
+  utils.h
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
