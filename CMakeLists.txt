@@ -22,8 +22,9 @@ endif()
 # At the time of this writing, HEAD revision is commit d312ba91419c9cb12c8279fd3a19096d39dfcb5e 
 # available at https://github.com/ArashPartow/exprtk/archive/d312ba91419c9cb12c8279fd3a19096d39dfcb5e.zip
 # Using latest revision to get all bug fixes.
-set(EXPRTK_PACKAGE_URL "https://github.com/ArashPartow/exprtk/archive/master.zip")
-set(EXPRTK_PACKAGE_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk.zip)
+set(EXPRTK_TAG "0.0.3")
+set(EXPRTK_PACKAGE_URL "https://github.com/ArashPartow/exprtk/archive/refs/tags/${EXPRTK_TAG}.zip")
+set(EXPRTK_PACKAGE_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk-${EXPRTK_TAG}.zip)
 if(NOT EXISTS ${EXPRTK_PACKAGE_PATH})
   message(STATUS "Downloading exprtk package from ${EXPRTK_PACKAGE_URL}")
   file(DOWNLOAD ${EXPRTK_PACKAGE_URL} ${EXPRTK_PACKAGE_PATH}
@@ -37,7 +38,7 @@ if(NOT EXISTS ${EXPRTK_PACKAGE_PATH})
     WORKING_DIRECTORY ${PACKAGE_DOWNLOAD_DIR}
   )
 endif()
-set(EXPRTK_HEADER_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk-master/exprtk.hpp)
+set(EXPRTK_HEADER_PATH ${PACKAGE_DOWNLOAD_DIR}/exprtk-${EXPRTK_TAG}/exprtk.hpp)
 if(EXISTS ${EXPRTK_HEADER_PATH})
   message(STATUS "Found exprtk header file: ${EXPRTK_HEADER_PATH}")
 else()
