@@ -30,37 +30,22 @@
 
 #include "targetver.h"
 
-// Windows Header Files:
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-#include <Windows.h>
-#include <unknwn.h>
-#include <Shlwapi.h>
-#include <shellapi.h>
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+#ifndef WINVER
+#define WINVER 0x0501
+#endif 
+#define _ATL_APARTMENT_THREADED
+
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
+
+#define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
+
+#include "resource.h"
 #include <atlbase.h>
-#include <ShObjIdl.h>
-#include <ShlObj.h>
-#include <ShlGuid.h>
-#include <initguid.h>
-#include <CmnQuery.h>
-#include <DSQuery.h>
-#include <DSClient.h>
-
-void DllAddRef();
-void DllRelease();
-
-#define INITGUID
-#include <guiddef.h>
-
-// Shell extension CLSID / GUID
-// {B0D35103-86A1-471C-A653-E130E3439A3B}
-DEFINE_GUID(CLSID_ShellAnythingMenu, 0xb0d35103, 0x86a1, 0x471c, 0xa6, 0x53, 0xe1, 0x30, 0xe3, 0x43, 0x9a, 0x3b);
-
-static const char* ShellExtensionClassName = "ShellExtension.ShellAnything"; //no space in string
-static const char* ShellExtensionDescription = "ShellAnything Class";
+#include <atlcom.h>
 
 // Debugging support
-//#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
+#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
 //#define SA_ENABLE_SCOPE_DEBUGGING
-
-// QueryInterface implementations
-#define SA_QUERYINTERFACE_IMPL 1

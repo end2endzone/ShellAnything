@@ -49,6 +49,8 @@
 #include "LoggerHelper.h"
 
 #include <assert.h>
+#include <ShlObj.h> // for IID_IShellExtInit, IID_IContextMenu
+#include "shellext.h" // for CLSID_ShellAnything
 
 std::string GuidToString(GUID guid)
 {
@@ -68,7 +70,7 @@ std::string GuidToInterfaceName(GUID guid)
   if (IsEqualGUID(guid, IID_IObjectWithSite))           return "IObjectWithSite";           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
   if (IsEqualGUID(guid, IID_IInternetSecurityManager))  return "IInternetSecurityManager";  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
 
-  if (IsEqualGUID(guid, CLSID_ShellAnythingMenu))       return "ShellAnything";
+  if (IsEqualGUID(guid, CLSID_ShellAnything))       return "ShellAnything";
 
   //unknown GUID, return the string representation:
   //ie: CLSID_UNDOCUMENTED_01, {924502A7-CC8E-4F60-AE1F-F70C0A2B7A7C}

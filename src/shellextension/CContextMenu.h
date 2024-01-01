@@ -26,6 +26,16 @@
 
 #include "stdafx.h"
 
+#include <shlobj.h>
+#include <shlguid.h>
+#include <comdef.h>
+#include <atlconv.h>	// for ATL string conversion macros
+#include "resource.h"   // main symbols
+
+// Generated files
+#include "shellext.h"
+#include "shellext_i.c"
+
 #include "CCriticalSection.h"
 #include "BitmapCache.h"
 #include "SelectionContext.h"
@@ -35,18 +45,30 @@
 #include <vector>
 #include <map>
 
-class CContextMenu : public IShellExtInit, public IContextMenu
+class ATL_NO_VTABLE CContextMenu :
+	public CComObjectRootEx<CComSingleThreadModel>,
+	public CComCoClass<CContextMenu, &CLSID_ShellAnything>,
+	public IDispatchImpl<IShellAnything, &IID_IShellAnything, &LIBID_SHELLEXTENSIONLib>,
+	public IShellExtInit,
+	public IContextMenu
 {
 public:
   typedef std::map<std::string /*fileextension*/, shellanything::Icon> IconMap;
 
 public:
   CContextMenu();
+  ~CContextMenu();
 
-  //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
-  ULONG   STDMETHODCALLTYPE AddRef();
-  ULONG   STDMETHODCALLTYPE Release();
+  DECLARE_REGISTRY_RESOURCEID(IDR_SHELLANYTHING)
+
+  DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+  BEGIN_COM_MAP(CContextMenu)
+    COM_INTERFACE_ENTRY(IShellAnything)
+    COM_INTERFACE_ENTRY(IDispatch)
+    COM_INTERFACE_ENTRY(IShellExtInit)
+    COM_INTERFACE_ENTRY(IContextMenu)
+  END_COM_MAP()
 
   //IContextMenu interface
   HRESULT STDMETHODCALLTYPE QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags);
@@ -55,9 +77,6 @@ public:
 
   //IShellExtInit interface
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
-
-protected:
-  ~CContextMenu();
 
 private:
   void BuildMenuTree(HMENU hMenu);

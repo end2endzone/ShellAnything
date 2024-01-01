@@ -49,6 +49,8 @@
 #include "rapidassist/unicode.h"
 #include "rapidassist/environment.h"
 
+OBJECT_ENTRY_AUTO(CLSID_ShellAnything, CContextMenu)
+
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
@@ -305,17 +307,11 @@ CContextMenu::CContextMenu()
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
   m_previousMenu = 0;
-
-  // Increment the dll's reference counter.
-  DllAddRef();
 }
 
 CContextMenu::~CContextMenu()
 {
   SA_LOG(INFO) << __FUNCTION__ << "(), delete instance " << ToHexString(this);
-
-  // Decrement the dll's reference counter.
-  DllRelease();
 }
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags)

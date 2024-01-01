@@ -6,19 +6,24 @@ add_library(sa.shellextension SHARED
   ${SHELLANYTHING_VERSION_RC}
   ${CMAKE_SOURCE_DIR}/src/resource.rc.in
   ${CMAKE_SOURCE_DIR}/src/version.rc.in
-  CClassFactory.cpp
-  CClassFactory.h
   CContextMenu.cpp
   CContextMenu.h
   CCriticalSection.cpp
   CCriticalSection.h
   dllmain.cpp
+  resource.h
   shellext.def
+  shellext.idl
+  shellext.rgs
+  stdafx.cpp
   stdafx.h
   targetver.h
   utils.cpp
   utils.h
 )
+
+# Force *.rgs to be groupped in Source Files
+source_group("Source Files" FILES "shellext.rgs")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(sa.shellextension        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
@@ -30,6 +35,8 @@ target_include_directories(sa.shellextension
   PRIVATE
     rapidassist
     libmagic
+    ${CMAKE_SOURCE_DIR}/src/shellextension
+    ${CMAKE_BINARY_DIR}/src/shellextension/sa.shellextension.dir/\$\(Configuration\)
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/logger/glog
