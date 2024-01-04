@@ -604,7 +604,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
       std::wstring path(length, '\0');
       if (path.size() != length)
         continue;
-      size_t num_characters = length + 1;
+      size_t num_characters = size_t(length) + 1;
 
       // Copy the element into the temporary buffer
       DragQueryFileW(hDropInfo, i, (wchar_t*)path.data(), (UINT)num_characters);
@@ -625,81 +625,4 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
   m_Context.RegisterProperties();
 
   return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE CContextMenu::QueryInterface(REFIID riid, LPVOID FAR* ppv)
-{
-  std::string riid_str = GuidToInterfaceName(riid);
-  SA_LOG(INFO) << __FUNCTION__ << "(), riid=" << riid_str << ", this=" << ToHexString(this);
-
-  HRESULT hr = E_NOINTERFACE;
-
-#if SA_QUERYINTERFACE_IMPL == 0
-  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
-
-  // Always set out parameter to NULL, validating it first.
-  if (!ppv)
-    return E_INVALIDARG;
-  *ppv = NULL;
-
-  ////Filter out unimplemented known interfaces so they do not show as WARNINGS
-  //if (IsEqualGUID(riid, IID_IObjectWithSite) ||           //{FC4801A3-2BA9-11CF-A229-00AA003D7352}
-  //    IsEqualGUID(riid, IID_IInternetSecurityManager) ||  //{79EAC9EE-BAF9-11CE-8C82-00AA004BA90B}
-  //    IsEqualGUID(riid, IID_IContextMenu2) ||             //{000214f4-0000-0000-c000-000000000046}
-  //    IsEqualGUID(riid, IID_IContextMenu3) ||             //{BCFCE0A0-EC17-11d0-8D10-00A0C90F2719}
-  //    IsEqualGUID(riid, CLSID_UNDOCUMENTED_01)
-  //    )
-  //{
-  //  SA_LOG(INFO) << __FUNCTION__ << "(), interface not supported " << riid_str;
-  //  return E_NOINTERFACE;
-  //}
-
-  //https://stackoverflow.com/questions/1742848/why-exactly-do-i-need-an-explicit-upcast-when-implementing-queryinterface-in-a
-  if (IsEqualGUID(riid, IID_IUnknown))        *ppv = (LPVOID)this;
-  if (IsEqualGUID(riid, IID_IShellExtInit))   *ppv = (LPSHELLEXTINIT)this;
-  if (IsEqualGUID(riid, IID_IContextMenu))    *ppv = (LPCONTEXTMENU)this;
-
-  if (*ppv)
-  {
-    AddRef();
-    hr = S_OK;
-  }
-  else
-    hr = E_NOINTERFACE;
-#elif SA_QUERYINTERFACE_IMPL == 1
-  static const QITAB qit[] =
-  {
-    QITABENT(CContextMenu, IShellExtInit),
-    QITABENT(CContextMenu, IContextMenu),
-    { 0, 0 },
-  };
-  hr = QISearch(this, qit, riid, ppv);
-#endif
-
-  if (SUCCEEDED(hr))
-    SA_LOG(INFO) << __FUNCTION__ << "(), found interface " << riid_str << ", ppv=" << ToHexString(*ppv);
-  else
-    SA_LOG(INFO) << __FUNCTION__ << "(), unknown interface " << riid_str;
-  return hr;
-}
-
-ULONG STDMETHODCALLTYPE CContextMenu::AddRef()
-{
-  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
-
-  // Increment the object's internal counter.
-  return InterlockedIncrement(&m_refCount);
-}
-
-ULONG STDMETHODCALLTYPE CContextMenu::Release()
-{
-  //https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/implementing-iunknown-in-c-plus-plus
-
-  // Decrement the object's internal counter.
-  LONG refCount = InterlockedDecrement(&m_refCount);
-  if (refCount == 0)
-  {
-    delete this;
-  }
-  return refCount;
 }

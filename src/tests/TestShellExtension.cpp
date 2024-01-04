@@ -98,7 +98,9 @@ namespace shellanything
 
       ShellExtensionLibraryHandler() :
         mFailed(true),
-        mModule(NULL)
+        mModule(NULL),
+        pfnDllGetClassObject(NULL),
+        pfnDllCanUnloadNow(NULL)
       {
         std::string path = GetShellExtensionDllPath();
 

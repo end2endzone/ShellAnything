@@ -45,6 +45,8 @@
 #include "SaUtils.h"
 #include "utils.h"
 
+#include "rapidassist/errors.h"
+
 //Declarations
 shellanything::ILoggerService* logger_service = NULL;
 shellanything::IRegistryService* registry_service = NULL;
@@ -136,11 +138,16 @@ STDAPI DllUnregisterServer(void)
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
-  HRESULT hr = _AtlModule.DllMain(dwReason, lpReserved);
-  if (FAILED(hr))
+  BOOL result = _AtlModule.DllMain(dwReason, lpReserved);
+  if (result == FALSE)
   {
-    SA_LOG(ERROR) << "Failed initializing module DLLMain()";
-    return hr;
+    SA_LOG(ERROR) << "Failed initializing module DLLMain().";
+
+    ra::errors::errorcode_t code = ra::errors::GetLastErrorCode();
+    std::string desc = ra::errors::GetErrorCodeDescription(code);
+
+    SA_LOG(ERROR) << "ERROR: 0x" << std::hex << code << std::dec << ", " << desc;
+    return result;
   }
 
   // Skip log initializations and default configuration installation if process that is loading this dll is regsvr32.exe.
@@ -201,10 +208,11 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     }
   }
 
-  return S_OK;
+  return result;
 }
 
 // DllInstall - Adds/Removes entries to the system registry per user per machine.
+_Use_decl_annotations_
 STDAPI DllInstall(BOOL bInstall, _In_opt_  LPCWSTR pszCmdLine)
 {
   ATTACH_HOOK_DEBUGGING;
