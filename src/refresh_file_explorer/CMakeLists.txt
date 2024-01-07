@@ -4,7 +4,11 @@ add_executable(refresh_file_explorer WIN32
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  file_explorer.cpp
+  file_explorer.h
   main.cpp
+  user.cpp
+  user.h
 )
 
 # Force UNICODE for target
