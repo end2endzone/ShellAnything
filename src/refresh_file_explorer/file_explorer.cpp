@@ -206,3 +206,21 @@ void TestOpenFolderUnicode()
     ShowErrorMessage(message);
   }
 }
+
+void PrintPathsToString(const Utf8FileList& paths, tstring_t& str)
+{
+  str.clear();
+
+  for (size_t i = 0; i < paths.size(); i++)
+  {
+    const std::string& path_utf8 = paths[i];
+
+    #ifdef UNICODE
+    str += ra::unicode::Utf8ToUnicode(path_utf8);
+    str += L"\r\n";
+    #else
+    str += ra::unicode::Utf8ToAnsi(path_utf8);
+    str += "\r\n";
+    #endif
+  }
+}

@@ -1,15 +1,28 @@
 find_package(rapidassist REQUIRED)
 
+set(REFRESH_FILE_EXP_RESOURCE_FILES ""
+  resource.h
+  resource.ico
+  resource.rc
+)
+
 add_executable(refresh_file_explorer WIN32
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
+  ${REFRESH_FILE_EXP_RESOURCE_FILES}
   file_explorer.cpp
   file_explorer.h
+  framework.h
   main.cpp
+  main.h
+  targetver.h
   user.cpp
   user.h
 )
+
+# Group external files as filter for Visual Studio
+source_group("Resource Files"          FILES ${REFRESH_FILE_EXP_RESOURCE_FILES})
 
 # Force UNICODE for target
 target_compile_definitions(refresh_file_explorer PRIVATE -D_UNICODE -DUNICODE)

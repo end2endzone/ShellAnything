@@ -1,5 +1,7 @@
 #pragma once
 
+#include "user.h"
+
 #include <string>
 #include <vector>
 
@@ -24,3 +26,10 @@ bool OpenFileExplorerWindow(const std::string& path);
 /// Test to open directory unicode directory `D:\Ψ`.
 /// </summary>
 void TestOpenFolderUnicode();
+
+/// <summary>
+/// Print the list of given paths to a string
+/// </summary>
+/// <param name="paths">The list of paths to print.</param>
+/// <param name="str">The output string.</param>
+void PrintPathsToString(const Utf8FileList& paths, tstring_t& str);

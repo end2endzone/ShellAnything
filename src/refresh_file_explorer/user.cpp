@@ -26,8 +26,11 @@ void ShowErrorMessage(const std::wstring& message)
   MessageBoxW(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 }
 
-bool GetUserConfirmation()
+bool GetUserConfirmation(HWND hWnd)
 {
+  if (hWnd == NULL)
+    hWnd = GetForegroundWindow();
+
   std::string path = ra::process::GetCurrentProcessPathUtf8();
   std::string filename = ra::filesystem::GetFilenameWithoutExtension(path.c_str());
   std::wstring filename_wide = ra::unicode::Utf8ToUnicode(filename);
@@ -47,7 +50,6 @@ bool GetUserConfirmation()
   message += L"\n\n";
   message += L"Do you want to continue?";
 
-  HWND hWnd = GetForegroundWindow();
   int result = MessageBoxW(hWnd, message.c_str(), title.c_str(), MB_YESNO | MB_ICONQUESTION);
   if (result == IDYES)
     return true;
