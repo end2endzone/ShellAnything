@@ -9,12 +9,25 @@
 #include <atlbase.h>
 #include <shlobj.h>
 #include <exdisp.h>
+#include <psapi.h> // For access to GetModuleFileNameEx
 
 #include "rapidassist/undef_windows_macros.h"
 #include "rapidassist/unicode.h"
 #include "rapidassist/errors.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/environment_utf8.h"
+#include "rapidassist/process_utf8.h"
+
+bool FindPath(const Utf8FileList& list, const std::string& path)
+{
+  for (size_t i = 0; i < list.size(); i++)
+  {
+    const std::string & element = list[i];
+    if (path == element)
+      return true;
+  }
+  return false;
+}
 
 bool GetFileExplorerWindowPaths(Utf8FileList& files)
 {
@@ -127,7 +140,7 @@ bool GetFileExplorerWindowPaths(Utf8FileList& files)
 bool OpenFileExplorerWindow(const std::string& path)
 {
   // Find the absolute path of explorer.exe
-  std::string explorer_path_utf8 = ra::filesystem::FindFileFromPathsUtf8("explorer.exe");
+  std::string explorer_path_utf8 = GetFileExplorerExecPath();
   if (explorer_path_utf8.empty())
     return false;
   std::wstring explorer_path_wide = ra::unicode::Utf8ToUnicode(explorer_path_utf8);
@@ -223,4 +236,90 @@ void PrintPathsToString(const Utf8FileList& paths, tstring_t& str)
     str += "\r\n";
     #endif
   }
+}
+
+std::string GetFileExplorerExecPath()
+{
+  // Find the absolute path of explorer.exe
+  std::string explorer_path_utf8 = ra::filesystem::FindFileFromPathsUtf8("explorer.exe");
+  return explorer_path_utf8;
+}
+
+std::string GetProcessExecPathFromProcessId(DWORD pid)
+{
+  HANDLE hProcess = NULL;
+  TCHAR szPath[50 * MAX_PATH];
+
+  std::string output;
+
+  hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, 1234);
+  if (hProcess != NULL)
+  {
+    if (GetModuleFileNameEx(hProcess, NULL, szPath, 50 * MAX_PATH) != 0)
+    {
+      #ifdef UNICODE
+      output = ra::unicode::UnicodeToUtf8(szPath);
+      #else
+      output = ra::unicode::AnsiToUtf8(szPath);
+      #endif
+      return output;
+    }
+    CloseHandle(hProcess);
+  }
+
+  return output;
+}
+
+ra::process::ProcessIdList GetFileExplorerProcessIds()
+{
+  ra::process::ProcessIdList pids;
+
+  std::string explorer_path_utf8 = GetFileExplorerExecPath();
+  if (explorer_path_utf8.empty())
+    return pids;  // error.
+
+  ra::process::ProcessIdList system_process_ids = ra::process::GetProcesses();
+  if (system_process_ids.empty())
+    return pids;  // error.
+
+  // For each process
+  for (size_t i = 0; i < system_process_ids.size(); i++)
+  {
+    const ra::process::processid_t system_pid = system_process_ids[i];
+
+    // Does this pid match File Explorer?
+    std::string exec_path = GetProcessExecPathFromProcessId(system_pid);
+    if (explorer_path_utf8 == exec_path)
+    {
+      // Match
+      pids.push_back(system_pid);
+    }
+  }
+
+  return pids;
+}
+
+bool KillFileExplorerProcesses()
+{
+  std::string explorer_path_utf8 = GetFileExplorerExecPath();
+  if (explorer_path_utf8.empty())
+    return false;
+
+  ra::process::ProcessIdList process_ids = GetFileExplorerProcessIds();
+  if (process_ids.empty())
+    return true; // nothing to do
+
+  // For each process
+  for (size_t i = 0; i < process_ids.size(); i++)
+  {
+    const ra::process::processid_t pid = process_ids[i];
+    bool killed = true; // ra::process::Kill(pid);
+    if (!killed)
+      return false;
+  }
+
+  // Confirm
+  process_ids = GetFileExplorerProcessIds();
+  bool success = (process_ids.empty());
+  return success;
 }

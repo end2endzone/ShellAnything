@@ -8,6 +8,14 @@
 typedef std::vector<std::string> Utf8FileList;
 
 /// <summary>
+/// Search a given path within a file list.
+/// </summary>
+/// <param name="list">The list of path to search into.</param>
+/// <param name="path">The value to seach for.</param>
+/// <returns>Returns true when given path was found. Returns false otherwise.</returns>
+bool FindPath(const Utf8FileList& list, const std::string& path);
+
+/// <summary>
 /// Get the list of paths for all opened File Explorer windows.
 /// The paths are returned in utf8 format.
 /// </summary>
@@ -33,3 +41,15 @@ void TestOpenFolderUnicode();
 /// <param name="paths">The list of paths to print.</param>
 /// <param name="str">The output string.</param>
 void PrintPathsToString(const Utf8FileList& paths, tstring_t& str);
+
+/// <summary>
+/// Get the path (utf8) of File Explorer executable.
+/// </summary>
+/// <returns>Returns a valid string when the operation is succesful. Returns an empty string on error.</returns>
+std::string GetFileExplorerExecPath();
+
+/// <summary>
+/// Show a MessageBox centered on parent window.
+/// </summary>
+/// <returns>Returns true when the operation is succesful. Returns false otherwise.</returns>
+bool KillFileExplorerProcesses();

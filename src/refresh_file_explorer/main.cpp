@@ -6,6 +6,8 @@
 #include "user.h"
 #include "file_explorer.h"
 
+#include "rapidassist/unicode.h"
+
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,9 +29,23 @@ HINSTANCE hInst;
 tstring_t window_text;
 
 // Store the list of initial in a string
-Utf8FileList paths_intial;
+Utf8FileList paths_backup;
+Utf8FileList paths_missing;
 
-static const DWORD WM_USER_APP_INITIALIZE = WM_USER + 1;
+// Custom messages
+static const DWORD WM_USER_APP_INITIALIZE           = (WM_USER + 0x001);
+static const DWORD WM_USER_KILL_FILE_EXPLORER       = (WM_USER + 0x002);
+static const DWORD WM_USER_RESTORE_FILE_EXPLORER    = (WM_USER + 0x003);
+
+enum APP_EXIT_CODES
+{
+  EXIT_SUCCESS_NO_ERROR,
+  EXIT_USER_STOP_REQUEST,
+  EXIT_REGISTER_CLASS_FAILED,
+  EXIT_WINDOW_CREATE_FAILED,
+  EXIT_GET_FILE_EXPLORER_PATHS_FAILED,
+  EXIT_PROCESS_KILL_FAILED,
+};
 
 // Forward declarations of functions included in this code module:
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -61,7 +77,7 @@ int WINAPI WinMain(
   if ( !RegisterClassEx(&wcex) )
   {
     ShowErrorMessage(L"Window registration has failed!");
-    return 1;
+    return EXIT_REGISTER_CLASS_FAILED;
   }
 
   // Store instance handle in our global variable
@@ -94,7 +110,7 @@ int WINAPI WinMain(
   if ( !hWnd )
   {
     ShowErrorMessage(L"Window creation has failed!");
-    return 1;
+    return EXIT_WINDOW_CREATE_FAILED;
   }
 
   // The parameters to ShowWindow explained:
@@ -119,7 +135,8 @@ int WINAPI WinMain(
     }
   }
 
-  return (int)msg.wParam;
+  int exit_code = (int)msg.wParam;
+  return exit_code;
 }
 
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -131,6 +148,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static HWND hWndEdit = NULL;
   static HFONT hEditFont = NULL;
+  static UINT_PTR uCleanupIDEvent = NULL;
+
+  bool killed = false;
+  bool confirmed = false;
+  bool success = false;
 
   switch ( message )
   {
@@ -177,34 +199,143 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   //  return DefWindowProc(hWnd, message, wParam, lParam);
 
   case WM_USER_APP_INITIALIZE:
+    // Get user prompt confirmation
+    confirmed = GetUserConfirmation(hWnd);
+    if (!confirmed)
+      PostQuitMessage(EXIT_USER_STOP_REQUEST);
+
+    // Backup the path of each File Explorer windows
+    paths_backup.clear();
+    success = GetFileExplorerWindowPaths(paths_backup);
+    if (!success)
     {
-      // Get user prompt confirmation
-      bool confirmed = GetUserConfirmation(hWnd);
-      if (!confirmed)
-        PostMessage(hWnd, WM_QUIT, 0, 0);
-
-      // Get all the paths from File Explorer windows
-      paths_intial.clear();
-      bool success = GetFileExplorerWindowPaths(paths_intial);
-      if (!success)
-      {
-        std::wstring message;
-        message += L"ERROR!\n";
-        message += L"Failed getting paths from File Explorer windows.";
-        ShowErrorMessage(message);
-        PostMessage(hWnd, WM_QUIT, 0, 0);
-      }
-
-      // Print paths to a string
-      PrintPathsToString(paths_intial, window_text);
-
-      // Add text to the window.
-      SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
-
-      // Continue with next messages
-      return DefWindowProc(hWnd, message, wParam, lParam);
+      std::wstring str;
+      str += L"Failed getting paths from File Explorer windows.";
+      ShowErrorMessage(hWnd, str);
+      PostQuitMessage(EXIT_GET_FILE_EXPLORER_PATHS_FAILED);
+      return 0;
     }
 
+    // Print paths to a string
+    PrintPathsToString(paths_backup, window_text);
+
+    // Add text to the window.
+    SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
+
+    if (paths_backup.empty())
+    {
+      std::wstring str;
+      str += L"There is no File Explorer windows opened.";
+      ShowErrorMessage(hWnd, str);
+      PostQuitMessage(EXIT_SUCCESS_NO_ERROR);
+      return 0;
+    }
+
+    // Continue with next step
+    SendMessage(hWnd, WM_USER_KILL_FILE_EXPLORER, 0, 0);
+    break;
+  case WM_USER_KILL_FILE_EXPLORER:
+    //killed = KillFileExplorerProcesses();
+    //if (!killed)
+    //{
+    //  std::wstring str;
+    //  str += L"Failed killing all File Explorer processes.";
+    //  ShowErrorMessage(hWnd, str);
+    //  PostQuitMessage(EXIT_PROCESS_KILL_FAILED);
+    //  return 0;
+    //}
+    // Continue with next step
+    SendMessage(hWnd, WM_USER_RESTORE_FILE_EXPLORER, 0, 0);
+    break;
+  case WM_USER_RESTORE_FILE_EXPLORER:
+    //for (size_t i = 0; i < paths_backup.size(); i++)
+    //{
+    //  const std::string& path_utf8 = paths_backup[i];
+    //  bool opened = OpenFileExplorerWindow(path_utf8);
+    //  if (!opened)
+    //  {
+    //    std::wstring str;
+    //    str += L"Failed to open directory '";
+    //    str += ra::unicode::Utf8ToUnicode(path_utf8);
+    //    str += L"'. Press OK to continue.";
+    //    ShowErrorMessage(hWnd, str);
+    //  }
+    //}
+
+    // Remember which paths we need to restore.
+    paths_missing = paths_backup;
+
+    // Start a timer to check every second
+    uCleanupIDEvent = SetTimer(hWnd, IDT_TIMER1, 1000, (TIMERPROC)NULL);
+    break;
+  case WM_TIMER:
+    switch (wParam)
+    {
+    case IDT_TIMER1:
+      // Prevent triggering the timer while handling the time event.
+      KillTimer(hWnd, uCleanupIDEvent);
+
+      // Check again the path of each File Explorer windows
+      Utf8FileList restored;
+      success = GetFileExplorerWindowPaths(restored);
+      if (!success)
+      {
+        std::wstring str;
+        str += L"Failed getting paths from File Explorer windows.";
+        ShowErrorMessage(hWnd, str);
+        PostQuitMessage(EXIT_GET_FILE_EXPLORER_PATHS_FAILED);
+        return 0;
+      }
+
+      // Remove from the missing list every path that we succesfully restored.
+      Utf8FileList tmp;
+      for (size_t i = 0; i < paths_missing.size(); i++)
+      {
+        const std::string missing_path = paths_missing[i];
+
+        // Is t still missing ?
+        bool found = FindPath(restored, missing_path);
+
+        if (!found)
+        {
+          // Still missing...
+          tmp.push_back(missing_path);
+        }
+      }
+
+      // Debugging and testing...
+      // Force simulate a last missing path.
+      //tmp.clear();
+      //tmp.push_back("foobar");
+
+      bool has_changed = (paths_missing != tmp);
+      paths_missing = tmp;
+
+      if (has_changed)
+      {
+        // Print paths to a string
+        PrintPathsToString(paths_missing, window_text);
+
+        // Add text to the window.
+        SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
+      }
+
+      // Did we restored all previous windows ?
+      if (paths_missing.empty())
+      {
+        std::wstring str;
+        str += L"All File Explorer windows has been restored.\n"
+          L"Press OK to close the application.";
+        MessageBoxCentered(hWnd, str.c_str(), L"Operation succesful", MB_OK | MB_ICONINFORMATION);
+        PostQuitMessage(EXIT_SUCCESS_NO_ERROR);
+        return 0;
+      }
+
+      // No? Then wait for the time to look again...
+      uCleanupIDEvent = SetTimer(hWnd, IDT_TIMER1, 1000, (TIMERPROC)NULL);
+      break;
+    };
+    break;
   case WM_COMMAND:
     switch ( wParam )
     {
@@ -214,46 +345,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       case IDM_EXIT:
         DestroyWindow(hWnd);
         break;
-
-    /*case IDM_EDUNDO:
-      // Send WM_UNDO only if there is something to be undone. 
-
-      if ( SendMessage(hWndEdit, EM_CANUNDO, 0, 0) )
-        SendMessage(hWndEdit, WM_UNDO, 0, 0);
-      else
-      {
-        MessageBox(hWndEdit,
-                   L"Nothing to undo.",
-                   L"Undo notification",
-                   MB_OK);
-      }
-      break;
-
-    case IDM_EDCUT:
-      SendMessage(hWndEdit, WM_CUT, 0, 0);
-      break;
-
-    case IDM_EDCOPY:
-      SendMessage(hWndEdit, WM_COPY, 0, 0);
-      break;
-
-    case IDM_EDPASTE:
-      SendMessage(hWndEdit, WM_PASTE, 0, 0);
-      break;
-
-    case IDM_EDDEL:
-      SendMessage(hWndEdit, WM_CLEAR, 0, 0);
-      break;
-  */
-
-    default:
-      return DefWindowProc(hWnd, message, wParam, lParam);
+      default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
     }
     break;
-
   case WM_SETFOCUS:
     SetFocus(hWndEdit);
-    return 0;
+    break;
 
   case WM_SIZE:
     // Make the edit control the size of the window's client area.
@@ -273,8 +371,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // Set the rectangle
     SendMessage(hWndEdit, EM_SETRECT, 0, (LPARAM)&rc);
 
-    return 0;
-
+    break;
   case WM_DESTROY:
     DeleteObject(hEditFont);
     hEditFont = NULL;
