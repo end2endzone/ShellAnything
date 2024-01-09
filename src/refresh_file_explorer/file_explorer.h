@@ -1,6 +1,6 @@
 #pragma once
 
-#include "user.h"
+#include "user_feedback.h"
 
 #include <string>
 #include <vector>
@@ -53,3 +53,11 @@ std::string GetFileExplorerExecPath();
 /// </summary>
 /// <returns>Returns true when the operation is succesful. Returns false otherwise.</returns>
 bool KillFileExplorerProcesses();
+
+/// <summary>
+/// Find elements from a previous call to GetFileExplorerWindowPaths() that are missing from a recent call to GetFileExplorerWindowPaths().
+/// </summary>
+/// <param name="previous">The paths found from a previous call to GetFileExplorerWindowPaths().</param>
+/// <param name="output">The out paths that are missing.</param>
+/// <returns>Returns true when the operation is succesful. Returns false otherwise.</returns>
+bool FindMissingElements(const Utf8FileList& previous, Utf8FileList & output);

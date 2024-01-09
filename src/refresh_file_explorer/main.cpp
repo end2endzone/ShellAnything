@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "main.h"
-#include "user.h"
+#include "user_feedback.h"
 #include "file_explorer.h"
 
 #include "rapidassist/unicode.h"
@@ -276,8 +276,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       KillTimer(hWnd, uCleanupIDEvent);
 
       // Check again the path of each File Explorer windows
-      Utf8FileList restored;
-      success = GetFileExplorerWindowPaths(restored);
+      Utf8FileList tmp;
+      success = FindMissingElements(paths_missing, tmp);
       if (!success)
       {
         std::wstring str;
@@ -286,27 +286,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(EXIT_GET_FILE_EXPLORER_PATHS_FAILED);
         return 0;
       }
-
-      // Remove from the missing list every path that we succesfully restored.
-      Utf8FileList tmp;
-      for (size_t i = 0; i < paths_missing.size(); i++)
-      {
-        const std::string missing_path = paths_missing[i];
-
-        // Is t still missing ?
-        bool found = FindPath(restored, missing_path);
-
-        if (!found)
-        {
-          // Still missing...
-          tmp.push_back(missing_path);
-        }
-      }
-
-      // Debugging and testing...
-      // Force simulate a last missing path.
-      //tmp.clear();
-      //tmp.push_back("foobar");
 
       bool has_changed = (paths_missing != tmp);
       paths_missing = tmp;
@@ -326,12 +305,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         std::wstring str;
         str += L"All File Explorer windows has been restored.\n"
           L"Press OK to close the application.";
-        MessageBoxCentered(hWnd, str.c_str(), L"Operation succesful", MB_OK | MB_ICONINFORMATION);
+        ShowSuccessMessage(hWnd, str);
         PostQuitMessage(EXIT_SUCCESS_NO_ERROR);
         return 0;
       }
 
-      // No? Then wait for the time to look again...
+      // No? Wait then to look again...
       uCleanupIDEvent = SetTimer(hWnd, IDT_TIMER1, 1000, (TIMERPROC)NULL);
       break;
     };

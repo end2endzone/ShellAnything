@@ -1,5 +1,5 @@
 #include <Windows.h>
-#include "user.h"
+#include "user_feedback.h"
 
 #include "rapidassist/process_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -29,6 +29,11 @@ void ShowErrorMessage(HWND hWnd, const std::wstring& message)
   title += L" ERROR!";
 
   MessageBoxCentered(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+}
+
+void ShowSuccessMessage(HWND hWnd, const std::wstring& message)
+{
+  MessageBoxCentered(hWnd, message.c_str(), L"Operation succesful", MB_OK | MB_ICONINFORMATION);
 }
 
 bool GetUserConfirmation(HWND hWnd)

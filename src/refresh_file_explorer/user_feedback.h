@@ -26,6 +26,12 @@ void ShowErrorMessage(const std::wstring& message);
 void ShowErrorMessage(HWND hWnd, const std::wstring& message);
 
 /// <summary>
+/// Show an generic operation successful message to the user.
+/// </summary>
+/// <param name="hWnd">The parent window.</param>
+void ShowSuccessMessage(HWND hWnd, const std::wstring& message);
+
+/// <summary>
 /// Ask for the user's confirmation before proceeding.
 /// </summary>
 /// <param name="hWnd">The parent window.</param>

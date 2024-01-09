@@ -2,7 +2,7 @@
 // https://forums.codeguru.com/showthread.php?345012-Access-violation-using-CComPtr-lt-gt
 
 #include "file_explorer.h"
-#include "user.h"
+#include "user_feedback.h"
 
 #include <objbase.h>
 #include <comdef.h>
@@ -322,4 +322,37 @@ bool KillFileExplorerProcesses()
   process_ids = GetFileExplorerProcessIds();
   bool success = (process_ids.empty());
   return success;
+}
+
+bool FindMissingElements(const Utf8FileList& previous, Utf8FileList& output)
+{
+  output.clear();
+
+  // Check again the path of each File Explorer windows
+  Utf8FileList current;
+  bool success = GetFileExplorerWindowPaths(current);
+  if (!success)
+    return false;
+
+  // Remove from the missing list every path that we succesfully restored.
+  for (size_t i = 0; i < previous.size(); i++)
+  {
+    const std::string previous_path = previous[i];
+
+    // Is t still missing ?
+    bool found = FindPath(previous, previous_path);
+
+    if (!found)
+    {
+      // Still missing...
+      output.push_back(previous_path);
+    }
+  }
+
+  // Debugging and testing...
+  // Force simulate a last missing path.
+  //output.clear();
+  //output.push_back("foobar");
+
+  return true;
 }

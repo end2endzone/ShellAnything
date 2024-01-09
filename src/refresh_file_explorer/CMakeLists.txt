@@ -17,8 +17,8 @@ add_executable(refresh_file_explorer WIN32
   main.cpp
   main.h
   targetver.h
-  user.cpp
-  user.h
+  user_feedback.cpp
+  user_feedback.h
 )
 
 # Group external files as filter for Visual Studio
