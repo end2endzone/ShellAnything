@@ -313,7 +313,7 @@ bool KillFileExplorerProcesses()
   for (size_t i = 0; i < process_ids.size(); i++)
   {
     const ra::process::processid_t pid = process_ids[i];
-    bool killed = true; // ra::process::Kill(pid);
+    bool killed = ra::process::Kill(pid);
     if (!killed)
       return false;
   }

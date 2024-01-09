@@ -235,32 +235,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     SendMessage(hWnd, WM_USER_KILL_FILE_EXPLORER, 0, 0);
     break;
   case WM_USER_KILL_FILE_EXPLORER:
-    //killed = KillFileExplorerProcesses();
-    //if (!killed)
-    //{
-    //  std::wstring str;
-    //  str += L"Failed killing all File Explorer processes.";
-    //  ShowErrorMessage(hWnd, str);
-    //  PostQuitMessage(EXIT_PROCESS_KILL_FAILED);
-    //  return 0;
-    //}
+    killed = KillFileExplorerProcesses();
+    if (!killed)
+    {
+      std::wstring str;
+      str += L"Failed killing all File Explorer processes.";
+      ShowErrorMessage(hWnd, str);
+      PostQuitMessage(EXIT_PROCESS_KILL_FAILED);
+      return 0;
+    }
     // Continue with next step
     SendMessage(hWnd, WM_USER_RESTORE_FILE_EXPLORER, 0, 0);
     break;
   case WM_USER_RESTORE_FILE_EXPLORER:
-    //for (size_t i = 0; i < paths_backup.size(); i++)
-    //{
-    //  const std::string& path_utf8 = paths_backup[i];
-    //  bool opened = OpenFileExplorerWindow(path_utf8);
-    //  if (!opened)
-    //  {
-    //    std::wstring str;
-    //    str += L"Failed to open directory '";
-    //    str += ra::unicode::Utf8ToUnicode(path_utf8);
-    //    str += L"'. Press OK to continue.";
-    //    ShowErrorMessage(hWnd, str);
-    //  }
-    //}
+    for (size_t i = 0; i < paths_backup.size(); i++)
+    {
+      const std::string& path_utf8 = paths_backup[i];
+      bool opened = OpenFileExplorerWindow(path_utf8);
+      if (!opened)
+      {
+        std::wstring str;
+        str += L"Failed to open directory '";
+        str += ra::unicode::Utf8ToUnicode(path_utf8);
+        str += L"'. Press OK to continue.";
+        ShowErrorMessage(hWnd, str);
+      }
+    }
 
     // Remember which paths we need to restore.
     paths_missing = paths_backup;
