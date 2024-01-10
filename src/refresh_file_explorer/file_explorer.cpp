@@ -17,6 +17,7 @@
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/process_utf8.h"
+#include "rapidassist/timing.h"
 
 bool FindPath(const Utf8FileList& list, const std::string& path)
 {
@@ -33,11 +34,21 @@ bool GetFileExplorerWindowPaths(Utf8FileList& files)
 {
   files.clear();
 
-  CoInitialize(NULL);
-
   HRESULT hr;
-  wchar_t szPath[50 * MAX_PATH];
-  DWORD size_in_characters = sizeof(szPath) / 2;
+  hr = CoInitialize(NULL);
+  if (FAILED(hr))
+  {
+    return false;
+  }
+
+  static const DWORD BUFFER_SIZE = 32 * 1024;
+  static const DWORD BUFFER_LENGTH_IN_CHARACTERS = (BUFFER_SIZE / sizeof(wchar_t) - 1);
+  wchar_t* szPath = new wchar_t[BUFFER_LENGTH_IN_CHARACTERS + 1];
+  if (szPath == NULL)
+  {
+    CoUninitialize();
+    return false;
+  }
 
   CComPtr<IShellWindows> pShellWindows;
   hr = pShellWindows.CoCreateInstance(
@@ -47,25 +58,32 @@ bool GetFileExplorerWindowPaths(Utf8FileList& files)
   );
   if (FAILED(hr))
   {
+    delete[] szPath;
+    szPath = NULL;
+    CoUninitialize();
+    return false;
+  }
+
+  // Get Count of Windows...
+  long nCount = 0;
+  hr = pShellWindows->get_Count(&nCount);
+  if (FAILED(hr))
+  {
+    delete[] szPath;
+    szPath = NULL;
     CoUninitialize();
     return false;
   }
 
   // Browse shell windows one by one
-  bool has_more = true;
   VARIANT index;
   V_VT(&index) = VT_I4;
-  V_I4(&index) = 0;
-  while (has_more)
+  for(V_I4(&index) = 0; V_I4(&index) < nCount; V_I4(&index)++)
   {
     // Check for a shell window at index
     IDispatch* pDisp;
     hr = pShellWindows->Item(index, &pDisp);
-    if (hr == S_FALSE)
-    {
-      has_more = false;
-    }
-    else if (hr == S_OK) // Warning, do not check 'hr' with SUCCEEDED() macro since S_FALSE is considered a success.
+    if (hr == S_OK) // Warning, do not check 'hr' with SUCCEEDED() macro since S_FALSE is considered a success.
     {
       // Handle IDispatch* graceful destruction
       CComPtr<IDispatch> pItem = pDisp;
@@ -105,10 +123,11 @@ bool GetFileExplorerWindowPaths(Utf8FileList& files)
                   CComPtr<IPersistFolder2> pPersistFolder2 = ppf2;
 
                   LPITEMIDLIST pidlFolder;
-                  if (SUCCEEDED(ppf2->GetCurFolder(&pidlFolder)))
+                  hr = ppf2->GetCurFolder(&pidlFolder);
+                  if (SUCCEEDED(hr))
                   {
                     szPath[0] = '\0';
-                    if (SHGetPathFromIDListEx(pidlFolder, szPath, size_in_characters, GPFIDL_DEFAULT))
+                    if (SHGetPathFromIDListEx(pidlFolder, szPath, BUFFER_LENGTH_IN_CHARACTERS, GPFIDL_DEFAULT))
                     {
                       // Convert from WIDE to UTF8
                       std::string str_utf8 = ra::unicode::UnicodeToUtf8(szPath);
@@ -127,11 +146,10 @@ bool GetFileExplorerWindowPaths(Utf8FileList& files)
         }
       }
     }
-
-    // Next Item
-    V_I4(&index)++;
   }
 
+  delete[] szPath;
+  szPath = NULL;
   CoUninitialize();
 
   return true;
@@ -155,11 +173,14 @@ bool OpenFileExplorerWindow(const std::string& path)
 
   // Add the given path as an argument
   // Wrap the path in double quotes to handle spaces.
+  if (!path_wide.empty())
+  {
+    command_line += L" ";
+    command_line += L"\"";
+    command_line += path_wide;
+    command_line += L"\"";
+  }
   // And make a copy of the string for stupid WIN32 api...
-  command_line += L" ";
-  command_line += L"\"";
-  command_line += path_wide;
-  command_line += L"\"";
   wchar_t * lpCommandLine = new wchar_t[command_line.size() + 1];
   StrCpyW(lpCommandLine, command_line.c_str());
 
@@ -167,6 +188,9 @@ bool OpenFileExplorerWindow(const std::string& path)
   PROCESS_INFORMATION pi = { 0 };
   STARTUPINFOW si = { 0 };
   si.cb = sizeof(STARTUPINFO);
+  si.dwFlags = STARTF_USESHOWWINDOW;
+  // Note: Which wShowWindow flags allow creating casding windows ? DO NOT WORK: SW_SHOW, SW_SHOWNOACTIVATE, SW_SHOWNORMAL, SW_RESTORE
+  si.wShowWindow = SW_SHOW;
   BOOL created = CreateProcessW(
     lpApplicationName,  // Using module name
     lpCommandLine,      // Command line
@@ -248,25 +272,34 @@ std::string GetFileExplorerExecPath()
 std::string GetProcessExecPathFromProcessId(DWORD pid)
 {
   HANDLE hProcess = NULL;
-  TCHAR szPath[50 * MAX_PATH];
 
   std::string output;
 
-  hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, 1234);
+  static const DWORD BUFFER_SIZE = 32 * 1024;
+  static const DWORD BUFFER_LENGTH_IN_CHARACTERS = (BUFFER_SIZE / sizeof(TCHAR) - 1);
+  TCHAR* szPath = new TCHAR[BUFFER_LENGTH_IN_CHARACTERS + 1];
+  if (szPath == NULL)
+  {
+    return false;
+  }
+
+  hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
   if (hProcess != NULL)
   {
-    if (GetModuleFileNameEx(hProcess, NULL, szPath, 50 * MAX_PATH) != 0)
+    if (GetModuleFileNameEx(hProcess, NULL, szPath, BUFFER_LENGTH_IN_CHARACTERS) != 0)
     {
       #ifdef UNICODE
       output = ra::unicode::UnicodeToUtf8(szPath);
       #else
       output = ra::unicode::AnsiToUtf8(szPath);
       #endif
-      return output;
     }
+
     CloseHandle(hProcess);
   }
 
+  delete[] szPath;
+  szPath = NULL;
   return output;
 }
 
@@ -318,9 +351,29 @@ bool KillFileExplorerProcesses()
       return false;
   }
 
-  // Confirm
-  process_ids = GetFileExplorerProcessIds();
-  bool success = (process_ids.empty());
+  // Confirm that all expected processes were killed.
+  // Allow time to each killed process to disaprear from the process list.
+  static const uint64_t TIMEOUT_TIME_MS = 30000;
+  uint64_t timer_start = ra::timing::GetMillisecondsCounterU64();
+  uint64_t timer_elapsed_ms = 0;
+  bool success = false;
+  while (!success && timer_elapsed_ms < TIMEOUT_TIME_MS)
+  {
+    process_ids = GetFileExplorerProcessIds();
+    success = (process_ids.empty());
+
+    if (!success)
+    {
+      // Wait a little more and then check again...
+      Sleep(1000);
+      uint64_t timer_now = ra::timing::GetMillisecondsCounterU64();
+      timer_elapsed_ms = timer_now - timer_start;
+    }
+  }
+  if (success == false)
+  {
+    int a = 0;
+  }
   return success;
 }
 

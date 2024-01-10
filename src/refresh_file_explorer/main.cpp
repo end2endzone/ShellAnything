@@ -153,6 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   bool killed = false;
   bool confirmed = false;
   bool success = false;
+  bool opened = false;
 
   switch ( message )
   {
@@ -170,6 +171,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     // Add text to the window.
     SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
+    // And force EDIT window to redraw
+    SendMessage(hWndEdit, WM_PAINT, 0, 0);
+    InvalidateRect(hWndEdit, NULL, true);
+    UpdateWindow(hWndEdit);
 
     // Create font for edit label
     {
@@ -202,7 +207,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // Get user prompt confirmation
     confirmed = GetUserConfirmation(hWnd);
     if (!confirmed)
+    {
       PostQuitMessage(EXIT_USER_STOP_REQUEST);
+      return 0;
+    }
 
     // Backup the path of each File Explorer windows
     paths_backup.clear();
@@ -221,6 +229,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     // Add text to the window.
     SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
+    // And force EDIT window to redraw
+    SendMessage(hWndEdit, WM_PAINT, 0, 0);
+    InvalidateRect(hWndEdit, NULL, true);
+    UpdateWindow(hWndEdit);
 
     if (paths_backup.empty())
     {
@@ -239,11 +251,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if (!killed)
     {
       std::wstring str;
-      str += L"Failed killing all File Explorer processes.";
+      str += L"Failed to kill all File Explorer processes.";
       ShowErrorMessage(hWnd, str);
       PostQuitMessage(EXIT_PROCESS_KILL_FAILED);
       return 0;
     }
+
+    // Start a default File Explorer instance (for desktop and taskbar handling)
+    opened = OpenFileExplorerWindow("");
+    if (!opened)
+    {
+      std::wstring str;
+      str += L"Failed to a default File Explorer instance.";
+      ShowErrorMessage(hWnd, str);
+      ShowErrorMessage(hWnd, str);
+      PostQuitMessage(EXIT_PROCESS_KILL_FAILED);
+      return 0;
+    }
+    Sleep(500);
+
     // Continue with next step
     SendMessage(hWnd, WM_USER_RESTORE_FILE_EXPLORER, 0, 0);
     break;
@@ -251,7 +277,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     for (size_t i = 0; i < paths_backup.size(); i++)
     {
       const std::string& path_utf8 = paths_backup[i];
-      bool opened = OpenFileExplorerWindow(path_utf8);
+      opened = OpenFileExplorerWindow(path_utf8);
       if (!opened)
       {
         std::wstring str;
@@ -297,6 +323,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         // Add text to the window.
         SendMessage(hWndEdit, WM_SETTEXT, 0, (LPARAM)window_text.c_str());
+        // And force EDIT window to redraw
+        SendMessage(hWndEdit, WM_PAINT, 0, 0);
+        InvalidateRect(hWndEdit, NULL, true);
+        UpdateWindow(hWndEdit);
       }
 
       // Did we restored all previous windows ?
