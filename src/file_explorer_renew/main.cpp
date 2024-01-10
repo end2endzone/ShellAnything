@@ -20,7 +20,7 @@
 static TCHAR szWindowClass[] = _T("DesktopApp");
 
 // The string that appears in the application's title bar.
-static TCHAR szTitle[] = _T("File Explorer cycle manager");
+static TCHAR szTitle[] = _T("File Explorer renew");
 
 // Stored instance handle for use in Win32 API calls such as FindResource
 HINSTANCE hInst;

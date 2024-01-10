@@ -6,7 +6,7 @@ set(REFRESH_FILE_EXP_RESOURCE_FILES ""
   resource.rc
 )
 
-add_executable(refresh_file_explorer WIN32
+add_executable(file_explorer_renew WIN32
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
@@ -25,13 +25,13 @@ add_executable(refresh_file_explorer WIN32
 source_group("Resource Files"          FILES ${REFRESH_FILE_EXP_RESOURCE_FILES})
 
 # Force UNICODE for target
-target_compile_definitions(refresh_file_explorer PRIVATE -D_UNICODE -DUNICODE)
+target_compile_definitions(file_explorer_renew PRIVATE -D_UNICODE -DUNICODE)
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(refresh_file_explorer PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(file_explorer_renew PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the executable.
-target_include_directories(refresh_file_explorer
+target_include_directories(file_explorer_renew
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
@@ -39,14 +39,14 @@ target_include_directories(refresh_file_explorer
 )
 
 # Define linking dependencies.
-add_dependencies(refresh_file_explorer sa.shared)
-target_link_libraries(refresh_file_explorer
+add_dependencies(file_explorer_renew sa.shared)
+target_link_libraries(file_explorer_renew
   PRIVATE
     sa.shared
     rapidassist
 )
 
-install(TARGETS refresh_file_explorer
+install(TARGETS file_explorer_renew
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
