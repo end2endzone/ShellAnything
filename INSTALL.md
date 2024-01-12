@@ -1,6 +1,28 @@
-﻿# Install #
+﻿# Overview #
 
-### Compiled binary packages: ###
+This document contains information for the end-user that needs to install or uninstall the application and for developpers that want to build the application from source code.
+This manual includes a description of the steps that are required in order to build the application yourself. It is divided in the following sections:
+
+* [Install](#install)
+  * [Compiled binary packages](#compiled-binary-packages)
+  * [Using the build scripts](#using-the-build-scripts)
+  * [From the source code](#from-the-source-code)
+* [Uninstall](#uninstall)
+  * [Uninstall Shell Extensions without rebooting](#uninstall-shell-extensions-without-rebooting)
+* [Build](#build)
+  * [Prerequisites](#prerequisites)
+    * [Software Requirements](#software-requirements)
+    * [Windows Requirements](#windows-requirements)
+  * [Build steps](#build-steps)
+  * [CMake Quick Tips](#cmake-quick-tips)
+  * [Build options](#build-options)
+* [Testing](#testing)
+
+
+
+# Install #
+
+### Compiled binary packages ###
 
 You can find the latest pre-compiled binaries  on the [github project release page](https://github.com/end2endzone/ShellAnything/releases/latest). 
 The binary installer of previous versions are also available [here](https://github.com/end2endzone/ShellAnything/releases).
@@ -9,7 +31,7 @@ You can also checkout the [latest builds / nightly builds](https://ci.appveyor.c
 
 
 
-### Using the build scripts: ###
+### Using the build scripts ###
 
 To build ShellAnything on the system in "one click", one can use the build script which builds ShellAnything with default settings. This is the recommended way to build ShellAnything if you just want to use the application.
 
@@ -35,7 +57,7 @@ If you are a developer and you plan on debugging ShellAnything, there is another
 
 
 
-### From the source code: ###
+### From the source code ###
 
 To install ShellAnything on the system from the source code, the source code must be compiled and copied to the appropriate directory.
 
@@ -48,6 +70,27 @@ The following steps show how to install the application:
 3) Navigate to the `build` directory and execute `cmake --build . --config Release --target INSTALL`.
 
 The [build scripts](https://github.com/end2endzone/ShellAnything/tree/master/ci/appveyor), located in `ci/appveyor` directory, are also a good source of information for understanding how to build the executable even if they are meant to run on AppVeyor's CI server.
+
+
+
+
+# Uninstall #
+
+
+
+### Uninstall Shell Extensions without rebooting ###
+
+_Shell Extensions_ do not uninstall as easily as other softwares. Shell Extensions DLLs cannot be deleted during the uninstall process because _File Explorer_ usually have a lock on the file. 
+There is an issue with File Explorer which do not automatically release shell extensions dll even if they have been unregistered from the system. Because of the lock, these dll files cannot be deleted. A system reboot is usually the prefered option to make sure all dll files are released and can be deleted.
+
+ShellAnything provides a workaround which allow complete uninstallation without rebooting the system.
+
+**File Explorer Renew** is an utility provided with ShellAnything that can close and reopen all File Explorer windows. If the shell extension is unregistered, it will renew all windows and release the lock on the shell extension dll.
+
+To uninstall the application without rebooting, execute the following steps:
+1. Unregister the shell extension by executing `unregister.bat` with administrator priviledges.
+2. Run `file_explorer_renew.exe` and answer _Yes_ to the confirmation prompt.
+3. Launch the uninstaller.
 
 
 
