@@ -448,6 +448,7 @@ set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "${CPACK_WIX_HELP_LINK}")
 # Define start menu shortcuts for WIX
 # More shortcuts are defined in file "wix/WIX.extra.in"
 set_property(INSTALL "bin/$<TARGET_FILE_NAME:sa.tests>"                 PROPERTY CPACK_START_MENU_SHORTCUTS "${PROJECT_NAME} unit tests")
+set_property(INSTALL "bin/$<TARGET_FILE_NAME:file_explorer_renew>"      PROPERTY CPACK_START_MENU_SHORTCUTS "File Explorer Renew")
 set_property(INSTALL "${README_FILENAME}"                               PROPERTY CPACK_START_MENU_SHORTCUTS "${README_FILENAME}"        )
 set_property(INSTALL "${USERMANUAL_FILENAME}"                           PROPERTY CPACK_START_MENU_SHORTCUTS "${USERMANUAL_FILENAME}"    )
 set_property(INSTALL "${CONTRIBUTING_FILENAME}"                         PROPERTY CPACK_START_MENU_SHORTCUTS "${CONTRIBUTING_FILENAME}"  )
@@ -461,9 +462,13 @@ set_property(INSTALL "bin/unregister.bat"                               PROPERTY
 configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.patches.in" "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
 configure_file("${CMAKE_SOURCE_DIR}/wix/WIX.extra.in"   "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
 set(CPACK_WIX_PATCH_FILE    "${CMAKE_BINARY_DIR}/wix/WIX.patches.wxs")
-set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"  )
+set(CPACK_WIX_EXTRA_SOURCES
+  "${CMAKE_BINARY_DIR}/wix/WIX.extra.wxs"
+  "${CMAKE_SOURCE_DIR}/wix/WixUI_FileExplorerRenewDlg.wxs"
+  "${CMAKE_SOURCE_DIR}/wix/WixUI_ShellAnythingUI.wxs"
+)
 set(CPACK_WIX_EXTENSIONS "WiXUtilExtension") # This is required for the util:InternetShortcut in WIX.extra.in
-set(CPACK_WIX_UI_REF "WixUI_FeatureTree") # To show a custom install directory and list of features.
+set(CPACK_WIX_UI_REF "WixUI_ShellAnythingUI") # To show a custom install directory and list of features.
 
 # Starting from version 0.8.0 we must disable the installation of ShellAnything if an existing version is already installed.
 # See issues for details:
