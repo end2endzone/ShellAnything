@@ -119,6 +119,13 @@ namespace shellanything
         action->SetRegistryKey(tmp_str);
       }
 
+      //parse searchpath
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "searchpath", true, true, tmp_str, error))
+      {
+        action->SetSearchPath(tmp_str);
+      }
+
       //done parsing
       return action;
     }
@@ -147,6 +154,21 @@ namespace shellanything
     std::string file = pmgr.Expand(mFile);
     std::string filesize = pmgr.Expand(mFileSize);
     std::string regisrykey = pmgr.Expand(mRegistryKey);
+    std::string searchpath = pmgr.Expand(mSearchPath);
+
+    // If searchpath is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!searchpath.empty())
+    {
+      // Search for a file in PATH environment variable.
+      std::string abs_path = ra::filesystem::FindFileFromPathsUtf8(searchpath);
+
+      // If found
+      if (!abs_path.empty())
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = abs_path;
+      }
+    }
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!exprtk.empty())
@@ -324,6 +346,16 @@ namespace shellanything
   void ActionProperty::SetRegistryKey(const std::string& value)
   {
     mRegistryKey = value;
+  }
+
+  const std::string& ActionProperty::GetSearchPath() const
+  {
+    return mSearchPath;
+  }
+
+  void ActionProperty::SetSearchPath(const std::string& value)
+  {
+    mSearchPath = value;
   }
 
 } //namespace shellanything
