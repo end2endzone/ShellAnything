@@ -24,28 +24,7 @@
 
 #pragma once
 
-#ifndef STRICT
-#define STRICT
-#endif
-
-#include "targetver.h"
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#ifndef WINVER
-#define WINVER 0x0501
-#endif 
-#define _ATL_APARTMENT_THREADED
-
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
-
-#define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
-
-#include "resource.h"
-#include <atlbase.h>
-#include <atlcom.h>
-
-// Debugging support
-//#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
-//#define SA_ENABLE_SCOPE_DEBUGGING
+// // Including SDKDDKVer.h defines the highest available Windows platform.
+// If you wish to build your application for a previous Windows platform, include WinSDKVer.h and
+// set the _WIN32_WINNT macro to the platform you wish to support before including SDKDDKVer.h.
+#include <SDKDDKVer.h>

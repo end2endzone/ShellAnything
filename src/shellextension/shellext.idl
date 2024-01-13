@@ -1,0 +1,39 @@
+// shellext.idl : IDL source for sa.shellextension.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (ShellExtension.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(C67AAC2C-186E-4361-8856-AC93851FF781),
+	dual,
+	helpstring("IShellAnything Interface"),
+	pointer_default(unique)
+]
+interface IShellAnything : IDispatch
+{
+};
+
+[
+	uuid(EB26EA8E-3B98-4DED-AE59-255C3BA725C3),
+	version(1.0),
+	helpstring("ShellExtension 1.0 Type Library")
+]
+library SHELLEXTENSIONLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(B0D35103-86A1-471C-A653-E130E3439A3B),
+		helpstring("ShellAnything Extension")
+	]
+	coclass ShellAnything
+	{
+		[default] interface IShellAnything;
+	};
+};

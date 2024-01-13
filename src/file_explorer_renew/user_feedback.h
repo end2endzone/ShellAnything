@@ -24,23 +24,45 @@
 
 #pragma once
 
-#include "stdafx.h"
+#include <Windows.h>
+#include <string>
 
-class CClassFactory : public IClassFactory
-{
-public:
-  CClassFactory();
+#ifdef UNICODE
+typedef std::wstring tstring_t;
+#else
+typedef std::string tstring_t;
+#endif
 
-  //IUnknown interface
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, LPVOID FAR*);
-  ULONG   STDMETHODCALLTYPE AddRef();
-  ULONG   STDMETHODCALLTYPE Release();
+/// <summary>
+/// Show an error message to the user.
+/// </summary>
+void ShowErrorMessageUtf8(const std::string& message);
 
-  //IClassFactory interface
-  HRESULT STDMETHODCALLTYPE CreateInstance(LPUNKNOWN, REFIID, LPVOID FAR*);
-  HRESULT STDMETHODCALLTYPE LockServer(BOOL);
+/// <summary>
+/// Show an error message to the user.
+/// </summary>
+void ShowErrorMessage(const std::wstring& message);
 
-private:
-  ~CClassFactory();
-  ULONG m_refCount;
-};
+/// <summary>
+/// Show an error message to the user.
+/// </summary>
+/// <param name="hWnd">The parent window.</param>
+void ShowErrorMessage(HWND hWnd, const std::wstring& message);
+
+/// <summary>
+/// Show an generic operation successful message to the user.
+/// </summary>
+/// <param name="hWnd">The parent window.</param>
+void ShowSuccessMessage(HWND hWnd, const std::wstring& message);
+
+/// <summary>
+/// Ask for the user's confirmation before proceeding.
+/// </summary>
+/// <param name="hWnd">The parent window.</param>
+/// <returns>Returns true when the user has agreed to proceed. Returns false otherwise.</returns>
+bool GetUserConfirmation(HWND hWnd);
+
+/// <summary>
+/// Show a MessageBox centered on parent window.
+/// </summary>
+int MessageBoxCentered(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType);

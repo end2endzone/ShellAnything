@@ -20,12 +20,12 @@ HKCR
 			{
 				val ThreadingModel = s 'Apartment'
 			}
-			'TypeLib' = s '{C0F6D726-56D2-4FF2-A0B7-A50BB10F6EC4}'
+			'TypeLib' = s '{EB26EA8E-3B98-4DED-AE59-255C3BA725C3}'
 		}
 	}
 	NoRemove *
 	{
-		NoRemove ShellEx
+		NoRemove shellex
 		{
 			NoRemove ContextMenuHandlers
 			{
@@ -36,13 +36,9 @@ HKCR
 
 	NoRemove Directory
 	{
-		NoRemove ShellEx
+		NoRemove shellex
 		{
 			NoRemove ContextMenuHandlers
-			{
-				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
-			}
-			NoRemove DragDropHandlers
 			{
 				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
 			}
@@ -53,13 +49,9 @@ HKCR
 	{
 		NoRemove Background
 		{
-			NoRemove ShellEx
+			NoRemove shellex
 			{
 				NoRemove ContextMenuHandlers
-				{
-					ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
-				}
-				NoRemove DragDropHandlers
 				{
 					ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
 				}
@@ -67,15 +59,22 @@ HKCR
 		}
 	}
 
-	NoRemove Drive
+	NoRemove Folder
 	{
-		NoRemove ShellEx
+		NoRemove shellex
 		{
 			NoRemove ContextMenuHandlers
 			{
 				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
 			}
-			NoRemove DragDropHandlers
+		}
+	}
+
+	NoRemove Drive
+	{
+		NoRemove shellex
+		{
+			NoRemove ContextMenuHandlers
 			{
 				ForceRemove ShellAnything = s '{B0D35103-86A1-471C-A653-E130E3439A3B}'
 			}

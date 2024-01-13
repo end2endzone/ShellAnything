@@ -24,84 +24,51 @@
 
 #include "stdafx.h"
 
-#include "CContextMenu.h"
-#include "CClassFactory.h"
-#include "LoggerHelper.h"
+#include "resource.h"
+#include <initguid.h>
+#include <shlobj.h> // for SHChangeNotify(), SHCNE_ASSOCCHANGED
 
-#include "ErrorManager.h"
-#include "Win32Registry.h"
-#include "Win32Utils.h"
-#include "GlogUtils.h"
+// Generated files
+#include "shellext.h"
+#include "shellext_i.c"
+
+#include "LoggerHelper.h"
 
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
 #include "ClipboardService.h"
 
-#include "rapidassist/undef_windows_macros.h"
-#include "rapidassist/strings.h"
-#include "rapidassist/filesystem_utf8.h"
-#include "rapidassist/process_utf8.h"
-#include "rapidassist/errors.h"
-#include "rapidassist/user_utf8.h"
-#include "rapidassist/unicode.h"
-#include "rapidassist/environment.h"
-
 #include "shellanything/version.h"
 #include "shellanything/config.h"
 
-#include "ConfigManager.h"
-#include "PropertyManager.h"
+#include "GlogUtils.h"
 #include "SaUtils.h"
+#include "utils.h"
 
-#include "shellext.h"
-
-using namespace shellanything::logging;
+#include "rapidassist/errors.h"
 
 //Declarations
-UINT        g_cRefDll = 0;            // Reference counter of this DLL
-HINSTANCE   g_hmodDll = 0;            // HINSTANCE of the DLL
 shellanything::ILoggerService* logger_service = NULL;
 shellanything::IRegistryService* registry_service = NULL;
 shellanything::IClipboardService* clipboard_service = NULL;
 
-void DllAddRef(void)
+class CShellAnythingModule : public ATL::CAtlDllModuleT< CShellAnythingModule >
 {
-  SA_LOG(INFO) << __FUNCTION__ << "(), new";
+public:
+  DECLARE_LIBID(LIBID_SHELLEXTENSIONLib)
+  DECLARE_REGISTRY_APPID_RESOURCEID(IDR_SHELLANYTHING, "{EB26EA8E-3B98-4DED-AE59-255C3BA725C3}")
+};
 
-  InterlockedIncrement(&g_cRefDll);
-}
+class CShellAnythingModule _AtlModule;
 
-void DllRelease(void)
-{
-  SA_LOG(INFO) << __FUNCTION__ << "(), delete";
-
-  InterlockedDecrement(&g_cRefDll);
-}
-
-STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
+// Returns a class factory to create an object of the requested type.
+_Use_decl_annotations_
+STDAPI DllGetClassObject(_In_ REFCLSID clsid, _In_ REFIID riid, _Outptr_ LPVOID* ppv)
 {
   std::string clsid_str = GuidToInterfaceName(clsid);
   std::string riid_str = GuidToInterfaceName(riid);
-  SA_LOG(INFO) << __FUNCTION__ << "(), clsid=" << clsid_str << ", riid=" << riid_str;
 
-  // Always set out parameter to NULL, validating it first.
-  if (!ppv)
-    return E_INVALIDARG;
-  *ppv = NULL;
-
-  HRESULT hr = CLASS_E_CLASSNOTAVAILABLE;
-
-  if (IsEqualGUID(clsid, CLSID_ShellAnythingMenu))
-  {
-    hr = E_OUTOFMEMORY;
-
-    CClassFactory* pClassFactory = new CClassFactory();
-    if (pClassFactory)
-    {
-      hr = pClassFactory->QueryInterface(riid, ppv);
-      pClassFactory->Release();
-    }
-  }
+  HRESULT hr = _AtlModule.DllGetClassObject(clsid, riid, ppv);
 
   if (hr == CLASS_E_CLASSNOTAVAILABLE)
     SA_LOG(ERROR) << __FUNCTION__ << "(), ClassFactory " << clsid_str << " not found!";
@@ -112,237 +79,77 @@ STDAPI DllGetClassObject(REFCLSID clsid, REFIID riid, LPVOID* ppv)
   return hr;
 }
 
+// Used to determine whether the DLL can be unloaded by OLE.
+_Use_decl_annotations_
 STDAPI DllCanUnloadNow(void)
 {
   SA_LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
 
-  ULONG ulRefCount = 0;
-  ulRefCount = InterlockedIncrement(&g_cRefDll);
-  ulRefCount = InterlockedDecrement(&g_cRefDll);
+  HRESULT hr = _AtlModule.DllCanUnloadNow();
 
-  if (0 == ulRefCount)
+  if (hr == S_OK)
   {
     SA_LOG(INFO) << __FUNCTION__ << "() -> Yes";
     return S_OK;
   }
-  SA_LOG(INFO) << __FUNCTION__ << "() -> No, " << ulRefCount << " instances are still in use.";
+  SA_LOG(INFO) << __FUNCTION__ << "() -> No.";
   return S_FALSE;
 }
 
+// DllRegisterServer - Adds entries to the system registry.
+_Use_decl_annotations_
 STDAPI DllRegisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(CLSID_ShellAnythingMenu).c_str();
-  const char* guid_str = guid_str_tmp.c_str();
-  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
-  const std::string module_path = GetCurrentModulePath();
+  // registers object, typelib and all interfaces in typelib
+  HRESULT hr = _AtlModule.DllRegisterServer();
 
-  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
-
-  //Register version 1 of our class
+  if (SUCCEEDED(hr))
   {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
-    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s.1\\CLSID", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
+    // Notify the Shell to pick the changes:
+    // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+    // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+    // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+    // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+    SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
   }
 
-  //Register current version of our class
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CLSID", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s\\CurVer", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), class_name_version1.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Add the CLSID of this DLL to the registry
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
-
-  // Define the path and parameters of our DLL:
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\ProgID", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str(), class_name_version1.c_str()))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\VersionIndependentProgID", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str(), ShellExtensionClassName))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\Programmable", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s\\InprocServer32", guid_str);
-    if (!Win32Registry::CreateKey(key.c_str(), module_path.c_str()))
-      return E_ACCESSDENIED;
-    if (!Win32Registry::SetValue(key.c_str(), "ThreadingModel", "Apartment"))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for all the file types
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for directories
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for folders
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folder\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for the desktop or the file explorer's background
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension for drives
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::CreateKey(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Register the shell extension to the system's approved Shell Extensions
-  {
-    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!Win32Registry::CreateKey(key.c_str()))
-      return E_ACCESSDENIED;
-    if (!Win32Registry::SetValue(key.c_str(), guid_str, ShellExtensionDescription))
-      return E_ACCESSDENIED;
-  }
-
-  // Notify the Shell to pick the changes:
-  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
-  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
-  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
-  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
-  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
-
-  return S_OK;
+  return hr;
 }
 
+// DllUnregisterServer - Removes entries from the system registry.
+_Use_decl_annotations_
 STDAPI DllUnregisterServer(void)
 {
-  const std::string guid_str_tmp = GuidToString(CLSID_ShellAnythingMenu).c_str();
-  const char* guid_str = guid_str_tmp.c_str();
-  const std::string class_name_version1 = std::string(ShellExtensionClassName) + ".1";
-  const std::string guid_icontextmenu_tmp = GuidToString(IID_IContextMenu);
-  const std::string guid_icontextmenu = guid_icontextmenu_tmp.c_str();
+  // unregisters object, typelib and all interfaces in typelib
+  HRESULT hr = _AtlModule.DllUnregisterServer();
 
-  //#define TRACELINE() MessageBox(NULL, (std::string("Line: ") + ra::strings::ToString(__LINE__)).c_str(), "DllUnregisterServer() DEBUG", MB_OK);
-
-  // Removed the shell extension from the user's cached Shell Extensions
+  if (SUCCEEDED(hr))
   {
-    std::string key = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Cached";
-    std::string value = ra::strings::Format("%s {000214E4-0000-0000-C000-000000000046} 0xFFFF", guid_str); // {B0D35103-86A1-471C-A653-E130E3439A3B} {000214E4-0000-0000-C000-000000000046} 0xFFFF
-    if (!Win32Registry::DeleteValue(key.c_str(), value.c_str()))
-      return E_ACCESSDENIED;
+    // Notify the Shell to pick the changes:
+    // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
+    // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
+    // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
+    // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
+    SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
   }
 
-  // Unregister the shell extension from the system's approved Shell Extensions
-  {
-    std::string key = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved";
-    if (!Win32Registry::DeleteValue(key.c_str(), guid_str))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister the shell extension for drives
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Drive\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister the shell extension for the desktop or the file explorer's background
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\Background\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister the shell extension for folders
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Folders\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister the shell extension for directories
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\Directory\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister the shell extension for all the file types
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\*\\shellex\\ContextMenuHandlers\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Remove the CLSID of this DLL from the registry
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\CLSID\\%s", guid_str);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Unregister current and version 1 of our extension
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", class_name_version1.c_str());
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-  {
-    std::string key = ra::strings::Format("HKEY_CLASSES_ROOT\\%s", ShellExtensionClassName);
-    if (!Win32Registry::DeleteKey(key.c_str()))
-      return E_ACCESSDENIED;
-  }
-
-  // Notify the Shell to pick the changes:
-  // https://docs.microsoft.com/en-us/windows/desktop/shell/reg-shell-exts#predefined-shell-objects
-  // Any time you create or change a Shell extension handler, it is important to notify the system that you have made a change.
-  // Do so by calling SHChangeNotify, specifying the SHCNE_ASSOCCHANGED event.
-  // If you do not call SHChangeNotify, the change might not be recognized until the system is rebooted.
-  SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
-
-  return S_OK;
+  return hr;
 }
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+  BOOL result = _AtlModule.DllMain(dwReason, lpReserved);
+  if (result == FALSE)
+  {
+    SA_LOG(ERROR) << "Failed initializing module DLLMain().";
+
+    ra::errors::errorcode_t code = ra::errors::GetLastErrorCode();
+    std::string desc = ra::errors::GetErrorCodeDescription(code);
+
+    SA_LOG(ERROR) << "ERROR: 0x" << std::hex << code << std::dec << ", " << desc;
+    return result;
+  }
+
   // Skip log initializations and default configuration installation if process that is loading this dll is regsvr32.exe.
   // Shell extension un/registration will not call a shell extension entry points and does not require logging support.
   if (IsRegsvr32Process())
@@ -354,8 +161,6 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
   {
     ATTACH_HOOK_DEBUGGING;
 
-    g_hmodDll = hInstance;
-
     DisableThreadLibraryCalls((HMODULE)hInstance);
 
     if (!app.IsTestingEnvironment())
@@ -365,7 +170,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       app.SetApplicationPath(dll_path);
 
       // Initialize Google's logging library.
-      glog::InitGlog();
+      shellanything::logging::glog::InitGlog();
 
       // Setup an active logger in ShellAnything's core.
       logger_service = new shellanything::GlogLoggerService();
@@ -390,7 +195,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
     if (!app.IsTestingEnvironment())
     {
       // Shutdown Google's logging library.
-      glog::ShutdownGlog();
+      shellanything::logging::glog::ShutdownGlog();
 
       // Destroy services
       app.ClearServices();
@@ -402,7 +207,41 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       logger_service = NULL;
     }
   }
-  return 1;
+
+  return result;
+}
+
+// DllInstall - Adds/Removes entries to the system registry per user per machine.
+_Use_decl_annotations_
+STDAPI DllInstall(BOOL bInstall, _In_opt_  LPCWSTR pszCmdLine)
+{
+  ATTACH_HOOK_DEBUGGING;
+
+  HRESULT hr = E_FAIL;
+  static const wchar_t szUserSwitch[] = L"user";
+
+  if (pszCmdLine != nullptr)
+  {
+    if (_wcsnicmp(pszCmdLine, szUserSwitch, _countof(szUserSwitch)) == 0)
+    {
+      ATL::AtlSetPerUserRegistration(true);
+    }
+  }
+
+  if (bInstall)
+  {
+    hr = DllRegisterServer();
+    if (FAILED(hr))
+    {
+      DllUnregisterServer();
+    }
+  }
+  else
+  {
+    hr = DllUnregisterServer();
+  }
+
+  return hr;
 }
 
 //int main(int argc, char* argv[])

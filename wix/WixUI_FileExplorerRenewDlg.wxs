@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <UI>
+            <Dialog Id="FileExplorerRenewDlg" Width="370" Height="270" Title="[ProductName] Setup">
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+                    <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+                </Control>
+                
+                <Control Id="Message1" Type="Text" X="25" Y="60" Width="325" Height="165" Transparent="yes" NoPrefix="yes" >
+                  <Text>
+                    <![CDATA[Shell Extensions DLLs often cannot be deleted during the uninstall process because _File Explorer_ usually have a lock on the file. Because of the lock, a system reboot is required to complete the uninstall.
+
+ShellAnything provides an utility called "File Explorer Renew" that can close and reopen all File Explorer windows. If the shell extension is unregistered, it will renew all windows and release the lock on the shell extension dll.
+
+For more details, check the following in the documentation: ]]>
+                  </Text>
+                </Control>
+              
+                <Control Id="Link1" Type="Hyperlink" X="25" Y="150" Width="325" Height="15" Transparent="yes">
+                  <Text><![CDATA[<a href="https://github.com/end2endzone/ShellAnything/blob/master/INSTALL.md#uninstall">INSTALL.md, uninstall section</a>]]></Text>
+                </Control>
+
+                <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="It is possible to uninstall Shell Extensions without rebooting" />
+                <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Before you uninstall" />
+                <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+            </Dialog>
+        </UI>
+    </Fragment>
+</Wix>
