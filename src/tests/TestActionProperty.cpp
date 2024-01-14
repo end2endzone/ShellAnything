@@ -34,6 +34,7 @@
 
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/random.h"
 #include "rapidassist/undef_windows_macros.h"
@@ -699,6 +700,77 @@ namespace shellanything
       //ASSERT a single value
       std::string test1 = pmgr.GetProperty("test1");
       ASSERT_EQ("C:\\Program Files\\7-Zip\\", test1);
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testSearchPath)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get all menus.
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
+      ASSERT_EQ(1, configs.size());
+
+      //ASSERT a single menu is available
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
+      ASSERT_GT(menus.size(), 1);
+
+      //Clear properties
+      static const char* properties[] = {
+        "test1",
+        "test2",
+        "test3",
+        "test4",
+      };
+      static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        pmgr.ClearProperty(properties[i]);
+      }
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      for (size_t i = 0; i < menus.size(); i++)
+      {
+        Menu* menu = menus[i];
+        bool executed = ActionManager::Execute(menu, c);
+        ASSERT_TRUE(executed) << "Failed to execute actions of menu '" << menu->GetName() << "'.";
+      }
+
+      //ASSERT the properties were set
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        ASSERT_TRUE(pmgr.HasProperty(property_name)) << "Property not found: '" << property_name << "'.";
+      }
+
+      //ASSERT the properties matches a real file
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        const std::string& file_path = pmgr.GetProperty(property_name);
+        ASSERT_TRUE(ra::filesystem::FileExistsUtf8(file_path.c_str())) << "File does not exists: '" << file_path << "'.";
+      }
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

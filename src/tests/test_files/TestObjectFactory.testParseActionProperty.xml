@@ -42,6 +42,13 @@
         <property name="foo" registrykey="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path" />
       </actions>
     </menu>
+    
+    <menu name="menu06">
+      <actions>
+        <!--basic searchpath usage-->
+        <property name="foo" searchpath="foobar.exe" />
+      </actions>
+    </menu>
 
   </shell>
 </root>

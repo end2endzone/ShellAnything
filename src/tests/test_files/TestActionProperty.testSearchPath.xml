@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <!-- Find `explorer.exe` in Windows directory -->
+        <property name="test1" searchpath="explorer.exe" />
+      </actions>
+    </menu>
+    
+    <menu name="menu2">
+      <actions>
+        <!-- Find `python.exe` interpreter in an unknown directory -->
+        <property name="test2" searchpath="python.exe" />
+      </actions>
+    </menu>
+    
+    <menu name="menu3">
+      <actions>
+        <!-- Find `cmd.exe` in Windows System32 directory -->
+        <property name="test3" searchpath="cmd.exe" />
+      </actions>
+    </menu>
+    
+    <menu name="menu4">
+      <actions>
+        <!-- Find `git.exe` command -->
+        <property name="test4" searchpath="git.exe" />
+      </actions>
+    </menu>
+    
+    <menu name="menu5">
+      <actions>
+        <!-- Find `powershell.exe` command -->
+        <property name="test5" searchpath="powershell.exe" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>

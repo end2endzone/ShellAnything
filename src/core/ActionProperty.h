@@ -124,6 +124,16 @@ namespace shellanything
     /// </summary>
     void SetRegistryKey(const std::string& value);
 
+    /// <summary>
+    /// Getter for the 'searchpath' parameter.
+    /// </summary>
+    const std::string& GetSearchPath() const;
+
+    /// <summary>
+    /// Setter for the 'searchpath' parameter.
+    /// </summary>
+    void SetSearchPath(const std::string& value);
+
   private:
     std::string mName;
     std::string mValue;
@@ -131,6 +141,7 @@ namespace shellanything
     std::string mFile;
     std::string mFileSize;
     std::string mRegistryKey;
+    std::string mSearchPath;
   };
 
 
