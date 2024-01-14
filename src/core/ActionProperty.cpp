@@ -162,12 +162,14 @@ namespace shellanything
       // Search for a file in PATH environment variable.
       std::string abs_path = ra::filesystem::FindFileFromPathsUtf8(searchpath);
 
-      // If found
-      if (!abs_path.empty())
+      if (abs_path.empty())
       {
-        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
-        value = abs_path;
+        SA_LOG(WARNING) << "File not found in PATH environment variable: '" << searchpath << "'.";
+        return false;
       }
+
+      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+      value = abs_path;
     }
 
     // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").

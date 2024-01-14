@@ -30,5 +30,12 @@
       </actions>
     </menu>
     
+    <menu name="menu5">
+      <actions>
+        <!-- Find `powershell.exe` command -->
+        <property name="test5" searchpath="powershell.exe" />
+      </actions>
+    </menu>
+    
   </shell>
 </root>

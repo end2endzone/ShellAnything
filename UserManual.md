@@ -1132,6 +1132,45 @@ For example :
 
 
 
+#### searchpath attribute: ####
+
+The `searchpath` attribute allows searching for a file name using the `PATH` environment variable. The attribute defines a file name (including the file extension) to search in the list of directories identified in the `PATH` environment variable. If the given file name cannot be found in a PATH directory, the action execution stop and reports an error.
+
+For example, the following sets the property `python.exe.path` to the location of the python interpreter :
+```xml
+<property name="python.exe.path" registrykey="python.exe" />
+```
+
+This method allows to create generic configuration file that can be used by everyone.
+
+For example :
+
+***Run python script*** :
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <!-- Detect PYTHON executable from PATH environment variable. -->
+      <!-- The property `python.exe.path` is set only if `python.exe` can be found
+           in the directories listed in PATH environment variable. -->
+      <property name="python.exe.path" searchpath="python.exe" />
+    </default>
+
+    <menu name="Run with python">
+      <icon path="${python.exe.path}" index="0" />
+      <!-- Show the menu only if PYTHON is found in PATH environment variable -->
+      <visibility properties="python.exe.path" maxfiles="1" maxfolders="0" fileextensions="py" />
+      <actions>
+        <exec path="${python.exe.path}" arguments="${selection.path}" />
+      </actions>
+    </menu>
+  </shell>
+</root>
+```
+
+
+
 ### &lt;file&gt; action ###
 
 The &lt;file&gt; element is used to create a text file on disk. The content of the file is specified between the opening and closing tags of the &lt;file&gt; element. The &lt;file&gt; element supports dynamic properties and can be used to create default configuration files or create support files for the menu.
