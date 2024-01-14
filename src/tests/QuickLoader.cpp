@@ -67,11 +67,13 @@ namespace shellanything
     ConfigManager& cmgr = ConfigManager::GetInstance();
     cmgr.Refresh();
 
-    std::cout << "Deleting configuration files in workspace directory '" << workspace_dir << "'." << std::endl;
-
     // For each files in workspace directory...
     ra::strings::StringVector files;
     ra::filesystem::FindFilesUtf8(files, workspace_dir.c_str());
+    if (!files.empty())
+    {
+      std::cout << "Deleting configuration files in workspace directory '" << workspace_dir << "'." << std::endl;
+    }
     for (size_t i = 0; i < files.size(); i++)
     {
       const std::string& file_path = files[i];
