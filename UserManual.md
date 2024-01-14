@@ -1068,7 +1068,7 @@ For example :
 ```xml
 <menu name="Capture exec output">
   <actions>
-    <exec path="cmd.exe" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${env.TEMP}\command_output.txt&quot;" />
+    <exec path="cmd.exe" wait="true" arguments="/C dir /b &quot;${application.directory}&quot;> &quot;${env.TEMP}\command_output.txt&quot;" />
     <property name="files" file="${env.TEMP}\command_output.txt" />
   </actions>
 </menu>
