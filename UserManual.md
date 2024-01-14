@@ -1138,8 +1138,12 @@ The `searchpath` attribute allows searching for a file name using the `PATH` env
 
 For example, the following sets the property `python.exe.path` to the location of the python interpreter :
 ```xml
-<property name="python.exe.path" registrykey="python.exe" />
+<property name="python.exe.path" searchpath="python.exe" />
 ```
+
+This feature allow people to detect software that are available on the system. For example, software that are "portable" do not require installation and cannot be easily detected from the registry or other means. Other software installs in a non standards directory (outside of as _C:\\Program Files\\_). To be easily available on the system, some add their executable directory to the PATH environment variable.
+
+For example, [python](https://www.python.org/) executable is not always installed in the same directory. For example, the executable for version 3.10.0 installed in directory `C:\Users\MyUserName\AppData\Local\Programs\Python\Python310\python.exe`. The issue is that you cannot predict the directory `Python310` to be identical for all users. The installer properly configures the PATH environment variable to so that `python.exe` can be found on the system.
 
 This method allows to create generic configuration file that can be used by everyone.
 
@@ -1155,14 +1159,17 @@ For example :
       <!-- The property `python.exe.path` is set only if `python.exe` can be found
            in the directories listed in PATH environment variable. -->
       <property name="python.exe.path" searchpath="python.exe" />
+      <property name="cmd.exe.path"    searchpath="cmd.exe" />
     </default>
 
-    <menu name="Run with python">
+    <menu name="Run python with arguments">
       <icon path="${python.exe.path}" index="0" />
       <!-- Show the menu only if PYTHON is found in PATH environment variable -->
       <visibility properties="python.exe.path" maxfiles="1" maxfolders="0" fileextensions="py" />
       <actions>
-        <exec path="${python.exe.path}" arguments="${selection.path}" />
+        <prompt name="python.args" title="Entrer the desired command line arguments" />
+        <file path="${env.USERPROFILE}\temp_python_with_args.bat" encoding="utf8">@&quot;${python.exe.path}&quot; &quot;${selection.path}&quot; ${python.args}</file>
+        <exec path="${cmd.exe.path}" basedir="${selection.dir}" arguments="/K call ^&quot;${env.USERPROFILE}\temp_python_with_args.bat&quot;" />
       </actions>
     </menu>
   </shell>
