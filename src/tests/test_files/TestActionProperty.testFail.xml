@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <!-- test invalid exprtk expression -->
+        <property name="test1" fail="no" exprtk="foobar" />
+        <property name="test1" value="1" />
+      </actions>
+    </menu>
+    
+    <menu name="menu2">
+      <actions>
+        <!-- test invalid file path -->
+        <property name="test2" fail="no" file="C:\foobar" />
+        <property name="test2" value="1" />
+      </actions>
+    </menu>
+    
+    <menu name="menu3">
+      <actions>
+        <!-- test invalid filesize -->
+        <property name="cmd.exe.path" searchpath="cmd.exe" />
+        <property name="test3" fail="no" file="${cmd.exe.path}" filesize="foobar" />
+        <property name="test3" value="1" />
+      </actions>
+    </menu>
+    
+    <menu name="menu4">
+      <actions>
+        <!-- test invalid registrykey -->
+        <property name="test4" fail="no" registrykey="foobar" />
+        <property name="test4" value="1" />
+      </actions>
+    </menu>
+    
+    <menu name="menu5">
+      <actions>
+        <!-- test invalid searchpath -->
+        <property name="test5" fail="no" searchpath="foobar" />
+        <property name="test5" value="1" />
+      </actions>
+    </menu>
+    
+    <menu name="menu6">
+      <actions>
+        <property name="foo" value="original-value" />
+        
+        <!-- test that an unresolved value that do not fail do not modify the property -->
+        <property name="foo" fail="no" exprtk="foobar" />
+        <property name="foo" fail="no" file="C:\foobar" />
+        <property name="foo" fail="no" file="${cmd.exe.path}" filesize="foobar" />
+        <property name="foo" fail="no" registrykey="foobar" />
+        <property name="foo" fail="no" searchpath="foobar" />
+
+        <property name="test6" value="1" />
+      </actions>
+    </menu>
+    
+  </shell>
+</root>

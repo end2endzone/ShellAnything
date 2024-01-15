@@ -47,6 +47,11 @@ namespace shellanything
     static const size_t DEFAULT_MAX_FILE_SIZE;
 
     /// <summary>
+    /// Default value for 'fail' attribute.
+    /// </summary>
+    static const std::string DEFAULT_FAIL_VALUE;
+
+    /// <summary>
     /// Name of the xml element for this action.
     /// </summary>
     static const std::string XML_ELEMENT_NAME;
@@ -134,9 +139,25 @@ namespace shellanything
     /// </summary>
     void SetSearchPath(const std::string& value);
 
+    /// <summary>
+    /// Getter for the 'fail' parameter.
+    /// </summary>
+    const std::string& GetFail() const;
+
+    /// <summary>
+    /// Setter for the 'fail' parameter.
+    /// </summary>
+    void SetFail(const std::string& value);
+
   private:
+    bool GetValueFromExprtk(const std::string& exprtk, std::string& value) const;
+    bool GetValueFromFile(const std::string& file, const std::string& filesize, std::string& value) const;
+    bool GetValueFromRegistryKey(const std::string& registrykey, std::string& value) const;
+    bool GetValueFromSearchPath(const std::string& searchpath, std::string& value) const;
+
     std::string mName;
     std::string mValue;
+    std::string mFail;
     std::string mExprtk;
     std::string mFile;
     std::string mFileSize;
