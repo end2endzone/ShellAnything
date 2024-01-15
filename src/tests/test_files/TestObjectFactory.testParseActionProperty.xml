@@ -49,6 +49,13 @@
         <property name="foo" searchpath="foobar.exe" />
       </actions>
     </menu>
+    
+    <menu name="menu07">
+      <actions>
+        <!--basic searchpath usage-->
+        <property name="foo" searchpath="foobar.exe" fail="bing" />
+      </actions>
+    </menu>
 
   </shell>
 </root>

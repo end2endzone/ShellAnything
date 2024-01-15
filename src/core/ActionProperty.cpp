@@ -39,6 +39,7 @@ namespace shellanything
 {
   const std::string ActionProperty::XML_ELEMENT_NAME = "property";
   const size_t ActionProperty::DEFAULT_MAX_FILE_SIZE = 10240;
+  const std::string ActionProperty::DEFAULT_FAIL_VALUE = "true";
 
   class ActionPropertyFactory : public virtual IActionFactory
   {
@@ -126,6 +127,13 @@ namespace shellanything
         action->SetSearchPath(tmp_str);
       }
 
+      //parse fail
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "fail", true, true, tmp_str, error))
+      {
+        action->SetFail(tmp_str);
+      }
+
       //done parsing
       return action;
     }
@@ -137,7 +145,8 @@ namespace shellanything
     return new ActionPropertyFactory();
   }
 
-  ActionProperty::ActionProperty()
+  ActionProperty::ActionProperty() :
+    mFail(DEFAULT_FAIL_VALUE)
   {
   }
 
@@ -150,134 +159,113 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string name = pmgr.Expand(mName);
     std::string value = pmgr.Expand(mValue);
+    std::string fail = pmgr.Expand(mFail);
     std::string exprtk = pmgr.Expand(mExprtk);
     std::string file = pmgr.Expand(mFile);
     std::string filesize = pmgr.Expand(mFileSize);
-    std::string regisrykey = pmgr.Expand(mRegistryKey);
+    std::string registrykey = pmgr.Expand(mRegistryKey);
     std::string searchpath = pmgr.Expand(mSearchPath);
+
+    // Set a flag if an actual value must be set.
+    bool has_new_value = false;
+    if (
+      exprtk.empty() &&
+      file.empty() &&
+      filesize.empty() &&
+      registrykey.empty() &&
+      searchpath.empty())
+    {
+      // If no automatic value has been specified, then value is an actual new value, even if empty.
+      has_new_value = true;
+    }
 
     // If searchpath is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!searchpath.empty())
     {
-      // Search for a file in PATH environment variable.
-      std::string abs_path = ra::filesystem::FindFileFromPathsUtf8(searchpath);
-
-      if (abs_path.empty())
+      std::string tmp_value;
+      bool resolved = GetValueFromSearchPath(searchpath, tmp_value);
+      if (Validator::IsTrue(fail) && !resolved)
       {
-        SA_LOG(WARNING) << "File not found in PATH environment variable: '" << searchpath << "'.";
+        SA_LOG(WARNING) << "Reporting an error because fail is set to '" << fail << "'.";
         return false;
       }
-
-      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
-      value = abs_path;
+      if (resolved)
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = tmp_value;
+        has_new_value = true;
+      }
     }
 
-    // If exprtk is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    // If exprtk is specified, it has priority over value.
     if (!exprtk.empty())
     {
-      static const size_t ERROR_SIZE = 10480;
-      char error[ERROR_SIZE];
-      error[0] = '\0';
-
-      double result = 0.0;
-      int evaluated = EvaluateDouble(exprtk.c_str(), &result, error, ERROR_SIZE);
-      if (!evaluated)
+      std::string tmp_value;
+      bool resolved = GetValueFromExprtk(exprtk, tmp_value);
+      if (Validator::IsTrue(fail) && !resolved)
       {
-        SA_LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
-        SA_LOG(WARNING) << "Exprtk error: " << error << "'.";
+        SA_LOG(WARNING) << "Reporting an error because fail is set to '" << fail << "'.";
         return false;
       }
-
-      // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
-      value = ra::strings::ToString(result);
+      if (resolved)
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = tmp_value;
+        has_new_value = true;
+      }
     }
 
     // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
-    if (!regisrykey.empty())
+    if (!registrykey.empty())
     {
-      IRegistryService* registry = App::GetInstance().GetRegistryService();
-      if (registry == NULL)
+      std::string tmp_value;
+      bool resolved = GetValueFromRegistryKey(registrykey, tmp_value);
+      if (Validator::IsTrue(fail) && !resolved)
       {
-        SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << regisrykey << "'.";
+        SA_LOG(WARNING) << "Reporting an error because fail is set to '" << fail << "'.";
         return false;
       }
-
-      // Query for an existing registry key
-      std::string key_value;
-      if (registry->GetRegistryKeyAsString(regisrykey, key_value))
+      if (resolved)
       {
         // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
-        value = key_value;
-      }
-      else
-      {
-        SA_LOG(WARNING) << "Failed evaluating registrykey expression '" << regisrykey << "'.";
-        return false;
+        value = tmp_value;
+        has_new_value = true;
       }
     }
 
     // If file is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!file.empty())
     {
-      // Validate input file
-      if (!ra::filesystem::FileExistsUtf8(file.c_str()))
+      std::string tmp_value;
+      bool resolved = GetValueFromFile(file, filesize, tmp_value);
+      if (Validator::IsTrue(fail) && !resolved)
       {
-        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File not found!";
+        SA_LOG(WARNING) << "Reporting an error because fail is set to '" << fail << "'.";
         return false;
       }
-      if (!ra::filesystem::HasFileReadAccessUtf8(file.c_str()))
+      if (resolved)
       {
-        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
-        return false;
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = tmp_value;
+        has_new_value = true;
       }
-
-      // Define the maximum number of bytes to read.
-      size_t max_read_size = DEFAULT_MAX_FILE_SIZE;
-
-      // Did user specified a maximum number of bytes to read?
-      bool custom_file_size = false;
-      if (!filesize.empty())
-      {
-        size_t tmp_file_size = 0;
-        bool parsed = ra::strings::Parse(filesize, tmp_file_size);
-        if (!parsed)
-        {
-          SA_LOG(WARNING) << "Failed parsing filesize value '" << filesize << "'.";
-          return false;
-        }
-
-        custom_file_size = true;
-        max_read_size = tmp_file_size;
-      }
-
-      // Custom log entry
-      if (custom_file_size && max_read_size != 0)
-        SA_LOG(INFO) << "Setting property '" << name << "' from the first " << max_read_size << " bytes of file '" << file << "'.";
-      else
-        SA_LOG(INFO) << "Setting property '" << name << "' from file '" << file << "'.";
-
-      // Set max_read_size to infinite if set to special value 0.
-      if (max_read_size == 0)
-        max_read_size = (size_t)-1;
-
-      // Do the actual reading from the file.
-      bool file_read_success = ra::filesystem::PeekFileUtf8(file.c_str(), max_read_size, value);
-      if (!file_read_success)
-      {
-        SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
-        return false;
-      }
-
-      SA_LOG(INFO) << "Read " << value.size() << " bytes from file '" << file << "'.";
     }
 
-    //debug
-    if (value.size() <= 512 && IsPrintableUtf8(value))
-      SA_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+    if (!has_new_value)
+    {
+      SA_LOG(WARNING) << "Property '" << name << "' has not been updated.";
+    }
     else
-      SA_LOG(INFO) << "Setting property '" << name << "' to a new unprintable value.";
+    {
+      //debug
+      if (value.size() <= 512 && IsPrintableUtf8(value))
+        SA_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+      else
+        SA_LOG(INFO) << "Setting property '" << name << "' to a new unprintable value.";
 
-    pmgr.SetProperty(name, value);
+      // Update the new property.
+      pmgr.SetProperty(name, value);
+    }
 
     // If a user has changed property 'selection.multi.separator', the context must rebuild selection-based properties.
     // See issue #52 for details.
@@ -358,6 +346,133 @@ namespace shellanything
   void ActionProperty::SetSearchPath(const std::string& value)
   {
     mSearchPath = value;
+  }
+
+  const std::string& ActionProperty::GetFail() const
+  {
+    return mFail;
+  }
+
+  void ActionProperty::SetFail(const std::string& value)
+  {
+    mFail = value;
+  }
+
+  bool ActionProperty::GetValueFromExprtk(const std::string& exprtk, std::string& value) const
+  {
+    static const size_t ERROR_SIZE = 10480;
+    char error[ERROR_SIZE];
+    error[0] = '\0';
+
+    double result = 0.0;
+    int evaluated = EvaluateDouble(exprtk.c_str(), &result, error, ERROR_SIZE);
+    if (!evaluated)
+    {
+      // report a warning.
+      SA_LOG(WARNING) << "Failed evaluating exprtk expression '" << exprtk << "'.";
+      SA_LOG(WARNING) << "Exprtk error: " << error << "'.";
+      return false;
+    }
+
+    value = ra::strings::ToString(result);
+    return true;
+  }
+
+  bool ActionProperty::GetValueFromFile(const std::string& file, const std::string& filesize, std::string& value) const
+  {
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string name = pmgr.Expand(mName);
+
+    // Validate input file
+    if (!ra::filesystem::FileExistsUtf8(file.c_str()))
+    {
+      SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File not found!";
+      return false;
+    }
+    if (!ra::filesystem::HasFileReadAccessUtf8(file.c_str()))
+    {
+      SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
+      return false;
+    }
+
+    // Define the maximum number of bytes to read.
+    size_t max_read_size = DEFAULT_MAX_FILE_SIZE;
+
+    // Did user specified a maximum number of bytes to read?
+    bool custom_file_size = false;
+    if (!filesize.empty())
+    {
+      size_t tmp_file_size = 0;
+      bool parsed = ra::strings::Parse(filesize, tmp_file_size);
+      if (!parsed)
+      {
+        SA_LOG(WARNING) << "Failed parsing filesize value '" << filesize << "'.";
+        return false;
+      }
+
+      custom_file_size = true;
+      max_read_size = tmp_file_size;
+    }
+
+    // Custom log entry
+    if (custom_file_size && max_read_size != 0)
+      SA_LOG(INFO) << "Setting property '" << name << "' from the first " << max_read_size << " bytes of file '" << file << "'.";
+    else
+      SA_LOG(INFO) << "Setting property '" << name << "' from file '" << file << "'.";
+
+    // Set max_read_size to infinite if set to special value 0.
+    if (max_read_size == 0)
+      max_read_size = (size_t)-1;
+
+    // Do the actual reading from the file.
+    bool file_read_success = ra::filesystem::PeekFileUtf8(file.c_str(), max_read_size, value);
+    if (!file_read_success)
+    {
+      SA_LOG(WARNING) << "Failed setting property '" << name << "' from file '" << file << "'. File cannot be read!";
+      return false;
+    }
+
+    SA_LOG(INFO) << "Read " << value.size() << " bytes from file '" << file << "'.";
+    return true;
+  }
+
+  bool ActionProperty::GetValueFromRegistryKey(const std::string& registrykey, std::string& value) const
+  {
+    IRegistryService* registry = App::GetInstance().GetRegistryService();
+    if (registry == NULL)
+    {
+      SA_LOG(ERROR) << "No Registry service configured for evaluating registrykey expression '" << registrykey << "'.";
+      return false;
+    }
+
+    // Query for an existing registry key
+    std::string key_value;
+    bool success = (registry->GetRegistryKeyAsString(registrykey, key_value));
+
+    if (!success)
+    {
+      SA_LOG(WARNING) << "Failed evaluating registrykey expression '" << registrykey << "'.";
+      return false;
+    }
+
+    value = key_value;
+    return true;
+  }
+
+  bool ActionProperty::GetValueFromSearchPath(const std::string& searchpath, std::string& value) const
+  {
+    // Search for a file in PATH environment variable.
+    std::string abs_path = ra::filesystem::FindFileFromPathsUtf8(searchpath);
+    bool success = !abs_path.empty();
+
+    if (!success)
+    {
+      // Only report a warning.
+      SA_LOG(WARNING) << "File not found in PATH environment variable: '" << searchpath << "'.";
+      return false;
+    }
+    value = abs_path;
+    return true;
   }
 
 } //namespace shellanything

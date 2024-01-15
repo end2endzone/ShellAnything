@@ -1002,7 +1002,7 @@ For example, the following set the property `myprogram.user.name` to value `Al C
 
 The `exprtk` attribute defines an expression that is evaluated to set a new value for the given property. The expression must be specified as a mathematical expression and the result must evaluates to an integer or a floating point value such as `4+9` or `${foo}+1`.
 
-The `exprtk` attribute can also be set to an expression that evaluates to `true` or `false` and logical `and` and `or` operators can be use to group expressions. eg: `${foo.count} > 1 and '${foo.state}'=='PAUSED'`.
+The `exprtk` attribute can also be set to an expression that evaluates to `true` or `false` and logical `and` and `or` operators can be use to group expressions. eg: `${foo.count} > 1 and '${foo.state}'=='PAUSED'`. If the exprtk expression cannot be evaluated, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 The attribute supports the following operators: 
 * Basic operators: `+`, `-`, `*`, `/`, `%`, `^`
@@ -1031,7 +1031,7 @@ The `exprtk` attribute uses the *exprtk library* to parse the expression. For mo
 
 #### file attribute: ####
 
-The `file` attribute defines the path of a file who's content is used as a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+The `file` attribute defines the path of a file who's content is used as a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 For example, the following sets the property `myprogram.config` to the content of an application ini file :
 ```xml
@@ -1081,7 +1081,7 @@ To specifiy how much to read from the file, see the `filesize` attribute. By def
 
 #### filesize attribute: ####
 
-The `filesize` attribute defines the how many bytes the `file` attribute should read from the file. The special value `0` can be use to read the whole file with no limit.
+The `filesize` attribute defines the how many bytes the `file` attribute should read from the file. The special value `0` can be use to read the whole file with no limit. If the given value is not valid, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 For example, the following sets the property `myprogram.bigfile.header` by reading the first 10 bytes of a data file :
 ```xml
@@ -1095,7 +1095,7 @@ If not specified, a maximum of ***10 KB*** can be read from a file.
 
 #### registrykey attribute: ####
 
-The `registrykey` attribute defines the path to a [Windows Registry Key](https://en.wikipedia.org/wiki/Windows_Registry) or _Registry Value_ that is used to set a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error.
+The `registrykey` attribute defines the path to a [Windows Registry Key](https://en.wikipedia.org/wiki/Windows_Registry) or _Registry Value_ that is used to set a new value for the property. If the given file path does not exists or can not be read, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 For example, the following sets the property `apps.7zip.dir` to the installation directory of [7-zip](https://www.7-zip.org/) :
 ```xml
@@ -1134,7 +1134,7 @@ For example :
 
 #### searchpath attribute: ####
 
-The `searchpath` attribute allows searching for a file name using the `PATH` environment variable. The attribute defines a file name (including the file extension) to search in the list of directories identified in the `PATH` environment variable. If the given file name cannot be found in a PATH directory, the action execution stop and reports an error.
+The `searchpath` attribute allows searching for a file name using the `PATH` environment variable. The attribute defines a file name (including the file extension) to search in the list of directories identified in the `PATH` environment variable. If the given file name cannot be found in a PATH directory, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 For example, the following sets the property `python.exe.path` to the location of the python interpreter :
 ```xml
@@ -1175,6 +1175,39 @@ For example :
   </shell>
 </root>
 ```
+
+
+
+#### fail attribute: ####
+
+The `fail` attribute controls the behavior of the action when the property is not directly set from the `value` attribute. This applies to the following attributes: `exprtk`, `file`, `registrykey` and `searchpath`. The attribute must be set to a value that evaluates to `true` or `false`. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. 
+
+By default, if a value cannot be resolved from these attributes (invalid exprtk expression, file not found, registry key not found, filename not in PATH), an error is reported and the execution of the following actions is interrupted. By setting the `fail` attribute to a value that evaluates to `false`, the same warning is logged **but** the execution of the following actions continue.
+
+For example, the following action will not fail if the file is not found :
+```xml
+<property name="foo" fail="no" file="c:\this_file_does_not_exist.txt" />
+```
+
+The _fail_ attribute allows all actions to set its property. Without this attribute, the &lt;property&gt; actions must be ordered from the least expected to fail to the most expected to fail.
+
+For example :
+
+***Always set all values in default properties section*** :
+```xml
+<default>
+  <!-- Do not skip setting property `workspace.dir` if Python or 7-zip 
+       is not installed on the system -->
+  <property fail="no" name="python.exe.path" searchpath="python.exe" />
+  <property fail="no" name="sevenzip.dir" registry="HKEY_LOCAL_MACHINE\SOFTWARE\7-Zip\Path64" />
+  <property name="workspace.dir" value="C:\my_workspace" />
+</default>
+```
+
+**Note:**
+* By default, the attribute is set to `true` for compatibility with legacy Configuration Files.
+* Without this attribute, the &lt;property&gt; actions must be ordered from the least expected to fail to the most expected to fail.
+* If the property value cannot be resolved and `fail` attribute is set to `false`, the target property is not modified.
 
 
 
