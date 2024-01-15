@@ -1134,7 +1134,7 @@ For example :
 
 #### searchpath attribute: ####
 
-The `searchpath` attribute allows searching for a file name using the `PATH` environment variable. The attribute defines a file name (including the file extension) to search in the list of directories identified in the `PATH` environment variable. If the file can be found in multiple PATH directories, the first match is used to set the property. If the given file name cannot be found in a PATH directory, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
+The `searchpath` attribute allows searching for a file name using the `PATH` environment variable. The attribute defines a file name (including the file extension) to search in the PATH directories. If the file name is found in multiple PATH directories, the first match is used to set the property. If the file name is not found in a PATH directory, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
 
 For example, the following sets the property `python.exe.path` to the location of the python interpreter :
 ```xml
