@@ -58,10 +58,10 @@ namespace shellanything
 
     enum KEYB_TOGGLE_ID
     {
-      KSID_INVALID,
-      KSID_CAPS_LOCK,
-      KSID_SCROLL_LOCK,
-      KSID_NUM_LOCK,
+      KTID_INVALID,
+      KTID_CAPS_LOCK,
+      KTID_SCROLL_LOCK,
+      KTID_NUM_LOCK,
     };
 
     /// <summary>

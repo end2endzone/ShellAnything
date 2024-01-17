@@ -57,11 +57,11 @@ namespace shellanything
   {
     switch (value)
     {
-    case IKeyboardService::KSID_CAPS_LOCK:
+    case IKeyboardService::KTID_CAPS_LOCK:
       return "CAPS";
-    case IKeyboardService::KSID_SCROLL_LOCK:
+    case IKeyboardService::KTID_SCROLL_LOCK:
       return "SCROLL";
-    case IKeyboardService::KSID_NUM_LOCK:
+    case IKeyboardService::KTID_NUM_LOCK:
       return "NUM";
     };
     return "";
@@ -69,13 +69,13 @@ namespace shellanything
 
   IKeyboardService::KEYB_TOGGLE_ID KeyboardHelper::ParseKeyboardToggleId(const std::string& value)
   {
-    if (value == ToString(IKeyboardService::KSID_CAPS_LOCK))
-      return IKeyboardService::KSID_CAPS_LOCK;
-    if (value == ToString(IKeyboardService::KSID_SCROLL_LOCK))
-      return IKeyboardService::KSID_SCROLL_LOCK;
-    if (value == ToString(IKeyboardService::KSID_NUM_LOCK))
-      return IKeyboardService::KSID_NUM_LOCK;
-    return IKeyboardService::KSID_INVALID;
+    if (value == ToString(IKeyboardService::KTID_CAPS_LOCK))
+      return IKeyboardService::KTID_CAPS_LOCK;
+    if (value == ToString(IKeyboardService::KTID_SCROLL_LOCK))
+      return IKeyboardService::KTID_SCROLL_LOCK;
+    if (value == ToString(IKeyboardService::KTID_NUM_LOCK))
+      return IKeyboardService::KTID_NUM_LOCK;
+    return IKeyboardService::KTID_INVALID;
   }
 
 } //namespace shellanything

@@ -85,11 +85,11 @@ namespace shellanything
   {
     switch (key)
     {
-    case KSID_CAPS_LOCK:
+    case KTID_CAPS_LOCK:
       return VK_CAPITAL;
-    case KSID_SCROLL_LOCK:
+    case KTID_SCROLL_LOCK:
       return VK_SCROLL;
-    case KSID_NUM_LOCK:
+    case KTID_NUM_LOCK:
       return VK_NUMLOCK;
     };
     return 0;
