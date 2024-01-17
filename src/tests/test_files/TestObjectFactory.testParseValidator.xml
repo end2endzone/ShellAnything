@@ -125,5 +125,13 @@
       </actions>
     </menu>
 
+    <menu name="menu15">
+      <!-- keyboard attribute is set -->
+      <visibility keyboard="press-me" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

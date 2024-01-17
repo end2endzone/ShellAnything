@@ -292,6 +292,16 @@ namespace shellanything
       }
     }
 
+    //parse keyboard
+    std::string keyboard;
+    if (ParseAttribute(element, Validator::ATTRIBUTE_KEYBOARD.c_str(), true, true, keyboard, error))
+    {
+      if (!keyboard.empty())
+      {
+        validator->SetKeyboard(keyboard);
+      }
+    }
+
     //parse plugin's custom conditions attributes
     PropertyStore customs_attributes;
     for (size_t i = 0; i < mPlugins.size(); i++)

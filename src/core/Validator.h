@@ -51,6 +51,8 @@
 #define SA_ISTRUE_ATTR_SEPARATOR_STR          SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_ISFALSE_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
 #define SA_ISFALSE_ATTR_SEPARATOR_STR         SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
+#define SA_KEYBOARD_ATTR_SEPARATOR_CHAR       SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
+#define SA_KEYBOARD_ATTR_SEPARATOR_STR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_CONDITIONS_ATTR_SEPARATOR_CHAR     SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
 #define SA_CONDITIONS_ATTR_SEPARATOR_STR      SA_DEFAULT_ATTRIBUTE_SEPARATOR_STR 
 #define SA_ACTIONS_ATTR_SEPARATOR_CHAR        SA_DEFAULT_ATTRIBUTE_SEPARATOR_CHAR
@@ -88,6 +90,7 @@ namespace shellanything
     static const std::string& ATTRIBUTE_ISTRUE;
     static const std::string& ATTRIBUTE_ISFALSE;
     static const std::string& ATTRIBUTE_ISEMPTY;
+    static const std::string& ATTRIBUTE_KEYBOARD;
     static const std::string& ATTRIBUTE_INSERVE;
 
     /// <summary>
@@ -214,6 +217,16 @@ namespace shellanything
     void SetIsEmpty(const std::string& isempty);
 
     /// <summary>
+    /// Getter for the 'keyboard' parameter.
+    /// </summary>
+    const std::string& GetKeyboard() const;
+
+    /// <summary>
+    /// Setter for the 'keyboard' parameter.
+    /// </summary>
+    void SetKeyboard(const std::string& keyboard);
+
+    /// <summary>
     /// Get the custom attributes (key and values) defined by plugins.
     /// </summary>
     const PropertyStore& GetCustomAttributes() const;
@@ -295,6 +308,7 @@ namespace shellanything
     bool ValidateIsFalse(const SelectionContext& context, const std::string& isfalse, bool inversed) const;
     bool ValidateIsEmpty(const SelectionContext& context, const std::string& isempty, bool inversed) const;
     bool ValidatePlugin(const SelectionContext& context, Plugin* plugin) const;
+    bool ValidateKeyboard(const SelectionContext& context, const std::string& keyboard, bool inversed) const;
 
   private:
     int mMaxFiles;

@@ -50,6 +50,7 @@ namespace shellanything
 
     enum KEYB_MODIFIER_ID
     {
+      KMID_INVALID,
       KMID_CTRL,
       KMID_ALT,
       KMID_SHIFT,
@@ -57,6 +58,7 @@ namespace shellanything
 
     enum KEYB_TOGGLE_ID
     {
+      KSID_INVALID,
       KSID_CAPS_LOCK,
       KSID_SCROLL_LOCK,
       KSID_NUM_LOCK,

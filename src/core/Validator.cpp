@@ -31,6 +31,7 @@
 #include "DriveClass.h"
 #include "Wildcard.h"
 #include "LoggerHelper.h"
+#include "KeyboardHelper.h"
 #include "libexprtk.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -48,6 +49,7 @@ namespace shellanything
   const std::string& Validator::ATTRIBUTE_ISTRUE = "istrue";
   const std::string& Validator::ATTRIBUTE_ISFALSE = "isfalse";
   const std::string& Validator::ATTRIBUTE_ISEMPTY = "isempty";
+  const std::string& Validator::ATTRIBUTE_KEYBOARD = "keyboard";
   const std::string& Validator::ATTRIBUTE_INSERVE = "inverse";
 
   bool HasValue(const ra::strings::StringVector& values, const std::string& token)
@@ -211,6 +213,16 @@ namespace shellanything
   void Validator::SetIsEmpty(const std::string& isempty)
   {
     mAttributes.SetProperty(ATTRIBUTE_ISEMPTY, isempty);
+  }
+
+  const std::string& Validator::GetKeyboard() const
+  {
+    return mAttributes.GetProperty(ATTRIBUTE_KEYBOARD);
+  }
+
+  void Validator::SetKeyboard(const std::string& keyboard)
+  {
+    mAttributes.SetProperty(ATTRIBUTE_KEYBOARD, keyboard);
   }
 
   const PropertyStore& Validator::GetCustomAttributes() const
@@ -406,6 +418,17 @@ namespace shellanything
     {
       Plugin* p = mPlugins[i];
       bool valid = ValidatePlugin(context, p);
+      if (!valid)
+        return false;
+    }
+
+    //validate keyboard
+    const std::string& keyboard_attr = mAttributes.GetProperty(ATTRIBUTE_KEYBOARD);
+    const std::string keyboard = pmgr.Expand(keyboard_attr);
+    if (!keyboard_attr.empty())  // note, testing with non-expanded value instead of expanded value
+    {
+      bool inversed = IsInversed("keyboard");
+      bool valid = ValidateKeyboard(context, keyboard, inversed);
       if (!valid)
         return false;
     }
@@ -924,8 +947,57 @@ namespace shellanything
         return false;
     }
 
+    return true;
+  }
+
+  bool Validator::ValidateKeyboard(const SelectionContext& context, const std::string& keyboard, bool inversed) const
+  {
+    if (keyboard.empty())
+      return true;
+
+    IKeyboardService* keyboard_service = App::GetInstance().GetKeyboardService();
+    if (keyboard_service == NULL)
+      return false; // invalid. No keyboard setup to validate.
+
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+
+    //split
+    ra::strings::StringVector mandatory_keyboard_ids = ra::strings::Split(keyboard, SA_KEYBOARD_ATTR_SEPARATOR_STR);
+
+    //for each modifiers
+    for (size_t i = 0; i < mandatory_keyboard_ids.size(); i++)
+    {
+      const std::string& element = mandatory_keyboard_ids[i];
+      bool valid_element = false;
+
+      // Validate as a modifier
+      IKeyboardService::KEYB_MODIFIER_ID mid = KeyboardHelper::ParseKeyboardModifierId(element);
+      if (mid != IKeyboardService::KMID_INVALID)
+      {
+        bool element_key_down = keyboard_service->IsModifierKeyDown(mid);
+        if (!inversed && !element_key_down)
+          return false; //mandatory file/directory not found
+        if (inversed && element_key_down)
+          return false; //mandatory file/directory not found
+        valid_element = true;
+      }
+
+      // Validate as a toogle
+      IKeyboardService::KEYB_TOGGLE_ID tid = KeyboardHelper::ParseKeyboardToggleId(element);
+      if (tid != IKeyboardService::KMID_INVALID)
+      {
+        bool element_toggle_on = keyboard_service->IsStateOn(tid);
+        if (!inversed && !element_toggle_on)
+          return false; //mandatory file/directory not found
+        if (inversed && element_toggle_on)
+          return false; //mandatory file/directory not found
+        valid_element = true;
+      }
+
+    }
 
     return true;
   }
+
 
 } //namespace shellanything
