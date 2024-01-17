@@ -39,6 +39,22 @@ namespace shellanything
     FIND_BY_NAME_ALL = (-1),
   };
 
+  enum KEYB_MODIFIER_ID
+  {
+    KMID_INVALID = 0,
+    KMID_CTRL,
+    KMID_ALT,
+    KMID_SHIFT,
+  };
+
+  enum KEYB_TOGGLE_ID
+  {
+    KTID_INVALID = 0,
+    KTID_CAPS_LOCK,
+    KTID_SCROLL_LOCK,
+    KTID_NUM_LOCK,
+  };
+
 } //namespace shellanything
 
 #endif //SA_ENUMS_H

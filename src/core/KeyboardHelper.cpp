@@ -28,54 +28,54 @@
 namespace shellanything
 {
 
-  const char* KeyboardHelper::ToString(IKeyboardService::KEYB_MODIFIER_ID value)
+  const char* KeyboardHelper::ToString(KEYB_MODIFIER_ID value)
   {
     switch (value)
     {
-    case IKeyboardService::KMID_CTRL:
+    case KMID_CTRL:
       return "CTRL";
-    case IKeyboardService::KMID_ALT:
+    case KMID_ALT:
       return "ALT";
-    case IKeyboardService::KMID_SHIFT:
+    case KMID_SHIFT:
       return "SHIFT";
     };
     return "";
   }
 
-  IKeyboardService::KEYB_MODIFIER_ID KeyboardHelper::ParseKeyboardModifierId(const std::string& value)
+  KEYB_MODIFIER_ID KeyboardHelper::ParseKeyboardModifierId(const std::string& value)
   {
-    if (value == ToString(IKeyboardService::KMID_CTRL))
-      return IKeyboardService::KMID_CTRL;
-    if (value == ToString(IKeyboardService::KMID_ALT))
-      return IKeyboardService::KMID_ALT;
-    if (value == ToString(IKeyboardService::KMID_SHIFT))
-      return IKeyboardService::KMID_SHIFT;
-    return IKeyboardService::KMID_INVALID;
+    if (value == ToString(KMID_CTRL))
+      return KMID_CTRL;
+    if (value == ToString(KMID_ALT))
+      return KMID_ALT;
+    if (value == ToString(KMID_SHIFT))
+      return KMID_SHIFT;
+    return KMID_INVALID;
   }
 
-  const char* KeyboardHelper::ToString(IKeyboardService::KEYB_TOGGLE_ID value)
+  const char* KeyboardHelper::ToString(KEYB_TOGGLE_ID value)
   {
     switch (value)
     {
-    case IKeyboardService::KTID_CAPS_LOCK:
+    case KTID_CAPS_LOCK:
       return "CAPS";
-    case IKeyboardService::KTID_SCROLL_LOCK:
+    case KTID_SCROLL_LOCK:
       return "SCROLL";
-    case IKeyboardService::KTID_NUM_LOCK:
+    case KTID_NUM_LOCK:
       return "NUM";
     };
     return "";
   }
 
-  IKeyboardService::KEYB_TOGGLE_ID KeyboardHelper::ParseKeyboardToggleId(const std::string& value)
+  KEYB_TOGGLE_ID KeyboardHelper::ParseKeyboardToggleId(const std::string& value)
   {
-    if (value == ToString(IKeyboardService::KTID_CAPS_LOCK))
-      return IKeyboardService::KTID_CAPS_LOCK;
-    if (value == ToString(IKeyboardService::KTID_SCROLL_LOCK))
-      return IKeyboardService::KTID_SCROLL_LOCK;
-    if (value == ToString(IKeyboardService::KTID_NUM_LOCK))
-      return IKeyboardService::KTID_NUM_LOCK;
-    return IKeyboardService::KTID_INVALID;
+    if (value == ToString(KTID_CAPS_LOCK))
+      return KTID_CAPS_LOCK;
+    if (value == ToString(KTID_SCROLL_LOCK))
+      return KTID_SCROLL_LOCK;
+    if (value == ToString(KTID_NUM_LOCK))
+      return KTID_NUM_LOCK;
+    return KTID_INVALID;
   }
 
 } //namespace shellanything

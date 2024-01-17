@@ -37,7 +37,7 @@
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
 #include "ClipboardService.h"
-#include "KeyboardService.h"
+#include "WindowsKeyboardService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -187,7 +187,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       app.SetClipboardService(clipboard_service);
 
       // Setup an active keyboard service in ShellAnything's core.
-      keyboard_service = new shellanything::KeyboardService();
+      keyboard_service = new shellanything::WindowsKeyboardService();
       app.SetKeyboardService(keyboard_service);
 
       // Setup and starting application

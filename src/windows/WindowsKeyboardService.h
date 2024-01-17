@@ -31,18 +31,18 @@
 namespace shellanything
 {
   /// <summary>
-  /// Win32 implementation class of IKeyboardService.
+  /// Win32 implementation class of IWindowsKeyboardService.
   /// </summary>
-  class SA_WINDOWS_EXPORT KeyboardService : public virtual IKeyboardService
+  class SA_WINDOWS_EXPORT WindowsKeyboardService : public virtual IKeyboardService
   {
   public:
-    KeyboardService();
-    virtual ~KeyboardService();
+    WindowsKeyboardService();
+    virtual ~WindowsKeyboardService();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    KeyboardService(const KeyboardService&);
-    KeyboardService& operator=(const KeyboardService&);
+    WindowsKeyboardService(const WindowsKeyboardService&);
+    WindowsKeyboardService& operator=(const WindowsKeyboardService&);
   public:
 
     /// <summary>
@@ -64,14 +64,14 @@ namespace shellanything
     /// </summary>
     /// <param name="key">The id of a matching keyboard toggle key.</param>
     /// <returns>Returns true if the given key is ON. Returns false otherwise.</returns>
-    virtual bool IsStateOn(KEYB_TOGGLE_ID state) const;
+    virtual bool IsToggleStateOn(KEYB_TOGGLE_ID state) const;
 
     /// <summary>
     /// Reads the state of a keyboard toggle key.
     /// </summary>
     /// <param name="key">The id of a matching keyboard toggle key.</param>
     /// <returns>Returns true if the given key is OFF. Returns false otherwise.</returns>
-    virtual bool IsStateOff(KEYB_TOGGLE_ID state) const;
+    virtual bool IsToggleStateOff(KEYB_TOGGLE_ID state) const;
 
   private:
     int ToWin32VirtualKey(KEYB_MODIFIER_ID key) const;

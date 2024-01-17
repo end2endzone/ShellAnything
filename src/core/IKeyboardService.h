@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "Enums.h"
 
 #include <string>
 
@@ -48,22 +49,6 @@ namespace shellanything
     IKeyboardService& operator=(const IKeyboardService&);
   public:
 
-    enum KEYB_MODIFIER_ID
-    {
-      KMID_INVALID,
-      KMID_CTRL,
-      KMID_ALT,
-      KMID_SHIFT,
-    };
-
-    enum KEYB_TOGGLE_ID
-    {
-      KTID_INVALID,
-      KTID_CAPS_LOCK,
-      KTID_SCROLL_LOCK,
-      KTID_NUM_LOCK,
-    };
-
     /// <summary>
     /// Reads the state of a keyboard modifier key.
     /// </summary>
@@ -83,14 +68,14 @@ namespace shellanything
     /// </summary>
     /// <param name="key">The id of a matching keyboard toggle key.</param>
     /// <returns>Returns true if the given key is ON. Returns false otherwise.</returns>
-    virtual bool IsStateOn(KEYB_TOGGLE_ID state) const = 0;
+    virtual bool IsToggleStateOn(KEYB_TOGGLE_ID state) const = 0;
 
     /// <summary>
     /// Reads the state of a keyboard toggle key.
     /// </summary>
     /// <param name="key">The id of a matching keyboard toggle key.</param>
     /// <returns>Returns true if the given key is OFF. Returns false otherwise.</returns>
-    virtual bool IsStateOff(KEYB_TOGGLE_ID state) const = 0;
+    virtual bool IsToggleStateOff(KEYB_TOGGLE_ID state) const = 0;
 
   };
 

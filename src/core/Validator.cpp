@@ -971,8 +971,8 @@ namespace shellanything
       bool valid_element = false;
 
       // Validate as a modifier
-      IKeyboardService::KEYB_MODIFIER_ID mid = KeyboardHelper::ParseKeyboardModifierId(element);
-      if (mid != IKeyboardService::KMID_INVALID)
+      KEYB_MODIFIER_ID mid = KeyboardHelper::ParseKeyboardModifierId(element);
+      if (mid != KMID_INVALID)
       {
         bool element_key_down = keyboard_service->IsModifierKeyDown(mid);
         if (!inversed && !element_key_down)
@@ -983,10 +983,10 @@ namespace shellanything
       }
 
       // Validate as a toogle
-      IKeyboardService::KEYB_TOGGLE_ID tid = KeyboardHelper::ParseKeyboardToggleId(element);
-      if (tid != IKeyboardService::KMID_INVALID)
+      KEYB_TOGGLE_ID tid = KeyboardHelper::ParseKeyboardToggleId(element);
+      if (tid != KMID_INVALID)
       {
-        bool element_toggle_on = keyboard_service->IsStateOn(tid);
+        bool element_toggle_on = keyboard_service->IsToggleStateOn(tid);
         if (!inversed && !element_toggle_on)
           return false; //mandatory file/directory not found
         if (inversed && element_toggle_on)

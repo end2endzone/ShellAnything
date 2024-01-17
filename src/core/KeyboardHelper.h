@@ -42,28 +42,28 @@ namespace shellanything
     /// </summary>
     /// <param name="value">The value to convert to string.</param>
     /// <returns>Returns the string representation of the given value. Returns an empty string if unknown.</returns>
-    static const char* ToString(IKeyboardService::KEYB_MODIFIER_ID value);
+    static const char* ToString(KEYB_MODIFIER_ID value);
 
     /// <summary>
     /// Parses a string as a KEYB_MODIFIER_ID.
     /// </summary>
     /// <param name="value">The string value to convert.</param>
     /// <returns>Returns a valid KEYB_MODIFIER_ID. Returns KMID_INVALID if string is unknown.</returns>
-    static IKeyboardService::KEYB_MODIFIER_ID ParseKeyboardModifierId(const std::string& value);
+    static KEYB_MODIFIER_ID ParseKeyboardModifierId(const std::string& value);
 
     /// <summary>
     /// Converts a KEYB_TOGGLE_ID to a string.
     /// </summary>
     /// <param name="value">The value to convert to string.</param>
     /// <returns>Returns the string representation of the given value. Returns an empty string if unknown.</returns>
-    static const char* ToString(IKeyboardService::KEYB_TOGGLE_ID value);
+    static const char* ToString(KEYB_TOGGLE_ID value);
 
     /// <summary>
     /// Parses a string as a KEYB_TOGGLE_ID.
     /// </summary>
     /// <param name="value">The string value to convert.</param>
     /// <returns>Returns a valid KEYB_TOGGLE_ID. Returns KTID_INVALID if string is unknown.</returns>
-    static IKeyboardService::KEYB_TOGGLE_ID ParseKeyboardToggleId(const std::string& value);
+    static KEYB_TOGGLE_ID ParseKeyboardToggleId(const std::string& value);
 
   };
 

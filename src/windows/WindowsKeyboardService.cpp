@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "KeyboardService.h"
+#include "WindowsKeyboardService.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -34,41 +34,41 @@ namespace shellanything
   static const SHORT KEY_STATUS_DOWN = (SHORT)0x8000;
   static const SHORT KEY_STATUS_TOGGLED = 0x0001;
 
-  KeyboardService::KeyboardService()
+  WindowsKeyboardService::WindowsKeyboardService()
   {
   }
 
-  KeyboardService::~KeyboardService()
+  WindowsKeyboardService::~WindowsKeyboardService()
   {
   }
 
-  bool KeyboardService::IsModifierKeyUp(KEYB_MODIFIER_ID key) const
+  bool WindowsKeyboardService::IsModifierKeyUp(KEYB_MODIFIER_ID key) const
   {
     bool pressed = IsModifierKeyDown(key);
     return !pressed;
   }
 
-  bool KeyboardService::IsModifierKeyDown(KEYB_MODIFIER_ID key) const
+  bool WindowsKeyboardService::IsModifierKeyDown(KEYB_MODIFIER_ID key) const
   {
     int vk_key = ToWin32VirtualKey(key);
     bool pressed = (GetKeyState(vk_key) & KEY_STATUS_DOWN);
     return pressed;
   }
 
-  bool KeyboardService::IsStateOn(KEYB_TOGGLE_ID state) const
+  bool WindowsKeyboardService::IsToggleStateOn(KEYB_TOGGLE_ID state) const
   {
     int vk_key = ToWin32VirtualKey(state);
     bool pressed = (GetKeyState(vk_key) & KEY_STATUS_TOGGLED);
     return pressed;
   }
 
-  bool KeyboardService::IsStateOff(KEYB_TOGGLE_ID state) const
+  bool WindowsKeyboardService::IsToggleStateOff(KEYB_TOGGLE_ID state) const
   {
-    bool state_on = IsStateOn(state);
+    bool state_on = IsToggleStateOn(state);
     return !state_on;
   }
 
-  int KeyboardService::ToWin32VirtualKey(KEYB_MODIFIER_ID key) const
+  int WindowsKeyboardService::ToWin32VirtualKey(KEYB_MODIFIER_ID key) const
   {
     switch (key)
     {
@@ -81,7 +81,7 @@ namespace shellanything
     }
     return 0;
   }
-  int KeyboardService::ToWin32VirtualKey(KEYB_TOGGLE_ID key) const
+  int WindowsKeyboardService::ToWin32VirtualKey(KEYB_TOGGLE_ID key) const
   {
     switch (key)
     {
