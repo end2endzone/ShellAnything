@@ -968,32 +968,34 @@ namespace shellanything
     for (size_t i = 0; i < mandatory_keyboard_ids.size(); i++)
     {
       const std::string& element = mandatory_keyboard_ids[i];
-      bool valid_element = false;
+
+      KEYB_MODIFIER_ID mid = KeyboardHelper::ParseKeyboardModifierId(element);
+      KEYB_TOGGLE_ID tid = KeyboardHelper::ParseKeyboardToggleId(element);
+      if (mid == KMID_INVALID && tid == KMID_INVALID)
+      {
+        // Unknown keyboard id
+        return false;
+      }
 
       // Validate as a modifier
-      KEYB_MODIFIER_ID mid = KeyboardHelper::ParseKeyboardModifierId(element);
       if (mid != KMID_INVALID)
       {
         bool element_key_down = keyboard_service->IsModifierKeyDown(mid);
         if (!inversed && !element_key_down)
-          return false; //mandatory file/directory not found
+          return false; //mandatory modifier not set
         if (inversed && element_key_down)
-          return false; //mandatory file/directory not found
-        valid_element = true;
+          return false; //mandatory modifier not set
       }
 
       // Validate as a toogle
-      KEYB_TOGGLE_ID tid = KeyboardHelper::ParseKeyboardToggleId(element);
       if (tid != KMID_INVALID)
       {
         bool element_toggle_on = keyboard_service->IsToggleStateOn(tid);
         if (!inversed && !element_toggle_on)
-          return false; //mandatory file/directory not found
+          return false; //mandatory modifier not set
         if (inversed && element_toggle_on)
-          return false; //mandatory file/directory not found
-        valid_element = true;
+          return false; //mandatory modifier not set
       }
-
     }
 
     return true;

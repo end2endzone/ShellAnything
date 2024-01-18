@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "KeyboardHelper.h"
+#include "rapidassist/strings.h"
 #include <string>
 
 namespace shellanything
@@ -44,11 +45,12 @@ namespace shellanything
 
   KEYB_MODIFIER_ID KeyboardHelper::ParseKeyboardModifierId(const std::string& value)
   {
-    if (value == ToString(KMID_CTRL))
+    const std::string value_upper = ra::strings::Uppercase(value);
+    if (value_upper == ToString(KMID_CTRL))
       return KMID_CTRL;
-    if (value == ToString(KMID_ALT))
+    if (value_upper == ToString(KMID_ALT))
       return KMID_ALT;
-    if (value == ToString(KMID_SHIFT))
+    if (value_upper == ToString(KMID_SHIFT))
       return KMID_SHIFT;
     return KMID_INVALID;
   }
@@ -69,11 +71,12 @@ namespace shellanything
 
   KEYB_TOGGLE_ID KeyboardHelper::ParseKeyboardToggleId(const std::string& value)
   {
-    if (value == ToString(KTID_CAPS_LOCK))
+    const std::string value_upper = ra::strings::Uppercase(value);
+    if (value_upper == ToString(KTID_CAPS_LOCK))
       return KTID_CAPS_LOCK;
-    if (value == ToString(KTID_SCROLL_LOCK))
+    if (value_upper == ToString(KTID_SCROLL_LOCK))
       return KTID_SCROLL_LOCK;
-    if (value == ToString(KTID_NUM_LOCK))
+    if (value_upper == ToString(KTID_NUM_LOCK))
       return KTID_NUM_LOCK;
     return KTID_INVALID;
   }
