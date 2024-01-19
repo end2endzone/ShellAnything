@@ -37,6 +37,7 @@
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
 #include "ClipboardService.h"
+#include "WindowsKeyboardService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -51,6 +52,7 @@
 shellanything::ILoggerService* logger_service = NULL;
 shellanything::IRegistryService* registry_service = NULL;
 shellanything::IClipboardService* clipboard_service = NULL;
+shellanything::IKeyboardService* keyboard_service = NULL;
 
 class CShellAnythingModule : public ATL::CAtlDllModuleT< CShellAnythingModule >
 {
@@ -180,9 +182,13 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       registry_service = new shellanything::RegistryService();
       app.SetRegistryService(registry_service);
 
-      // Setup an active registry service in ShellAnything's core.
+      // Setup an active clipboard service in ShellAnything's core.
       clipboard_service = new shellanything::ClipboardService();
       app.SetClipboardService(clipboard_service);
+
+      // Setup an active keyboard service in ShellAnything's core.
+      keyboard_service = new shellanything::WindowsKeyboardService();
+      app.SetKeyboardService(keyboard_service);
 
       // Setup and starting application
       app.Start();
@@ -199,6 +205,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
       // Destroy services
       app.ClearServices();
+      delete keyboard_service;
       delete clipboard_service;
       delete registry_service;
       delete logger_service;

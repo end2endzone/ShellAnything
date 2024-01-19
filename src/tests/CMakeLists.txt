@@ -69,6 +69,8 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestIcon.h
   TestInputBox.cpp
   TestInputBox.h
+  TestKeyboardService.cpp
+  TestKeyboardService.h
   TestLibExprtk.cpp
   TestLibExprtk.h
   TestMenu.cpp

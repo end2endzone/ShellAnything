@@ -27,8 +27,11 @@
 #include "Menu.h"
 #include "SelectionContext.h"
 #include "PropertyManager.h"
+#include "TestKeyboardService.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/process.h"
+
+extern shellanything::TestKeyboardService* keyboard_service;
 
 namespace shellanything
 {
@@ -1263,6 +1266,107 @@ namespace shellanything
       pmgr.SetProperty("an-empty-property", "");
 
       v.SetIsEmpty("${an-empty-property}"); // expands to an empty string
+      ASSERT_FALSE(v.Validate(c));
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestValidator, testKeyboard)
+    {
+      //assert success if the service is not available
+      ASSERT_TRUE(keyboard_service != NULL);
+
+      SelectionContext c;
+      StringList elements;
+      elements.push_back(ra::process::GetCurrentProcessPath());
+      c.SetElements(elements);
+
+      Validator v;
+
+      //assert default
+      ASSERT_TRUE(v.Validate(c));
+
+      //assert failure when string is unknown
+      v.SetKeyboard("foo");
+      ASSERT_FALSE(v.Validate(c));
+
+      // ctrl
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL, true);
+      v.SetKeyboard("ctrl");
+      ASSERT_TRUE(v.Validate(c));
+
+      // shift
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
+      v.SetKeyboard("shift");
+      ASSERT_TRUE(v.Validate(c));
+
+      // alt
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_ALT, true);
+      v.SetKeyboard("alt");
+      ASSERT_TRUE(v.Validate(c));
+
+      //assert if multiple values are specified, all values must be set on the system for the validation to be successful.
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL, true);
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
+      keyboard_service->SetModifierKeyDown(KMID_ALT, true);
+      v.SetKeyboard("ctrl;shift;alt");
+      ASSERT_TRUE(v.Validate(c));
+
+      //assert failure if one element is not set
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL, true);
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
+      keyboard_service->SetModifierKeyDown(KMID_ALT, false);
+      v.SetKeyboard("ctrl;shift;alt");
+      ASSERT_FALSE(v.Validate(c));
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestValidator, testKeyboardInversed)
+    {
+      SelectionContext c;
+      StringList elements;
+      elements.push_back(ra::process::GetCurrentProcessPath());
+      c.SetElements(elements);
+
+      Validator v;
+      v.SetInserve("keyboard");
+
+      //assert default
+      ASSERT_TRUE(v.Validate(c));
+
+      //assert failure when string is unknown
+      v.SetKeyboard("foo");
+      ASSERT_FALSE(v.Validate(c));
+
+      //assert failure if the modifier is set
+      // ctrl
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL, true);
+      v.SetKeyboard("ctrl");
+      ASSERT_FALSE(v.Validate(c));
+
+      // shift
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
+      v.SetKeyboard("shift");
+      ASSERT_FALSE(v.Validate(c));
+
+      // alt
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_ALT, true);
+      v.SetKeyboard("alt");
+      ASSERT_FALSE(v.Validate(c));
+
+      //If multiple modifiers are specified, all modifiers must be unset for the validation to be successful.
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL, false);
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, false);
+      keyboard_service->SetModifierKeyDown(KMID_ALT, false);
+      v.SetKeyboard("ctrl;shift;alt");
+      ASSERT_TRUE(v.Validate(c));
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
       ASSERT_FALSE(v.Validate(c));
     }
     //--------------------------------------------------------------------------------------------------

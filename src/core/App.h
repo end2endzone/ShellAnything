@@ -28,6 +28,7 @@
 #include "ILoggerService.h"
 #include "IRegistryService.h"
 #include "IClipboardService.h"
+#include "IKeyboardService.h"
 
 #include <string>
 
@@ -113,6 +114,21 @@ namespace shellanything
     IClipboardService* GetClipboardService();
 
     /// <summary>
+    /// Set the current application keyboard service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetKeyboardService(IKeyboardService* instance);
+
+    /// <summary>
+    /// Get the current application keyboard service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IKeyboardService* GetKeyboardService();
+
+    /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
     /// </summary>
     /// <returns>Returns true if application is loaded in a test environment. Returns false otherwise.</returns>
@@ -165,6 +181,7 @@ namespace shellanything
     ILoggerService * mLogger;
     IRegistryService* mRegistry;
     IClipboardService* mClipboard;
+    IKeyboardService* mKeyboard;
   };
 
 

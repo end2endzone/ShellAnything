@@ -22,6 +22,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [istrue attribute](#istrue-attribute)
     * [isfalse attribute](#isfalse-attribute)
     * [isempty attribute](#isempty-attribute)
+    * [keyboard attribute](#keyboard-attribute)
     * [inverse attribute](#inverse-attribute)
     * [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements)
   * [Icons](#icons)
@@ -521,6 +522,21 @@ For example, the following set a menu visible only when the property `first_sele
 
 
 
+### keyboard attribute: ###
+
+The `keyboard` attribute validates a menu if the specified keyboard modifier (key) is pressed. A keyboard modifier is any of the following text values: `CTRL`, `ALT`, `SHIFT`. These values are not case sensitive.
+
+If the `keyboard` attribute is set, the application will look if the matching keyboard key is pressed. If there is a match between the value and the modifier state, the validation is successful. To specify multiple modifier, one must separate each property with the `;` character. If multiple modifier are specified, **all modifier** must match the keyboard state for the validation to be successful.
+
+If `keyboard` attribute is not specified, then the validation is successful.
+
+For example, the following set a menu visible only when the keyboard _shift_ modifier is pressed:
+```xml
+<visibility keyboard="shift" />
+```
+
+
+
 ### inverse attribute: ###
 
 The `inverse` attribute inverts the logic of one or multiple attributes. For example, to inverse the meaning of the `maxfiles` attribute, set `inverse` attribute to the value `maxfiles`. 
@@ -531,19 +547,20 @@ If `inverse` attribute is not specified, then the validation is successful.
 
 The meaning of each inversed attribute in explained in the following table:
 
-| Attributes     | Meaning                                                                                                                                                                                                                                      |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| class          | Validates a menu if the selected file or directory **does not** match the class of the selected files.<br>If multiple classes are specified, **no classes** must match the selected files for the validation to be successful.               |
-| maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.                                |
-| maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.                     |
-| fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match the selected files for the validation to be successful. |
-| pattern        | Validates a menu if the selected file or directory **does not** match the wildcard pattern matching algorithm.<br>If multiple patterns are specified, **no pattern** must match the selected files for the validation to be successful.      |
-| exists         | Validates a menu if the selected file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.                                  |
-| properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.                                |
-| exprtk         | Validates a menu if the given string expression **does not** evaluates to logical _true_.<br>If multiple expressions are specified, **no expression** must evaluate to logical _true_ for the validation to be successful.                   |
-| istrue         | Validates a menu if the given value **does not** evaluates to logical _true_.<br>If multiple values are specified, **no value** must evaluate to logical _true_ for the validation to be successful.                                         |
-| isfalse        | Validates a menu if the given value **does not** evaluates to logical _false_.<br>If multiple values are specified, **no value** must evaluate to logical _false_ for the validation to be successful.                                       |
-| isempty        | Validates a menu if the given text **is not** empty. If the attribute is not specified, then the validation is successful. Otherwise, if text is specified, the expanded value **must not** be empty.                                        |
+| Attributes     | Meaning                                                                                                                                                                                                                                      |   |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| class          | Validates a menu if the selected file or directory **does not** match the class of the selected files.<br>If multiple classes are specified, **no classes** must match the selected files for the validation to be successful.               |   |
+| maxfiles       | Defines a minimum number of selected files. Validates a menu if **more than** _x_ files are selected.<br>If 'maxfiles` is set to 5, _more than_ 5 files must be selected for the validation to be successful.                                |   |
+| maxfolders     | Defines a minimum number of selected folder. Validates a menu if **more than** _x_ folders are selected.<br>If 'maxfolders` is set to 3, _more than_ 3 directories must be selected for the validation to be successful.                     |   |
+| fileextensions | Validates a menu if the given file's extension **does not** match the file extension selected by the user.<br>If multiple file extensions are specified, **no extension** must match the selected files for the validation to be successful. |   |
+| pattern        | Validates a menu if the selected file or directory **does not** match the wildcard pattern matching algorithm.<br>If multiple patterns are specified, **no pattern** must match the selected files for the validation to be successful.      |   |
+| exists         | Validates a menu if the selected file or directory **does not** exists.<br>If multiple files/directories are specified, **all values** must _not exists_ on the system for the validation to be successful.                                  |   |
+| properties     | Validates a menu if the specified property is **empty** or **not defined**.<br>If multiple properties are specified, **all properties** must be _empty_ or _not defined_ for the validation to be successful.                                |   |
+| exprtk         | Validates a menu if the given string expression **does not** evaluates to logical _true_.<br>If multiple expressions are specified, **no expression** must evaluate to logical _true_ for the validation to be successful.                   |   |
+| istrue         | Validates a menu if the given value **does not** evaluates to logical _true_.<br>If multiple values are specified, **no value** must evaluate to logical _true_ for the validation to be successful.                                         |   |
+| isfalse        | Validates a menu if the given value **does not** evaluates to logical _false_.<br>If multiple values are specified, **no value** must evaluate to logical _false_ for the validation to be successful.                                       |   |
+| isempty        | Validates a menu if the given text **is not** empty. If the attribute is not specified, then the validation is successful. Otherwise, if text is specified, the expanded value **must not** be empty.                                        |   |
+| keyboard       | Validates a menu if the specified keyboard modifier **is not** pressed.<br>If multiple modifiers are specified, **all modifiers** must not match the keyboard state for the validation to be successful.                                           |   |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
 

@@ -31,7 +31,7 @@
 namespace shellanything
 {
   /// <summary>
-  /// Abstract IRegistryService class.
+  /// Win32 implementation class of IClipboardService.
   /// </summary>
   class SA_WINDOWS_EXPORT ClipboardService : public virtual IClipboardService
   {

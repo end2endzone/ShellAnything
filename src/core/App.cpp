@@ -50,7 +50,8 @@ namespace shellanything
   App::App() :
     mLogger(NULL),
     mRegistry(NULL),
-    mClipboard(NULL)
+    mClipboard(NULL),
+    mKeyboard(NULL)
   {
   }
 
@@ -83,6 +84,7 @@ namespace shellanything
     mLogger = NULL;
     mRegistry = NULL;
     mClipboard = NULL;
+    mKeyboard = NULL;
   }
 
   void App::SetLoggerService(ILoggerService* logger)
@@ -113,6 +115,16 @@ namespace shellanything
   IClipboardService* App::GetClipboardService()
   {
     return mClipboard;
+  }
+
+  void App::SetKeyboardService(IKeyboardService* instance)
+  {
+    mKeyboard = instance;
+  }
+
+  IKeyboardService* App::GetKeyboardService()
+  {
+    return mKeyboard;
   }
 
   bool App::IsTestingEnvironment()

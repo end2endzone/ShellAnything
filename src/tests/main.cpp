@@ -48,10 +48,13 @@
 #include "GlogLoggerService.h"
 #include "RegistryService.h"
 #include "ClipboardService.h"
+#include "TestKeyboardService.h"
 #include "ConfigManager.h"
 
 using namespace ra;
 using namespace shellanything::logging;
+
+shellanything::TestKeyboardService* keyboard_service = NULL;
 
 int SetTestPreferedRootDirectory()
 {
@@ -131,9 +134,13 @@ int main(int argc, char** argv)
   shellanything::IRegistryService* registry_service = new shellanything::RegistryService();
   app.SetRegistryService(registry_service);
 
-  // Setup an active registry service in ShellAnything's core.
+  // Setup an active clipboard service in ShellAnything's core.
   shellanything::IClipboardService* clipboard_service = new shellanything::ClipboardService();
   app.SetClipboardService(clipboard_service);
+
+  // Setup an active clipboard service in ShellAnything's core.
+  keyboard_service = new shellanything::TestKeyboardService();
+  app.SetKeyboardService(keyboard_service);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
@@ -191,6 +198,7 @@ int main(int argc, char** argv)
 
   // Destroy services
   app.ClearServices();
+  delete keyboard_service;
   delete clipboard_service;
   delete registry_service;
   delete logger_service;

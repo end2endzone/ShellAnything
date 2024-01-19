@@ -1,11 +1,13 @@
 add_library(sa.windows SHARED
-  dllmain.cpp
   ClipboardService.cpp
   ClipboardService.h
+  dllmain.cpp
   RegistryService.cpp
   RegistryService.h
   Win32Clipboard.cpp
   Win32Clipboard.h
+  WindowsKeyboardService.cpp
+  WindowsKeyboardService.h
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables

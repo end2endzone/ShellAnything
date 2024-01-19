@@ -22,39 +22,17 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_REGISTRY_SERVICE_H
-#define SA_REGISTRY_SERVICE_H
-
-#include "sa_windows_export.h"
-#include "IRegistryService.h"
+#include "IKeyboardService.h"
 
 namespace shellanything
 {
-  /// <summary>
-  /// Win32 implementation class of IRegistryService.
-  /// </summary>
-  class SA_WINDOWS_EXPORT RegistryService : public virtual IRegistryService
+
+  IKeyboardService::IKeyboardService()
   {
-  public:
-    RegistryService();
-    virtual ~RegistryService();
+  }
 
-  private:
-    // Disable and copy constructor, dtor and copy operator
-    RegistryService(const RegistryService&);
-    RegistryService& operator=(const RegistryService&);
-  public:
-
-    /// <summary>
-    /// Get a registry key as a string.
-    /// </summary>
-    /// <param name="path">The path to a registry key or a registry value.</param>
-    /// <param name="value">The output value to store the result.</param>
-    /// <returns>Returns true if the registry key/value is found. Returns false otherwise.</returns>
-    virtual bool GetRegistryKeyAsString(const std::string& path, std::string& value);
-
-  };
+  IKeyboardService::~IKeyboardService()
+  {
+  }
 
 } //namespace shellanything
-
-#endif //SA_REGISTRY_SERVICE_H
