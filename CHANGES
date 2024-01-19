@@ -10,6 +10,7 @@ Changes for 0.9.0
 * Fixed issue #134: Set a property value from a registry key.
 * Fixed issue #135: Set a property value from a search in the PATH environment variable.
 * Fixed issue #137: Library independent logging support.
+* Fixed issue #138: Restrict the context menu to appear only when the Shift key is held down.
 * Fixed issue #139: Wait for an <exec> action to complete before executing the next action.
 * Fixed issue #141: Separator visibility options.
 * Fixed issue #147: Allow property action attributes to not fail (continue to next action) if unresolved.
