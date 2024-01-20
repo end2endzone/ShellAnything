@@ -42,6 +42,9 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
   const std::string PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE = "false";
   const std::string PropertyManager::SYSTEM_CLIPBOARD_PROPERTY_NAME = "clipboard";
+  const std::string PropertyManager::SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME   = "keyboard.ctrl";
+  const std::string PropertyManager::SYSTEM_KEYBOARD_ALT_PROPERTY_NAME    = "keyboard.alt";
+  const std::string PropertyManager::SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME  = "keyboard.shift";
 
   PropertyManager::PropertyManager()
   {
@@ -274,14 +277,59 @@ namespace shellanything
     virtual std::string GetProperty() const
     {
       // Try to read the clipboard's value.
-      IClipboardService* clipboard = App::GetInstance().GetClipboardService();
-      if (clipboard)
+      IClipboardService* service = App::GetInstance().GetClipboardService();
+      if (service)
       {
         std::string clipboard_value;
-        bool clipboard_read = clipboard->GetClipboardText(clipboard_value);
+        bool clipboard_read = service->GetClipboardText(clipboard_value);
         if (clipboard_read)
         {
           return clipboard_value;
+        }
+      }
+
+      static std::string EMPTY_VALUE;
+      return EMPTY_VALUE;
+    }
+  };
+
+
+  class KeyboardModifierLiveProperty : public virtual ILiveProperty
+  {
+  private:
+    std::string property_name;
+    KEYB_MODIFIER_ID keyb_modifier_id;
+
+  public:
+    KeyboardModifierLiveProperty(const std::string& name, KEYB_MODIFIER_ID id) :
+      property_name(name),
+      keyb_modifier_id(id)
+    {
+    }
+
+    ~KeyboardModifierLiveProperty()
+    {
+    }
+
+    virtual const std::string& GetName() const
+    {
+      return property_name;
+    }
+
+    virtual std::string GetProperty() const
+    {
+      // Try to read the keyboard's modifier state.
+      IKeyboardService* service = App::GetInstance().GetKeyboardService();
+      if (service)
+      {
+        PropertyManager& pmgr = PropertyManager::GetInstance();
+        if (service->IsModifierKeyDown(keyb_modifier_id))
+        {
+          return pmgr.GetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME);
+        }
+        else
+        {
+          return pmgr.GetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME);
         }
       }
 
@@ -294,9 +342,13 @@ namespace shellanything
   {
     // Check if a live property instance already exists
     if (GetLiveProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME) == NULL)
-    {
       AddLiveProperty(new ClipboardLiveProperty());
-    }
+    if (GetLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME) == NULL)
+      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME, KMID_CTRL));
+    if (GetLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME) == NULL)
+      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME, KMID_ALT));
+    if (GetLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME) == NULL)
+      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME, KMID_SHIFT));
   }
 
   void PropertyManager::ClearLiveProperty(const std::string& name)

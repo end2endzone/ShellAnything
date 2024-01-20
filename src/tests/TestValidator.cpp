@@ -1271,7 +1271,7 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestValidator, testKeyboard)
     {
-      //assert success if the service is not available
+      //assert the service is available
       ASSERT_TRUE(keyboard_service != NULL);
 
       SelectionContext c;

@@ -82,6 +82,21 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_CLIPBOARD_PROPERTY_NAME;
 
+    /// <summary>
+    /// Name of the property that defines the keyboard's CTRL modifier state.
+    /// </summary>
+    static const std::string SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME;
+
+    /// <summary>
+    /// Name of the property that defines the keyboard's ALT modifier state.
+    /// </summary>
+    static const std::string SYSTEM_KEYBOARD_ALT_PROPERTY_NAME;
+
+    /// <summary>
+    /// Name of the property that defines the keyboard's SHIFT modifier state.
+    /// </summary>
+    static const std::string SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME;
+
   public:
 
     /// <summary>

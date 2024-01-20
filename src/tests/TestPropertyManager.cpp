@@ -25,10 +25,13 @@
 #include "TestPropertyManager.h"
 #include "PropertyManager.h"
 #include "IClipboardService.h"
+#include "TestKeyboardService.h"
 #include "App.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/random.h"
+
+extern shellanything::TestKeyboardService* keyboard_service;
 
 namespace shellanything
 {
@@ -394,6 +397,45 @@ namespace shellanything
       ASSERT_EQ(str1, "str1");
       ASSERT_EQ(str2, "str2");
       ASSERT_EQ(str3, "str3");
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPropertyManager, testLivePropertyKeyboardAutoUpdate)
+    {
+      //assert the service is available
+      ASSERT_TRUE(keyboard_service != NULL);
+
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      // Act
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL , false);
+      keyboard_service->SetModifierKeyDown(KMID_ALT  , false);
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, false);
+      std::string str1 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME  + "}");
+      std::string str2 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_ALT_PROPERTY_NAME   + "}");
+      std::string str3 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME + "}");
+
+      // Assert.
+      ASSERT_EQ(str1, "false");
+      ASSERT_EQ(str2, "false");
+      ASSERT_EQ(str3, "false");
+
+      // Act
+      keyboard_service->Clear();
+      keyboard_service->SetModifierKeyDown(KMID_CTRL , true);
+      keyboard_service->SetModifierKeyDown(KMID_ALT  , true);
+      keyboard_service->SetModifierKeyDown(KMID_SHIFT, true);
+      str1 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME  + "}");
+      str2 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_ALT_PROPERTY_NAME   + "}");
+      str3 = pmgr.Expand("${" + PropertyManager::SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME + "}");
+
+      // Assert.
+      ASSERT_EQ(str1, "true");
+      ASSERT_EQ(str2, "true");
+      ASSERT_EQ(str3, "true");
     }
 
   } //namespace test

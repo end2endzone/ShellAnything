@@ -535,6 +535,9 @@ For example, the following set a menu visible only when the keyboard _shift_ mod
 <visibility keyboard="shift" />
 ```
 
+**Note:**
+You can also filter menus based on keyboard modifier states using `keyboard.ctrl`, `keyboard.alt` or `keyboard.shift` properties. See [live properties](#live-properties) for details.
+
 
 
 ### inverse attribute: ###
@@ -560,7 +563,7 @@ The meaning of each inversed attribute in explained in the following table:
 | istrue         | Validates a menu if the given value **does not** evaluates to logical _true_.<br>If multiple values are specified, **no value** must evaluate to logical _true_ for the validation to be successful.                                         |   |
 | isfalse        | Validates a menu if the given value **does not** evaluates to logical _false_.<br>If multiple values are specified, **no value** must evaluate to logical _false_ for the validation to be successful.                                       |   |
 | isempty        | Validates a menu if the given text **is not** empty. If the attribute is not specified, then the validation is successful. Otherwise, if text is specified, the expanded value **must not** be empty.                                        |   |
-| keyboard       | Validates a menu if the specified keyboard modifier **is not** pressed.<br>If multiple modifiers are specified, **all modifiers** must not match the keyboard state for the validation to be successful.                                           |   |
+| keyboard       | Validates a menu if the specified keyboard modifier **is not** pressed.<br>If multiple modifiers are specified, **all modifiers** must not match the keyboard state for the validation to be successful.                                     |   |
 
 Typical use case of the `inverse` attribute is about filtering out known file extensions.
 
@@ -1221,7 +1224,7 @@ For example :
 </default>
 ```
 
-**Note:**
+**Notes:**
 * By default, the attribute is set to `true` for compatibility with legacy Configuration Files.
 * Without this attribute, the &lt;property&gt; actions must be ordered from the least expected to fail to the most expected to fail.
 * If the property value cannot be resolved and `fail` attribute is set to `false`, the target property is not modified.
@@ -1409,9 +1412,12 @@ The application provides _live_ properties which are defined automatically by th
 
 The following table defines the list of live properties and their utility:
 
-| Property  | Description                                                                                                         |
-|-----------|---------------------------------------------------------------------------------------------------------------------|
-| clipboard | Matches the content of [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525). |
+| Property       | Description                                                                                                         |
+|----------------|---------------------------------------------------------------------------------------------------------------------|
+| clipboard      | Matches the content of [Windows Clipboard](https://lifehacker.com/how-to-copy-cut-and-paste-for-beginners-5801525). |
+| keyboard.ctrl  | Matches the down state of keyboard CTRL modififer. The value is set to `system.true` or `system.false` properties.  |
+| keyboard.alt   | Matches the down state of keyboard ALT modififer. The value is set to `system.true` or `system.false` properties.   |
+| keyboard.shift | Matches the down state of keyboard SHIFT modififer. The value is set to `system.true` or `system.false` properties. |
 
 These properties are encoded in utf-8.
 
