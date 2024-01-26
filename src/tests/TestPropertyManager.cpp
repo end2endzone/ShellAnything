@@ -30,6 +30,7 @@
 
 #include "rapidassist/testing.h"
 #include "rapidassist/random.h"
+#include "rapidassist/timing.h"
 
 extern shellanything::TestKeyboardService* keyboard_service;
 
@@ -437,6 +438,137 @@ namespace shellanything
       ASSERT_EQ(str2, "true");
       ASSERT_EQ(str3, "true");
     }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPropertyManager, testLivePropertyDateTimeAutoUpdate)
+    {
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      const char* dt_properties[] = {
+        "date.year"       ,
+        "date.month"      ,
+        "date.day"        ,
+        "date.full"       ,
+        "date.short"      ,
+
+        "time.hours"      ,
+        "time.minutes"    ,
+        "time.seconds"    ,
+        "time.full"       ,
+        "time.short"      ,
+
+        "datetime.full"   ,
+        "datetime.short"  ,
+      };
+      const size_t dt_properties_count = sizeof(dt_properties) / sizeof(dt_properties[0]);
+
+      const char** quick_changing_properties = &dt_properties[7];
+      const size_t quick_changing_properties_count = 5;
+
+      // Act
+
+      // Assert.
+      for (size_t i = 0; i < dt_properties_count; i++)
+      {
+        std::string property_name;
+        property_name += "${";
+        property_name += dt_properties[i];
+        property_name += "}";
+
+        std::string value = pmgr.Expand(property_name);
+
+        ASSERT_NE(std::string(""), value);
+      }
+
+      // Act
+      // Capture snapshots of live properties containing seconds
+      typedef std::vector<std::string> PropSnapshots;
+      typedef std::vector<PropSnapshots> ListOfPropSnapshots;
+      ListOfPropSnapshots snapshots;
+      static const size_t num_tests = 10;
+      for (size_t i = 0; i < num_tests; i++)
+      {
+        PropSnapshots snapshot;
+        for (size_t j = 0; j < quick_changing_properties_count; j++)
+        {
+          std::string property_name;
+          property_name += "${";
+          property_name += quick_changing_properties[j];
+          property_name += "}";
+
+          std::string value = pmgr.Expand(property_name);
+
+          snapshot.push_back(value);
+        }
+
+        // keep snapshot
+        snapshots.push_back(snapshot);
+
+        std::cout << "Captured live property snapshot " << i + 1 << " of " << num_tests << "\n";
+
+        // Make sure the next snapshot will be actually different
+        ra::timing::Millisleep(1500);
+      }
+
+      // ASSERT some live properties are changing every seconds.
+      for (size_t i = 0; i < num_tests-1; i++)
+      {
+        const PropSnapshots& snapshot = snapshots[i];
+
+        // compare with the remaining snapshots
+        for (size_t j = i+1; j < num_tests; j++)
+        {
+          const PropSnapshots& next = snapshots[j];
+          ASSERT_NE(snapshot, next);
+        }
+      }
+    }
+    //--------------------------------------------------------------------------------------------------
+    void SetPropertyNameVerbose(const std::string& name, const std::string& value)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      std::cout << "Setting property '" << name << "' to value '" << value << "'.\n";
+      pmgr.SetProperty(name, value);
+    }
+    TEST_F(TestPropertyManager, testLivePropertyPrint)
+    {
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      SetPropertyNameVerbose("months.names.01", "January");
+      SetPropertyNameVerbose("months.names.02", "February");
+      SetPropertyNameVerbose("months.names.03", "March");
+      SetPropertyNameVerbose("months.names.04", "April");
+      SetPropertyNameVerbose("months.names.05", "May");
+      SetPropertyNameVerbose("months.names.06", "June");
+      SetPropertyNameVerbose("months.names.07", "July");
+      SetPropertyNameVerbose("months.names.08", "August");
+      SetPropertyNameVerbose("months.names.09", "September");
+      SetPropertyNameVerbose("months.names.10", "October");
+      SetPropertyNameVerbose("months.names.11", "November");
+      SetPropertyNameVerbose("months.names.12", "December");
+
+      // Build a custom format for `datetime.custom` live property.
+      std::string custom_format = "Today is ${months.names.${date.month}} ddth of yyyy. Current time is HH hours, MM minutes and SS seconds.";
+      SetPropertyNameVerbose(PropertyManager::SYSTEM_DATETIME_FORMAT_PROPERTY_NAME, custom_format);
+
+      std::cout << "\n";
+      std::cout << "Listing all live properties...\n";
+      StringList names;
+      pmgr.GetLivePropertyNames(names);
+
+      for (size_t i = 0; i < names.size(); i++)
+      {
+        const std::string& name = names[i];
+        const std::string value = pmgr.GetProperty(name);
+        std::cout << name << "=" << value << "\n";
+      }
+    }
+    //--------------------------------------------------------------------------------------------------
 
   } //namespace test
 } //namespace shellanything

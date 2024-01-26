@@ -32,6 +32,7 @@
 
 #include "rapidassist/environment_utf8.h"
 #include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/timing.h"
 
 namespace shellanything
 {
@@ -45,6 +46,8 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME   = "keyboard.ctrl";
   const std::string PropertyManager::SYSTEM_KEYBOARD_ALT_PROPERTY_NAME    = "keyboard.alt";
   const std::string PropertyManager::SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME  = "keyboard.shift";
+  const std::string PropertyManager::SYSTEM_DATETIME_FORMAT_PROPERTY_NAME = "datetime.format";
+  const std::string PropertyManager::SYSTEM_DATETIME_FORMAT_DEFAULT_VALUE = "yyyy-mm-dd HHhMMmSS";
 
   PropertyManager::PropertyManager()
   {
@@ -265,6 +268,23 @@ namespace shellanything
     return NULL;
   }
 
+  void PropertyManager::GetLivePropertyNames(StringList& names) const
+  {
+    names.clear();
+    LivePropertyMap::const_iterator it;
+    for (it = live_properties.begin(); it != live_properties.end(); it++)
+    {
+      const ILiveProperty* instance = it->second;
+      const std::string& name = instance->GetName();
+      names.push_back(name);
+    }
+  }
+
+  size_t PropertyManager::GetLivePropertyCount() const
+  {
+    return live_properties.size();
+  }
+
   class ClipboardLiveProperty : public virtual ILiveProperty
   {
   public:
@@ -292,7 +312,6 @@ namespace shellanything
       return EMPTY_VALUE;
     }
   };
-
 
   class KeyboardModifierLiveProperty : public virtual ILiveProperty
   {
@@ -338,17 +357,73 @@ namespace shellanything
     }
   };
 
+  class DateTimeLiveProperty : public virtual ILiveProperty
+  {
+  private:
+    std::string property_name;
+    std::string date_format;
+
+  public:
+    DateTimeLiveProperty(const std::string& name, const std::string & format) :
+      property_name(name),
+      date_format(format)
+    {
+    }
+
+    ~DateTimeLiveProperty()
+    {
+    }
+
+    virtual const std::string& GetName() const
+    {
+      return property_name;
+    }
+
+    virtual std::string GetProperty() const
+    {
+      ra::timing::DateTime now = ra::timing::ToDateTime(ra::timing::GetLocalTime());
+
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      std::string datetime = pmgr.Expand(date_format);
+
+      // date
+      ra::strings::Replace(datetime, "yyyy", ra::strings::ToString(now.year));
+      ra::strings::Replace(datetime, "mm", ra::strings::Format("%02d", now.month));
+      ra::strings::Replace(datetime, "dd", ra::strings::Format("%02d", now.day));
+
+      // time
+      ra::strings::Replace(datetime, "HH", ra::strings::Format("%02d", now.hour));
+      ra::strings::Replace(datetime, "MM", ra::strings::Format("%02d", now.min));
+      ra::strings::Replace(datetime, "SS", ra::strings::Format("%02d", now.sec));
+
+      return datetime;
+    }
+  };
+
   void PropertyManager::RegisterLiveProperties()
   {
-    // Check if a live property instance already exists
-    if (GetLiveProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME) == NULL)
-      AddLiveProperty(new ClipboardLiveProperty());
-    if (GetLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME) == NULL)
-      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME, KMID_CTRL));
-    if (GetLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME) == NULL)
-      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME, KMID_ALT));
-    if (GetLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME) == NULL)
-      AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME, KMID_SHIFT));
+    // Check if a live property instance already exists before adding one
+    if (GetLiveProperty(SYSTEM_CLIPBOARD_PROPERTY_NAME) == NULL)            AddLiveProperty(new ClipboardLiveProperty());
+    if (GetLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME) == NULL)        AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME, KMID_CTRL));
+    if (GetLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME) == NULL)         AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME, KMID_ALT));
+    if (GetLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME) == NULL)       AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME, KMID_SHIFT));
+
+    const char* prop = NULL;
+    prop = "date.year";         if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyy"));
+    prop = "date.month";        if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "mm"));
+    prop = "date.day";          if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "dd"));
+    prop = "date.full";         if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyy-mm-dd"));
+    prop = "date.short";        if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyymmdd"));
+
+    prop = "time.hours";        if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "HH"));
+    prop = "time.minutes";      if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "MM"));
+    prop = "time.seconds";      if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "SS"));
+    prop = "time.full";         if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "HH-MM-SS"));
+    prop = "time.short";        if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "HHMMSS"));
+
+    prop = "datetime.full";     if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyy-mm-dd--HH-MM-SS"));
+    prop = "datetime.short";    if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyymmddHHMMSS"));
+    prop = "datetime.custom";   if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "${datetime.format}"));
   }
 
   void PropertyManager::ClearLiveProperty(const std::string& name)
@@ -459,6 +534,7 @@ namespace shellanything
 
     SetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME, PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE);
     SetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME, PropertyManager::SYSTEM_FALSE_DEFAULT_VALUE);
+    SetProperty(PropertyManager::SYSTEM_DATETIME_FORMAT_PROPERTY_NAME, PropertyManager::SYSTEM_DATETIME_FORMAT_DEFAULT_VALUE);
 
     // Set default property for multi selection. Issue #52.
     SetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME, SelectionContext::DEFAULT_MULTI_SELECTION_SEPARATOR);

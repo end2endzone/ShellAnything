@@ -97,6 +97,16 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME;
 
+    /// <summary>
+    /// Name of the property that defines the system true.
+    /// </summary>
+    static const std::string SYSTEM_DATETIME_FORMAT_PROPERTY_NAME;
+
+    /// <summary>
+    /// Default value for the property 'SYSTEM_DATETIME_FORMAT_PROPERTY_NAME'.
+    /// </summary>
+    static const std::string SYSTEM_DATETIME_FORMAT_DEFAULT_VALUE;
+
   public:
 
     /// <summary>
@@ -182,6 +192,18 @@ namespace shellanything
     /// <param name="name">The name of the property to get.</param>
     /// <returns>Returns the instance of ILiveProperty if found. Returns NULL otherwise.</returns>
     const ILiveProperty* GetLiveProperty(const std::string& name) const;
+
+    /// <summary>
+    /// Get the names of all registered live properties.
+    /// </summary>
+    /// <param name="names">The output names.</param>
+    /// <returns>Returns the names of all registered live properties.</returns>
+    void GetLivePropertyNames(StringList & names) const;
+
+    /// <summary>
+    /// Get the number of ILiveProperty instances registered.
+    /// </summary>
+    size_t GetLivePropertyCount() const;
 
     /// <summary>
     /// Registers default live properties to the manager.
