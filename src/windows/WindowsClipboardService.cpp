@@ -22,20 +22,20 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "ClipboardService.h"
+#include "WindowsClipboardService.h"
 #include "Win32Clipboard.h"
 
 namespace shellanything
 {
-  ClipboardService::ClipboardService()
+  WindowsClipboardService::WindowsClipboardService()
   {
   }
 
-  ClipboardService::~ClipboardService()
+  WindowsClipboardService::~WindowsClipboardService()
   {
   }
 
-  bool ClipboardService::GetClipboardText(std::string& value)
+  bool WindowsClipboardService::GetClipboardText(std::string& value)
   {
     //get clipboard handler
     Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();
@@ -49,7 +49,7 @@ namespace shellanything
     return result;
   }
 
-  bool ClipboardService::SetClipboardText(const std::string& value)
+  bool WindowsClipboardService::SetClipboardText(const std::string& value)
   {
     //get clipboard handler
     Win32Clipboard::Clipboard& clipboard = Win32Clipboard::Clipboard::GetInstance();

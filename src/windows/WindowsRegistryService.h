@@ -33,16 +33,16 @@ namespace shellanything
   /// <summary>
   /// Win32 implementation class of IRegistryService.
   /// </summary>
-  class SA_WINDOWS_EXPORT RegistryService : public virtual IRegistryService
+  class SA_WINDOWS_EXPORT WindowsRegistryService : public virtual IRegistryService
   {
   public:
-    RegistryService();
-    virtual ~RegistryService();
+    WindowsRegistryService();
+    virtual ~WindowsRegistryService();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    RegistryService(const RegistryService&);
-    RegistryService& operator=(const RegistryService&);
+    WindowsRegistryService(const WindowsRegistryService&);
+    WindowsRegistryService& operator=(const WindowsRegistryService&);
   public:
 
     /// <summary>

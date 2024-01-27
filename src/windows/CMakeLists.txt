@@ -1,11 +1,11 @@
 add_library(sa.windows SHARED
-  ClipboardService.cpp
-  ClipboardService.h
   dllmain.cpp
-  RegistryService.cpp
-  RegistryService.h
   Win32Clipboard.cpp
   Win32Clipboard.h
+  WindowsClipboardService.cpp
+  WindowsClipboardService.h
+  WindowsRegistryService.cpp
+  WindowsRegistryService.h
   WindowsKeyboardService.cpp
   WindowsKeyboardService.h
 )

@@ -35,8 +35,8 @@
 #include "LoggerHelper.h"
 
 #include "GlogLoggerService.h"
-#include "RegistryService.h"
-#include "ClipboardService.h"
+#include "WindowsRegistryService.h"
+#include "WindowsClipboardService.h"
 #include "WindowsKeyboardService.h"
 
 #include "shellanything/version.h"
@@ -179,11 +179,11 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       app.SetLoggerService(logger_service);
 
       // Setup an active registry service in ShellAnything's core.
-      registry_service = new shellanything::RegistryService();
+      registry_service = new shellanything::WindowsRegistryService();
       app.SetRegistryService(registry_service);
 
       // Setup an active clipboard service in ShellAnything's core.
-      clipboard_service = new shellanything::ClipboardService();
+      clipboard_service = new shellanything::WindowsClipboardService();
       app.SetClipboardService(clipboard_service);
 
       // Setup an active keyboard service in ShellAnything's core.

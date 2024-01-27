@@ -22,7 +22,7 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#include "RegistryService.h"
+#include "WindowsRegistryService.h"
 #include "Win32Registry.h"
 
 #include "rapidassist/filesystem_utf8.h"
@@ -40,15 +40,15 @@ namespace shellanything
   }
 
 
-  RegistryService::RegistryService()
+  WindowsRegistryService::WindowsRegistryService()
   {
   }
 
-  RegistryService::~RegistryService()
+  WindowsRegistryService::~WindowsRegistryService()
   {
   }
 
-  bool RegistryService::GetRegistryKeyAsString(const std::string& path, std::string& value)
+  bool WindowsRegistryService::GetRegistryKeyAsString(const std::string& path, std::string& value)
   {
     Win32Registry::REGISTRY_TYPE key_type;
     Win32Registry::MemoryBuffer key_value;

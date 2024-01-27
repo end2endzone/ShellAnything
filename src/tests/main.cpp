@@ -46,8 +46,8 @@
 #include "App.h"
 #include "LoggerHelper.h"
 #include "GlogLoggerService.h"
-#include "RegistryService.h"
-#include "ClipboardService.h"
+#include "WindowsRegistryService.h"
+#include "WindowsClipboardService.h"
 #include "TestKeyboardService.h"
 #include "ConfigManager.h"
 
@@ -131,11 +131,11 @@ int main(int argc, char** argv)
   app.SetLoggerService(logger_service);
 
   // Setup an active registry service in ShellAnything's core.
-  shellanything::IRegistryService* registry_service = new shellanything::RegistryService();
+  shellanything::IRegistryService* registry_service = new shellanything::WindowsRegistryService();
   app.SetRegistryService(registry_service);
 
   // Setup an active clipboard service in ShellAnything's core.
-  shellanything::IClipboardService* clipboard_service = new shellanything::ClipboardService();
+  shellanything::IClipboardService* clipboard_service = new shellanything::WindowsClipboardService();
   app.SetClipboardService(clipboard_service);
 
   // Setup an active clipboard service in ShellAnything's core.

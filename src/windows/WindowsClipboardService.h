@@ -33,16 +33,16 @@ namespace shellanything
   /// <summary>
   /// Win32 implementation class of IClipboardService.
   /// </summary>
-  class SA_WINDOWS_EXPORT ClipboardService : public virtual IClipboardService
+  class SA_WINDOWS_EXPORT WindowsClipboardService : public virtual IClipboardService
   {
   public:
-    ClipboardService();
-    virtual ~ClipboardService();
+    WindowsClipboardService();
+    virtual ~WindowsClipboardService();
 
   private:
     // Disable and copy constructor, dtor and copy operator
-    ClipboardService(const ClipboardService&);
-    ClipboardService& operator=(const ClipboardService&);
+    WindowsClipboardService(const WindowsClipboardService&);
+    WindowsClipboardService& operator=(const WindowsClipboardService&);
   public:
 
     /// <summary>
