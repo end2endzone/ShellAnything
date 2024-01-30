@@ -38,6 +38,7 @@
 #include "WindowsRegistryService.h"
 #include "WindowsClipboardService.h"
 #include "WindowsKeyboardService.h"
+#include "PcgRandomService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -53,6 +54,7 @@ shellanything::ILoggerService* logger_service = NULL;
 shellanything::IRegistryService* registry_service = NULL;
 shellanything::IClipboardService* clipboard_service = NULL;
 shellanything::IKeyboardService* keyboard_service = NULL;
+shellanything::IRandomService* random_service = NULL;
 
 class CShellAnythingModule : public ATL::CAtlDllModuleT< CShellAnythingModule >
 {
@@ -190,6 +192,10 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       keyboard_service = new shellanything::WindowsKeyboardService();
       app.SetKeyboardService(keyboard_service);
 
+      // Setup an active random service in ShellAnything's core.
+      random_service = new shellanything::PcgRandomService();
+      app.SetRandomService(random_service);
+
       // Setup and starting application
       app.Start();
 
@@ -205,10 +211,13 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
 
       // Destroy services
       app.ClearServices();
+      delete random_service;
       delete keyboard_service;
       delete clipboard_service;
       delete registry_service;
       delete logger_service;
+      random_service = NULL;
+      keyboard_service = NULL;
       clipboard_service = NULL;
       registry_service = NULL;
       logger_service = NULL;

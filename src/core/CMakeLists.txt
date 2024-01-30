@@ -20,10 +20,12 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ILiveProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/IClipboardService.h
   ${CMAKE_SOURCE_DIR}/src/core/ILoggerService.h
+  ${CMAKE_SOURCE_DIR}/src/core/IRandomService.h
   ${CMAKE_SOURCE_DIR}/src/core/IRegistryService.h
   ${CMAKE_SOURCE_DIR}/src/core/KeyboardHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
+  ${CMAKE_SOURCE_DIR}/src/core/PcgRandomService.h
   ${CMAKE_SOURCE_DIR}/src/core/Validator.h
 )
 
@@ -60,6 +62,7 @@ add_library(sa.core SHARED
   ILiveProperty.cpp
   IClipboardService.cpp
   ILoggerService.cpp
+  IRandomService.cpp
   IRegistryService.cpp
   KeyboardHelper.cpp
   LoggerHelper.cpp
@@ -71,6 +74,7 @@ add_library(sa.core SHARED
   Menu.cpp
   ObjectFactory.h
   ObjectFactory.cpp
+  PcgRandomService.cpp
   Plugin.h
   Plugin.cpp
   Unicode.h
@@ -140,6 +144,7 @@ target_include_directories(sa.core
     rapidassist
     libexprtk
     libmagic
+    ${PCGCPP_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src/libexprtk
     ${CMAKE_SOURCE_DIR}/src/shared
 )

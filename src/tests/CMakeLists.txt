@@ -79,6 +79,8 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestObjectFactory.h
   TestPropertyManager.cpp
   TestPropertyManager.h
+  TestRandomService.cpp
+  TestRandomService.h
   TestSaUtils.cpp
   TestSaUtils.h
   TestSelectionContext.cpp

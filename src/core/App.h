@@ -29,6 +29,7 @@
 #include "IRegistryService.h"
 #include "IClipboardService.h"
 #include "IKeyboardService.h"
+#include "IRandomService.h"
 
 #include <string>
 
@@ -129,6 +130,21 @@ namespace shellanything
     IKeyboardService* GetKeyboardService();
 
     /// <summary>
+    /// Set the current application random service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetRandomService(IRandomService* instance);
+
+    /// <summary>
+    /// Get the current application random service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IRandomService* GetRandomService();
+
+    /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
     /// </summary>
     /// <returns>Returns true if application is loaded in a test environment. Returns false otherwise.</returns>
@@ -182,6 +198,7 @@ namespace shellanything
     IRegistryService* mRegistry;
     IClipboardService* mClipboard;
     IKeyboardService* mKeyboard;
+    IRandomService* mRandom;
   };
 
 

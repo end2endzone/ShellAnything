@@ -49,6 +49,7 @@
 #include "WindowsRegistryService.h"
 #include "WindowsClipboardService.h"
 #include "TestKeyboardService.h"
+#include "PcgRandomService.h"
 #include "ConfigManager.h"
 
 using namespace ra;
@@ -142,6 +143,10 @@ int main(int argc, char** argv)
   keyboard_service = new shellanything::TestKeyboardService();
   app.SetKeyboardService(keyboard_service);
 
+  // Setup an active random service in ShellAnything's core.
+  shellanything::IRandomService* random_service = new shellanything::PcgRandomService();
+  app.SetRandomService(random_service);
+
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
   //When running tests from a developer environment, the log directory is expected to have write access.
@@ -198,10 +203,13 @@ int main(int argc, char** argv)
 
   // Destroy services
   app.ClearServices();
+  delete random_service;
   delete keyboard_service;
   delete clipboard_service;
   delete registry_service;
   delete logger_service;
+  random_service = NULL;
+  keyboard_service = NULL;
   clipboard_service = NULL;
   registry_service = NULL;
   logger_service = NULL;
