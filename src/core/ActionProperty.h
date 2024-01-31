@@ -140,6 +140,36 @@ namespace shellanything
     void SetSearchPath(const std::string& value);
 
     /// <summary>
+    /// Getter for the 'random' parameter.
+    /// </summary>
+    const std::string& GetRandom() const;
+
+    /// <summary>
+    /// Setter for the 'random' parameter.
+    /// </summary>
+    void SetRandom(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'randommin' parameter.
+    /// </summary>
+    const std::string& GetRandomMin() const;
+
+    /// <summary>
+    /// Setter for the 'randommin' parameter.
+    /// </summary>
+    void SetRandomMin(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'randommax' parameter.
+    /// </summary>
+    const std::string& GetRandomMax() const;
+
+    /// <summary>
+    /// Setter for the 'randommax' parameter.
+    /// </summary>
+    void SetRandomMax(const std::string& value);
+
+    /// <summary>
     /// Getter for the 'fail' parameter.
     /// </summary>
     const std::string& GetFail() const;
@@ -154,6 +184,7 @@ namespace shellanything
     bool GetValueFromFile(const std::string& file, const std::string& filesize, std::string& value) const;
     bool GetValueFromRegistryKey(const std::string& registrykey, std::string& value) const;
     bool GetValueFromSearchPath(const std::string& searchpath, std::string& value) const;
+    bool GetValueFromRandom(const std::string& random, const std::string& random_min, std::string& random_max, std::string& value) const;
 
     std::string mName;
     std::string mValue;
@@ -163,6 +194,9 @@ namespace shellanything
     std::string mFileSize;
     std::string mRegistryKey;
     std::string mSearchPath;
+    std::string mRandom;
+    std::string mRandomMin;
+    std::string mRandomMax;
   };
 
 

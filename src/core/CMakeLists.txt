@@ -26,6 +26,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/LoggerHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Menu.h
   ${CMAKE_SOURCE_DIR}/src/core/PcgRandomService.h
+  ${CMAKE_SOURCE_DIR}/src/core/RandomHelper.h
   ${CMAKE_SOURCE_DIR}/src/core/Validator.h
 )
 
@@ -89,6 +90,7 @@ add_library(sa.core SHARED
   PropertyManager.cpp
   PropertyStore.h
   PropertyStore.cpp
+  RandomHelper.cpp
   Registry.h
   Registry.cpp
   StringList.h

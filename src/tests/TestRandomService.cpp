@@ -40,14 +40,14 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestRandomService, testAvailable)
     {
-      IRandomService* random = App::GetInstance().GetRandomService();
-      ASSERT_TRUE(random != NULL);
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestRandomService, testRandomness)
     {
-      IRandomService* random = App::GetInstance().GetRandomService();
-      ASSERT_TRUE(random != NULL);
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
 
       static const size_t count = 10000;
 
@@ -55,7 +55,7 @@ namespace shellanything
       uint32_t values[count] = { 0 };
       for (size_t i = 0; i < count; i++)
       {
-        values[i] = random->GetRandomValue();
+        values[i] = random_service->GetRandomValue();
       }
 
       // ASSERT that values are all different
@@ -74,8 +74,8 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestRandomService, testRandomRange)
     {
-      IRandomService* random = App::GetInstance().GetRandomService();
-      ASSERT_TRUE(random != NULL);
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
 
       static const size_t count = 100000;
       static const uint32_t min_value = 1000;
@@ -86,7 +86,7 @@ namespace shellanything
       bool max_found = false;
       for (size_t i = 0; i < count && (!min_found || !max_found); i++)
       {
-        uint32_t value = random->GetRandomValue(min_value, max_value);
+        uint32_t value = random_service->GetRandomValue(min_value, max_value);
         if (value == min_value)
           min_found = true;
         if (value == max_value - 1)
