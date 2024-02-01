@@ -581,6 +581,186 @@ namespace shellanything
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testRandomProperties)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      // Seed the random number generator to get predictable values
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
+      uint32_t seed = 44u;
+      ASSERT_TRUE(random_service->Seed(seed));
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get all menus.
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
+      ASSERT_EQ(1, configs.size());
+
+      //ASSERT a multiple menus are available
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
+      ASSERT_EQ(menus.size(), 7);
+
+      //Clear properties
+      static const char* properties[] = {
+        "test1",
+        "test2",
+        "test3",
+        "test4",
+        "test5",
+        "test6",
+        "test7",
+      };
+      static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        pmgr.ClearProperty(properties[i]);
+      }
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      for (size_t i = 0; i < menus.size(); i++)
+      {
+        Menu* menu = menus[i];
+        bool executed = ActionManager::Execute(menu, c);
+        ASSERT_TRUE(executed) << "Failed to execute actions of menu '" << menu->GetName() << "'.";
+      }
+
+      //ASSERT the properties were set
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        ASSERT_TRUE(pmgr.HasProperty(property_name)) << "Property not found: '" << property_name << "'.";
+      }
+
+      //ASSERT expected values for each properties
+      static const char* expected_values[] = {
+        "6564989",
+        "05509961",
+        "igrmoudd",
+        "MAEDMLOH",
+        "KXXlVh6Z",
+        "Pjl_(kF7",
+        "0056",
+      };
+      static const size_t expected_values_count = sizeof(expected_values) / sizeof(expected_values[0]);
+      ASSERT_EQ(expected_values_count, properties_count);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        std::string actual_value = pmgr.GetProperty(property_name);
+        std::string expected_value = expected_values[i];
+        std::cout << property_name << "=`" << actual_value << "`.\n";
+        ASSERT_EQ(expected_value, actual_value);
+      }
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionProperty, testRandomPropertiesAdvanced)
+    {
+      ConfigManager& cmgr = ConfigManager::GetInstance();
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      // Seed the random number generator to get predictable values
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
+      uint32_t seed = 2u;
+      ASSERT_TRUE(random_service->Seed(seed));
+
+      //Creating a temporary workspace for the test execution.
+      Workspace workspace;
+      ASSERT_FALSE(workspace.GetBaseDirectory().empty());
+      ASSERT_TRUE(workspace.IsEmpty());
+
+      //Load the test Configuration File that matches this test name.
+      QuickLoader loader;
+      loader.SetWorkspace(&workspace);
+      ASSERT_TRUE(loader.DeleteConfigurationFilesInWorkspace());
+      ASSERT_TRUE(loader.LoadCurrentTestConfigurationFile());
+
+      //Get all menus.
+      ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
+      ASSERT_EQ(1, configs.size());
+
+      //ASSERT a multiple menus are available
+      Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
+      ASSERT_EQ(menus.size(), 1);
+
+      //Clear properties
+      static const char* properties[] = {
+        "my_dice_roll",
+        "my_coin_flip",
+        "my_card",
+      };
+      static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        pmgr.ClearProperty(properties[i]);
+      }
+      pmgr.Clear();
+      pmgr.RegisterLiveProperties();
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows");
+      c.SetElements(elements);
+      c.RegisterProperties();
+
+      // Execute
+      for (size_t i = 0; i < menus.size(); i++)
+      {
+        Menu* menu = menus[i];
+        bool executed = ActionManager::Execute(menu, c);
+        ASSERT_TRUE(executed) << "Failed to execute actions of menu '" << menu->GetName() << "'.";
+      }
+
+      //ASSERT the properties were set
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        ASSERT_TRUE(pmgr.HasProperty(property_name)) << "Property not found: '" << property_name << "'.";
+      }
+
+      //ASSERT expected values for each properties
+      static const char* expected_values[] = {
+        "3",
+        "Tails",
+        "Five of Diamonds",
+      };
+      static const size_t expected_values_count = sizeof(expected_values) / sizeof(expected_values[0]);
+      ASSERT_EQ(expected_values_count, properties_count);
+      for (size_t i = 0; i < properties_count; i++)
+      {
+        const char* property_name = properties[i];
+        std::string actual_value = pmgr.GetProperty(property_name);
+        std::string expected_value = expected_values[i];
+        std::cout << property_name << "=`" << actual_value << "`.\n";
+        ASSERT_EQ(expected_value, actual_value);
+      }
+
+      //Cleanup
+      ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
+    }
+    //--------------------------------------------------------------------------------------------------
     TEST_F(TestActionProperty, testCaptureOutput)
     {
       ConfigManager& cmgr = ConfigManager::GetInstance();

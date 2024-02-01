@@ -631,7 +631,7 @@ namespace shellanything
 
       // Validate pattern length against
       size_t min_length = RandomHelper::GetNumericPatternLength(&random[0]);
-      std::string random_string = RandomHelper::GetRandomMinMaxValue(min_value, max_value);
+      std::string random_string = RandomHelper::GetRandomMinMaxValue(min_value, max_value + 1); // +1 to include max_value as a possible outcome.
 
       bool must_have_leading_zeroes = (random[0] == RandomHelper::NUMERIC_DIGIT_WITH_LEADING_ZEROS_PATTERN);
       if (must_have_leading_zeroes)

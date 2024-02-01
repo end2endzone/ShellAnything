@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestRandomHelper.h"
+#include "App.h"
 #include "RandomHelper.h"
 
 namespace shellanything
@@ -98,36 +99,39 @@ namespace shellanything
       ASSERT_TRUE(RandomHelper::GetRandomFromPattern("", r));
       ASSERT_FALSE(RandomHelper::GetRandomFromPattern("00bbb", r));
 
-      ASSERT_TRUE(RandomHelper::GetRandomFromPattern("#########", r));
-      std::cout << "r=" << r << "\n";
-      ASSERT_GT(r.size(), 2) << "r=" << r;
+      // Seed the random number generator to get predictable values
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random_service != NULL);
+      uint32_t seed = 44u;
+      ASSERT_TRUE(random_service->Seed(seed));
 
       struct SINGLE_TEST
       {
         const char* pattern;
-        size_t length;
+        const char* expected_value;
       };
       static const SINGLE_TEST tests[] = {
-        {"0000", 4},
-        {"aaa", 3},
-        {"AA", 2},
-        {"zzZZzzZZ", 8},
-        {"*****", 5},
+        {"########", "6564989"},
+        {"00000000", "05509961"},
+        {"aaaaaaaa", "igrmoudd"},
+        {"AAAAAAAA", "MAEDMLOH"},
+        {"zzZZzzZZ", "KXXlVh6Z"},
+        {"********", "Pjl_(kF7"},
       };
       static const size_t num_tests = sizeof(tests) / sizeof(tests[0]);
 
-      // ASSERT each string has the expected size
+      // ASSERT each string generates the expected output
       for (size_t i = 0; i < num_tests; i++)
       {
         const SINGLE_TEST& t = tests[i];
         const char* pattern = t.pattern;
-        const size_t expected_length = t.length;
+        const std::string expected_value = t.expected_value;
 
         bool success = RandomHelper::GetRandomFromPattern(pattern, r);
         std::cout << "GetRandomFromPattern() with pattern `" << pattern << "` returns `" << r << "`.\n";
 
-        ASSERT_TRUE(success) << "pattern=" << pattern;
-        ASSERT_EQ(expected_length, r.size()) << "pattern=" << pattern << " , " << "r=" << r;
+        ASSERT_TRUE(success) << "pattern `" << pattern << "`.";
+        ASSERT_EQ(expected_value, r) << "pattern `" << pattern << "` returns `" << r << "`.";
       }
     }
     //--------------------------------------------------------------------------------------------------

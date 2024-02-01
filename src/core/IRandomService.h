@@ -62,6 +62,26 @@ namespace shellanything
     /// <returns>Returns a valid uint32_t value.</returns>
     virtual uint32_t GetRandomValue(uint32_t min_value, uint32_t max_value) = 0;
 
+    /// <summary>
+    /// Seed the random number generator with a real random value, if available.
+    /// </summary>
+    /// <returns>Returns true if the operation is succesful. Return false otherwise.</returns>
+    virtual bool Seed() = 0;
+
+    /// <summary>
+    /// Seed the random number generator with a custom 32 bit value.
+    /// </summary>
+    /// <param name="seed">The seed value.</param>
+    /// <returns>Returns true if the operation is succesful. Return false otherwise.</returns>
+    virtual bool Seed(uint32_t seed) = 0;
+
+    /// <summary>
+    /// Seed the random number generator with a custom 32 bit value.
+    /// </summary>
+    /// <param name="seed">The seed value.</param>
+    /// <returns>Returns true if the operation is succesful. Return false otherwise.</returns>
+    virtual bool Seed(uint64_t seed) = 0;
+
   };
 
 } //namespace shellanything

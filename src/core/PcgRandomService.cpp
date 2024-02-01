@@ -30,16 +30,21 @@
 
 namespace shellanything
 {
+  inline pcg32& GetPcg(void* pimpl)
+  {
+    // mPimpl to local pcg reference
+    pcg32& rng = *((pcg32*)(pimpl));
+
+    return rng;
+  }
+
   PcgRandomService::PcgRandomService() :
     mPimpl(NULL)
   {
-    mPimpl = new pcg32(42u, 54u);
-
-    // mPimpl to local pcg reference
-    pcg32& rng = *((pcg32*)(mPimpl));
-
     // Seed with a real random value, if available
-    rng.seed(pcg_extras::seed_seq_from<std::random_device>());
+    pcg_extras::seed_seq_from<std::random_device> seed_source;
+
+    mPimpl = new pcg32(seed_source);
   }
 
   PcgRandomService::~PcgRandomService()
@@ -51,8 +56,7 @@ namespace shellanything
 
   uint32_t PcgRandomService::GetRandomValue()
   {
-    // mPimpl to local pcg reference
-    pcg32& rng = *((pcg32*)(mPimpl));
+    pcg32& rng = GetPcg(mPimpl);
 
     uint32_t value = rng();
     return value;
@@ -60,12 +64,36 @@ namespace shellanything
 
   uint32_t PcgRandomService::GetRandomValue(uint32_t min_value, uint32_t max_value)
   {
-    // mPimpl to local pcg reference
-    pcg32& rng = *((pcg32*)(mPimpl));
+    pcg32& rng = GetPcg(mPimpl);
 
     uint32_t range = max_value - min_value;
     uint32_t value = rng(range) + min_value;
     return value;
+  }
+
+  bool PcgRandomService::Seed()
+  {
+    pcg32& rng = GetPcg(mPimpl);
+
+    // Seed with a real random value, if available
+    pcg_extras::seed_seq_from<std::random_device> seed_source;
+
+    rng.seed(seed_source);
+    return true;
+  }
+
+  bool PcgRandomService::Seed(uint32_t seed)
+  {
+    pcg32& rng = GetPcg(mPimpl);
+    rng.seed(seed);
+    return true;
+  }
+
+  bool PcgRandomService::Seed(uint64_t seed)
+  {
+    pcg32& rng = GetPcg(mPimpl);
+    rng.seed(seed);
+    return true;
   }
 
 } //namespace shellanything

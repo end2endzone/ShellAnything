@@ -11,6 +11,8 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testCopyFile.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testFail.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testLiveProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testRandomProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testRandomPropertiesAdvanced.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testRegistryKey.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestActionProperty.testSearchPath.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testAssignCommandId.1.xml

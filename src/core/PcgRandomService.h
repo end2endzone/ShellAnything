@@ -40,8 +40,10 @@ namespace shellanything
     virtual ~PcgRandomService();
 
     virtual uint32_t GetRandomValue();
-
     virtual uint32_t GetRandomValue(uint32_t min_value, uint32_t max_value);
+    virtual bool Seed();
+    virtual bool Seed(uint32_t seed);
+    virtual bool Seed(uint64_t seed);
 
   private:
     void * mPimpl;
