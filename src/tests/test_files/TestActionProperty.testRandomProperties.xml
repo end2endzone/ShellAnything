@@ -44,5 +44,11 @@
       </actions>
     </menu>
 
+    <menu name="menu8">
+      <actions>
+        <property name="test8" random="###" randommin="100" />
+      </actions>
+    </menu>
+
   </shell>
 </root>

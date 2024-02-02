@@ -609,7 +609,7 @@ namespace shellanything
 
       //ASSERT a multiple menus are available
       Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
-      ASSERT_EQ(menus.size(), 7);
+      ASSERT_EQ(menus.size(), 8);
 
       //Clear properties
       static const char* properties[] = {
@@ -620,6 +620,7 @@ namespace shellanything
         "test5",
         "test6",
         "test7",
+        "test8",
       };
       static const size_t properties_count = sizeof(properties) / sizeof(properties[0]);
       for (size_t i = 0; i < properties_count; i++)
@@ -658,6 +659,7 @@ namespace shellanything
         "KXXlVh6Z",
         "Pjl_(kF7",
         "0056",
+        "753",
       };
       static const size_t expected_values_count = sizeof(expected_values) / sizeof(expected_values[0]);
       ASSERT_EQ(expected_values_count, properties_count);

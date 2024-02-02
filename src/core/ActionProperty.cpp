@@ -607,7 +607,6 @@ namespace shellanything
     if (!min_max_mode)
     {
       // Generate from the pattern
-
       std::string random_string;
       bool success = RandomHelper::GetRandomFromPattern(random, random_string);
 
@@ -629,10 +628,17 @@ namespace shellanything
         return false;
       }
 
+      // Limit maximum value based on pattern length if not specified.
+      if (random_max.empty())
+      {
+        max_value = RandomHelper::GetMaxValue(random.size());
+      }
+      
       // Validate pattern length against
       size_t min_length = RandomHelper::GetNumericPatternLength(&random[0]);
       std::string random_string = RandomHelper::GetRandomMinMaxValue(min_value, max_value + 1); // +1 to include max_value as a possible outcome.
 
+      // Add leading zeroes if pattern is made of '0' characters and generated value is smaller than pattern.
       bool must_have_leading_zeroes = (random[0] == RandomHelper::NUMERIC_DIGIT_WITH_LEADING_ZEROS_PATTERN);
       if (must_have_leading_zeroes)
       {

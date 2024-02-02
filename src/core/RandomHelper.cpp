@@ -45,7 +45,7 @@ namespace shellanything
   static const std::string ANY_CHARACTERS = "!#$()+,-.0123456789;=@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_abcdefghijklmnopqrstuvwxyz{}~";
 
   static const uint32_t MAX_UINT32 = (uint32_t)-1;
-  static const uint32_t MAX_DIGITS_32 = 10; // maximum number of digits in an unsigned 32 bit value (4,294,967,295)
+  static const uint32_t MAX_DIGITS_32 = 10; // maximum number of digits in an unsigned 32 bit value (4,294,967,295 / 4294967295)
 
   bool RandomHelper::IsNumericPattern(const std::string& value)
   {

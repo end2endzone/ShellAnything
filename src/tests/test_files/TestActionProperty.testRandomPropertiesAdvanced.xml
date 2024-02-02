@@ -72,7 +72,7 @@
         <property name="my_coin_flip.index" random="#" randommin="0" randommax="1" />
         <property name="my_card.index" random="00" randommin="1" randommax="52" />
 
-        <!-- Convert indice ro actual names -->
+        <!-- Convert numeric card index to a card name -->
         <property name="my_coin_flip" value="${coins.names.${my_coin_flip.index}}" />
         <property name="my_card" value="${cards.names.${my_card.index}}" />
       </actions>
