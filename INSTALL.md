@@ -115,6 +115,7 @@ The following software must be installed on the system for compiling source code
 * [File and libmagic for Windows v5.38 + modifications](https://github.com/Cirn09/file-windows/tree/39f1624b4c95a0ab657a1084d50069270ebb8947)
 * [zlib v1.2.11](https://github.com/madler/zlib/releases/tag/v1.2.11)
 * [CMake v3.4.3](http://www.cmake.org/) (or newer)
+* [imneme/pcg-cpp](https://github.com/imneme/pcg-cpp/tree/428802d1a5634f96bcd0705fab379ff0113bcf13) (or newer)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 
 

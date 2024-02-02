@@ -1041,7 +1041,7 @@ The `exprtk` attribute allows advanced property evaluation. The following table 
 | Create a counter using properties.<br>(with a default property value set)               | \<property name="mycounter" exprtk="${mycounter}+1"\>                                                                                                                                                                                                                                                                                                                                                      | The property update itself by increasing its own value by 1.<br>Note: this only work if the property is defined to a numeric value first.                                               |
 | Create a counter using properties.<br>(without having to initialize the property first) | if ('\${mycounter}' == '$'+'{mycounter}' or '\${mycounter}' == '0') 1;<br>else if ('\${mycounter}' == '1') 2;<br>else if ('\${mycounter}' == '2') 3;<br>else if ('\${mycounter}' == '3') 4;<br>else if ('\${mycounter}' == '4') 5;<br>else if ('\${mycounter}' == '5') 6;<br>else if ('\${mycounter}' == '6') 7;<br>else if ('\${mycounter}' == '7') 8;<br>else if ('\${mycounter}' == '8') 9;<br>else 10; | Increase the value of property `mycounter` by `1` going from `1` up to `10`.<br>On the first call, the first line of the expression detects if the property is unset and set it to `1`. |
 | Get the length of a property value.                                                     | '\${command}'[]                                                                                                                                                                                                                                                                                                                                                                                            | Set the property to the length of the `command` property value.                                                                                                                         |
-| Set a property to logical `true` or `false`.                                            | ${foo} == 2 or ${bar} >= 5                                                                                                                                                                                                                                                                                                                                                                                 | The property will be set to value `1` if the expression evaluates to `true` <br>and set to `0` if the expression evaluates to `false`.                                                  |
+| Set a property to logical `true` or `false`.                                            | \${foo} == 2 or \${bar} >= 5                                                                                                                                                                                                                                                                                                                                                                               | The property will be set to value `1` if the expression evaluates to `true` <br>and set to `0` if the expression evaluates to `false`.                                                  |
 
 
 **Note:**
@@ -1198,9 +1198,147 @@ For example :
 
 
 
+#### random attribute: ####
+
+The `random` attribute defines a pattern that is used to generate a random value for the given property. The pattern must be specified as a sequence of symbol character. If the random pattern contains unknown characters or cannot be evaluated, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
+
+The attribute supports the following pattern characters:
+
+| Value      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `#`        | Matches a numeric digit between `0` and `9` where `###` would generate values between 0 and 999. For example `42`.                                                                                                                                                                                                                                                                                                                                         |
+| `0`        | Matches a numeric digit between `0` and `9` where `000` would generate values between 0 and 999. The generated value has leading zeroes to match the pattern's length. For example, `042`.                                                                                                                                                                                                                                                                 |
+| `a`        | Matches a lowercase alphabetic letter between `a` and `z` where `aaaa` would generate a random word of 4 lowercase letters. For example, `igrm`.                                                                                                                                                                                                                                                                                                           |
+| `A`        | Matches a lowercase alphabetic letter between `a` and `z` where `AAAA` would generate a random word of 4 lowercase letters. For example, `MAED`.                                                                                                                                                                                                                                                                                                           |
+| `z` or `Z` | Matches an alphanumeric character including lowercase and uppercase letters or digits 0 to 9 where `ZZZzzz` would generate a string of characters containing numbers or English letters. For example, `KXvh6Z`.                                                                                                                                                                                                                                            |
+| `*`        | Matches any alphanumeric character or symbol, including lowercase and uppercase letters, numbers `0` through `9` or a symbols character. A symbol character is one of the following characters: `!#$()+,-.;= @[]_{}~`. The symbol characters are compatible with file systems and can be used as random file names. A pattern like `******` would generate a string of 6 characters containing random letters, numbers or symbols. For example `Pjl_(kF7`. |
+
+The `random` attribute allows easy generation of temporary file or variables.
+
+For example :
+
+***Generate a temporary file name for a task*** :
+```xml
+<actions>
+  <property name="temp.file.name" random="****************************" />
+  <property name="temp.file.path" random="${env.TEMP}\${temp.file.name}.tmp" />
+</actions>
+```
+
+**Note:**
+To specify custom minimum and/or maximum values, see the `randommin` and `randommax` attributes. Pattern of multiple `#` or `0` characters are evaluated in sequence. The longest sequence is 10 characters which represent an unsigned 32 bit value with a maximum value of 4,294,967,295. In other words, the pattern `##########` can not generates values between 4,294,967,296 up to 9,999,999,999.
+
+
+
+#### randommin attribute: ####
+
+The `randommin` attribute defines the minimum value that `random` attribute can produce. The random pattern must be all numeric (filled with `#` or `0` pattern characters) for the attribute to be used. If the given value is not valid, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
+
+For advanced examples, see examples with `randommax` attribute.
+
+
+
+#### randommax attribute: ####
+
+The `randommin` attribute defines the minimum value that `random` attribute can produce. The random pattern must be all numeric (filled with `#` or `0` pattern characters) for the attribute to be used. If the given value is not valid, the action execution stop and reports an error. See the [fail attribute](#fail-attribute) to change this behavior.
+
+When combined, `randommin` and `randommax` attributes allows advanced use case and random property manipulation.
+
+For example :
+
+***Generate a values with specific boundaries*** :
+```xml
+<actions>
+  <property name="my_dice_roll" random="#" randommin="1" randommax="6" />
+  <property name="my_coin_flip" random="#" randommin="0" randommax="1" />
+  <property name="my_play_card" random="##" randommin="1" randommax="52" />
+</actions>
+```
+
+
+***Generates a random number between 100 and 999 in order to secure a 3 digits number*** :
+```xml
+<property name="3_digits_number" random="###" randomnin="100" />
+```
+
+
+***Pick a random string from a fixed list*** :
+```xml
+<actions>
+  <!-- Define properties to store the names of each playing cards. -->
+  <property name="cards.names.01" value="Ace of Diamonds" />
+  <property name="cards.names.02" value="Two of Diamonds" />
+  <property name="cards.names.03" value="Theee of Diamonds" />
+  <property name="cards.names.04" value="Four of Diamonds" />
+  <property name="cards.names.05" value="Five of Diamonds" />
+  <property name="cards.names.06" value="Six of Diamonds" />
+  <property name="cards.names.07" value="Seven of Diamonds" />
+  <property name="cards.names.08" value="Eight of Diamonds" />
+  <property name="cards.names.09" value="Nine of Diamonds" />
+  <property name="cards.names.10" value="Ten of Diamonds" />
+  <property name="cards.names.11" value="Jack of Diamonds" />
+  <property name="cards.names.12" value="Queen of Diamonds" />
+  <property name="cards.names.13" value="King of Diamonds" />
+
+  <property name="cards.names.14" value="Ace of Clubs" />
+  <property name="cards.names.15" value="Two of Clubs" />
+  <property name="cards.names.16" value="Theee of Clubs" />
+  <property name="cards.names.17" value="Four of Clubs" />
+  <property name="cards.names.18" value="Five of Clubs" />
+  <property name="cards.names.19" value="Six of Clubs" />
+  <property name="cards.names.20" value="Seven of Clubs" />
+  <property name="cards.names.21" value="Eight of Clubs" />
+  <property name="cards.names.22" value="Nine of Clubs" />
+  <property name="cards.names.23" value="Ten of Clubs" />
+  <property name="cards.names.24" value="Jack of Clubs" />
+  <property name="cards.names.25" value="Queen of Clubs" />
+  <property name="cards.names.26" value="King of Clubs" />
+
+  <property name="cards.names.27" value="Ace of Hearts" />
+  <property name="cards.names.28" value="Two of Hearts" />
+  <property name="cards.names.29" value="Theee of Hearts" />
+  <property name="cards.names.30" value="Four of Hearts" />
+  <property name="cards.names.31" value="Five of Hearts" />
+  <property name="cards.names.32" value="Six of Hearts" />
+  <property name="cards.names.33" value="Seven of Hearts" />
+  <property name="cards.names.34" value="Eight of Hearts" />
+  <property name="cards.names.35" value="Nine of Hearts" />
+  <property name="cards.names.36" value="Ten of Hearts" />
+  <property name="cards.names.37" value="Jack of Hearts" />
+  <property name="cards.names.38" value="Queen of Hearts" />
+  <property name="cards.names.39" value="King of Hearts" />
+          
+  <property name="cards.names.40" value="Ace of Spades" />
+  <property name="cards.names.41" value="Two of Spades" />
+  <property name="cards.names.42" value="Theee of Spades" />
+  <property name="cards.names.43" value="Four of Spades" />
+  <property name="cards.names.44" value="Five of Spades" />
+  <property name="cards.names.45" value="Six of Spades" />
+  <property name="cards.names.46" value="Seven of Spades" />
+  <property name="cards.names.47" value="Eight of Spades" />
+  <property name="cards.names.48" value="Nine of Spades" />
+  <property name="cards.names.49" value="Ten of Spades" />
+  <property name="cards.names.50" value="Jack of Spades" />
+  <property name="cards.names.51" value="Queen of Spades" />
+  <property name="cards.names.52" value="King of Spades" />
+          
+  <property name="cards.names.53" value="Red Joker" />
+  <property name="cards.names.54" value="Black Joker" />
+
+
+  <!-- Pick a random card from a 52 cards game -->
+  <property name="my_card.index" random="00" randommin="1" randommax="52" />
+
+  <!-- Convert numeric card index to a card name -->
+  <property name="my_card" value="${cards.names.${my_card.index}}" />
+</actions>
+```
+
+
+
 #### fail attribute: ####
 
-The `fail` attribute controls the behavior of the action when the property is not directly set from the `value` attribute. This applies to the following attributes: `exprtk`, `file`, `registrykey` and `searchpath`. The attribute must be set to a value that evaluates to `true` or `false`. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. 
+The `fail` attribute controls the behavior of the action when the property is not directly set from the `value` attribute. This applies to the following attributes: `exprtk`, `file`, `registrykey`, `searchpath` and `random`. The attribute must be set to a value that evaluates to `true` or `false`. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. 
 
 By default, if a value cannot be resolved from these attributes (invalid exprtk expression, file not found, registry key not found, filename not in PATH), an error is reported and the execution of the following actions is interrupted. By setting the `fail` attribute to a value that evaluates to `false`, the same warning is logged **but** the execution of the following actions continue.
 
