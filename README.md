@@ -4,6 +4,8 @@
 # ShellAnything #
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Github Releases](https://img.shields.io/github/release/end2endzone/shellanything.svg)](https://github.com/end2endzone/shellanything/releases)
+[![Downloads (all time)](https://img.shields.io/github/downloads/end2endzone/shellanything/total?logo=github)](https://github.com/end2endzone/ShellAnything/releases/latest)
+[![Downloads (latest)](https://img.shields.io/github/downloads/end2endzone/shellanything/latest/total?logo=github)](https://github.com/end2endzone/ShellAnything/releases/latest)
 
 ShellAnything is a C++ open-source software which allow one to easily customize and add new options to *Windows Explorer* context menu. Define specific actions when a user right-click on a file or a directory.
 
