@@ -27,6 +27,7 @@
 #include "SaUtils.h"
 #include "SelectionContext.h"
 #include "LoggerHelper.h"
+#include "RandomHelper.h"
 
 #include "shellanything/version.h"
 
@@ -38,6 +39,8 @@ namespace shellanything
 {
   static const int EXPANDING_MAX_ITERATIONS = 20;
 
+  static const std::string EMPTY_VALUE;
+
   const std::string PropertyManager::SYSTEM_TRUE_PROPERTY_NAME = "system.true";
   const std::string PropertyManager::SYSTEM_TRUE_DEFAULT_VALUE = "true";
   const std::string PropertyManager::SYSTEM_FALSE_PROPERTY_NAME = "system.false";
@@ -48,6 +51,9 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME  = "keyboard.shift";
   const std::string PropertyManager::SYSTEM_DATETIME_FORMAT_PROPERTY_NAME = "datetime.format";
   const std::string PropertyManager::SYSTEM_DATETIME_FORMAT_DEFAULT_VALUE = "yyyy-mm-dd HHhMMmSS";
+  const std::string PropertyManager::SYSTEM_RANDOM_GUID_PROPERTY_NAME = "random.guid";
+  const std::string PropertyManager::SYSTEM_RANDOM_FILE_PROPERTY_NAME = "random.file";
+  const std::string PropertyManager::SYSTEM_RANDOM_PATH_PROPERTY_NAME = "random.path";
 
   PropertyManager::PropertyManager()
   {
@@ -126,7 +132,6 @@ namespace shellanything
       return value;
     }
 
-    static std::string EMPTY_VALUE;
     return EMPTY_VALUE;
   }
 
@@ -298,17 +303,14 @@ namespace shellanything
     {
       // Try to read the clipboard's value.
       IClipboardService* service = App::GetInstance().GetClipboardService();
-      if (service)
-      {
-        std::string clipboard_value;
-        bool clipboard_read = service->GetClipboardText(clipboard_value);
-        if (clipboard_read)
-        {
-          return clipboard_value;
-        }
-      }
+      if (!service) return EMPTY_VALUE;
 
-      static std::string EMPTY_VALUE;
+      std::string clipboard_value;
+      bool clipboard_read = service->GetClipboardText(clipboard_value);
+      if (clipboard_read)
+      {
+        return clipboard_value;
+      }
       return EMPTY_VALUE;
     }
   };
@@ -339,21 +341,17 @@ namespace shellanything
     {
       // Try to read the keyboard's modifier state.
       IKeyboardService* service = App::GetInstance().GetKeyboardService();
-      if (service)
-      {
-        PropertyManager& pmgr = PropertyManager::GetInstance();
-        if (service->IsModifierKeyDown(keyb_modifier_id))
-        {
-          return pmgr.GetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME);
-        }
-        else
-        {
-          return pmgr.GetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME);
-        }
-      }
+      if (!service) return EMPTY_VALUE;
 
-      static std::string EMPTY_VALUE;
-      return EMPTY_VALUE;
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      if (service->IsModifierKeyDown(keyb_modifier_id))
+      {
+        return pmgr.GetProperty(PropertyManager::SYSTEM_TRUE_PROPERTY_NAME);
+      }
+      else
+      {
+        return pmgr.GetProperty(PropertyManager::SYSTEM_FALSE_PROPERTY_NAME);
+      }
     }
   };
 
@@ -400,6 +398,119 @@ namespace shellanything
     }
   };
 
+  class RandomGuidLiveProperty : public virtual ILiveProperty
+  {
+  public:
+
+    virtual const std::string& GetName() const
+    {
+      return PropertyManager::SYSTEM_RANDOM_GUID_PROPERTY_NAME;
+    }
+
+    virtual std::string GetProperty() const
+    {
+      // Check for random service
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      if (!random_service) return EMPTY_VALUE;
+
+      union GUID
+      {
+        uint32_t groups[4];
+        uint8_t bytes[16];
+      };
+
+      GUID g;
+      g.groups[0] = random_service->GetRandomValue(); // bytes  0 to  3
+      g.groups[1] = random_service->GetRandomValue(); // bytes  4 to  7
+      g.groups[2] = random_service->GetRandomValue(); // bytes  8 to 11
+      g.groups[3] = random_service->GetRandomValue(); // bytes 12 to 15
+
+      // Version 4
+      // https://en.wikipedia.org/wiki/Universally_unique_identifier
+      // https://www.intl-spectrum.com/Article/r848/IS_UUID_V4_UUID_V4_Random_Generation
+
+      // Conforming to RFC 4122 Specification
+      // Set the four most significant bits of the 7th byte '0100', so that the Hex value always starts with a 4,
+      // Set the 2 most significant bits of the 9 th byte to '10', so that the Hex value will always start with a 8, 9, A , or B.
+      // AA97B177-9383-4934-8543-0F91A7A02836
+      g.bytes[6] = 0x40 + (g.bytes[6] & 0x0F);
+      g.bytes[8] = 0x80 + (g.bytes[8] & 0x3F);
+
+      // To string
+      char buffer[64];
+      sprintf(buffer, "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+        (int)g.bytes[0],
+        (int)g.bytes[1],
+        (int)g.bytes[2],
+        (int)g.bytes[3],
+        (int)g.bytes[4],
+        (int)g.bytes[5],
+        (int)g.bytes[6],
+        (int)g.bytes[7],
+        (int)g.bytes[8],
+        (int)g.bytes[9],
+        (int)g.bytes[10],
+        (int)g.bytes[11],
+        (int)g.bytes[12],
+        (int)g.bytes[13],
+        (int)g.bytes[14],
+        (int)g.bytes[15]
+      );
+      return buffer;
+    }
+  };
+
+  class RandomFileLiveProperty : public virtual ILiveProperty
+  {
+  private:
+    std::string property_name;
+    bool prefix_temp_dir;
+
+  public:
+    RandomFileLiveProperty(const std::string& name, bool prefix) :
+      property_name(name),
+      prefix_temp_dir(prefix)
+    {
+    }
+
+    ~RandomFileLiveProperty()
+    {
+    }
+
+    virtual const std::string& GetName() const
+    {
+      return property_name;
+    }
+
+    virtual std::string GetProperty() const
+    {
+      // Check for random service
+      IRandomService* random_service = App::GetInstance().GetRandomService();
+      if (!random_service) return EMPTY_VALUE;
+
+      std::string output;
+
+      // Add TEMP directory if requested
+      if (prefix_temp_dir)
+      {
+        output = ra::filesystem::GetTemporaryDirectoryUtf8();
+        output.append(1, ra::filesystem::GetPathSeparator());
+      }
+
+      // Generate a random file name with 32 characters
+      static const std::string pattern = "zzzzzzzzZZZZZZZZzzzzzzzzZZZZZZZZ";
+      std::string filename;
+      bool success = RandomHelper::GetRandomFromPattern(pattern, filename);
+      if (!success)
+        return EMPTY_VALUE;
+
+      output += filename;
+      output += ".tmp";
+
+      return output;
+    }
+  };
+
   void PropertyManager::RegisterLiveProperties()
   {
     // Check if a live property instance already exists before adding one
@@ -407,6 +518,9 @@ namespace shellanything
     if (GetLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME) == NULL)        AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_CTRL_PROPERTY_NAME, KMID_CTRL));
     if (GetLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME) == NULL)         AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_ALT_PROPERTY_NAME, KMID_ALT));
     if (GetLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME) == NULL)       AddLiveProperty(new KeyboardModifierLiveProperty(SYSTEM_KEYBOARD_SHIFT_PROPERTY_NAME, KMID_SHIFT));
+    if (GetLiveProperty(SYSTEM_RANDOM_GUID_PROPERTY_NAME) == NULL)          AddLiveProperty(new RandomGuidLiveProperty());
+    if (GetLiveProperty(SYSTEM_RANDOM_FILE_PROPERTY_NAME) == NULL)          AddLiveProperty(new RandomFileLiveProperty(SYSTEM_RANDOM_FILE_PROPERTY_NAME, false));
+    if (GetLiveProperty(SYSTEM_RANDOM_PATH_PROPERTY_NAME) == NULL)          AddLiveProperty(new RandomFileLiveProperty(SYSTEM_RANDOM_PATH_PROPERTY_NAME, true));
 
     const char* prop = NULL;
     prop = "date.year";         if (GetLiveProperty(prop) == NULL)    AddLiveProperty(new DateTimeLiveProperty(prop, "yyyy"));

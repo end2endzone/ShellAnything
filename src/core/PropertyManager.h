@@ -107,6 +107,21 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_DATETIME_FORMAT_DEFAULT_VALUE;
 
+    /// <summary>
+    /// Name of the property to get a random guid.
+    /// </summary>
+    static const std::string SYSTEM_RANDOM_GUID_PROPERTY_NAME;
+
+    /// <summary>
+    /// Name of the property to get a random file.
+    /// </summary>
+    static const std::string SYSTEM_RANDOM_FILE_PROPERTY_NAME;
+
+    /// <summary>
+    /// Name of the property to get a random path.
+    /// </summary>
+    static const std::string SYSTEM_RANDOM_PATH_PROPERTY_NAME;
+
   public:
 
     /// <summary>

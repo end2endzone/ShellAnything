@@ -44,6 +44,35 @@ else()
   message(FATAL_ERROR "exprtk header file not found.")
 endif()
 
+# pcg-cpp
+# https://www.pcg-random.org/
+# The pcg-cpp library has not created tags since 2015 even if the number of commits has double since the last release.
+# At the time of this writing, HEAD revision is commit 428802d1a5634f96bcd0705fab379ff0113bcf13 
+# available at https://github.com/imneme/pcg-cpp/archive/428802d1a5634f96bcd0705fab379ff0113bcf13.zip
+# Using latest revision to get all bug fixes.
+set(PCGCPP_PACKAGE_URL "https://github.com/imneme/pcg-cpp/archive/master.zip")
+set(PCGCPP_PACKAGE_PATH ${PACKAGE_DOWNLOAD_DIR}/pcg-cpp.zip)
+if(NOT EXISTS ${PCGCPP_PACKAGE_PATH})
+  message(STATUS "Downloading pcg-cpp package from ${PCGCPP_PACKAGE_URL}")
+  file(DOWNLOAD ${PCGCPP_PACKAGE_URL} ${PCGCPP_PACKAGE_PATH}
+     TIMEOUT 60  # seconds
+     TLS_VERIFY ON
+  )
+  
+  message(STATUS "Extracting pcg-cpp package to ${PCGCPP_PACKAGE_PATH}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf 
+    ${PCGCPP_PACKAGE_PATH}
+    WORKING_DIRECTORY ${PACKAGE_DOWNLOAD_DIR}
+  )
+endif()
+set(PCGCPP_HEADER_PATH ${PACKAGE_DOWNLOAD_DIR}/pcg-cpp-master/include/pcg_random.hpp)
+if(EXISTS ${PCGCPP_HEADER_PATH})
+  message(STATUS "Found pcg-cpp header file: ${PCGCPP_HEADER_PATH}")
+  get_filename_component(PCGCPP_INCLUDE_DIR ${PCGCPP_HEADER_PATH} PATH)
+else()
+  message(FATAL_ERROR "pcg-cpp header file not found.")
+endif()
+
 ##############################################################################################################################################
 # Standard CMake variables
 ##############################################################################################################################################

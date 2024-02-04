@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <property name="test1" random="########" />
+      </actions>
+    </menu>
+
+    <menu name="menu2">
+      <actions>
+        <property name="test2" random="00000000" />
+      </actions>
+    </menu>
+
+    <menu name="menu3">
+      <actions>
+        <property name="test3" random="aaaaaaaa" />
+      </actions>
+    </menu>
+
+    <menu name="menu4">
+      <actions>
+        <property name="test4" random="AAAAAAAA" />
+      </actions>
+    </menu>
+
+    <menu name="menu5">
+      <actions>
+        <property name="test5" random="zzZZzzZZ" />
+      </actions>
+    </menu>
+
+    <menu name="menu6">
+      <actions>
+        <property name="test6" random="********" />
+      </actions>
+    </menu>
+
+    <menu name="menu7">
+      <actions>
+        <property name="test7" random="0000" randommin="1" randommax="100" />
+      </actions>
+    </menu>
+
+    <menu name="menu8">
+      <actions>
+        <property name="test8" random="###" randommin="100" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

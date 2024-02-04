@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+
+    <menu name="menu1">
+      <actions>
+        <!-- Define properties to store the names of each playing cards. -->
+        <property name="cards.names.01" value="Ace of Diamonds" />
+        <property name="cards.names.02" value="Two of Diamonds" />
+        <property name="cards.names.03" value="Theee of Diamonds" />
+        <property name="cards.names.04" value="Four of Diamonds" />
+        <property name="cards.names.05" value="Five of Diamonds" />
+        <property name="cards.names.06" value="Six of Diamonds" />
+        <property name="cards.names.07" value="Seven of Diamonds" />
+        <property name="cards.names.08" value="Eight of Diamonds" />
+        <property name="cards.names.09" value="Nine of Diamonds" />
+        <property name="cards.names.10" value="Ten of Diamonds" />
+        <property name="cards.names.11" value="Jack of Diamonds" />
+        <property name="cards.names.12" value="Queen of Diamonds" />
+        <property name="cards.names.13" value="King of Diamonds" />
+
+        <property name="cards.names.14" value="Ace of Clubs" />
+        <property name="cards.names.15" value="Two of Clubs" />
+        <property name="cards.names.16" value="Theee of Clubs" />
+        <property name="cards.names.17" value="Four of Clubs" />
+        <property name="cards.names.18" value="Five of Clubs" />
+        <property name="cards.names.19" value="Six of Clubs" />
+        <property name="cards.names.20" value="Seven of Clubs" />
+        <property name="cards.names.21" value="Eight of Clubs" />
+        <property name="cards.names.22" value="Nine of Clubs" />
+        <property name="cards.names.23" value="Ten of Clubs" />
+        <property name="cards.names.24" value="Jack of Clubs" />
+        <property name="cards.names.25" value="Queen of Clubs" />
+        <property name="cards.names.26" value="King of Clubs" />
+
+        <property name="cards.names.27" value="Ace of Hearts" />
+        <property name="cards.names.28" value="Two of Hearts" />
+        <property name="cards.names.29" value="Theee of Hearts" />
+        <property name="cards.names.30" value="Four of Hearts" />
+        <property name="cards.names.31" value="Five of Hearts" />
+        <property name="cards.names.32" value="Six of Hearts" />
+        <property name="cards.names.33" value="Seven of Hearts" />
+        <property name="cards.names.34" value="Eight of Hearts" />
+        <property name="cards.names.35" value="Nine of Hearts" />
+        <property name="cards.names.36" value="Ten of Hearts" />
+        <property name="cards.names.37" value="Jack of Hearts" />
+        <property name="cards.names.38" value="Queen of Hearts" />
+        <property name="cards.names.39" value="King of Hearts" />
+        
+        <property name="cards.names.40" value="Ace of Spades" />
+        <property name="cards.names.41" value="Two of Spades" />
+        <property name="cards.names.42" value="Theee of Spades" />
+        <property name="cards.names.43" value="Four of Spades" />
+        <property name="cards.names.44" value="Five of Spades" />
+        <property name="cards.names.45" value="Six of Spades" />
+        <property name="cards.names.46" value="Seven of Spades" />
+        <property name="cards.names.47" value="Eight of Spades" />
+        <property name="cards.names.48" value="Nine of Spades" />
+        <property name="cards.names.49" value="Ten of Spades" />
+        <property name="cards.names.50" value="Jack of Spades" />
+        <property name="cards.names.51" value="Queen of Spades" />
+        <property name="cards.names.52" value="King of Spades" />
+        
+        <property name="cards.names.53" value="Red Joker" />
+        <property name="cards.names.54" value="Black Joker" />
+
+        <property name="coins.names.0" value="Heads" />
+        <property name="coins.names.1" value="Tails" />
+
+        <!-- Do the random picks -->
+        <property name="my_dice_roll" random="#" randommin="1" randommax="6" />
+        <property name="my_coin_flip.index" random="#" randommin="0" randommax="1" />
+        <property name="my_card.index" random="00" randommin="1" randommax="52" />
+
+        <!-- Convert numeric card index to a card name -->
+        <property name="my_coin_flip" value="${coins.names.${my_coin_flip.index}}" />
+        <property name="my_card" value="${cards.names.${my_card.index}}" />
+      </actions>
+    </menu>
+
+  </shell>
+</root>

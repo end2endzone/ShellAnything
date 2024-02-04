@@ -27,6 +27,7 @@
 #include "libexprtk.h"
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
+#include "RandomHelper.h"
 #include "SaUtils.h"
 
 #include "rapidassist/strings.h"
@@ -127,6 +128,27 @@ namespace shellanything
         action->SetSearchPath(tmp_str);
       }
 
+      //parse random
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "random", true, true, tmp_str, error))
+      {
+        action->SetRandom(tmp_str);
+      }
+
+      //parse randommin
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "randommin", true, true, tmp_str, error))
+      {
+        action->SetRandomMin(tmp_str);
+      }
+
+      //parse randommax
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "randommax", true, true, tmp_str, error))
+      {
+        action->SetRandomMax(tmp_str);
+      }
+
       //parse fail
       tmp_str = "";
       if (ObjectFactory::ParseAttribute(element, "fail", true, true, tmp_str, error))
@@ -165,6 +187,9 @@ namespace shellanything
     std::string filesize = pmgr.Expand(mFileSize);
     std::string registrykey = pmgr.Expand(mRegistryKey);
     std::string searchpath = pmgr.Expand(mSearchPath);
+    std::string random = pmgr.Expand(mRandom);
+    std::string random_min = pmgr.Expand(mRandomMin);
+    std::string random_max = pmgr.Expand(mRandomMax);
 
     // Set a flag if an actual value must be set.
     bool has_new_value = false;
@@ -173,10 +198,29 @@ namespace shellanything
       file.empty() &&
       filesize.empty() &&
       registrykey.empty() &&
-      searchpath.empty())
+      searchpath.empty() &&
+      random.empty())
     {
       // If no automatic value has been specified, then value is an actual new value, even if empty.
       has_new_value = true;
+    }
+
+    // If random is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    if (!random.empty())
+    {
+      std::string tmp_value;
+      bool resolved = GetValueFromRandom(random, random_min, random_max, tmp_value);
+      if (Validator::IsTrue(fail) && !resolved)
+      {
+        SA_LOG(WARNING) << "Reporting an error because fail is set to '" << fail << "'.";
+        return false;
+      }
+      if (resolved)
+      {
+        // Store the result in 'value' as if user set this specific value (to use the same process as a property that sets a value).
+        value = tmp_value;
+        has_new_value = true;
+      }
     }
 
     // If searchpath is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
@@ -348,6 +392,36 @@ namespace shellanything
     mSearchPath = value;
   }
 
+  const std::string& ActionProperty::GetRandom() const
+  {
+    return mRandom;
+  }
+
+  void ActionProperty::SetRandom(const std::string& value)
+  {
+    mRandom = value;
+  }
+
+  const std::string& ActionProperty::GetRandomMin() const
+  {
+    return mRandomMin;
+  }
+
+  void ActionProperty::SetRandomMin(const std::string& value)
+  {
+    mRandomMin = value;
+  }
+
+  const std::string& ActionProperty::GetRandomMax() const
+  {
+    return mRandomMax;
+  }
+
+  void ActionProperty::SetRandomMax(const std::string& value)
+  {
+    mRandomMax = value;
+  }
+
   const std::string& ActionProperty::GetFail() const
   {
     return mFail;
@@ -473,6 +547,107 @@ namespace shellanything
     }
     value = abs_path;
     return true;
+  }
+
+  bool ActionProperty::GetValueFromRandom(const std::string& random, const std::string& random_min, std::string& random_max, std::string& value) const
+  {
+    IRandomService* random_service = App::GetInstance().GetRandomService();
+    if (random_service == NULL)
+    {
+      SA_LOG(ERROR) << "No Random service configured for evaluating random expression '" << random << "'.";
+      return false;
+    }
+
+    if (random.empty())
+    {
+      SA_LOG(WARNING) << "Failed evaluating random expression. The value is empty.";
+      return false;
+    }
+
+    // Check if min/max are specified
+    bool min_max_mode = false;
+    uint32_t min_value = 0;
+    uint32_t max_value = uint32_t(-1);
+
+    if (!random_min.empty())
+    {
+      uint32_t tmp = 0;
+      bool parsed = ra::strings::Parse(random_min, tmp);
+      if (!parsed)
+      {
+        SA_LOG(WARNING) << "Failed parsing randommin value '" << random_min << "'.";
+        return false;
+      }
+
+      min_max_mode = true;
+      min_value = tmp;
+    }
+    if (!random_max.empty())
+    {
+      uint32_t tmp = 0;
+      bool parsed = ra::strings::Parse(random_max, tmp);
+      if (!parsed)
+      {
+        SA_LOG(WARNING) << "Failed parsing randommax value '" << random_max << "'.";
+        return false;
+      }
+
+      min_max_mode = true;
+      max_value = tmp;
+    }
+
+    // Validate min/max
+    if (min_max_mode && min_value > max_value)
+    {
+      SA_LOG(WARNING) << "Failed validating random min/max: randommin (" << min_value << ") must be smaller than randommax (" << max_value << ").";
+      return false;
+    }
+
+    // Check which mode we are generating
+    if (!min_max_mode)
+    {
+      // Generate from the pattern
+      std::string random_string;
+      bool success = RandomHelper::GetRandomFromPattern(random, random_string);
+
+      if (!success)
+      {
+        SA_LOG(WARNING) << "Failed evaluating random expression '" << random << "'.";
+        return false;
+      }
+
+      value = random_string;
+      return true;
+    }
+    else
+    {
+      // Generate from the pattern using custom min/max values
+      if (!RandomHelper::IsNumericPattern(random))
+      {
+        SA_LOG(WARNING) << "Failed validating random expression '" << random << "'. The expression must only contain a numerical pattern (digits).";
+        return false;
+      }
+
+      // Limit maximum value based on pattern length if not specified.
+      if (random_max.empty())
+      {
+        max_value = RandomHelper::GetMaxValue(random.size());
+      }
+      
+      // Validate pattern length against
+      size_t min_length = RandomHelper::GetNumericPatternLength(&random[0]);
+      std::string random_string = RandomHelper::GetRandomMinMaxValue(min_value, max_value + 1); // +1 to include max_value as a possible outcome.
+
+      // Add leading zeroes if pattern is made of '0' characters and generated value is smaller than pattern.
+      bool must_have_leading_zeroes = (random[0] == RandomHelper::NUMERIC_DIGIT_WITH_LEADING_ZEROS_PATTERN);
+      if (must_have_leading_zeroes)
+      {
+        RandomHelper::FormatLeadingZeroes(random_string, min_length);
+      }
+
+      value = random_string;
+      return true;
+    }
   }
 
 } //namespace shellanything

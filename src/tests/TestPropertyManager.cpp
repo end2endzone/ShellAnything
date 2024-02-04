@@ -26,11 +26,13 @@
 #include "PropertyManager.h"
 #include "IClipboardService.h"
 #include "TestKeyboardService.h"
+#include "IRandomService.h"
 #include "App.h"
 
-#include "rapidassist/testing.h"
+#include "rapidassist/testing_utf8.h"
 #include "rapidassist/random.h"
 #include "rapidassist/timing.h"
+#include "rapidassist/filesystem_utf8.h"
 
 extern shellanything::TestKeyboardService* keyboard_service;
 
@@ -524,6 +526,78 @@ namespace shellanything
           ASSERT_NE(snapshot, next);
         }
       }
+    }
+    //--------------------------------------------------------------------------------------------------
+    bool IsGuid(const std::string& value)
+    {
+      // AA97B177-9383-4934-8543-0F91A7A02836
+      if (value.size() != 36) return false;
+      if (value[14] != '4') return false;
+
+      char c19 = value[19];
+      if (c19 == '8' ||
+          c19 == '9' ||
+          c19 == 'A' ||
+          c19 == 'B')
+        return true;
+      return false;
+    }
+    TEST_F(TestPropertyManager, testLivePropertyRandomGuid)
+    {
+      IRandomService* random = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random != NULL);
+
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      const std::string text = "${" + PropertyManager::SYSTEM_RANDOM_GUID_PROPERTY_NAME + "}";
+
+      // Act
+      random->Seed(1234u);//34u
+      static const size_t num_tests = 6;
+      std::string guid[num_tests];
+      for (size_t i = 0; i < num_tests; i++)
+      {
+        guid[i] = pmgr.Expand(text);
+      }
+
+      // Assert.
+      for (size_t i = 0; i < num_tests; i++)
+      {
+        ASSERT_TRUE(IsGuid(guid[i])) << "guid[" << i << "] is not a guid : " << guid[i];
+      }
+
+      ASSERT_EQ(guid[0], "A842299E-E25F-4E0C-8B3F-45471E21B3C1");
+      ASSERT_EQ(guid[1], "F2479604-DEAF-47BB-BC02-A495AE20C17E");
+      ASSERT_EQ(guid[2], "6DE0CF7D-D778-46AF-8202-0D3AFECD6EC3");
+      ASSERT_EQ(guid[3], "C6513C18-6F03-4E1B-AB64-1D36D9BBC3AD");
+      ASSERT_EQ(guid[4], "7C8AAE90-1222-4A4C-9FFF-6CB772A286DE");
+      ASSERT_EQ(guid[5], "2E86A41D-549A-4F7B-8E0B-E3283E3939CA");
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestPropertyManager, testLivePropertyRandomPath)
+    {
+      IRandomService* random = App::GetInstance().GetRandomService();
+      ASSERT_TRUE(random != NULL);
+
+      // Update PropertyManager with default live properties
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      pmgr.ClearLiveProperties();
+      pmgr.RegisterLiveProperties();
+
+      const std::string text = "${" + PropertyManager::SYSTEM_RANDOM_PATH_PROPERTY_NAME + "}";
+
+      // Act
+      random->Seed(1234u);//34u
+      const std::string path = pmgr.Expand(text);
+
+      // Assert
+      ASSERT_TRUE(!path.empty());
+      ASSERT_FALSE(ra::filesystem::FileExistsUtf8(path.c_str())) << "File already exists: " << path;
+      ASSERT_TRUE(ra::testing::CreateFileUtf8(path.c_str())) << "Failed to create file: " << path;
+      ASSERT_TRUE(ra::filesystem::DeleteFileUtf8(path.c_str())) << "Failed to delete file: " << path;
     }
     //--------------------------------------------------------------------------------------------------
     void SetPropertyNameVerbose(const std::string& name, const std::string& value)

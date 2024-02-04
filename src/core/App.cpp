@@ -127,6 +127,16 @@ namespace shellanything
     return mKeyboard;
   }
 
+  void App::SetRandomService(IRandomService* instance)
+  {
+    mRandom = instance;
+  }
+
+  IRandomService* App::GetRandomService()
+  {
+    return mRandom;
+  }
+
   bool App::IsTestingEnvironment()
   {
     std::string process_path = ra::process::GetCurrentProcessPath();
