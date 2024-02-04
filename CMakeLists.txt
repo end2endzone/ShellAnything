@@ -45,6 +45,7 @@ else()
 endif()
 
 # pcg-cpp
+# https://www.pcg-random.org/
 # The pcg-cpp library has not created tags since 2015 even if the number of commits has double since the last release.
 # At the time of this writing, HEAD revision is commit 428802d1a5634f96bcd0705fab379ff0113bcf13 
 # available at https://github.com/imneme/pcg-cpp/archive/428802d1a5634f96bcd0705fab379ff0113bcf13.zip
