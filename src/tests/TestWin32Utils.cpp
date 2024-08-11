@@ -359,7 +359,7 @@ namespace shellanything
           (char*)arg2.c_str(),
         };
         int exit_code = shellanything::InvokeCommandLineEntryPoint("ExtractLargeAndSmallIcons", argc, argv);
-        ASSERT_EQ(0, exit_code);
+        ASSERT_EQ(0, exit_code) << "Failed run ExtractLargeAndSmallIcons() for test icon index " << i;
       }
     }
     //--------------------------------------------------------------------------------------------------
@@ -478,7 +478,7 @@ namespace shellanything
           (char*)arg1.c_str(),
         };
         int exit_code = shellanything::InvokeCommandLineEntryPoint("ExtractSmallIcon", argc, argv);
-        ASSERT_EQ(0, exit_code);
+        ASSERT_EQ(0, exit_code) << "Failed run ExtractSmallIcon() for test icon index " << i;
       }
     }
     //--------------------------------------------------------------------------------------------------

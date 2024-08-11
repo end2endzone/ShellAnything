@@ -1,3 +1,9 @@
+Changes for 0.10.0
+
+* Fixed issue #150: ico icon (that do not specifically force index=0) are not working.
+* Fixed issue #155: Drop support for loading icons from a resource id (icons with a negative index smaller than -1).
+
+
 Changes for 0.9.0
 
 * Fixed issue #111: Move code from the shell extension to the core.

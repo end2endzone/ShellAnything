@@ -342,11 +342,10 @@ namespace shellanything
       //menu #02
       ASSERT_EQ(std::string("txt"), menus[02]->GetIcon().GetFileExtension());
       ASSERT_EQ(std::string(""), menus[02]->GetIcon().GetPath());
-      ASSERT_EQ(Icon::INVALID_ICON_INDEX, menus[02]->GetIcon().GetIndex());
 
       //menu #03
       ASSERT_EQ(std::string("C:\\Windows\\System32\\shell32.dll"), menus[03]->GetIcon().GetPath());
-      ASSERT_EQ(0, menus[03]->GetIcon().GetIndex()); // index 0 should be set automatically.
+      ASSERT_EQ(0, menus[03]->GetIcon().GetIndex()); // index 0 should be set automatically. See Issue #150.
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
