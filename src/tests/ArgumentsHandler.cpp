@@ -43,7 +43,15 @@
 namespace shellanything
 {
   typedef std::vector<COMMAND_LINE_ENTRY_POINT> cmd_line_entry_points_t;
-  cmd_line_entry_points_t g_cmd_line_entry_points;
+
+  cmd_line_entry_points_t & GetCommandLineEntryPointsRegistry();
+
+  // https://stackoverflow.com/questions/1005685/c-static-initialization-order
+  cmd_line_entry_points_t & GetCommandLineEntryPointsRegistry()
+  {
+    static cmd_line_entry_points_t cache;
+    return cache;
+  }
 
   //https://stackoverflow.com/questions/8046097/how-to-check-if-a-process-has-the-administrative-rights
   bool IsProcessElevated()
@@ -159,6 +167,7 @@ namespace shellanything
     COMMAND_LINE_ENTRY_POINT ep;
     ep.name = name;
     ep.func = func;
+    cmd_line_entry_points_t& g_cmd_line_entry_points = GetCommandLineEntryPointsRegistry();
     g_cmd_line_entry_points.push_back(ep);
     COMMAND_LINE_ENTRY_POINT* last = &g_cmd_line_entry_points[g_cmd_line_entry_points.size() - 1];
     return last;
@@ -166,6 +175,7 @@ namespace shellanything
 
   bool HasCommandLineEntryPoints(int argc, char** argv)
   {
+    cmd_line_entry_points_t& g_cmd_line_entry_points = GetCommandLineEntryPointsRegistry();
     for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
     {
       COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
@@ -179,6 +189,7 @@ namespace shellanything
 
   int ProcessCommandLineEntryPoints(int argc, char** argv)
   {
+    cmd_line_entry_points_t& g_cmd_line_entry_points = GetCommandLineEntryPointsRegistry();
     for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
     {
       COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
@@ -198,6 +209,7 @@ namespace shellanything
   {
     if (name == NULL)
       return NULL;
+    cmd_line_entry_points_t& g_cmd_line_entry_points = GetCommandLineEntryPointsRegistry();
     for (int i = 0; i < g_cmd_line_entry_points.size(); i++)
     {
       COMMAND_LINE_ENTRY_POINT& ep = g_cmd_line_entry_points[i];
