@@ -35,6 +35,27 @@ jobs:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
 
+    # Force reinstall of ATL through update of Visual Studio 2022 VC components
+    # See https://github.com/actions/runner-images/issues/9873 for details.
+    # The step to `Delete Visual Studio components` is indeed unnecessary.
+    # Only the reinstallation of the following component is required to solve the error `fatal error C1083: Cannot open include file: 'atlbase.h': No such file or directory `. 
+    - name: Install Visual Studio components
+      shell: pwsh
+      run: |
+          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+          $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          $componentsToRemove= @(
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.ATL"
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.ATL.Spectre"
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC"
+            "Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC.Spectre"
+          )
+          [string]$workloadArgs = $componentsToRemove | ForEach-Object {" --add " +  $_}
+          $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+          # should be run twice
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+
     - name: Create new environment variables
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
