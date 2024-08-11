@@ -322,12 +322,13 @@ namespace shellanything
 
       //ASSERT all 3 menus are available
       Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
-      ASSERT_EQ(3, menus.size());
+      ASSERT_EQ(4, menus.size());
 
       //Assert all icons are valid
       ASSERT_TRUE(menus[00]->GetIcon().IsValid());
       ASSERT_TRUE(menus[01]->GetIcon().IsValid());
       ASSERT_TRUE(menus[02]->GetIcon().IsValid());
+      ASSERT_TRUE(menus[03]->GetIcon().IsValid());
 
       //Assert <icon> tag properly parsed
       //menu #00
@@ -342,6 +343,10 @@ namespace shellanything
       ASSERT_EQ(std::string("txt"), menus[02]->GetIcon().GetFileExtension());
       ASSERT_EQ(std::string(""), menus[02]->GetIcon().GetPath());
       ASSERT_EQ(Icon::INVALID_ICON_INDEX, menus[02]->GetIcon().GetIndex());
+
+      //menu #03
+      ASSERT_EQ(std::string("C:\\Windows\\System32\\shell32.dll"), menus[03]->GetIcon().GetPath());
+      ASSERT_EQ(0, menus[03]->GetIcon().GetIndex()); // index 0 should be set automatically.
 
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";

@@ -624,6 +624,20 @@ namespace shellanything
       result.SetIndex(icon_index);
     }
 
+    // As per documentation, "If the index is not specified, the value 0 is used."
+    // See Issue #150 for details.
+    if (!result.IsValid())
+    {
+      int previous_index = result.GetIndex();
+
+      // try re-validating with a default index
+      result.SetIndex(0);
+
+      // if still invalid, revert our change
+      if (!result.IsValid())
+        result.SetIndex(previous_index);
+    }
+
     //success
     icon = result;
     return true;

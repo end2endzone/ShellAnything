@@ -24,6 +24,14 @@
         <property name="baz" value="true" />
       </actions>
     </menu>
+    
+    <menu name="menu03">
+      <!-- Refer to issue #150. Valid path without specifying index -->
+      <icon path="C:\Windows\System32\shell32.dll" />
+      <actions>
+        <property name="baz" value="true" />
+      </actions>
+    </menu>
 
   </shell>
 </root>
