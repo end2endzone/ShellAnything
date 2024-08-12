@@ -89,6 +89,11 @@ jobs:
         gist_file_name: ${{env.GIT_REPOSITORY}}.${{env.GIT_BRANCH}}.${{env.GITHUB_WORKFLOW}}.json
         file_path: ./ci/github/tests_not_available.badge.json
 
+    - name: Install CMake (issue \#158)
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_cmake.bat
+
     - name: Install Doxygen
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
