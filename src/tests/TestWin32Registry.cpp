@@ -239,6 +239,7 @@ namespace shellanything
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
     //--------------------------------------------------------------------------------------------------
+#if 0 // DISABLED CODE. See Issue #155
     TEST_F(TestWin32Registry, testGetFileTypeIconSDF)
     {
       //https://github.com/end2endzone/ShellAnything/issues/17
@@ -326,6 +327,7 @@ namespace shellanything
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
+#endif // DISABLED CODE. See Issue #155
     //--------------------------------------------------------------------------------------------------
 
   } //namespace test

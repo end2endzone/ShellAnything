@@ -65,6 +65,45 @@ namespace shellanything
     {
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestIcon, testValidIcon)
+    {
+      // default ctor
+      {
+        Icon icon;
+        ASSERT_FALSE(icon.IsValid()) << "Default Icon() ctor should return an invalid icon";
+      }
+
+      // path and index
+      {
+        Icon icon;
+        icon.SetPath("path/to/a/file.ico");
+        icon.SetIndex(42);
+        ASSERT_TRUE(icon.IsValid());
+      }
+
+      // file extension only
+      {
+        Icon icon;
+        icon.SetFileExtension("txt");
+        ASSERT_TRUE(icon.IsValid());
+      }
+
+      // path only
+      {
+        Icon icon;
+        icon.SetPath("path/to/a/file.ico");
+        ASSERT_TRUE(icon.IsValid());
+      }
+
+      // path and resource id
+      {
+        Icon icon;
+        icon.SetPath("path/to/a/file.ico");
+        icon.SetIndex(-99);
+        ASSERT_FALSE(icon.IsValid());
+      }
+    }
+    //--------------------------------------------------------------------------------------------------
     TEST_F(TestIcon, testResolveFileExtensionIcon)
     {
       Icon icon;

@@ -35,7 +35,7 @@ namespace shellanything
   Icon::FileExtensionSet Icon::mUnresolvedFileExtensions;
 
   Icon::Icon() :
-    mIndex(Icon::INVALID_ICON_INDEX)
+    mIndex(0) // As per documentation, "If the index is not specified, the value 0 is used." See Issue #17, #150 and #155.
   {
   }
 
@@ -63,9 +63,9 @@ namespace shellanything
   {
     if (!mFileExtension.empty())
       return true;
-    if (mPath.empty() || mIndex == Icon::INVALID_ICON_INDEX)
-      return false;
-    return true;
+    if (!mPath.empty() && mIndex >= 0) // not a resource id. See Issue #17, #150, #155
+      return true;
+    return false;
   }
 
   void Icon::ResolveFileExtensionIcon()
@@ -87,7 +87,7 @@ namespace shellanything
 
       //try to find the path to the icon module for the given file extension.
       Win32Registry::REGISTRY_ICON resolved_icon = Win32Registry::GetFileTypeIcon(file_extension.c_str());
-      if (!resolved_icon.path.empty() && resolved_icon.index != Win32Registry::INVALID_ICON_INDEX)
+      if (!resolved_icon.path.empty() && resolved_icon.index >= 0) // See Issue #17 #155. Do not accept icons which are resource ids.
       {
         //found the icon for the file extension
         //replace this menu's icon with the new information
