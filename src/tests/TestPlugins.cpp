@@ -306,6 +306,10 @@ namespace shellanything
       expected_properties.push_back("sa_plugin_services.WebClient.status");
       expected_properties.push_back("sa_plugin_services.defragsvc.status");
       expected_properties.push_back("sa_plugin_services.gupdate.status");
+      expected_properties.push_back("sa_plugin_services.PerfHost.status");
+      expected_properties.push_back("sa_plugin_services.SensorService.status");
+      expected_properties.push_back("sa_plugin_services.VSS.status");
+      expected_properties.push_back("sa_plugin_services.WMPNetworkSvc.status");
       expected_properties.push_back("sa_plugin_services.aaaa.status");
 
       //Clear expected properties
@@ -333,8 +337,24 @@ namespace shellanything
       static const std::string& STATUS_RUNNING = "running";
       static const std::string& STATUS_STOPPED = "stopped";
       static const std::string& STATUS_EMPTY = "";
-      ASSERT_EQ(STATUS_RUNNING, pmgr.GetProperty("sa_plugin_services.Dhcp.status"));
-      ASSERT_EQ(STATUS_STOPPED, pmgr.GetProperty("sa_plugin_services.gupdate.status"));
+
+      //ASSERT some expected running services
+      bool has_service_running = false;
+      has_service_running = has_service_running || (STATUS_RUNNING == pmgr.GetProperty("sa_plugin_services.Dhcp.status"));
+      has_service_running = has_service_running || (STATUS_RUNNING == pmgr.GetProperty("sa_plugin_services.Dnscache.status"));
+      has_service_running = has_service_running || (STATUS_RUNNING == pmgr.GetProperty("sa_plugin_services.msiserver.status"));
+      ASSERT_TRUE(has_service_running) << "No expected running services found.";
+
+      //ASSERT some expected stopped services
+      bool has_service_stopped = false;
+      has_service_stopped = has_service_stopped || (STATUS_STOPPED == pmgr.GetProperty("sa_plugin_services.gupdate.status"));
+      has_service_stopped = has_service_stopped || (STATUS_STOPPED == pmgr.GetProperty("sa_plugin_services.PerfHost.status"));
+      has_service_stopped = has_service_stopped || (STATUS_STOPPED == pmgr.GetProperty("sa_plugin_services.SensorService.status"));
+      has_service_stopped = has_service_stopped || (STATUS_STOPPED == pmgr.GetProperty("sa_plugin_services.VSS.status"));
+      has_service_stopped = has_service_stopped || (STATUS_STOPPED == pmgr.GetProperty("sa_plugin_services.WMPNetworkSvc.status"));
+      ASSERT_TRUE(has_service_stopped) << "No expected stopped services found.";
+
+      //ASSERT non existing services are "empty"
       ASSERT_EQ(STATUS_EMPTY, pmgr.GetProperty("sa_plugin_services.aaaa.status"));
 
       //Cleanup

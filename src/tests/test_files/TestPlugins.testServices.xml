@@ -24,6 +24,10 @@
       WebClient                       WebClient
       defragsvc                       Optimize drives
       gupdate                         Google Update Service (gupdate)
+      PerfHost                        Performance Counter DLL Host
+      SensorService                   Sensor Service
+      VSS                             Volume Shadow Copy
+      WMPNetworkSvc                   Windows Media Player Network Sharing
       -->
       <property name="sa_plugin_services.names" value=""/>
       <property name="sa_plugin_services.names" value="WinDefend;${sa_plugin_services.names}"/>
@@ -37,6 +41,10 @@
       <property name="sa_plugin_services.names" value="WebClient;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="defragsvc;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="gupdate;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="PerfHost;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="SensorService;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="VSS;${sa_plugin_services.names}"/>
+      <property name="sa_plugin_services.names" value="WMPNetworkSvc;${sa_plugin_services.names}"/>
       <property name="sa_plugin_services.names" value="aaaa;${sa_plugin_services.names}"/>
     </default>
 
