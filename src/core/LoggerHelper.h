@@ -40,7 +40,9 @@ namespace shellanything
   {
   public:
     LoggerHelper(ILoggerService::LOG_LEVEL level);
+    LoggerHelper(ILoggerService::LOG_LEVEL level, bool is_verbose_stream);
     LoggerHelper(const char * filename, int line, ILoggerService::LOG_LEVEL level);
+    LoggerHelper(const char * filename, int line, ILoggerService::LOG_LEVEL level, bool is_verbose_stream);
     virtual ~LoggerHelper();
 
     /// <summary>
@@ -58,15 +60,26 @@ namespace shellanything
     /// </summary>
     LoggerHelper& operator<<(std::ostream& (*f)(std::ostream&));
 
+    /// <summary>
+    /// Define if verbose logging is enabled.
+    /// </summary>
+    /// <returns>Returns true when verbose logging is enabled. Returns false otherwise.</returns>
+    static bool IsVerboseLoggingEnabled();
+
   private:
     ILoggerService::LOG_LEVEL mLevel;
+    bool mIsVerboseStream;
     const char* mFilename;
     int mLine;
     std::stringstream mSS;
   };
 
   #ifndef SA_LOG
-  #define SA_LOG(expr) (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILoggerService::LOG_LEVEL_##expr))
+  #define SA_LOG(expr)          (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILoggerService::LOG_LEVEL_##expr, false))
+  #endif
+
+  #ifndef SA_VERBOSE_LOG
+  #define SA_VERBOSE_LOG(expr)  (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILoggerService::LOG_LEVEL_##expr, true ))
   #endif
 
 } //namespace shellanything

@@ -25,6 +25,7 @@
 #ifndef SA_API_LOGGING_H
 #define SA_API_LOGGING_H
 
+#include "shellanything/sa_types.h"
 #include "shellanything/sa_enums.h"
 
 #ifdef __cplusplus
@@ -33,6 +34,12 @@ extern "C" {
 }  // do not indent code inside extern C
 #endif
 #endif
+
+/// <summary>
+/// Check if verbose logging is enabled.
+/// </summary>
+/// <returns>Return 1 if the verbose logging feature is enabled. Returns 0 otherwise.</returns>
+sa_boolean sa_logging_is_verbose();
 
 /// <summary>
 /// Log a custom message in logs.

@@ -15,6 +15,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
+  ${CMAKE_SOURCE_DIR}/src/core/Environment.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
   ${CMAKE_SOURCE_DIR}/src/core/IKeyboardService.h
   ${CMAKE_SOURCE_DIR}/src/core/ILiveProperty.h
@@ -84,6 +85,7 @@ add_library(sa.core SHARED
   DriveClass.h
   DriveClass.cpp
   Enums.h
+  Environment.cpp
   ErrorManager.h
   ErrorManager.cpp
   PropertyManager.h

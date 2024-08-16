@@ -54,6 +54,7 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_RANDOM_GUID_PROPERTY_NAME = "random.guid";
   const std::string PropertyManager::SYSTEM_RANDOM_FILE_PROPERTY_NAME = "random.file";
   const std::string PropertyManager::SYSTEM_RANDOM_PATH_PROPERTY_NAME = "random.path";
+  const std::string PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME = "system.logging.verbose";
 
   PropertyManager::PropertyManager()
   {

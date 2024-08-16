@@ -122,6 +122,11 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_RANDOM_PATH_PROPERTY_NAME;
 
+    /// <summary>
+    /// Name of the property that defines the verbose logging.
+    /// </summary>
+    static const std::string SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME;
+
   public:
 
     /// <summary>

@@ -27,6 +27,14 @@
 #include <stdarg.h> //for ...
 #include <string>
 
+sa_boolean sa_logging_is_verbose()
+{
+  bool value = shellanything::LoggerHelper::IsVerboseLoggingEnabled();
+  if (value)
+    return 1;
+  return 0;
+}
+
 void sa_logging_print(sa_log_level_t level, const char* source_name, const char* message)
 {
   if (source_name)
