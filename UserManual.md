@@ -40,12 +40,13 @@ This manual includes a description of the system functionalities and capabilitie
   * [Setting properties](#setting-properties)
   * [Property expansion](#property-expansion)
   * [Using properties](#using-properties)
-  * [Environment variables](#environment-variables)
+  * [Environment variables properties](#environment-variables-properties)
   * [Live properties](#live-properties)
   * [Selection-based properties](#selection-based-properties)
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
+* [Environment variables](#environment-variables)
 * [Plugins](#plugins)
   * [Plugin overview](#plugin-overview)
   * [C API](#c-api)
@@ -1530,7 +1531,7 @@ For instance, if one wants to implement 2 menus (called 'A' and 'B') and only sh
 
 
 
-## Environment variables ##
+## Environment variables properties ##
 
 The list of environment variables is available through the property system.
 
@@ -1772,6 +1773,25 @@ For example, the following would define `services.wce.command.start` and `servic
   <property name="services.wce.command.stop"  value="runwce /stop"  />
 </default>
 ```
+
+
+
+
+# Environment variables #
+
+ShellAnything default startup behavior can be modified by setting specific pre-defined environment variables. Some features or configuration options can also be enabled or disabled through environment variables. For example, one can define an environment variables to enable verbose logging.
+
+Most of the time, if a feature can be enabled/disabled from an environment variable and/or a property, the environment variable have priority over internal properties.
+
+Most environment variables are detected when the application starts. After application startup, if you modify an environment variable you have to log off from windows and log in again for the changes to take effect.
+
+All ShellAnything environment variables names are prefixed with `SA_`.
+
+The following table defines the list of pre-defined environment variables for ShellAnything:
+
+| Name                           | Description                                                                                                        |
+|--------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| SA_OPTION_LOGGING_VERBOSE      | Enables [verbose logging](#verbose-logging) when set to a value that evaluates to [true](#istrue-attribute).       |
 
 
 
@@ -2550,6 +2570,22 @@ On application startup, the existing log files are all validated and files older
 To force the application restart, reboot the computer and open a new Windows Explorer or close all Windows Explorer before opening a new Window Explorer window.
 
 There are no plan for keeping the log files for more than 5 days.
+
+
+
+### Verbose logging ###
+
+The application has a verbose logging mode. When enabled, the application will log additional details. This mode should be disabled by default. It should be temporary enabled because log files will likely contain sensitive information.
+
+Verbose mode is highly beneficial for debugging because it provides detailed information about the execution of the program. It allows you to see each step and print out intermediate values, helping you identify where things might be going wrong. For example, it is useful for diagnosing the reason for [Visibility / Validity](#visibility--validity) check failures.
+
+The verbose mode can be enabled (or disabled) with the following option :
+* Setting property `system.logging.verbose` to a value that evaluates to [true](#istrue-attribute) or [false](#isfalse-attribute).
+* Setting environment variable `SA_OPTION_LOGGING_VERBOSE` to a value that evaluates to [true](#istrue-attribute) or [false](#isfalse-attribute).
+
+If both options are specified, the environment variable has priority. 
+
+If no option is specified, verbose mode is disabled.
 
 
 
