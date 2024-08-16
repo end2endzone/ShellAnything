@@ -65,6 +65,8 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestConfiguration.h
   TestDemoSamples.cpp
   TestDemoSamples.h
+  TestEnvironment.cpp
+  TestEnvironment.h
   TestGlogUtils.cpp
   TestGlogUtils.h
   TestIcon.cpp
@@ -75,6 +77,8 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestKeyboardService.h
   TestLibExprtk.cpp
   TestLibExprtk.h
+  TestLoggerHelper.cpp
+  TestLoggerHelper.h
   TestMenu.cpp
   TestMenu.h
   TestObjectFactory.cpp
