@@ -119,6 +119,10 @@ namespace shellanything
 
   ConfigFile* ConfigFile::LoadFile(const std::string& path, std::string& error)
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
+
+    SA_VERBOSE_LOG(INFO) << "Loading configuration file '" << path << "'.";
+
     error = "";
 
     if (!ra::filesystem::FileExistsUtf8(path.c_str()))
@@ -339,6 +343,8 @@ namespace shellanything
 
   void ConfigFile::Update(const SelectionContext& context)
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     SetUpdatingConfigFile(this);
 
     //run callbacks of each plugins
@@ -346,10 +352,12 @@ namespace shellanything
     for (size_t i = 0; i < mPlugins.size(); i++)
     {
       Plugin* p = mPlugins[i];
+      SA_VERBOSE_LOG(INFO) << "Running update callbacks of plugin '" << p->GetPath() << "'.";
       Registry& registry = p->GetRegistry();
       size_t count = registry.GetUpdateCallbackCount();
       for (size_t j = 0; j < count; j++)
       {
+        SA_VERBOSE_LOG(INFO) << "Executing update callback " << (j + 1) << " of " << count << ".";
         IUpdateCallback* callback = registry.GetUpdateCallbackFromIndex(j);
         callback->SetSelectionContext(&context);
         callback->OnNewSelection();
@@ -372,8 +380,10 @@ namespace shellanything
   {
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
+      ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
       //configuration have default properties assigned
-      SA_LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+      SA_LOG(INFO) << "Initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
 
       const shellanything::IAction::ActionPtrList& actions = mDefaults->GetActions();
 
@@ -386,13 +396,17 @@ namespace shellanything
         const shellanything::ActionProperty* action_property = dynamic_cast<const shellanything::ActionProperty*>(abstract_action);
         if (action_property)
           properties.push_back(action_property);
+        else
+        {
+          SA_LOG(WARNING) << "Action " << (i + 1) << " of " << actions.size() << " is not a <property> action!";
+        }
       }
 
       //apply all ActionProperty
       SelectionContext empty_context;
       for (size_t i = 0; i < properties.size(); i++)
       {
-        SA_LOG(INFO) << __FUNCTION__ << "(), executing property " << (i + 1) << " of " << properties.size() << ".";
+        SA_LOG(INFO) << "Executing action " << (i + 1) << " of " << properties.size() << ".";
         const shellanything::ActionProperty* action_property = properties[i];
         if (action_property)
         {
@@ -401,7 +415,7 @@ namespace shellanything
         }
       }
 
-      SA_LOG(INFO) << __FUNCTION__ << "(), execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
+      SA_LOG(INFO) << "Execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
     }
   }
 

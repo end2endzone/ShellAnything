@@ -24,6 +24,7 @@
 
 #include "FileMagicManager.h"
 #include "SelectionContext.h"
+#include "LoggerHelper.h"
 #include "Validator.h"
 #include "PropertyManager.h"
 #include "DriveClass.h"
@@ -64,6 +65,8 @@ namespace shellanything
 
   void SelectionContext::RegisterProperties() const
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     PropertyManager& pmgr = PropertyManager::GetInstance();
 
     FileMagicManager& fm = FileMagicManager::GetInstance();

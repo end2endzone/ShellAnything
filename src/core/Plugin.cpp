@@ -175,6 +175,8 @@ namespace shellanything
 
   bool Plugin::Load()
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
 
@@ -280,6 +282,13 @@ namespace shellanything
 
   bool Plugin::Unload()
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path = pmgr.Expand(mPath);
+
+    SA_LOG(INFO) << "Unloading plugin '" << path << "'.";
+
     if (mEntryPoints->hModule == 0)
       return false; // something is wrong, nothing to unload or already unload
 

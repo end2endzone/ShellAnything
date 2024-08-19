@@ -66,12 +66,76 @@ namespace shellanything
     /// <returns>Returns true when verbose logging is enabled. Returns false otherwise.</returns>
     static bool IsVerboseLoggingEnabled();
 
+    /// <summary>
+    /// Converts a pointer to a hex string format. The value is prefixed with `0x`.
+    /// </summary>
+    /// <param name="ptr">The pointer value to convert.</param>
+    /// <param name="buffer">The target output buffer.</param>
+    /// <param name="buffer_size">The size in byte of the output buffer.</param>
+    static void ToHex(const void* ptr, char* buffer, size_t buffer_size);
+
+    /// <summary>
+    /// Converts a pointer to a hex string format. The value is prefixed with `0x`.
+    /// </summary>
+    /// <param name="ptr">The pointer value to convert.</param>
+    /// <returns>Returns a representation of the given pointer in hex string format.</returns>
+    static std::string ToHex(const void* ptr);
+
+    /// <summary>
+    /// Converts a numeric value to a hex string format. The value is prefixed with `0x`.
+    /// </summary>
+    /// <param name="ptr">The pointer value to convert.</param>
+    /// <returns>Returns a representation of the given pointer in hex string format.</returns>
+    static std::string ToHex(const uint32_t value);
+
   private:
     ILoggerService::LOG_LEVEL mLevel;
     bool mIsVerboseStream;
     const char* mFilename;
     int mLine;
     std::stringstream mSS;
+  };
+
+  /// <summary>
+  /// Helper class for logging the scope of a function or block of code.
+  /// </summary>
+  /// <example>
+  /// <code>
+  /// // For static functions:
+  /// ScopeLogger scope_logger(__FUNCTION__ "()");
+  /// ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
+  /// ScopeLogger info_verbose_scope_logger(__FUNCTION__ "()", true, ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO);
+  ///
+  /// // For class methods:
+  /// ScopeLogger scope_logger(__FUNCTION__ "()", this);
+  /// ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  /// ScopeLogger info_verbose_scope_logger(__FUNCTION__ "()", this, true, ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO);
+  /// </code>
+  /// </example>
+  class SHELLANYTHING_EXPORT ScopeLogger
+  {
+  public:
+    //ScopeLogger(const char* name);
+    ScopeLogger(const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+    //ScopeLogger(const char* name, const void * calling_instance);
+    ScopeLogger(const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+    ~ScopeLogger();
+
+  private:
+    // Disable copy constructor and copy operator
+    ScopeLogger(const ScopeLogger&);
+    ScopeLogger& operator=(const ScopeLogger&);
+
+  private:
+    void Reset();
+    void Enter();
+    void Leave();
+
+  public:
+    ILoggerService::LOG_LEVEL mLevel;
+    std::string mName;
+    bool mIsVerbose;
+    const void* mCallingInstance;
   };
 
   #ifndef SA_LOG

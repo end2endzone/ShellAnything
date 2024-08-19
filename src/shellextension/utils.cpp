@@ -88,7 +88,7 @@ std::string GetProcessContextDesc()
   return desc;
 }
 
-std::string ToHexString(void* value)
+std::string ToHexString(const void* value)
 {
   size_t address = reinterpret_cast<size_t>(value);
   char buffer[1024];

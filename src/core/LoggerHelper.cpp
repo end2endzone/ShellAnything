@@ -28,8 +28,11 @@
 #include "Validator.h"
 #include <string>
 
+#include "rapidassist/strings.h"
+
 namespace shellanything
 {
+
   LoggerHelper::LoggerHelper(ILoggerService::LOG_LEVEL level) :
     mFilename(NULL),
     mLine(0),
@@ -102,19 +105,20 @@ namespace shellanything
     Environment& env = Environment::GetInstance();
 
     // Check environment variable options first.
-    if (env.IsOptionSet(Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME))
+    static const std::string& VERBOSE_ENV_VAR_NAME = Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME;
+    if (env.IsOptionSet(VERBOSE_ENV_VAR_NAME))
     {
-      if (env.IsOptionTrue(Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME))
-      {
+      if (env.IsOptionTrue(VERBOSE_ENV_VAR_NAME))
         return true;
-      }
+      return false;
     }
 
     // Check internal property system.
-    if (!pmgr.HasProperty(PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME))
+    static const std::string& VERBOSE_PROPERTY_NAME = PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME;
+    if (!pmgr.HasProperty(VERBOSE_PROPERTY_NAME))
       return false; // no verbose logging
 
-    const std::string& value = pmgr.GetProperty(PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME);
+    const std::string& value = pmgr.GetProperty(VERBOSE_PROPERTY_NAME);
     if (value.empty())
       return false; // no verbose logging
 
@@ -122,5 +126,102 @@ namespace shellanything
     return has_vebose_logging;
   }
 
+  void LoggerHelper::ToHex(const void* ptr, char* buffer, size_t buffer_size)
+  {
+    sprintf_s(buffer, buffer_size, "0x%p", ptr);
+  }
+
+  std::string LoggerHelper::ToHex(const void* ptr)
+  {
+    char buffer[32];
+    ToHex(ptr, buffer, sizeof(buffer));
+    return buffer;
+  }
+
+  std::string LoggerHelper::ToHex(const uint32_t value)
+  {
+    std::string s = ra::strings::Format("0x%x", value);
+    return s;
+  }
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  //ScopeLogger::ScopeLogger(const char* name)
+  //{
+  //  Reset();
+  //  mName = name;
+
+  //  Enter();
+  //}
+
+  ScopeLogger::ScopeLogger(const char* name, bool is_verbose, ILoggerService::LOG_LEVEL level)
+  {
+    Reset();
+    mLevel = level;
+    mName = name;
+    mIsVerbose = is_verbose;
+
+    Enter();
+  }
+
+  //ScopeLogger::ScopeLogger(const char* name, const void* calling_instance)
+  //{
+  //  Reset();
+  //  mName = name;
+  //  mCallingInstance = calling_instance;
+
+  //  Enter();
+  //}
+
+  ScopeLogger::ScopeLogger(const char* name, const void* calling_instance, bool is_verbose, ILoggerService::LOG_LEVEL level)
+  {
+    Reset();
+    mLevel = level;
+    mName = name;
+    mIsVerbose = is_verbose;
+    mCallingInstance = calling_instance;
+
+    Enter();
+  }
+
+  ScopeLogger::~ScopeLogger()
+  {
+    Leave();
+  }
+
+  void ScopeLogger::Reset()
+  {
+    mLevel = ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO;
+    //mName
+    mIsVerbose = false;
+    mCallingInstance = NULL;
+  }
+
+  void ScopeLogger::Enter()
+  {
+    if (!mCallingInstance)
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - enter";
+    else
+    {
+      char hex_ptr_value[32];
+      LoggerHelper::ToHex(mCallingInstance, hex_ptr_value, sizeof(hex_ptr_value));
+
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " for instance " << hex_ptr_value << "- enter";
+    }
+  }
+
+  void ScopeLogger::Leave()
+  {
+    if (!mCallingInstance)
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - leave";
+    else
+    {
+      char hex_ptr_value[32];
+      LoggerHelper::ToHex(mCallingInstance, hex_ptr_value, sizeof(hex_ptr_value));
+
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " for instance " << hex_ptr_value << "- leave";
+    }
+  }
 
 } //namespace shellanything

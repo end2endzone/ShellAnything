@@ -259,7 +259,7 @@ namespace shellanything
       }
     }
 
-    // If regisrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
+    // If registrykey is specified, it has priority over value. This is required to allow setting a property to an empty value (a.k.a. value="").
     if (!registrykey.empty())
     {
       std::string tmp_value;

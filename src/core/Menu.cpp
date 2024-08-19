@@ -25,6 +25,7 @@
 #include "Menu.h"
 #include "Unicode.h"
 #include "PropertyManager.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/strings.h"
 
@@ -204,10 +205,14 @@ namespace shellanything
 
   void Menu::Update(const SelectionContext& context)
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     //update current menu
     bool visible = true;
     if (!mVisibilities.empty())
     {
+      SA_VERBOSE_LOG(DEBUG) << "Validating menu '" << mName << "' against visibility validators...";
+
       visible = false;
       size_t count = GetVisibilityCount();
       for (size_t i = 0; i < count && visible == false; i++)
@@ -222,6 +227,8 @@ namespace shellanything
     bool enabled = true;
     if (!mValidities.empty())
     {
+      SA_VERBOSE_LOG(DEBUG) << "Validating menu '" << mName << "' against validity validators...";
+
       enabled = false;
       size_t count = GetValidityCount();
       for (size_t i = 0; i < count && enabled == false; i++)
@@ -235,6 +242,14 @@ namespace shellanything
     }
     SetVisible(visible);
     SetEnabled(enabled);
+    if (!visible)
+    {
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is set invisible from validation.";
+    }
+    if (!enabled)
+    {
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is set disabled from validation.";
+    }
 
     //update children
     bool all_invisible_children = true;
@@ -256,6 +271,7 @@ namespace shellanything
     {
       //force this node as invisible.
       SetVisible(false);
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is forced invisible because all its children (" << children.size() << ") are invisibles.";
     }
   }
 

@@ -112,6 +112,8 @@ namespace shellanything
     if (found)
       return;
 
+    SA_VERBOSE_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+
     properties.SetProperty(name, value);
   }
 
@@ -130,6 +132,7 @@ namespace shellanything
     if (p)
     {
       std::string value = p->GetProperty();
+      SA_VERBOSE_LOG(INFO) << "Live property '" << name << "' evaluates to value '" << value << "'.";
       return value;
     }
 
@@ -258,6 +261,9 @@ namespace shellanything
     if (!instance)
       return;
     const std::string& name = instance->GetName();
+
+    SA_VERBOSE_LOG(INFO) << "Registering live property '" << name << "'.";
+
     live_properties[name] = instance;
   }
 
@@ -603,6 +609,8 @@ namespace shellanything
 
   void PropertyManager::RegisterEnvironmentVariables()
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
     ra::environment::GetEnvironmentVariableUtf8("foo");
 
@@ -622,6 +630,8 @@ namespace shellanything
 
   void PropertyManager::RegisterFixedAndDefaultProperties()
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     shellanything::App& app = shellanything::App::GetInstance();
 
     //define global properties

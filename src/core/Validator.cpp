@@ -52,6 +52,8 @@ namespace shellanything
   const std::string& Validator::ATTRIBUTE_KEYBOARD = "keyboard";
   const std::string& Validator::ATTRIBUTE_INSERVE = "inverse";
 
+  const std::string& INSERVE_ATTR_PREFIX = "inverse ";
+
   bool HasValue(const ra::strings::StringVector& values, const std::string& token)
   {
     for (size_t i = 0; i < values.size(); i++)
@@ -72,6 +74,52 @@ namespace shellanything
     }
   }
 
+  inline std::string GetPrevalidateMessage(const char* attr_name, bool inversed, const std::string & value)
+  {
+    std::string s;
+    s.reserve(128);
+
+    s += "Validating ";
+    if (inversed)
+      s += "inversed ";
+    s += "attribute ";
+    s += "'";
+    s += attr_name;
+    s += "' against value '";
+    s += attr_name;
+    s += "'.";
+    return s;
+  }
+
+  inline std::string GetAttrFailMessage(const Validator* this_instance, const char* attr_name, bool inversed)
+  {
+    std::string s;
+    s.reserve(128);
+
+    s += "Validator ";
+    s += LoggerHelper::ToHex(this_instance);
+    s += " has failed ";
+    if (inversed)
+      s += "inversed ";
+    s += "'";
+    s += attr_name;
+    s += "' validation.";
+    return s;
+  }
+
+  inline std::string GetCheckFailMessage(const Validator* this_instance, bool inversed)
+  {
+    std::string s;
+    s.reserve(128);
+
+    s += "Validator ";
+    s += LoggerHelper::ToHex(this_instance);
+    s += " ";
+    if (inversed)
+      s += "inversed ";
+    s += "check fail: ";
+    return s;
+  }
 
 
 
@@ -307,98 +355,155 @@ namespace shellanything
 
   bool Validator::Validate(const SelectionContext& context) const
   {
+    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+
     PropertyManager& pmgr = PropertyManager::GetInstance();
+    const char * attr_name = "";
 
-    bool maxfiles_inversed = IsInversed("maxfiles");
+    attr_name = "maxfiles";
+    bool maxfiles_inversed = IsInversed(attr_name);
     if (!maxfiles_inversed && context.GetNumFiles() > mMaxFiles)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, maxfiles_inversed);
       return false; //too many files selected
+    }
     if (maxfiles_inversed && context.GetNumFiles() <= mMaxFiles)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, maxfiles_inversed);
       return false; //too many files selected
+    }
 
-    bool maxfolders_inversed = IsInversed("maxfolders");
+    attr_name = "maxfolders";
+    bool maxfolders_inversed = IsInversed(attr_name);
     if (!maxfolders_inversed && context.GetNumDirectories() > mMaxDirectories)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, maxfolders_inversed);
       return false; //too many directories selected
+    }
     if (maxfolders_inversed && context.GetNumDirectories() <= mMaxDirectories)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, maxfolders_inversed);
       return false; //too many directories selected
+    }
 
     //validate properties
     const std::string properties = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_PROPERTIES));
     if (!properties.empty())
     {
-      bool inversed = IsInversed("properties");
+      attr_name = "properties";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, properties);
       bool valid = ValidateProperties(context, properties, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate file extentions
     const std::string file_extensions = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_FILEEXTENSIONS));
     if (!file_extensions.empty())
     {
-      bool inversed = IsInversed("fileextensions");
+      attr_name = "fileextensions";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, file_extensions);
       bool valid = ValidateFileExtensions(context, file_extensions, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate file/directory exists
     const std::string file_exists = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_EXISTS));
     if (!file_exists.empty())
     {
-      bool inversed = IsInversed("exists");
+      attr_name = "exists";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, file_exists);
       bool valid = ValidateExists(context, file_exists, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate class
     const std::string class_ = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_CLASS));
     if (!class_.empty())
     {
-      bool inversed = IsInversed("class");
+      attr_name = "class";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, class_);
       bool valid = ValidateClass(context, class_, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate pattern
     const std::string pattern = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_PATTERN));
     if (!pattern.empty())
     {
-      bool inversed = IsInversed("pattern");
+      attr_name = "pattern";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, pattern);
       bool valid = ValidatePattern(context, pattern, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate exprtx
     const std::string exprtk = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_EXPRTK));
     if (!exprtk.empty())
     {
-      bool inversed = IsInversed("exprtk");
+      attr_name = "exprtk";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, exprtk);
       bool valid = ValidateExprtk(context, exprtk, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate istrue
     const std::string istrue = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_ISTRUE));
     if (!istrue.empty())
     {
-      bool inversed = IsInversed("istrue");
+      attr_name = "istrue";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, istrue);
       bool valid = ValidateIsTrue(context, istrue, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate isfalse
     const std::string isfalse = pmgr.Expand(mAttributes.GetProperty(ATTRIBUTE_ISFALSE));
     if (!isfalse.empty())
     {
-      bool inversed = IsInversed("isfalse");
+      attr_name = "isfalse";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, isfalse);
       bool valid = ValidateIsFalse(context, isfalse, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate isempty
@@ -406,10 +511,15 @@ namespace shellanything
     const std::string isempty = pmgr.Expand(isempty_attr);
     if (!isempty_attr.empty())  // note, testing with non-expanded value instead of expanded value
     {
-      bool inversed = IsInversed("isempty");
+      attr_name = "isempty";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, isempty_attr);
       bool valid = ValidateIsEmpty(context, isempty, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //validate using plugins
@@ -419,7 +529,11 @@ namespace shellanything
       Plugin* p = mPlugins[i];
       bool valid = ValidatePlugin(context, p);
       if (!valid)
+      {
+        std::string plugin_desc = std::string("plugin '") + p->GetPath() + "'";
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, plugin_desc.c_str(), false);
         return false;
+      }
     }
 
     //validate keyboard
@@ -427,10 +541,15 @@ namespace shellanything
     const std::string keyboard = pmgr.Expand(keyboard_attr);
     if (!keyboard_attr.empty())  // note, testing with non-expanded value instead of expanded value
     {
-      bool inversed = IsInversed("keyboard");
+      attr_name = "keyboard";
+      bool inversed = IsInversed(attr_name);
+      SA_VERBOSE_LOG(DEBUG) << GetPrevalidateMessage(attr_name, inversed, keyboard_attr);
       bool valid = ValidateKeyboard(context, keyboard, inversed);
       if (!valid)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, attr_name, inversed);
         return false;
+      }
     }
 
     //check if we are updating a ConfigFile.
@@ -444,7 +563,11 @@ namespace shellanything
         Plugin* p = config_plugins[i];
         bool valid = ValidatePlugin(context, p);
         if (!valid)
+        {
+          std::string plugin_desc = std::string("plugin '") + p->GetPath() + "'";
+          SA_VERBOSE_LOG(DEBUG) << GetAttrFailMessage(this, plugin_desc.c_str(), false);
           return false;
+        }
       }
     }
 
@@ -509,10 +632,16 @@ namespace shellanything
       if (!inversed)
       {
         if (!pmgr.HasProperty(p))
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Property '" << p << "' is not set.";
           return false; //missing property
+        }
         const std::string& p_value = pmgr.GetProperty(p);
         if (p_value.empty())
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Property '" << p << "' is empty.";
           return false; //empty
+        }
       }
       else
       {
@@ -521,7 +650,10 @@ namespace shellanything
         {
           const std::string& p_value = pmgr.GetProperty(p);
           if (!p_value.empty())
+          {
+            SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Property '" << p << "' is not empty and set to '" << p_value << "'.";
             return false; //not empty
+          }
         }
       }
     }
@@ -537,22 +669,28 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions, SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
-    Uppercase(accepted_file_extensions);
+    std::string file_extensions_uppercase = ra::strings::Uppercase(file_extensions);
+    ra::strings::StringVector accepted_file_extensions = ra::strings::Split(file_extensions_uppercase, SA_FILEEXTENSION_ATTR_SEPARATOR_STR);
 
     //for each file selected
     const StringList& context_elements = context.GetElements();
     for (size_t i = 0; i < context_elements.size(); i++)
     {
       const std::string& path = context_elements[i];
-      std::string current_file_extension = ra::strings::Uppercase(ra::filesystem::GetFileExtention(path));
+      std::string current_file_extension_uppercase = ra::strings::Uppercase(ra::filesystem::GetFileExtention(path));
 
       //each file extension must be part of accepted_file_extensions
-      bool found = HasValue(accepted_file_extensions, current_file_extension);
+      bool found = HasValue(accepted_file_extensions, current_file_extension_uppercase);
       if (!inversed && !found)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " File extension '" << current_file_extension_uppercase << "' from selected file '" << path << "' is not allowed because only the extensions '" << file_extensions_uppercase << "' are accepted.";
         return false; //current file extension is not accepted
+      }
       if (inversed && found)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " File extension '" << current_file_extension_uppercase << "' from selected file '" << path << "' is not allowed because the extensions '" << file_extensions_uppercase << "' are forbidden.";
         return false; //current file extension is not accepted
+      }
     }
 
     return true;
@@ -576,9 +714,15 @@ namespace shellanything
       element_exists |= ra::filesystem::FileExistsUtf8(element.c_str());
       element_exists |= ra::filesystem::DirectoryExistsUtf8(element.c_str());
       if (!inversed && !element_exists)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " File/Directory '" << element.c_str() << "' does not exists.";
         return false; //mandatory file/directory not found
+      }
       if (inversed && element_exists)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " File/Directory '" << element.c_str() << "' exists.";
         return false; //mandatory file/directory not found
+      }
     }
 
     return true;
@@ -593,27 +737,45 @@ namespace shellanything
       // Selected element must be a file
       bool is_file = ra::filesystem::FileExistsUtf8(path.c_str());
       if (!inversed && !is_file)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is not a file.";
         return false;
+      }
       if (inversed && is_file)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is a file.";
         return false;
+      }
     }
     else if (class_ == "folder" || class_ == "directory")
     {
       // Selected elements must be a directory
       bool is_directory = ra::filesystem::DirectoryExistsUtf8(path.c_str());
       if (!inversed && !is_directory)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is not a directory.";
         return false;
+      }
       if (inversed && is_directory)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is a directory.";
         return false;
+      }
     }
     else if (class_ == "drive")
     {
       // Selected elements must be mapped to a drive
       std::string drive = GetDriveLetter(path);
       if (!inversed && drive.empty())  // All elements must be mapped to a drive
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is not on a drive.";
         return false;
+      }
       if (inversed && !drive.empty())  // All elements must NOT be mapped to a drive.
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is on a drive.";
         return false;
+      }
     }
     else if (GetDriveClassFromString(class_.c_str()) != DRIVE_CLASS_UNKNOWN)
     {
@@ -622,16 +784,31 @@ namespace shellanything
       // Selected elements must be of the same drive class
       DRIVE_CLASS element_class = GetDriveClassFromPath(path);
       if (!inversed && element_class != required_class)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is not of class " << ToString(required_class) <<  ".";
         return false;
+      }
       if (inversed && element_class == required_class)
+      {
+        //SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is of class " << ToString(required_class) << ".";
         return false;
+      }
     }
     else
     {
       SA_LOG(WARNING) << "Unknown class '" << class_ << "'.";
+      return false;
     }
 
     return true;
+  }
+
+  static inline bool IsValidClass(const std::string& class_)
+  {
+    DRIVE_CLASS parsed_class = GetDriveClassFromString(class_.c_str());
+    if (parsed_class != DRIVE_CLASS_UNKNOWN)
+      return true;
+    return false;
   }
 
   bool Validator::ValidateSingleFileMultipleClasses(const std::string& path, const std::string& class_, bool inversed) const
@@ -641,15 +818,32 @@ namespace shellanything
 
     //split
     ra::strings::StringVector classes = ra::strings::Split(class_, SA_CLASS_ATTR_SEPARATOR_STR);
+    std::string valid_classes;
 
     bool valid = false;
     for (size_t i = 0; i < classes.size(); i++)
     {
       const std::string& class_ = classes[i];
       valid |= ValidateSingleFileSingleClass(path, class_, inversed);
+
+      // Build a valid classes list from the given classes (strings)
+      if (IsValidClass(class_))
+      {
+        if (!valid_classes.empty()) valid_classes.append(1, ',');
+        valid_classes += class_;
+      }
     }
 
-    return valid;
+    if (!valid)
+    {
+      if (!inversed)
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is not of classes '" << valid_classes << "'.";
+      else
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' is of classes '" << valid_classes << "'.";
+      return false;
+    }
+
+    return true;
   }
 
   bool Validator::ValidateClass(const SelectionContext& context, const std::string& class_, bool inversed) const
@@ -709,7 +903,13 @@ namespace shellanything
       {
         bool valid = ValidateFileExtensions(context, file_extensions, inversed);
         if (!valid)
+        {
+          if (!inversed)
+            SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path(s) is/are not of file extensions '" << file_extensions << "'.";
+          else
+            SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path(s) is/are one of file extensions '" << file_extensions << "'.";
           return false;
+        }
       }
     }
 
@@ -728,9 +928,9 @@ namespace shellanything
         //each element must match one of the classes
         bool valid = ValidateSingleFileMultipleClasses(path, classes_str, inversed);
         if (!inversed && !valid)
-          return false; //current file extension is not accepted
+          return false; //verbose log is already printed in ValidateSingleFileMultipleClasses()
         if (inversed && valid)
-          return false; //current file extension is not accepted
+          return false; //verbose log is already printed in ValidateSingleFileMultipleClasses()
       }
     }
 
@@ -757,8 +957,8 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
 
     //split
-    ra::strings::StringVector patterns = ra::strings::Split(pattern, SA_PATTERN_ATTR_SEPARATOR_STR);
-    Uppercase(patterns);
+    ra::strings::StringVector patterns_uppercase = ra::strings::Split(pattern, SA_PATTERN_ATTR_SEPARATOR_STR);
+    Uppercase(patterns_uppercase);
 
     //for each file selected
     const StringList& context_elements = context.GetElements();
@@ -768,11 +968,17 @@ namespace shellanything
       std::string path_uppercase = ra::strings::Uppercase(path);
 
       //each element must match one of the patterns
-      bool match = WildcardMatch(patterns, path_uppercase.c_str());
+      bool match = WildcardMatch(patterns_uppercase, path_uppercase.c_str());
       if (!inversed && !match)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' does not match the pattern '" << pattern << "'.";
         return false; //current file does not match any patterns
+      }
       if (inversed && match)
-        return false; //current element is not accepted
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected path '" << path << "' matches with the pattern '" << pattern << "'.";
+        return false; //current file does match one pattern
+      }
     }
 
     return true;
@@ -798,10 +1004,18 @@ namespace shellanything
       return false;
     }
 
-    if (inversed)
-      result = !result;
+    if (!inversed && !result)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected element(s) does not match the exprtk expression '" << exprtk << "'.";
+      return false; //current file does not match any patterns
+    }
+    if (inversed && result)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Selected element(s) matches the exprtk expression '" << exprtk << "'.";
+      return false; //current file does match one pattern
+    }
 
-    return result;
+    return true;
   }
 
   bool Validator::ValidateIsTrue(const SelectionContext& context, const std::string& istrue, bool inversed) const
@@ -820,9 +1034,15 @@ namespace shellanything
       const std::string& statement = statements[i];
       bool match = IsTrue(statement);
       if (!inversed && !match)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << statement << "' does not evaluates to true.";
         return false; //current statement does not evaluate to true
+      }
       if (inversed && match)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << statement << "' evaluates to true.";
         return false; //current statement evaluates as true
+      }
     }
 
     return true;
@@ -844,9 +1064,15 @@ namespace shellanything
       const std::string& statement = statements[i];
       bool match = IsFalse(statement);
       if (!inversed && !match)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << statement << "' does not evaluates to false.";
         return false; //current statement does not evaluate to false
+      }
       if (inversed && match)
+      {
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << statement << "' evaluates to false.";
         return false; //current statement evaluates as false
+      }
     }
 
     return true;
@@ -858,9 +1084,15 @@ namespace shellanything
 
     bool match = isempty.empty();
     if (!inversed && !match)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << isempty << "' is not empty.";
       return false; //current statement is not empty
+    }
     if (inversed && match)
+    {
+      SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Statement '" << isempty << "' is empty.";
       return false; //current statement is empty
+    }
 
     return true;
   }
@@ -944,7 +1176,18 @@ namespace shellanything
       attr_validator->SetSelectionContext(NULL);
       attr_validator->SetCustomAttributes(NULL);
       if (!valid)
-        return false;
+      {
+        //get the names of custom attributes
+        shellanything::StringList custom_attribute_names_list;
+        mCustomAttributes.GetProperties(custom_attribute_names_list);
+        std::string custom_attribute_names = ra::strings::Join(custom_attribute_names_list, ",");
+
+        //get plugin description
+        std::string plugin_desc = std::string("plugin '") + plugin->GetPath() + "'";
+
+        SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, false) << " Plugin '" << plugin_desc << "' custom attributes '" << custom_attribute_names << "' have failed validation.";
+        return false; //current statement is not empty
+      }
     }
 
     return true;
@@ -957,7 +1200,10 @@ namespace shellanything
 
     IKeyboardService* keyboard_service = App::GetInstance().GetKeyboardService();
     if (keyboard_service == NULL)
+    {
+      SA_LOG(ERROR) << "No keyboard setup to validate keyboard validation.";
       return false; // invalid. No keyboard setup to validate.
+    }
 
     PropertyManager& pmgr = PropertyManager::GetInstance();
 
@@ -974,6 +1220,7 @@ namespace shellanything
       if (mid == KMID_INVALID && tid == KMID_INVALID)
       {
         // Unknown keyboard id
+        SA_LOG(ERROR) << "Unknown keyboard id '" << element << "'.";
         return false;
       }
 
@@ -982,9 +1229,15 @@ namespace shellanything
       {
         bool element_key_down = keyboard_service->IsModifierKeyDown(mid);
         if (!inversed && !element_key_down)
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Keyboard modifier '" << element << "' is not set.";
           return false; //mandatory modifier not set
+        }
         if (inversed && element_key_down)
-          return false; //mandatory modifier not set
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Keyboard modifier '" << element << "' is set.";
+          return false; //mandatory modifier is set
+        }
       }
 
       // Validate as a toogle
@@ -992,9 +1245,15 @@ namespace shellanything
       {
         bool element_toggle_on = keyboard_service->IsToggleStateOn(tid);
         if (!inversed && !element_toggle_on)
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Keyboard modifier '" << element << "' is not set.";
           return false; //mandatory modifier not set
+        }
         if (inversed && element_toggle_on)
-          return false; //mandatory modifier not set
+        {
+          SA_VERBOSE_LOG(DEBUG) << GetCheckFailMessage(this, inversed) << " Keyboard modifier '" << element << "' is set.";
+          return false; //mandatory modifier is set
+        }
       }
     }
 

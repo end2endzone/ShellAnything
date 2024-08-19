@@ -115,7 +115,7 @@ namespace shellanything
 
     bool validated = mValidator->Validate(context);
 
-    //update the property
+    //log the result
     if (validated)
       SA_LOG(INFO) << "ActionStop: Validation is successful.";
     else

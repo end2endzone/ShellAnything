@@ -24,6 +24,7 @@
 
 #include "ObjectFactory.h"
 
+#include "LoggerHelper.h"
 #include "PropertyManager.h"
 #include "ConfigFile.h"
 #include "Menu.h"
@@ -52,6 +53,14 @@ namespace shellanything
   static const std::string& NODE_ACTION_STOP = ActionStop::XML_ELEMENT_NAME;
   static const std::string& NODE_ACTION_PROPERTY = ActionProperty::XML_ELEMENT_NAME;
   static const std::string NODE_PLUGIN = "plugin";
+
+  std::string ToXml(const XMLElement* element)
+  {
+    XMLPrinter printer;
+    element->Accept(&printer);
+    std::string xml = printer.CStr();
+    return xml;
+  }
 
   ObjectFactory::ObjectFactory()
   {
@@ -360,17 +369,26 @@ namespace shellanything
     if (factory)
     {
       //convert the xml element to a string
-      XMLPrinter printer;
-      element->Accept(&printer);
-      std::string text = printer.CStr();
+      std::string xml = ToXml(element);
 
       //try to parse an IAction from the string
-      IAction* action = factory->ParseFromXml(text, error);
-      return action;
+      IAction* action = factory->ParseFromXml(xml, error);
+      if (action)
+        return action;
+
+      //failed parsing
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " has failed to parse as an Action.";
+      error += "\n";
+      error += "Failed to parse action from xml: {\n";
+      error += xml;
+      error += "\n}";
+      SA_VERBOSE_LOG(ERROR) << error;
+      return NULL;
     }
 
     //invalid
     error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
+    SA_VERBOSE_LOG(WARNING) << error;
     return NULL;
   }
 
@@ -431,6 +449,10 @@ namespace shellanything
         Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
         if (validator == NULL)
         {
+          // add verbose output
+          if (LoggerHelper::IsVerboseLoggingEnabled())
+            SA_VERBOSE_LOG(ERROR) << "Failed to parse validity validator from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
           delete menu;
           return NULL;
         }
@@ -446,6 +468,10 @@ namespace shellanything
         Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
         if (validator == NULL)
         {
+          // add verbose output
+          if (LoggerHelper::IsVerboseLoggingEnabled())
+            SA_VERBOSE_LOG(ERROR) << "Failed to parse visibility validator from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
           delete menu;
           return NULL;
         }
@@ -503,6 +529,10 @@ namespace shellanything
       Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
       if (validator == NULL)
       {
+        // add verbose output
+        if (LoggerHelper::IsVerboseLoggingEnabled())
+          SA_VERBOSE_LOG(ERROR) << "Failed to parse validity validator from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
         delete menu;
         return NULL;
       }
@@ -518,6 +548,10 @@ namespace shellanything
       Validator* validator = ObjectFactory::GetInstance().ParseValidator(elements[i], error);
       if (validator == NULL)
       {
+        // add verbose output
+        if (LoggerHelper::IsVerboseLoggingEnabled())
+          SA_VERBOSE_LOG(ERROR) << "Failed to parse visibility validator from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
         delete menu;
         return NULL;
       }
@@ -540,6 +574,10 @@ namespace shellanything
         IAction* action = ObjectFactory::GetInstance().ParseAction(xml_action, error);
         if (action == NULL)
         {
+          // add verbose output
+          if (LoggerHelper::IsVerboseLoggingEnabled())
+            SA_VERBOSE_LOG(ERROR) << "Failed to parse action from xml: {\n" << ToXml(xml_action) << "\n}\n";
+
           delete menu;
           return NULL;
         }
@@ -559,6 +597,10 @@ namespace shellanything
       Menu* submenu = ObjectFactory::GetInstance().ParseMenu(elements[i], error);
       if (submenu == NULL)
       {
+        // add verbose output
+        if (LoggerHelper::IsVerboseLoggingEnabled())
+          SA_VERBOSE_LOG(ERROR) << "Failed to parse menu from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
         delete menu;
         return NULL;
       }
@@ -572,7 +614,10 @@ namespace shellanything
       Icon icon;
       if (!ObjectFactory::GetInstance().ParseIcon(elements[i], icon, error))
       {
-        //failed icon parsing
+        // add verbose output
+        if (LoggerHelper::IsVerboseLoggingEnabled())
+          SA_VERBOSE_LOG(ERROR) << "Failed to parse icon from xml: {\n" << ToXml(elements[i]) << "\n}\n";
+
         delete menu;
         return NULL;
       }
@@ -594,7 +639,7 @@ namespace shellanything
     if (xml_name != NODE_ICON)
     {
       error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is an unknown type.";
-      return NULL;
+      return false;
     }
 
     //parse path
@@ -608,6 +653,7 @@ namespace shellanything
     if (!hasPath && !hasFileExtension)
     {
       //failed parsing
+      error = "Node '" + std::string(element->Name()) + "' at line " + ra::strings::ToString(element->GetLineNum()) + " is missing a path or a file extension.";
       return false;
     }
 

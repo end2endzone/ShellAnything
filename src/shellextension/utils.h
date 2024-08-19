@@ -41,7 +41,7 @@
 std::string GuidToString(GUID guid);
 std::string GuidToInterfaceName(GUID guid);
 std::string GetProcessContextDesc();
-std::string ToHexString(void* value);
+std::string ToHexString(const void* value);
 
 std::string GetQueryContextMenuFlags(UINT flags);
 std::string GetGetCommandStringFlags(UINT flags);

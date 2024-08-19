@@ -33,13 +33,15 @@ namespace shellanything
 
   bool ActionManager::Execute(const Menu* menu, const SelectionContext& context)
   {
+    shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
+
     //compute the visual menu title
     shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
     std::string title = pmgr.Expand(menu->GetName());
 
     bool success = true;
 
-    SA_LOG(INFO) << "Executing action(s) for menu '" << title.c_str() << "'...";
+    SA_LOG(INFO) << "Executing action(s) for menu '" << title.c_str() << "', id=" << menu->GetCommandId() << "...";
 
     //execute actions
     const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
@@ -59,7 +61,7 @@ namespace shellanything
           if (dwError)
           {
             std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << error_message;
+            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << LoggerHelper::ToHex(dwError) << ", " << error_message;
           }
           else
           {
