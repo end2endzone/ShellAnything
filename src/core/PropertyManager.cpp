@@ -56,11 +56,9 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_RANDOM_PATH_PROPERTY_NAME = "random.path";
   const std::string PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME = "system.logging.verbose";
 
-  PropertyManager::PropertyManager()
+  PropertyManager::PropertyManager() :
+    mInitialized(false)
   {
-    RegisterEnvironmentVariables();
-    RegisterFixedAndDefaultProperties();
-    RegisterLiveProperties();
   }
 
   PropertyManager::~PropertyManager()
@@ -71,6 +69,17 @@ namespace shellanything
   PropertyManager& PropertyManager::GetInstance()
   {
     static PropertyManager _instance;
+    if (!_instance.mInitialized)
+    {
+      _instance.mInitialized = true;
+
+      // Initialize PropertyManager with default properties.
+      // Note: The next calls will likely lead to another call to PropertyManager::GetInstance().
+      // We are using the PropertyManager::mInitialized flag to prevent running into a circular reference
+      _instance.RegisterEnvironmentVariables();
+      _instance.RegisterFixedAndDefaultProperties();
+      _instance.RegisterLiveProperties();
+    }
     return _instance;
   }
 

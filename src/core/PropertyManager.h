@@ -261,6 +261,7 @@ namespace shellanything
 
     void RegisterEnvironmentVariables();
     void RegisterFixedAndDefaultProperties();
+    bool mInitialized; // to prevent calling PropertyManager::GetInstance() while in PropertyManager ctor, creating a circular reference.
     PropertyStore properties;
     LivePropertyMap live_properties;
   };
