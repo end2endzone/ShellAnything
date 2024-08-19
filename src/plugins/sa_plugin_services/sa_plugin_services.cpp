@@ -54,6 +54,27 @@ void get_service_last_error(DWORD * error_code, char ** buffer, size_t * buffer_
   size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                                NULL, (*error_code), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
 
+  //Remove any LF or CRLF at the end of the buffer
+  if (messageBuffer)
+  {
+    size_t length = strlen(messageBuffer);
+    if (length >= 2)
+    {
+      // check for CRLF
+      if (messageBuffer[length - 2] == '\r' && messageBuffer[length - 1] == '\n')
+      {
+        messageBuffer[length - 2] = '\0';
+        messageBuffer[length - 1] = '\0';
+      }
+
+      // check for LF
+      if (messageBuffer[length - 1] == '\n')
+      {
+        messageBuffer[length - 1] = '\0';
+      }
+    }
+  }
+
   //Copy the error message into the output buffer.
   *buffer = _strdup(messageBuffer);
   *buffer_size = size;
