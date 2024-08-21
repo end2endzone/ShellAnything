@@ -48,4 +48,3 @@
 
 // Debugging support
 //#define SA_ENABLE_ATTACH_HOOK_DEBUGGING
-//#define SA_ENABLE_SCOPE_DEBUGGING
