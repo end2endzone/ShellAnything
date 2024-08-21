@@ -78,14 +78,14 @@ namespace shellanything
       // Get a copy of the streamed content
       std::string str_copy = mSS.str();
 
-      // Do we have the orignial filename and line number of the loged content?
+      // Do we have the orignial filename and line number of the logged content?
       if (mFilename)
       {
         logger->LogMessage(mFilename, mLine, mLevel, str_copy.c_str());
       }
       else
       {
-        logger->LogMessage(mFilename, mLine, mLevel, str_copy.c_str());
+        logger->LogMessage(mLevel, str_copy.c_str());
       }
     }
   }

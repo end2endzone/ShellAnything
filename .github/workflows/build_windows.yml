@@ -30,7 +30,7 @@ jobs:
         git submodule update --init --recursive
 
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
@@ -81,7 +81,8 @@ jobs:
       run: call ci\github\list_registry_keys.bat
 
     - name: Deploy 'tests not available' badge before building
-      uses: exuanbo/actions-deploy-gist@v1
+      #uses: exuanbo/actions-deploy-gist@v1
+      uses: end2endzone/actions-deploy-gist@main
       if: github.event_name != 'pull_request'
       with:
         token: ${{ secrets.BADGES }}
@@ -182,7 +183,8 @@ jobs:
       run: python ci\github\maketestbadge.py ${{env.UNITTEST_REPORT_PATH}}
       
     - name: Deploy test badge to gist
-      uses: exuanbo/actions-deploy-gist@v1
+      #uses: exuanbo/actions-deploy-gist@v1
+      uses: end2endzone/actions-deploy-gist@main
       if: github.event_name != 'pull_request'
       with:
         token: ${{ secrets.BADGES }}
@@ -191,13 +193,13 @@ jobs:
         file_path: ./badge.json
     
     - name: Archive test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unit-test-results
         path: build\bin\${{env.Configuration}}\sa.tests.*.xml
     
     - name: Archive test logs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unit-test-logs
         path: build\bin\${{env.Configuration}}\test_logs\*.log
@@ -211,7 +213,7 @@ jobs:
         echo SHELLANYTHING_VERSION=%SHELLANYTHING_VERSION%>> %GITHUB_ENV%
     
     - name: Archive installation packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Installation packages.
         path: build/ShellAnything-${{env.SHELLANYTHING_VERSION}}-*.*
