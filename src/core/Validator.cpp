@@ -32,6 +32,7 @@
 #include "Wildcard.h"
 #include "LoggerHelper.h"
 #include "KeyboardHelper.h"
+#include "SaUtils.h"
 #include "libexprtk.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
@@ -97,7 +98,7 @@ namespace shellanything
     s.reserve(128);
 
     s += "Validator ";
-    s += LoggerHelper::ToHex(this_instance);
+    s += ToHexString(this_instance);
     s += " has failed ";
     if (inversed)
       s += "inversed ";
@@ -113,7 +114,7 @@ namespace shellanything
     s.reserve(128);
 
     s += "Validator ";
-    s += LoggerHelper::ToHex(this_instance);
+    s += ToHexString(this_instance);
     s += " ";
     if (inversed)
       s += "inversed ";

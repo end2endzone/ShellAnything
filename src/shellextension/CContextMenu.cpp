@@ -95,12 +95,19 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
   // Build a unique descriptor for the menu
   std::string menu_unique_id_desc;
   menu_unique_id_desc.reserve(64);
-  menu_unique_id_desc += "{";
-  menu_unique_id_desc += "title='";
-  menu_unique_id_desc += title;
-  menu_unique_id_desc += "',id=";
+  menu_unique_id_desc += "addr='";
+  menu_unique_id_desc += ToHexString(menu);
+  menu_unique_id_desc += "'";
+  if (menu_separator)
+    menu_unique_id_desc += ",separator";
+  if (!title.empty())
+  {
+    menu_unique_id_desc += ",title='";
+    menu_unique_id_desc += title;
+    menu_unique_id_desc += "'";
+  }
+  menu_unique_id_desc += ",id=";
   menu_unique_id_desc += ra::strings::ToString(menu_command_id);
-  menu_unique_id_desc += "}";
 
   SA_VERBOSE_LOG(INFO) << "Build of menu : " << menu_unique_id_desc << " started.";
 

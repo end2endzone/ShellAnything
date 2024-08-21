@@ -84,4 +84,18 @@ bool IsPrintableUtf8(const std::string& value);
 /// <returns>Returns the length of the first code point, in bytes. Returns std::string::npos on error.</returns>
 size_t GetFirstCodePointLengthUtf8(const char * value);
 
+/// <summary>
+/// Converts a pointer value to a hex string format. The value is prefixed with `0x`.
+/// </summary>
+/// <param name="ptr">The pointer value to convert.</param>
+/// <returns>Returns a representation of the given pointer value in hex string format.</returns>
+std::string ToHexString(const void* value);
+
+/// <summary>
+/// Converts a value to a hex string format. The value is prefixed with `0x`.
+/// </summary>
+/// <param name="ptr">The value to convert.</param>
+/// <returns>Returns a representation of the given value in hex string format.</returns>
+std::string ToHexString(const uint32_t value);
+
 #endif //SA_UTILS_H

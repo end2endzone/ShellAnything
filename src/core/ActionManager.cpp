@@ -26,6 +26,8 @@
 #include "PropertyManager.h"
 #include "LoggerHelper.h"
 
+#include "SaUtils.h"
+
 #include "rapidassist/errors.h"
 
 namespace shellanything
@@ -61,7 +63,7 @@ namespace shellanything
           if (dwError)
           {
             std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << LoggerHelper::ToHex(dwError) << ", " << error_message;
+            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << ToHexString(dwError) << ", " << error_message;
           }
           else
           {

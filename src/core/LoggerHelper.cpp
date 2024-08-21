@@ -26,6 +26,7 @@
 #include "PropertyManager.h"
 #include "Environment.h"
 #include "Validator.h"
+#include "SaUtils.h"
 #include <string>
 
 #include "rapidassist/strings.h"
@@ -126,24 +127,6 @@ namespace shellanything
     return has_vebose_logging;
   }
 
-  void LoggerHelper::ToHex(const void* ptr, char* buffer, size_t buffer_size)
-  {
-    sprintf_s(buffer, buffer_size, "0x%p", ptr);
-  }
-
-  std::string LoggerHelper::ToHex(const void* ptr)
-  {
-    char buffer[32];
-    ToHex(ptr, buffer, sizeof(buffer));
-    return buffer;
-  }
-
-  std::string LoggerHelper::ToHex(const uint32_t value)
-  {
-    std::string s = ra::strings::Format("0x%x", value);
-    return s;
-  }
-
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -204,10 +187,8 @@ namespace shellanything
       ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - enter";
     else
     {
-      char hex_ptr_value[32];
-      LoggerHelper::ToHex(mCallingInstance, hex_ptr_value, sizeof(hex_ptr_value));
-
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " for instance " << hex_ptr_value << "- enter";
+      std::string hex_ptr_value = ToHexString(mCallingInstance);
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value << " - enter";
     }
   }
 
@@ -217,10 +198,8 @@ namespace shellanything
       ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - leave";
     else
     {
-      char hex_ptr_value[32];
-      LoggerHelper::ToHex(mCallingInstance, hex_ptr_value, sizeof(hex_ptr_value));
-
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " for instance " << hex_ptr_value << "- leave";
+      std::string hex_ptr_value = ToHexString(mCallingInstance);
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value << " - leave";
     }
   }
 

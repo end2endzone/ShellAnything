@@ -66,28 +66,6 @@ namespace shellanything
     /// <returns>Returns true when verbose logging is enabled. Returns false otherwise.</returns>
     static bool IsVerboseLoggingEnabled();
 
-    /// <summary>
-    /// Converts a pointer to a hex string format. The value is prefixed with `0x`.
-    /// </summary>
-    /// <param name="ptr">The pointer value to convert.</param>
-    /// <param name="buffer">The target output buffer.</param>
-    /// <param name="buffer_size">The size in byte of the output buffer.</param>
-    static void ToHex(const void* ptr, char* buffer, size_t buffer_size);
-
-    /// <summary>
-    /// Converts a pointer to a hex string format. The value is prefixed with `0x`.
-    /// </summary>
-    /// <param name="ptr">The pointer value to convert.</param>
-    /// <returns>Returns a representation of the given pointer in hex string format.</returns>
-    static std::string ToHex(const void* ptr);
-
-    /// <summary>
-    /// Converts a numeric value to a hex string format. The value is prefixed with `0x`.
-    /// </summary>
-    /// <param name="ptr">The pointer value to convert.</param>
-    /// <returns>Returns a representation of the given pointer in hex string format.</returns>
-    static std::string ToHex(const uint32_t value);
-
   private:
     ILoggerService::LOG_LEVEL mLevel;
     bool mIsVerboseStream;
