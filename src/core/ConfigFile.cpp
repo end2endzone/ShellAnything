@@ -378,12 +378,14 @@ namespace shellanything
 
   void ConfigFile::ApplyDefaultSettings()
   {
+    ScopeLogger scope_logger(__FUNCTION__ "()", false);
+
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
       ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
 
       //configuration have default properties assigned
-      SA_LOG(INFO) << "Initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+      SA_LOG(INFO) << "Initializing default properties of configuration file '" << mFilePath.c_str() << "' started.";
 
       const shellanything::IAction::ActionPtrList& actions = mDefaults->GetActions();
 
@@ -406,7 +408,7 @@ namespace shellanything
       SelectionContext empty_context;
       for (size_t i = 0; i < properties.size(); i++)
       {
-        SA_LOG(INFO) << "Executing action " << (i + 1) << " of " << properties.size() << ".";
+        SA_LOG(INFO) << "Initializing property action " << (i + 1) << " of " << properties.size() << ".";
         const shellanything::ActionProperty* action_property = properties[i];
         if (action_property)
         {
@@ -415,7 +417,7 @@ namespace shellanything
         }
       }
 
-      SA_LOG(INFO) << "Execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
+      SA_LOG(INFO) << "Initialization of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
     }
   }
 
