@@ -57,7 +57,7 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    ScopeLogger scope_logger(__FUNCTION__ "()", false);
 
     //validate existing configurations
     ConfigFile::ConfigFilePtrList existing = GetConfigFiles();
