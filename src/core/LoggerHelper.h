@@ -93,9 +93,7 @@ namespace shellanything
   class SHELLANYTHING_EXPORT ScopeLogger
   {
   public:
-    //ScopeLogger(const char* name);
     ScopeLogger(const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
-    //ScopeLogger(const char* name, const void * calling_instance);
     ScopeLogger(const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
     ~ScopeLogger();
 

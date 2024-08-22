@@ -92,23 +92,8 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
     return;
   }
 
-  // Build a unique descriptor for the menu
-  std::string menu_unique_id_desc;
-  menu_unique_id_desc.reserve(64);
-  menu_unique_id_desc += "addr='";
-  menu_unique_id_desc += ToHexString(menu);
-  menu_unique_id_desc += "'";
-  if (menu_separator)
-    menu_unique_id_desc += ",separator";
-  if (!title.empty())
-  {
-    menu_unique_id_desc += ",title='";
-    menu_unique_id_desc += title;
-    menu_unique_id_desc += "'";
-  }
-  menu_unique_id_desc += ",id=";
-  menu_unique_id_desc += ra::strings::ToString(menu_command_id);
-
+  // Print a message saying which menu we are processing.
+  std::string menu_unique_id_desc = menu->ToShortString();
   SA_VERBOSE_LOG(INFO) << "Build of menu : " << menu_unique_id_desc << " started.";
 
   // Truncate if required, issue #55.
@@ -357,7 +342,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   std::string flags_str = GetQueryContextMenuFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), hMenu=" << ToHexString((const void *)hMenu) << ", count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")";
+  SA_VERBOSE_LOG(INFO) << __FUNCTION__ "() args: hMenu=" << ToHexString((const void *)hMenu) << ", count=" << GetMenuItemCount(hMenu) << ", menu_index=" << menu_index << ", first_command_id=" << first_command_id << ", max_command_id=" << max_command_id << ", flags=" << flags_hex << "=(" << flags_str << ")";
 
   //https://docs.microsoft.com/en-us/windows/desktop/shell/how-to-implement-the-icontextmenu-interface
 
@@ -429,7 +414,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   //debug the constructed menu tree
   if (shellanything::LoggerHelper::IsVerboseLoggingEnabled())
   {
-    std::string menu_tree = Win32Utils::GetMenuTree(hMenu, 2);
+    std::string menu_tree;
+    cmgr.ToLongString(menu_tree, 0);
     SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), Menu tree:\n" << menu_tree.c_str();
   }
 
@@ -463,7 +449,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
   else
     verb = pici->lpVerb;
 
-  SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), pici->cbSize=" << struct_name << ", pici->fMask=" << pici->fMask << ", pici->lpVerb=" << verb;
+  SA_VERBOSE_LOG(INFO) << __FUNCTION__ "() args: pici->cbSize=" << struct_name << ", pici->fMask=" << pici->fMask << ", pici->lpVerb=" << verb;
 
   //validate
   if (!IS_INTRESOURCE(pici->lpVerb))
@@ -498,7 +484,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
   std::string flags_str = GetGetCommandStringFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
 
-  SA_VERBOSE_LOG(INFO) << __FUNCTION__ << "(), command_id=" << command_id << ", cchMax=" << cchMax << ", flags=" << flags_hex << ":" << flags_str;
+  SA_VERBOSE_LOG(INFO) << __FUNCTION__ << "() args: command_id=" << command_id << ", cchMax=" << cchMax << ", flags=" << flags_hex << ":" << flags_str;
 
   UINT target_command_offset = (UINT)command_id; //matches the command_id offset (command id of the selected menu substracted by command id of the first menu)
   UINT target_command_id = m_FirstCommandId + target_command_offset;
@@ -570,7 +556,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDA
 {
   shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
 
-  SA_VERBOSE_LOG(INFO) << __FUNCTION__ << "(), pIDFolder=" << ToHexString((void*)pIDFolder);
+  SA_VERBOSE_LOG(INFO) << __FUNCTION__ << "() args: pIDFolder=" << ToHexString((const void*)pIDFolder) << ", pDataObj=" << ToHexString((const void*)pDataObj);
 
   //From this point, it is safe to use class members without other threads interference
   CCriticalSectionGuard cs_guard(&m_CS);

@@ -130,14 +130,6 @@ namespace shellanything
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  //ScopeLogger::ScopeLogger(const char* name)
-  //{
-  //  Reset();
-  //  mName = name;
-
-  //  Enter();
-  //}
-
   ScopeLogger::ScopeLogger(const char* name, bool is_verbose, ILoggerService::LOG_LEVEL level)
   {
     Reset();
@@ -147,15 +139,6 @@ namespace shellanything
 
     Enter();
   }
-
-  //ScopeLogger::ScopeLogger(const char* name, const void* calling_instance)
-  //{
-  //  Reset();
-  //  mName = name;
-  //  mCallingInstance = calling_instance;
-
-  //  Enter();
-  //}
 
   ScopeLogger::ScopeLogger(const char* name, const void* calling_instance, bool is_verbose, ILoggerService::LOG_LEVEL level)
   {
@@ -184,11 +167,11 @@ namespace shellanything
   void ScopeLogger::Enter()
   {
     if (!mCallingInstance)
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - enter";
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName;
     else
     {
       std::string hex_ptr_value = ToHexString(mCallingInstance);
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value << " - enter";
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value;
     }
   }
 
