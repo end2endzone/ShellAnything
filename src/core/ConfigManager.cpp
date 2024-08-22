@@ -25,9 +25,11 @@
 #include "ConfigManager.h"
 #include "Menu.h"
 #include "LoggerHelper.h"
+#include "SaUtils.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
@@ -210,6 +212,50 @@ namespace shellanything
   void ConfigManager::AddSearchPath(const std::string& path)
   {
     mPaths.push_back(path);
+  }
+
+  std::string ConfigManager::ToShortString() const
+  {
+    std::string str;
+    str += "ConfigManager ";
+    str += ToHexString(this);
+    if (mPaths.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "path", mPaths.size());
+    }
+    if (mConfigurations.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "configuration", mConfigurations.size());
+    }
+    return str;
+  }
+
+  void ConfigManager::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const bool have_children = (mConfigurations.size() > 0);
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+    if (have_children)
+    {
+      str += " {";
+      str += NEW_LINE;
+
+      // print config children
+      for (size_t i = 0; i < mConfigurations.size(); i++)
+      {
+        ConfigFile* config = mConfigurations[i];
+        config->ToLongString(str, indent + 2);
+
+        str += NEW_LINE;
+      }
+
+      str += indent_str + "}";
+    }
   }
 
   bool ConfigManager::IsConfigFileLoaded(const std::string& path) const

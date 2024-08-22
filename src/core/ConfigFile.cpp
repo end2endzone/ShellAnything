@@ -30,8 +30,10 @@
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
+#include "rapidassist/environment.h"
 
 #include "tinyxml2.h"
+#include "SaUtils.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -499,6 +501,47 @@ namespace shellanything
   {
     mMenus.push_back(menu);
     menu->SetParentConfigFile(this);
+  }
+
+  std::string ConfigFile::ToShortString() const
+  {
+    std::string str;
+    str += "ConfigFile ";
+    str += ToHexString(this);
+    str += ", ";
+    str += this->mFilePath;
+    if (mMenus.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "menu", mMenus.size());
+    }
+    return str;
+  }
+
+  void ConfigFile::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const bool have_children = (mMenus.size() > 0);
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+    if (have_children)
+    {
+      str += " {";
+      str += NEW_LINE;
+
+      // print children
+      for (size_t i = 0; i < mMenus.size(); i++)
+      {
+        Menu* menu = mMenus[i];
+        menu->ToLongString(str, indent + 2);
+
+        str += NEW_LINE;
+      }
+
+      str += indent_str + "}";
+    }
   }
 
   void ConfigFile::DeleteChildren()

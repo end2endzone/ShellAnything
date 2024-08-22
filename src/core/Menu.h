@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "IObject.h"
 #include "Icon.h"
 #include "Validator.h"
 #include "IAction.h"
@@ -43,7 +44,7 @@ namespace shellanything
   /// <summary>
   /// The Menu class defines a displayed menu option.
   /// </summary>
-  class SHELLANYTHING_EXPORT Menu
+  class SHELLANYTHING_EXPORT Menu : public virtual IObject
   {
   public:
     /// <summary>
@@ -295,6 +296,10 @@ namespace shellanything
     /// Get the list of submenu of the menu.
     /// </summary>
     MenuPtrList GetSubMenus();
+
+    // IObject methods
+    virtual std::string ToShortString() const;
+    virtual void ToLongString(std::string& str, int indent) const;
 
   private:
     Menu* mParentMenu;

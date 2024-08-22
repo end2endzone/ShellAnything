@@ -27,8 +27,10 @@
 #include "PropertyManager.h"
 #include "Win32Registry.h"
 #include "LoggerHelper.h"
+#include "SaUtils.h"
 
 #include "rapidassist/strings.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
@@ -146,6 +148,38 @@ namespace shellanything
   void Icon::SetIndex(const int& index)
   {
     mIndex = index;
+  }
+
+  std::string Icon::ToShortString() const
+  {
+    std::string str;
+    str += "Icon ";
+    str += ToHexString(this);
+    if (!mPath.empty())
+    {
+      str += ", path=";
+      str += mPath;
+    }
+    if (!mFileExtension.empty())
+    {
+      str += ", ext=";
+      str += mFileExtension;
+    }
+    if (mIndex != INVALID_ICON_INDEX)
+    {
+      str += ", index=";
+      str += ra::strings::ToString(mIndex);
+    }
+    return str;
+  }
+
+  void Icon::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
   }
 
 } //namespace shellanything

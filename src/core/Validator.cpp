@@ -36,6 +36,8 @@
 #include "libexprtk.h"
 #include "rapidassist/strings.h"
 #include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/environment.h"
+
 
 namespace shellanything
 {
@@ -122,12 +124,14 @@ namespace shellanything
     return s;
   }
 
-
+  static const int MAX_FILES = std::numeric_limits<int>::max();
+  static const int MAX_DIRS = std::numeric_limits<int>::max();
 
 
   Validator::Validator() :
-    mMaxFiles(std::numeric_limits<int>::max()),
-    mMaxDirectories(std::numeric_limits<int>::max())
+    mMaxFiles(MAX_FILES),
+    mMaxDirectories(MAX_DIRS),
+    mLastValidateSuccessful(true)
   {
   }
 
@@ -361,6 +365,9 @@ namespace shellanything
     PropertyManager& pmgr = PropertyManager::GetInstance();
     const char * attr_name = "";
 
+    // assume validation will fail
+    mLastValidateSuccessful = false;
+
     attr_name = "maxfiles";
     bool maxfiles_inversed = IsInversed(attr_name);
     if (!maxfiles_inversed && context.GetNumFiles() > mMaxFiles)
@@ -572,6 +579,7 @@ namespace shellanything
       }
     }
 
+    mLastValidateSuccessful = true;
     return true;
   }
 
@@ -1261,5 +1269,62 @@ namespace shellanything
     return true;
   }
 
+  std::string Validator::ToShortString() const
+  {
+    std::string str;
+    str += "Validator ";
+    str += ToHexString(this);
+    //No need to output mMaxFiles or mMaxDirectories, they are already available in mAttributes
+    //if (mMaxFiles != MAX_FILES)
+    //{
+    //  str += ", maxfiles=";
+    //  str += ra::strings::ToString(mMaxFiles);
+    //}
+    //if (mMaxDirectories != MAX_DIRS)
+    //{
+    //  str += ", maxfolders=";
+    //  str += ra::strings::ToString(mMaxDirectories);
+    //}
+    if (!mAttributes.IsEmpty())
+    {
+      StringList attribute_names;
+      mAttributes.GetProperties(attribute_names);
+      for (size_t i = 0; i < attribute_names.size(); i++)
+      {
+        const std::string& attr_name = attribute_names[i];
+        str += ", ";
+        str += attr_name;
+        str += "=";
+        str += mAttributes.GetProperty(attr_name);
+      }
+    }
+    if (!mCustomAttributes.IsEmpty())
+    {
+      StringList attribute_names;
+      mCustomAttributes.GetProperties(attribute_names);
+      for (size_t i = 0; i < attribute_names.size(); i++)
+      {
+        const std::string& attr_name = attribute_names[i];
+        str += ", ";
+        str += attr_name;
+        str += "=";
+        str += mCustomAttributes.GetProperty(attr_name);
+      }
+    }
+    if (!mLastValidateSuccessful)
+    {
+      str += ", FAILED VALIDATION";
+    }
+    return str;
+  }
+
+  void Validator::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+  }
 
 } //namespace shellanything
