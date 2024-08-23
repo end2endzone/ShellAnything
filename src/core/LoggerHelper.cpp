@@ -151,6 +151,31 @@ namespace shellanything
     Enter();
   }
 
+  ScopeLogger::ScopeLogger(const char* filename, int line, const char* name, bool is_verbose, ILoggerService::LOG_LEVEL level)
+  {
+    Reset();
+    mLevel = level;
+    mName = name;
+    mIsVerbose = is_verbose;
+    mFilename = filename;
+    mLine = line;
+
+    Enter();
+  }
+
+  ScopeLogger::ScopeLogger(const char* filename, int line, const char* name, const void* calling_instance, bool is_verbose, ILoggerService::LOG_LEVEL level)
+  {
+    Reset();
+    mLevel = level;
+    mName = name;
+    mIsVerbose = is_verbose;
+    mCallingInstance = calling_instance;
+    mFilename = filename;
+    mLine = line;
+
+    Enter();
+  }
+
   ScopeLogger::~ScopeLogger()
   {
     Leave();
@@ -162,27 +187,50 @@ namespace shellanything
     //mName
     mIsVerbose = false;
     mCallingInstance = NULL;
+    mFilename = NULL;
+    mLine = 0;
   }
 
   void ScopeLogger::Enter()
   {
+    // Prepare output text
+    std::string text;
+    text += mName;
     if (!mCallingInstance)
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName;
+    {
+      text += ",this=";
+      text += ToHexString(mCallingInstance);
+    }
+
+    if (mFilename != NULL)
+    {
+      ::shellanything::LoggerHelper(mFilename, mLine, mLevel, mIsVerbose) << text;
+    }
     else
     {
-      std::string hex_ptr_value = ToHexString(mCallingInstance);
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value;
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << text;
     }
   }
 
   void ScopeLogger::Leave()
   {
+    // Prepare output text
+    std::string text;
+    text += mName;
     if (!mCallingInstance)
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << " - leave";
+    {
+      text += ",this=";
+      text += ToHexString(mCallingInstance);
+    }
+    text += " - returns";
+
+    if (mFilename != NULL)
+    {
+      ::shellanything::LoggerHelper(mFilename, mLine, mLevel, mIsVerbose) << text;
+    }
     else
     {
-      std::string hex_ptr_value = ToHexString(mCallingInstance);
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << mName << ",this=" << hex_ptr_value << " - leave";
+      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << text;
     }
   }
 

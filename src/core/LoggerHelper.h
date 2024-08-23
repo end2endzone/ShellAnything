@@ -95,6 +95,10 @@ namespace shellanything
   public:
     ScopeLogger(const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
     ScopeLogger(const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+
+    ScopeLogger(const char* filename, int line, const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+    ScopeLogger(const char* filename, int line, const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+
     ~ScopeLogger();
 
   private:
@@ -112,7 +116,17 @@ namespace shellanything
     std::string mName;
     bool mIsVerbose;
     const void* mCallingInstance;
+    const char* mFilename;
+    int mLine;
   };
+
+  #ifndef SA_DECLARE_VERBOSE_SCOPE_LOGGER
+  #define SA_DECLARE_VERBOSE_SCOPE_LOGGER ::shellanything::ScopeLogger verbose_scope_logger(__FILE__, __LINE__, __FUNCTION__ "()", this, true);
+  #endif
+
+  #ifndef SA_DECLARE_SCOPE_LOGGER
+  #define SA_DECLARE_SCOPE_LOGGER ::shellanything::ScopeLogger scope_logger(__FILE__, __LINE__, __FUNCTION__ "()", this, false);
+  #endif
 
   #ifndef SA_LOG
   #define SA_LOG(expr)          (::shellanything::LoggerHelper(__FILE__, __LINE__, ::shellanything::ILoggerService::LOG_LEVEL_##expr, false))
