@@ -89,7 +89,7 @@ namespace shellanything
     s += "'";
     s += attr_name;
     s += "' against value '";
-    s += attr_name;
+    s += value;
     s += "'.";
     return s;
   }
