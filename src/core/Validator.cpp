@@ -360,7 +360,10 @@ namespace shellanything
 
   bool Validator::Validate(const SelectionContext& context) const
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     PropertyManager& pmgr = PropertyManager::GetInstance();
     const char * attr_name = "";

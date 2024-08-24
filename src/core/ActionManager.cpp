@@ -35,7 +35,9 @@ namespace shellanything
 
   bool ActionManager::Execute(const Menu* menu, const SelectionContext& context)
   {
-    shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
 
     //compute the visual menu title
     shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();

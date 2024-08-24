@@ -79,26 +79,36 @@ namespace shellanything
   /// </summary>
   /// <example>
   /// <code>
-  /// // For static functions:
-  /// ScopeLogger scope_logger(__FUNCTION__ "()");
-  /// ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
-  /// ScopeLogger info_verbose_scope_logger(__FUNCTION__ "()", true, ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO);
-  ///
-  /// // For class methods:
-  /// ScopeLogger scope_logger(__FUNCTION__ "()", this);
-  /// ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
-  /// ScopeLogger info_verbose_scope_logger(__FUNCTION__ "()", this, true, ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO);
+  ///   SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  ///   sli.verbose = true;
+  ///   sli.instance = this;
+  ///   ScopeLogger logger(&sli);
   /// </code>
   /// </example>
   class SHELLANYTHING_EXPORT ScopeLogger
   {
   public:
-    ScopeLogger(const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
-    ScopeLogger(const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
+    /// <summary>
+    /// Context for a ScopeManager
+    /// </summary>
+    struct INFO
+    {
+      ///<summary>The souce code filename generating the log entries.</summary>
+      const char* filename;
+      ///<summary>The souce code line number generating the log entries.</summary>
+      int line;
+      ///<summary>The level to use while producing log entries.</summary>
+      ILoggerService::LOG_LEVEL level;
+      ///<summary>The name to use while generating logs. Usually the function name.</summary>
+      const char* name;
+      ///<summary>Is the log entries verbose or not.</summary>
+      bool verbose;
+      ///<summary>The calling class instance of the scope. Usually 'this'.</summary>
+      const void* instance;
+    };
 
-    ScopeLogger(const char* filename, int line, const char* name, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
-    ScopeLogger(const char* filename, int line, const char* name, const void * calling_instance, bool is_verbose = false, ILoggerService::LOG_LEVEL level = ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG);
-
+  public:
+    ScopeLogger(const ScopeLogger::INFO* info);
     ~ScopeLogger();
 
   private:
@@ -106,26 +116,16 @@ namespace shellanything
     ScopeLogger(const ScopeLogger&);
     ScopeLogger& operator=(const ScopeLogger&);
 
-  private:
-    void Reset();
-    void Enter();
-    void Leave();
-
   public:
-    ILoggerService::LOG_LEVEL mLevel;
-    std::string mName;
-    bool mIsVerbose;
-    const void* mCallingInstance;
-    const char* mFilename;
-    int mLine;
+    const INFO* info;
   };
 
-  #ifndef SA_DECLARE_VERBOSE_SCOPE_LOGGER
-  #define SA_DECLARE_VERBOSE_SCOPE_LOGGER ::shellanything::ScopeLogger verbose_scope_logger(__FILE__, __LINE__, __FUNCTION__ "()", this, true);
-  #endif
-
-  #ifndef SA_DECLARE_SCOPE_LOGGER
-  #define SA_DECLARE_SCOPE_LOGGER ::shellanything::ScopeLogger scope_logger(__FILE__, __LINE__, __FUNCTION__ "()", this, false);
+  #ifndef SA_DECLARE_SCOPE_LOGGER_INFO
+  #define SA_DECLARE_SCOPE_LOGGER_INFO(info) \
+    ::shellanything::ScopeLogger::INFO info = {0};\
+    info.filename = __FILE__;\
+    info.line = __LINE__;\
+    info.name = __FUNCTION__ "()";
   #endif
 
   #ifndef SA_LOG

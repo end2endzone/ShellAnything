@@ -121,7 +121,9 @@ namespace shellanything
 
   ConfigFile* ConfigFile::LoadFile(const std::string& path, std::string& error)
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
 
     SA_VERBOSE_LOG(INFO) << "Loading configuration file '" << path << "'.";
 
@@ -345,7 +347,10 @@ namespace shellanything
 
   void ConfigFile::Update(const SelectionContext& context)
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     SetUpdatingConfigFile(this);
 
@@ -380,11 +385,11 @@ namespace shellanything
 
   void ConfigFile::ApplyDefaultSettings()
   {
-    ScopeLogger scope_logger(__FUNCTION__ "()", false);
-
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
-      ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+      SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+      sli.verbose = true;
+      ScopeLogger logger(&sli);
 
       //configuration have default properties assigned
       SA_LOG(INFO) << "Initializing default properties of configuration file '" << mFilePath.c_str() << "' started.";

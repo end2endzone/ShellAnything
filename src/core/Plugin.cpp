@@ -175,7 +175,10 @@ namespace shellanything
 
   bool Plugin::Load()
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
@@ -282,7 +285,10 @@ namespace shellanything
 
   bool Plugin::Unload()
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);

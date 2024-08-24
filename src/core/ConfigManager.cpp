@@ -59,7 +59,8 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    ScopeLogger scope_logger(__FUNCTION__ "()", false);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    ScopeLogger logger(&sli);
 
     //validate existing configurations
     ConfigFile::ConfigFilePtrList existing = GetConfigFiles();
@@ -142,7 +143,10 @@ namespace shellanything
 
   void ConfigManager::Update(const SelectionContext& context)
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     //for each child
     ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();

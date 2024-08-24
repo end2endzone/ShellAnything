@@ -55,7 +55,10 @@ static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
 {
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   //Expanded the menu's strings
   shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
@@ -265,7 +268,10 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   //Every 5 times the shell extension popup is displayed, we look for 'unused' bitmap and delete them.
   //
 
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   //handle destruction of old bitmap in the cache
   m_BuildMenuTreeCount++;
@@ -337,7 +343,10 @@ CContextMenu::~CContextMenu()
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags)
 {
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   std::string flags_str = GetQueryContextMenuFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
@@ -425,7 +434,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 {
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   //define the type of structure pointed by pici
   const char* struct_name = "UNKNOWN";
@@ -479,7 +491,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
 
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR* reserved, LPSTR pszName, UINT cchMax)
 {
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   std::string flags_str = GetGetCommandStringFlags(flags);
   std::string flags_hex = ra::strings::Format("0x%08x", flags);
@@ -554,7 +569,10 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  shellanything::ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
 
   SA_VERBOSE_LOG(INFO) << __FUNCTION__ << "() args: pIDFolder=" << ToHexString((const void*)pIDFolder) << ", pDataObj=" << ToHexString((const void*)pDataObj);
 

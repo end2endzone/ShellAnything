@@ -618,7 +618,10 @@ namespace shellanything
 
   void PropertyManager::RegisterEnvironmentVariables()
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
     ra::environment::GetEnvironmentVariableUtf8("foo");
@@ -639,7 +642,10 @@ namespace shellanything
 
   void PropertyManager::RegisterFixedAndDefaultProperties()
   {
-    ScopeLogger verbose_scope_logger(__FUNCTION__ "()", this, true);
+    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
 
     shellanything::App& app = shellanything::App::GetInstance();
 

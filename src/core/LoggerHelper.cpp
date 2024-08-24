@@ -130,107 +130,47 @@ namespace shellanything
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  ScopeLogger::ScopeLogger(const char* name, bool is_verbose, ILoggerService::LOG_LEVEL level)
+  ScopeLogger::ScopeLogger(const ScopeLogger::INFO* info_) :
+    info(info_)
   {
-    Reset();
-    mLevel = level;
-    mName = name;
-    mIsVerbose = is_verbose;
+    // Prepare output text
+    std::string text;
+    text += info->name;
+    if (!info->instance)
+    {
+      text += ",this=";
+      text += ToHexString(info->instance);
+    }
 
-    Enter();
-  }
-
-  ScopeLogger::ScopeLogger(const char* name, const void* calling_instance, bool is_verbose, ILoggerService::LOG_LEVEL level)
-  {
-    Reset();
-    mLevel = level;
-    mName = name;
-    mIsVerbose = is_verbose;
-    mCallingInstance = calling_instance;
-
-    Enter();
-  }
-
-  ScopeLogger::ScopeLogger(const char* filename, int line, const char* name, bool is_verbose, ILoggerService::LOG_LEVEL level)
-  {
-    Reset();
-    mLevel = level;
-    mName = name;
-    mIsVerbose = is_verbose;
-    mFilename = filename;
-    mLine = line;
-
-    Enter();
-  }
-
-  ScopeLogger::ScopeLogger(const char* filename, int line, const char* name, const void* calling_instance, bool is_verbose, ILoggerService::LOG_LEVEL level)
-  {
-    Reset();
-    mLevel = level;
-    mName = name;
-    mIsVerbose = is_verbose;
-    mCallingInstance = calling_instance;
-    mFilename = filename;
-    mLine = line;
-
-    Enter();
+    if (info->filename != NULL)
+    {
+      ::shellanything::LoggerHelper(info->filename, info->line, info->level, info->verbose) << text;
+    }
+    else
+    {
+      ::shellanything::LoggerHelper(info->level, info->verbose) << text;
+    }
   }
 
   ScopeLogger::~ScopeLogger()
   {
-    Leave();
-  }
-
-  void ScopeLogger::Reset()
-  {
-    mLevel = ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO;
-    //mName
-    mIsVerbose = false;
-    mCallingInstance = NULL;
-    mFilename = NULL;
-    mLine = 0;
-  }
-
-  void ScopeLogger::Enter()
-  {
     // Prepare output text
     std::string text;
-    text += mName;
-    if (!mCallingInstance)
+    text += info->name;
+    if (!info->instance)
     {
       text += ",this=";
-      text += ToHexString(mCallingInstance);
-    }
-
-    if (mFilename != NULL)
-    {
-      ::shellanything::LoggerHelper(mFilename, mLine, mLevel, mIsVerbose) << text;
-    }
-    else
-    {
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << text;
-    }
-  }
-
-  void ScopeLogger::Leave()
-  {
-    // Prepare output text
-    std::string text;
-    text += mName;
-    if (!mCallingInstance)
-    {
-      text += ",this=";
-      text += ToHexString(mCallingInstance);
+      text += ToHexString(info->instance);
     }
     text += " - returns";
 
-    if (mFilename != NULL)
+    if (info->filename != NULL)
     {
-      ::shellanything::LoggerHelper(mFilename, mLine, mLevel, mIsVerbose) << text;
+      ::shellanything::LoggerHelper(info->filename, info->line, info->level, info->verbose) << text;
     }
     else
     {
-      ::shellanything::LoggerHelper(mLevel, mIsVerbose) << text;
+      ::shellanything::LoggerHelper(info->level, info->verbose) << text;
     }
   }
 
