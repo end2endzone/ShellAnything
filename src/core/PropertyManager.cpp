@@ -620,7 +620,6 @@ namespace shellanything
   {
     SA_DECLARE_SCOPE_LOGGER_INFO(sli);
     sli.verbose = true;
-    sli.instance = this;
     ScopeLogger logger(&sli);
 
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
@@ -644,7 +643,6 @@ namespace shellanything
   {
     SA_DECLARE_SCOPE_LOGGER_INFO(sli);
     sli.verbose = true;
-    sli.instance = this;
     ScopeLogger logger(&sli);
 
     shellanything::App& app = shellanything::App::GetInstance();

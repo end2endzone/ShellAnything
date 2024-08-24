@@ -136,7 +136,7 @@ namespace shellanything
     // Prepare output text
     std::string text;
     text += info->name;
-    if (!info->instance)
+    if (info->instance != NULL)
     {
       text += ",this=";
       text += ToHexString(info->instance);
@@ -157,7 +157,7 @@ namespace shellanything
     // Prepare output text
     std::string text;
     text += info->name;
-    if (!info->instance)
+    if (info->instance != NULL)
     {
       text += ",this=";
       text += ToHexString(info->instance);
