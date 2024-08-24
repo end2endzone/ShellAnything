@@ -618,7 +618,7 @@ namespace shellanything
 
   void PropertyManager::RegisterEnvironmentVariables()
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     ScopeLogger logger(&sli);
 
@@ -641,7 +641,7 @@ namespace shellanything
 
   void PropertyManager::RegisterFixedAndDefaultProperties()
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     ScopeLogger logger(&sli);
 

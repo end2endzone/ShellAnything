@@ -130,25 +130,25 @@ namespace shellanything
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  ScopeLogger::ScopeLogger(const ScopeLogger::INFO* info_) :
-    info(info_)
+  ScopeLogger::ScopeLogger(const ScopeLogger::ARGS* args_) :
+    args(args_)
   {
     // Prepare output text
     std::string text;
-    text += info->name;
-    if (info->instance != NULL)
+    text += args->name;
+    if (args->instance != NULL)
     {
       text += ",this=";
-      text += ToHexString(info->instance);
+      text += ToHexString(args->instance);
     }
 
-    if (info->filename != NULL)
+    if (args->filename != NULL)
     {
-      ::shellanything::LoggerHelper(info->filename, info->line, info->level, info->verbose) << text;
+      ::shellanything::LoggerHelper(args->filename, args->line, args->level, args->verbose) << text;
     }
     else
     {
-      ::shellanything::LoggerHelper(info->level, info->verbose) << text;
+      ::shellanything::LoggerHelper(args->level, args->verbose) << text;
     }
   }
 
@@ -156,21 +156,21 @@ namespace shellanything
   {
     // Prepare output text
     std::string text;
-    text += info->name;
-    if (info->instance != NULL)
+    text += args->name;
+    if (args->instance != NULL)
     {
       text += ",this=";
-      text += ToHexString(info->instance);
+      text += ToHexString(args->instance);
     }
     text += " - returns";
 
-    if (info->filename != NULL)
+    if (args->filename != NULL)
     {
-      ::shellanything::LoggerHelper(info->filename, info->line, info->level, info->verbose) << text;
+      ::shellanything::LoggerHelper(args->filename, args->line, args->level, args->verbose) << text;
     }
     else
     {
-      ::shellanything::LoggerHelper(info->level, info->verbose) << text;
+      ::shellanything::LoggerHelper(args->level, args->verbose) << text;
     }
   }
 

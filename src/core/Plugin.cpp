@@ -175,7 +175,7 @@ namespace shellanything
 
   bool Plugin::Load()
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);
@@ -285,7 +285,7 @@ namespace shellanything
 
   bool Plugin::Unload()
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);

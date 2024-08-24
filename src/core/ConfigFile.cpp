@@ -121,7 +121,7 @@ namespace shellanything
 
   ConfigFile* ConfigFile::LoadFile(const std::string& path, std::string& error)
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     ScopeLogger logger(&sli);
 
@@ -347,7 +347,7 @@ namespace shellanything
 
   void ConfigFile::Update(const SelectionContext& context)
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);
@@ -387,7 +387,7 @@ namespace shellanything
   {
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
-      SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+      SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
       sli.verbose = true;
       ScopeLogger logger(&sli);
 

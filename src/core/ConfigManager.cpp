@@ -59,7 +59,7 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     ScopeLogger logger(&sli);
 
     //validate existing configurations
@@ -143,7 +143,7 @@ namespace shellanything
 
   void ConfigManager::Update(const SelectionContext& context)
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     ScopeLogger logger(&sli);
 

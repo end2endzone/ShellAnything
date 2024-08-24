@@ -207,7 +207,7 @@ namespace shellanything
 
   void Menu::Update(const SelectionContext& context)
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);

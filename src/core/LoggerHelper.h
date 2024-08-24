@@ -79,7 +79,7 @@ namespace shellanything
   /// </summary>
   /// <example>
   /// <code>
-  ///   SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  ///   SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   ///   sli.verbose = true;
   ///   sli.instance = this;
   ///   ScopeLogger logger(&sli);
@@ -89,9 +89,9 @@ namespace shellanything
   {
   public:
     /// <summary>
-    /// Context for a ScopeManager
+    /// Argument struct for a ScopeManager
     /// </summary>
-    struct INFO
+    struct ARGS
     {
       ///<summary>The souce code filename generating the log entries.</summary>
       const char* filename;
@@ -108,7 +108,7 @@ namespace shellanything
     };
 
   public:
-    ScopeLogger(const ScopeLogger::INFO* info);
+    ScopeLogger(const ScopeLogger::ARGS* info);
     ~ScopeLogger();
 
   private:
@@ -117,12 +117,12 @@ namespace shellanything
     ScopeLogger& operator=(const ScopeLogger&);
 
   public:
-    const INFO* info;
+    const ARGS* args;
   };
 
-  #ifndef SA_DECLARE_SCOPE_LOGGER_INFO
-  #define SA_DECLARE_SCOPE_LOGGER_INFO(info) \
-    ::shellanything::ScopeLogger::INFO info = {0};\
+  #ifndef SA_DECLARE_SCOPE_LOGGER_ARGS
+  #define SA_DECLARE_SCOPE_LOGGER_ARGS(info) \
+    ::shellanything::ScopeLogger::ARGS info = {0};\
     info.filename = __FILE__;\
     info.line = __LINE__;\
     info.name = __FUNCTION__ "()";\

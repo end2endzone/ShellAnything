@@ -55,7 +55,7 @@ static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
 {
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);
@@ -268,7 +268,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   //Every 5 times the shell extension popup is displayed, we look for 'unused' bitmap and delete them.
   //
 
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);
@@ -343,7 +343,7 @@ CContextMenu::~CContextMenu()
 
 HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_index, UINT first_command_id, UINT max_command_id, UINT flags)
 {
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);
@@ -434,7 +434,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
 
 HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 {
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);
@@ -491,7 +491,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici
 
 HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UINT flags, UINT FAR* reserved, LPSTR pszName, UINT cchMax)
 {
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);
@@ -569,7 +569,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::GetCommandString(UINT_PTR command_id, UI
 
 HRESULT STDMETHODCALLTYPE CContextMenu::Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hRegKey)
 {
-  SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
   sli.instance = this;
   shellanything::ScopeLogger logger(&sli);

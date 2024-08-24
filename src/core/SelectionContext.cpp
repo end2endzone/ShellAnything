@@ -65,7 +65,7 @@ namespace shellanything
 
   void SelectionContext::RegisterProperties() const
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);

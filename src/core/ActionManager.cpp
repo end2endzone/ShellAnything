@@ -35,7 +35,7 @@ namespace shellanything
 
   bool ActionManager::Execute(const Menu* menu, const SelectionContext& context)
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     ScopeLogger logger(&sli);
 

@@ -120,7 +120,7 @@ namespace shellanything
     {
       SA_LOG(INFO) << __FUNCTION__ "(), line " << __LINE__ << " is the first line of code";
 
-      SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+      SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
       sli.verbose = true;
       sli.level = ::shellanything::ILoggerService::LOG_LEVEL::LOG_LEVEL_INFO; // force INFO level to make sure it is always visible
       ScopeLogger logger(&sli);

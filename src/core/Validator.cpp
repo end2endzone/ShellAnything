@@ -360,7 +360,7 @@ namespace shellanything
 
   bool Validator::Validate(const SelectionContext& context) const
   {
-    SA_DECLARE_SCOPE_LOGGER_INFO(sli);
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
     sli.verbose = true;
     sli.instance = this;
     ScopeLogger logger(&sli);
