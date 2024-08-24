@@ -107,7 +107,7 @@ namespace shellanything
     TEST_F(TestIcon, testResolveFileExtensionIcon)
     {
       Icon icon;
-      icon.SetFileExtension("txt");
+      icon.SetFileExtension("html");
 
       //act
       icon.ResolveFileExtensionIcon();

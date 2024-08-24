@@ -252,7 +252,7 @@ void CContextMenu::BuildSubMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT
   SA_VERBOSE_LOG(INFO) << "Build of menu : " << menu_unique_id_desc << " completed. result=" << result << ", insert.pos=" << ra::strings::Format("%03d", insert_pos) << ".";
 }
 
-void CContextMenu::BuildMenuTree(HMENU hMenu)
+void CContextMenu::BuildTopMenuTree(HMENU hMenu)
 {
   //Bitmap ressources must be properly destroyed.
   //When a menu (HMENU handle) is destroyed using win32 DestroyMenu() function, it also destroy the child menus:
@@ -264,7 +264,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
   //https://www.codeproject.com/Questions/1228261/Windows-shell-extension
   //
   //To prevent running out of bitmap ressource we use the shellanything::BitmapCache class.
-  //Each bitmap is identified as 'used' in CContextMenu::BuildMenuTree() with 'm_BitmapCache.FindHandle()'.
+  //Each bitmap is identified as 'used' in CContextMenu::BuildSubMenuTree() with 'm_BitmapCache.FindHandle()'.
   //Every 5 times the shell extension popup is displayed, we look for 'unused' bitmap and delete them.
   //
 
