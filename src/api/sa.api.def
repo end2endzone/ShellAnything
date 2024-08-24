@@ -36,6 +36,7 @@ EXPORTS
   sa_icon_set_index
   sa_icon_set_path
   sa_icon_to_immutable
+  sa_logging_is_verbose
   sa_logging_print
   sa_logging_print_format
   sa_memory_alloc

@@ -54,12 +54,11 @@ namespace shellanything
   const std::string PropertyManager::SYSTEM_RANDOM_GUID_PROPERTY_NAME = "random.guid";
   const std::string PropertyManager::SYSTEM_RANDOM_FILE_PROPERTY_NAME = "random.file";
   const std::string PropertyManager::SYSTEM_RANDOM_PATH_PROPERTY_NAME = "random.path";
+  const std::string PropertyManager::SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME = "system.logging.verbose";
 
-  PropertyManager::PropertyManager()
+  PropertyManager::PropertyManager() :
+    mInitialized(false)
   {
-    RegisterEnvironmentVariables();
-    RegisterFixedAndDefaultProperties();
-    RegisterLiveProperties();
   }
 
   PropertyManager::~PropertyManager()
@@ -70,6 +69,17 @@ namespace shellanything
   PropertyManager& PropertyManager::GetInstance()
   {
     static PropertyManager _instance;
+    if (!_instance.mInitialized)
+    {
+      _instance.mInitialized = true;
+
+      // Initialize PropertyManager with default properties.
+      // Note: The next calls will likely lead to another call to PropertyManager::GetInstance().
+      // We are using the PropertyManager::mInitialized flag to prevent running into a circular reference
+      _instance.RegisterEnvironmentVariables();
+      _instance.RegisterFixedAndDefaultProperties();
+      _instance.RegisterLiveProperties();
+    }
     return _instance;
   }
 
@@ -111,6 +121,8 @@ namespace shellanything
     if (found)
       return;
 
+    SA_VERBOSE_LOG(INFO) << "Setting property '" << name << "' to value '" << value << "'.";
+
     properties.SetProperty(name, value);
   }
 
@@ -129,6 +141,7 @@ namespace shellanything
     if (p)
     {
       std::string value = p->GetProperty();
+      SA_VERBOSE_LOG(INFO) << "Live property '" << name << "' evaluates to value '" << value << "'.";
       return value;
     }
 
@@ -257,6 +270,9 @@ namespace shellanything
     if (!instance)
       return;
     const std::string& name = instance->GetName();
+
+    SA_VERBOSE_LOG(INFO) << "Registering live property '" << name << "'.";
+
     live_properties[name] = instance;
   }
 
@@ -602,6 +618,10 @@ namespace shellanything
 
   void PropertyManager::RegisterEnvironmentVariables()
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
+
     //Work around for https://github.com/end2endzone/RapidAssist/issues/54
     ra::environment::GetEnvironmentVariableUtf8("foo");
 
@@ -621,6 +641,10 @@ namespace shellanything
 
   void PropertyManager::RegisterFixedAndDefaultProperties()
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
+
     shellanything::App& app = shellanything::App::GetInstance();
 
     //define global properties

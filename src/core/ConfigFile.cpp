@@ -30,8 +30,10 @@
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/random.h"
+#include "rapidassist/environment.h"
 
 #include "tinyxml2.h"
+#include "SaUtils.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -119,6 +121,12 @@ namespace shellanything
 
   ConfigFile* ConfigFile::LoadFile(const std::string& path, std::string& error)
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
+
+    SA_VERBOSE_LOG(INFO) << "Loading configuration file '" << path << "'.";
+
     error = "";
 
     if (!ra::filesystem::FileExistsUtf8(path.c_str()))
@@ -339,6 +347,11 @@ namespace shellanything
 
   void ConfigFile::Update(const SelectionContext& context)
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
+
     SetUpdatingConfigFile(this);
 
     //run callbacks of each plugins
@@ -346,10 +359,12 @@ namespace shellanything
     for (size_t i = 0; i < mPlugins.size(); i++)
     {
       Plugin* p = mPlugins[i];
+      SA_VERBOSE_LOG(INFO) << "Running update callbacks of plugin '" << p->GetPath() << "'.";
       Registry& registry = p->GetRegistry();
       size_t count = registry.GetUpdateCallbackCount();
       for (size_t j = 0; j < count; j++)
       {
+        SA_VERBOSE_LOG(INFO) << "Executing update callback " << (j + 1) << " of " << count << ".";
         IUpdateCallback* callback = registry.GetUpdateCallbackFromIndex(j);
         callback->SetSelectionContext(&context);
         callback->OnNewSelection();
@@ -372,8 +387,12 @@ namespace shellanything
   {
     if (mDefaults && mDefaults->GetActions().size() > 0)
     {
+      SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+      sli.verbose = true;
+      ScopeLogger logger(&sli);
+
       //configuration have default properties assigned
-      SA_LOG(INFO) << __FUNCTION__ << "(), initializing default properties of configuration file '" << mFilePath.c_str() << "'...";
+      SA_LOG(INFO) << "Initializing default properties of configuration file '" << mFilePath.c_str() << "' started.";
 
       const shellanything::IAction::ActionPtrList& actions = mDefaults->GetActions();
 
@@ -386,13 +405,17 @@ namespace shellanything
         const shellanything::ActionProperty* action_property = dynamic_cast<const shellanything::ActionProperty*>(abstract_action);
         if (action_property)
           properties.push_back(action_property);
+        else
+        {
+          SA_LOG(WARNING) << "Action " << (i + 1) << " of " << actions.size() << " is not a <property> action!";
+        }
       }
 
       //apply all ActionProperty
       SelectionContext empty_context;
       for (size_t i = 0; i < properties.size(); i++)
       {
-        SA_LOG(INFO) << __FUNCTION__ << "(), executing property " << (i + 1) << " of " << properties.size() << ".";
+        SA_LOG(INFO) << "Initializing property action " << (i + 1) << " of " << properties.size() << ".";
         const shellanything::ActionProperty* action_property = properties[i];
         if (action_property)
         {
@@ -401,7 +424,7 @@ namespace shellanything
         }
       }
 
-      SA_LOG(INFO) << __FUNCTION__ << "(), execution of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
+      SA_LOG(INFO) << "Initialization of default properties of configuration file '" << mFilePath.c_str() << "' completed.";
     }
   }
 
@@ -483,6 +506,47 @@ namespace shellanything
   {
     mMenus.push_back(menu);
     menu->SetParentConfigFile(this);
+  }
+
+  std::string ConfigFile::ToShortString() const
+  {
+    std::string str;
+    str += "ConfigFile ";
+    str += ToHexString(this);
+    str += ", ";
+    str += this->mFilePath;
+    if (mMenus.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "menu", mMenus.size());
+    }
+    return str;
+  }
+
+  void ConfigFile::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const bool have_children = (mMenus.size() > 0);
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+    if (have_children)
+    {
+      str += " {";
+      str += NEW_LINE;
+
+      // print children
+      for (size_t i = 0; i < mMenus.size(); i++)
+      {
+        Menu* menu = mMenus[i];
+        menu->ToLongString(str, indent + 2);
+
+        str += NEW_LINE;
+      }
+
+      str += indent_str + "}";
+    }
   }
 
   void ConfigFile::DeleteChildren()

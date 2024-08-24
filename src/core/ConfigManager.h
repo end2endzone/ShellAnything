@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "IObject.h"
 #include "StringList.h"
 #include "ConfigFile.h"
 #include "SelectionContext.h"
@@ -38,7 +39,7 @@ namespace shellanything
   /// <summary>
   /// The ConfigManager holds mutiple ConfigFile instances.
   /// </summary>
-  class SHELLANYTHING_EXPORT ConfigManager
+  class SHELLANYTHING_EXPORT ConfigManager : public virtual IObject
   {
   private:
     ConfigManager();
@@ -115,6 +116,10 @@ namespace shellanything
     /// </summary>
     /// <param name="path">The path to add to the search list.</param>
     void AddSearchPath(const std::string& path);
+
+    // IObject methods
+    virtual std::string ToShortString() const;
+    virtual void ToLongString(std::string& str, int indent) const;
 
   private:
     //methods

@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "IObject.h"
 #include "PropertyStore.h"
 #include "SelectionContext.h"
 #include "Plugin.h"
@@ -62,7 +63,7 @@ namespace shellanything
 {
   class Menu; // For Get/SetParentMenu()
 
-  class SHELLANYTHING_EXPORT Validator
+  class SHELLANYTHING_EXPORT Validator : public virtual IObject
   {
   public:
     /// <summary>
@@ -263,6 +264,10 @@ namespace shellanything
     /// <returns>Returns true if the given context is valid against the set of constraints. Returns false otherwise.</returns>
     bool Validate(const SelectionContext& context) const;
 
+    // IObject methods
+    virtual std::string ToShortString() const;
+    virtual void ToLongString(std::string& str, int indent) const;
+
     /// <summary>
     /// Validates if a given string can be evaluated as logical true.
     /// </summary>
@@ -317,6 +322,7 @@ namespace shellanything
     PropertyStore mCustomAttributes;
     Plugin::PluginPtrList mPlugins;
     Menu* mParentMenu;
+    mutable bool mLastValidateSuccessful; // private value used for ToString() implementation.
   };
 
 } //namespace shellanything

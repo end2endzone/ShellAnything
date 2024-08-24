@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "IObject.h"
 #include "Menu.h"
 #include "DefaultSettings.h"
 #include "Plugin.h"
@@ -40,7 +41,7 @@ namespace shellanything
   /// <summary>
   /// A ConfigFile holds mutiple Menu instances.
   /// </summary>
-  class SHELLANYTHING_EXPORT ConfigFile
+  class SHELLANYTHING_EXPORT ConfigFile : public virtual IObject
   {
   public:
     /// <summary>
@@ -170,6 +171,10 @@ namespace shellanything
     /// </summary>
     /// <param name="menu">The Menu to add.</param>
     void AddMenu(Menu* menu);
+
+    // IObject methods
+    virtual std::string ToShortString() const;
+    virtual void ToLongString(std::string& str, int indent) const;
 
   private:
     //methods

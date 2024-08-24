@@ -25,9 +25,11 @@
 #include "ConfigManager.h"
 #include "Menu.h"
 #include "LoggerHelper.h"
+#include "SaUtils.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/strings.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
@@ -49,6 +51,7 @@ namespace shellanything
 
   void ConfigManager::Clear()
   {
+    SA_LOG(INFO) << __FUNCTION__ << "()";
     ClearSearchPath(); //remove all search path to make sure that a refresh won’t find any other configuration file
     DeleteChildren();
     Refresh(); //forces all loaded configurations to be unloaded
@@ -56,7 +59,8 @@ namespace shellanything
 
   void ConfigManager::Refresh()
   {
-    SA_LOG(INFO) << __FUNCTION__ << "()";
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    ScopeLogger logger(&sli);
 
     //validate existing configurations
     ConfigFile::ConfigFilePtrList existing = GetConfigFiles();
@@ -139,6 +143,10 @@ namespace shellanything
 
   void ConfigManager::Update(const SelectionContext& context)
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
+
     //for each child
     ConfigFile::ConfigFilePtrList configurations = ConfigManager::GetConfigFiles();
     for (size_t i = 0; i < configurations.size(); i++)
@@ -207,6 +215,50 @@ namespace shellanything
   void ConfigManager::AddSearchPath(const std::string& path)
   {
     mPaths.push_back(path);
+  }
+
+  std::string ConfigManager::ToShortString() const
+  {
+    std::string str;
+    str += "ConfigManager ";
+    str += ToHexString(this);
+    if (mPaths.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "path", mPaths.size());
+    }
+    if (mConfigurations.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "configuration", mConfigurations.size());
+    }
+    return str;
+  }
+
+  void ConfigManager::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const bool have_children = (mConfigurations.size() > 0);
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+    if (have_children)
+    {
+      str += " {";
+      str += NEW_LINE;
+
+      // print config children
+      for (size_t i = 0; i < mConfigurations.size(); i++)
+      {
+        ConfigFile* config = mConfigurations[i];
+        config->ToLongString(str, indent + 2);
+
+        str += NEW_LINE;
+      }
+
+      str += indent_str + "}";
+    }
   }
 
   bool ConfigManager::IsConfigFileLoaded(const std::string& path) const

@@ -103,9 +103,34 @@
             <open path="https://github.com/end2endzone/ShellAnything/releases/latest" />
           </actions>
         </menu>
-        
       </menu>
 
+      <menu name="Verbose logging">
+        <icon path="C:\Windows\system32\shell32.dll" index="70" />
+        
+        <menu name="Verbose logging is ENABLED">
+          <visibility istrue="${system.logging.verbose}" />
+        </menu>
+        <menu name="Verbose logging is DISABLED">
+          <visibility istrue="${system.logging.verbose}" inverse="istrue" />
+        </menu>
+        <menu separator="true" />
+        <menu name="Enable">
+          <icon path="C:\Windows\system32\shell32.dll" index="302" />
+          <actions>
+            <property name="system.logging.verbose" value="${system.true}" />
+          </actions>
+        </menu>
+        <menu name="Disable">
+          <icon path="C:\Windows\system32\shell32.dll" index="109" />
+          <actions>
+            <property name="system.logging.verbose" value="${system.false}" />
+          </actions>
+        </menu>
+      </menu>
+
+      <menu separator="true />
+      
       <menu name="More configurations files...">
         <icon path="C:\Windows\system32\shell32.dll" index="69" />
         <actions>

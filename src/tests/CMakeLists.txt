@@ -26,6 +26,8 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testFindMenuByNameExpanding.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfigManager.testParentWithoutChildren.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestConfiguration.testLoadProperties.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestIObject.testToLongString.expected.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestIObject.testToLongString.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testGetParent.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionExecute.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestObjectFactory.testParseActionFile.xml
@@ -65,16 +67,22 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestConfiguration.h
   TestDemoSamples.cpp
   TestDemoSamples.h
+  TestEnvironment.cpp
+  TestEnvironment.h
   TestGlogUtils.cpp
   TestGlogUtils.h
   TestIcon.cpp
   TestIcon.h
   TestInputBox.cpp
   TestInputBox.h
+  TestIObject.cpp
+  TestIObject.h
   TestKeyboardService.cpp
   TestKeyboardService.h
   TestLibExprtk.cpp
   TestLibExprtk.h
+  TestLoggerHelper.cpp
+  TestLoggerHelper.h
   TestMenu.cpp
   TestMenu.h
   TestObjectFactory.cpp

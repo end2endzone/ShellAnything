@@ -139,7 +139,10 @@ namespace shellanything
     {
       SA_LOG(INFO) << "Open file '" << path << "'.";
       uint32_t pId = ra::process::OpenDocumentUtf8(path);
-      return pId != ra::process::INVALID_PROCESS_ID;
+      bool success = (pId != ra::process::INVALID_PROCESS_ID);
+      if (!success)
+        SA_LOG(ERROR) << "Failed opening file '" << path << "'.";
+      return success;
     }
 
     //is path a directory?
@@ -147,6 +150,8 @@ namespace shellanything
     {
       SA_LOG(INFO) << "Open directory '" << path << "'.";
       bool success = OpenPathGeneric(path);
+      if (!success)
+        SA_LOG(ERROR) << "Failed opening directory '" << path << "'.";
       return success;
     }
 
@@ -156,6 +161,8 @@ namespace shellanything
     {
       SA_LOG(INFO) << "Open url '" << path << "'.";
       bool success = OpenPathGeneric(path);
+      if (!success)
+        SA_LOG(ERROR) << "Failed opening URL '" << path << "'.";
       return success;
     }
 

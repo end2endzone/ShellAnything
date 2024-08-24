@@ -22,43 +22,37 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_SHELLEXTENSION_H
-#define SA_SHELLEXTENSION_H
+#include "IObject.h"
+#include "rapidassist/strings.h"
 
-#include "stdafx.h"
+namespace shellanything
+{
 
-#include <string>
+  IObject::IObject()
+  {
+  }
 
-#include "shellanything/version.h"
-#include "shellanything/config.h"
+  IObject::~IObject()
+  {
+  }
 
-#ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
-#define ATTACH_HOOK_DEBUGGING DebugHook(__FUNCTION__);
-#else
-#define ATTACH_HOOK_DEBUGGING ;
-#endif // #ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
+  void IObject::AppendObjectCount(std::string& str, const char* name, size_t count)
+  {
+    str += ra::strings::ToString(count);
+    str += " ";
+    str += name;
+    if (count > 1)
+      str += "s";
+  }
 
-std::string GuidToString(GUID guid);
-std::string GuidToInterfaceName(GUID guid);
-std::string GetProcessContextDesc();
+  void IObject::AppendObjectCount(std::string& str, const char* name1, const char* name2, size_t count)
+  {
+    str += ra::strings::ToString(count);
+    str += " ";
+    if (count >= 2)
+      str += name2;
+    else
+      str += name1;
+  }
 
-std::string GetQueryContextMenuFlags(UINT flags);
-std::string GetGetCommandStringFlags(UINT flags);
-
-void LogEnvironment();
-
-void DebugHook(const char* fname);
-
-/// <summary>
-/// Detect if the process loading the shell extension is Windows File Explorer.
-/// </summary>
-/// <returns>Returns true if the loading process is Windows File Explorer. Returns false otherwise.</returns>
-bool IsFileExplorerProcess();
-
-/// <summary>
-/// Detect if the process loading the shell extension is Windows regsvr32 application.
-/// </summary>
-/// <returns>Returns true if the loading process is Windows regsvr32 application. Returns false otherwise.</returns>
-bool IsRegsvr32Process();
-
-#endif //SA_SHELLEXTENSION_H
+} //namespace shellanything

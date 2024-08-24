@@ -26,6 +26,8 @@
 #include "PropertyManager.h"
 #include "LoggerHelper.h"
 
+#include "SaUtils.h"
+
 #include "rapidassist/errors.h"
 
 namespace shellanything
@@ -33,13 +35,17 @@ namespace shellanything
 
   bool ActionManager::Execute(const Menu* menu, const SelectionContext& context)
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    ScopeLogger logger(&sli);
+
     //compute the visual menu title
     shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
     std::string title = pmgr.Expand(menu->GetName());
 
     bool success = true;
 
-    SA_LOG(INFO) << "Executing action(s) for menu '" << title.c_str() << "'...";
+    SA_LOG(INFO) << "Executing action(s) for menu '" << title.c_str() << "', id=" << menu->GetCommandId() << "...";
 
     //execute actions
     const shellanything::IAction::ActionPtrList& actions = menu->GetActions();
@@ -59,7 +65,7 @@ namespace shellanything
           if (dwError)
           {
             std::string error_message = ra::errors::GetErrorCodeDescription(dwError);
-            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << error_message;
+            SA_LOG(ERROR) << "Action #" << (i + 1) << " has failed: " << ToHexString(dwError) << ", " << error_message;
           }
           else
           {

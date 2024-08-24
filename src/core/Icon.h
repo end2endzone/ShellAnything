@@ -27,6 +27,7 @@
 
 #include "shellanything/export.h"
 #include "shellanything/config.h"
+#include "IObject.h"
 #include <string>
 #include <vector>
 #include <set>
@@ -37,7 +38,7 @@ namespace shellanything
   /// <summary>
   /// Icon class encapsulate the path to a system's icon.
   /// </summary>
-  class SHELLANYTHING_EXPORT Icon
+  class SHELLANYTHING_EXPORT Icon : public virtual IObject
   {
   public:
     /// <summary>
@@ -94,6 +95,10 @@ namespace shellanything
     /// Setter for the 'index' parameter.
     /// </summary>
     void SetIndex(const int& index);
+
+    // IObject methods
+    virtual std::string ToShortString() const;
+    virtual void ToLongString(std::string& str, int indent) const;
 
   private:
     typedef std::set<std::string /*file extension*/> FileExtensionSet;

@@ -298,3 +298,30 @@ size_t GetFirstCodePointLengthUtf8(const char* value)
 
   return n;
 }
+
+std::string ToHexString(const void* value)
+{
+  size_t address = reinterpret_cast<size_t>(value);
+  char buffer[64];
+  static bool is_32bit = (sizeof(address) == 4);
+  static bool is_64bit = (sizeof(address) == 8);
+#ifdef _WIN32
+  if (is_32bit)
+    sprintf(buffer, "0x%Ix", address);
+  else if (is_64bit)
+    sprintf(buffer, "0x%Ix", address);
+#else
+  if (is_32bit)
+    sprintf(buffer, "0x%zx", address);
+  else if (is_64bit)
+    sprintf(buffer, "0x%zx", address);
+#endif
+  return buffer;
+}
+
+std::string ToHexString(const uint32_t value)
+{
+  char buffer[64];
+  sprintf(buffer, "0x%x", value);
+  return buffer;
+}

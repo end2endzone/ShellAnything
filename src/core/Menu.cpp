@@ -25,8 +25,11 @@
 #include "Menu.h"
 #include "Unicode.h"
 #include "PropertyManager.h"
+#include "LoggerHelper.h"
+#include "SaUtils.h"
 
 #include "rapidassist/strings.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
@@ -204,10 +207,17 @@ namespace shellanything
 
   void Menu::Update(const SelectionContext& context)
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
+
     //update current menu
     bool visible = true;
     if (!mVisibilities.empty())
     {
+      SA_VERBOSE_LOG(DEBUG) << "Validating menu '" << mName << "' against visibility validators...";
+
       visible = false;
       size_t count = GetVisibilityCount();
       for (size_t i = 0; i < count && visible == false; i++)
@@ -222,6 +232,8 @@ namespace shellanything
     bool enabled = true;
     if (!mValidities.empty())
     {
+      SA_VERBOSE_LOG(DEBUG) << "Validating menu '" << mName << "' against validity validators...";
+
       enabled = false;
       size_t count = GetValidityCount();
       for (size_t i = 0; i < count && enabled == false; i++)
@@ -235,6 +247,14 @@ namespace shellanything
     }
     SetVisible(visible);
     SetEnabled(enabled);
+    if (!visible)
+    {
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is set invisible from validation.";
+    }
+    if (!enabled)
+    {
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is set disabled from validation.";
+    }
 
     //update children
     bool all_invisible_children = true;
@@ -256,6 +276,7 @@ namespace shellanything
     {
       //force this node as invisible.
       SetVisible(false);
+      SA_VERBOSE_LOG(INFO) << "Menu '" << mName << "' is forced invisible because all its children (" << children.size() << ") are invisibles.";
     }
   }
 
@@ -433,6 +454,116 @@ namespace shellanything
   const IAction::ActionPtrList& Menu::GetActions() const
   {
     return mActions;
+  }
+
+  std::string Menu::ToShortString() const
+  {
+    std::string str;
+    str += "Menu ";
+    str += ToHexString(this);
+    if (mSeparator || mColumnSeparator)
+    {
+      str += ", SEPARATOR";
+    }
+    if (!mName.empty())
+    {
+      str += ", ";
+      str += mName;
+    }
+    if (!mVisible)
+    {
+      str += ", ";
+      str += "INVISIBLE";
+    }
+    if (!mEnabled)
+    {
+      str += ", ";
+      str += "DISABLED";
+    }
+    if (mCommandId != 0)
+    {
+      str += ", ";
+      str += "id=";
+      str += ra::strings::ToString(mCommandId);
+    }
+    //if (mIcon.IsValid())
+    //{
+    //  str += ", ";
+    //  str += mIcon.ToShortString();
+    //}
+    if (mSubMenus.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "submenu", mSubMenus.size());
+    }
+    if (mValidities.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "validity", "validities", mValidities.size());
+    }
+    if (mVisibilities.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "visibility", "visibilities", mVisibilities.size());
+    }
+    if (mActions.size())
+    {
+      str += ", ";
+      IObject::AppendObjectCount(str, "action", mActions.size());
+    }
+    return str;
+  }
+
+  void Menu::ToLongString(std::string& str, int indent) const
+  {
+    static const char* NEW_LINE = ra::environment::GetLineSeparator();
+    const bool have_children = (mVisibilities.size() + mValidities.size() + mSubMenus.size() > 0);
+    const std::string indent_str = std::string(indent, ' ');
+
+    const std::string short_string = ToShortString();
+    str += indent_str + short_string;
+    if (have_children)
+    {
+      str += " {";
+      str += NEW_LINE;
+
+      // print visibility children
+      if (mVisibilities.size())
+      {
+        str += indent_str + "  Visibilities:";
+        str += NEW_LINE;
+      }
+      for (size_t i = 0; i < mVisibilities.size(); i++)
+      {
+        Validator* validator = mVisibilities[i];
+        validator->ToLongString(str, indent + 4);
+
+        str += NEW_LINE;
+      }
+      // print validity children
+      if (mValidities.size())
+      {
+        str += indent_str + "  Validities:";
+        str += NEW_LINE;
+      }
+      for (size_t i = 0; i < mValidities.size(); i++)
+      {
+        Validator* validator = mValidities[i];
+        validator->ToLongString(str, indent + 4);
+
+        str += NEW_LINE;
+      }
+      // print menu children
+      for (size_t i = 0; i < mSubMenus.size(); i++)
+      {
+        Menu* submenu = mSubMenus[i];
+        submenu->ToLongString(str, indent + 2);
+
+        str += NEW_LINE;
+      }
+
+      str += indent_str + "}";
+    }
   }
 
 } //namespace shellanything

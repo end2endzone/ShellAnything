@@ -175,6 +175,11 @@ namespace shellanything
 
   bool Plugin::Load()
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
+
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
 
@@ -280,6 +285,16 @@ namespace shellanything
 
   bool Plugin::Unload()
   {
+    SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+    sli.verbose = true;
+    sli.instance = this;
+    ScopeLogger logger(&sli);
+
+    PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path = pmgr.Expand(mPath);
+
+    SA_LOG(INFO) << "Unloading plugin '" << path << "'.";
+
     if (mEntryPoints->hModule == 0)
       return false; // something is wrong, nothing to unload or already unload
 

@@ -122,6 +122,11 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_RANDOM_PATH_PROPERTY_NAME;
 
+    /// <summary>
+    /// Name of the property that defines the verbose logging.
+    /// </summary>
+    static const std::string SYSTEM_LOGGING_VERBOSE_PROPERTY_NAME;
+
   public:
 
     /// <summary>
@@ -256,6 +261,7 @@ namespace shellanything
 
     void RegisterEnvironmentVariables();
     void RegisterFixedAndDefaultProperties();
+    bool mInitialized; // to prevent calling PropertyManager::GetInstance() while in PropertyManager ctor, creating a circular reference.
     PropertyStore properties;
     LivePropertyMap live_properties;
   };

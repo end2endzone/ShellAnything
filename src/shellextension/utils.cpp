@@ -88,26 +88,6 @@ std::string GetProcessContextDesc()
   return desc;
 }
 
-std::string ToHexString(void* value)
-{
-  size_t address = reinterpret_cast<size_t>(value);
-  char buffer[1024];
-  static bool is_32bit = (sizeof(address) == 4);
-  static bool is_64bit = (sizeof(address) == 8);
-#ifdef _WIN32
-  if (is_32bit)
-    sprintf(buffer, "0x%Ix", address);
-  else if (is_64bit)
-    sprintf(buffer, "0x%Ix", address);
-#else
-  if (is_32bit)
-    sprintf(buffer, "0x%zx", address);
-  else if (is_64bit)
-    sprintf(buffer, "0x%zx", address);
-#endif
-  return buffer;
-}
-
 template <class T> class FlagDescriptor
 {
 public:

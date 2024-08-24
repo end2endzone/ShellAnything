@@ -22,43 +22,23 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef SA_SHELLEXTENSION_H
-#define SA_SHELLEXTENSION_H
+#ifndef TEST_SA_ENVIRONMENT_H
+#define TEST_SA_ENVIRONMENT_H
 
-#include "stdafx.h"
+#include <gtest/gtest.h>
 
-#include <string>
+namespace shellanything
+{
+  namespace test
+  {
+    class TestEnvironment : public ::testing::Test
+    {
+    public:
+      virtual void SetUp();
+      virtual void TearDown();
+    };
 
-#include "shellanything/version.h"
-#include "shellanything/config.h"
+  } //namespace test
+} //namespace shellanything
 
-#ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
-#define ATTACH_HOOK_DEBUGGING DebugHook(__FUNCTION__);
-#else
-#define ATTACH_HOOK_DEBUGGING ;
-#endif // #ifdef SA_ENABLE_ATTACH_HOOK_DEBUGGING
-
-std::string GuidToString(GUID guid);
-std::string GuidToInterfaceName(GUID guid);
-std::string GetProcessContextDesc();
-
-std::string GetQueryContextMenuFlags(UINT flags);
-std::string GetGetCommandStringFlags(UINT flags);
-
-void LogEnvironment();
-
-void DebugHook(const char* fname);
-
-/// <summary>
-/// Detect if the process loading the shell extension is Windows File Explorer.
-/// </summary>
-/// <returns>Returns true if the loading process is Windows File Explorer. Returns false otherwise.</returns>
-bool IsFileExplorerProcess();
-
-/// <summary>
-/// Detect if the process loading the shell extension is Windows regsvr32 application.
-/// </summary>
-/// <returns>Returns true if the loading process is Windows regsvr32 application. Returns false otherwise.</returns>
-bool IsRegsvr32Process();
-
-#endif //SA_SHELLEXTENSION_H
+#endif //TEST_SA_ENVIRONMENT_H

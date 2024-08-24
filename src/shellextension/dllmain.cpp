@@ -69,6 +69,8 @@ class CShellAnythingModule _AtlModule;
 _Use_decl_annotations_
 STDAPI DllGetClassObject(_In_ REFCLSID clsid, _In_ REFIID riid, _Outptr_ LPVOID* ppv)
 {
+  SA_LOG(INFO) << __FUNCTION__ "() " << GetProcessContextDesc();
+
   std::string clsid_str = GuidToInterfaceName(clsid);
   std::string riid_str = GuidToInterfaceName(riid);
 
@@ -87,7 +89,7 @@ STDAPI DllGetClassObject(_In_ REFCLSID clsid, _In_ REFIID riid, _Outptr_ LPVOID*
 _Use_decl_annotations_
 STDAPI DllCanUnloadNow(void)
 {
-  SA_LOG(INFO) << __FUNCTION__ << "() " << GetProcessContextDesc();
+  SA_LOG(INFO) << __FUNCTION__ "() " << GetProcessContextDesc();
 
   HRESULT hr = _AtlModule.DllCanUnloadNow();
 

@@ -1,0 +1,54 @@
+ConfigManager 0xdeadbeef, 1 path, 1 configuration {
+  ConfigFile 0xdeadbeef, C:\dev\ShellAnything\ShellAnything\test_workspace\TestIObject.testToLongString\TestIObject.testToLongString.xml, 6 menus {
+    Menu 0xdeadbeef, SEPARATOR
+    Menu 0xdeadbeef, Foo Service, 6 submenus {
+      Menu 0xdeadbeef, Stop, DISABLED, 1 validity, 1 action {
+        Validities:
+          Validator 0xdeadbeef, properties=services.foo.started, FAILED VALIDATION
+      }
+      Menu 0xdeadbeef, Start, DISABLED, 1 validity, 2 actions {
+        Validities:
+          Validator 0xdeadbeef, properties=services.foo.stopped, FAILED VALIDATION
+      }
+      Menu 0xdeadbeef, Restart, 4 actions
+      Menu 0xdeadbeef, SEPARATOR
+      Menu 0xdeadbeef, Connect, 1 action
+      Menu 0xdeadbeef, Update, 1 action
+    }
+    Menu 0xdeadbeef, Winzip, 3 submenus {
+      Menu 0xdeadbeef, Compress to '${selection.filename}.zip', 1 visibility, 1 action {
+        Visibilities:
+          Validator 0xdeadbeef, maxfiles=1, maxfolders=1
+      }
+      Menu 0xdeadbeef, Extract to folder ${selection.filename}, INVISIBLE, 1 visibility, 1 action {
+        Visibilities:
+          Validator 0xdeadbeef, fileextensions=zip, maxfiles=1, maxfolders=0, FAILED VALIDATION
+      }
+      Menu 0xdeadbeef, Extract here, INVISIBLE, 1 visibility, 1 action {
+        Visibilities:
+          Validator 0xdeadbeef, fileextensions=zip, maxfiles=1, maxfolders=0, FAILED VALIDATION
+      }
+    }
+    Menu 0xdeadbeef, MySoftware, 2 submenus {
+      Menu 0xdeadbeef, README, 1 action
+      Menu 0xdeadbeef, About, 1 action
+    }
+    Menu 0xdeadbeef, Shmi Skywalker, 1 submenu {
+      Menu 0xdeadbeef, Anakin Skywalker, 2 submenus {
+        Menu 0xdeadbeef, Luke Skywalker, 1 validity {
+          Validities:
+            Validator 0xdeadbeef
+        }
+        Menu 0xdeadbeef, Leia Organa, 1 submenu {
+          Menu 0xdeadbeef, Ben Solo, 3 visibilities {
+            Visibilities:
+              Validator 0xdeadbeef
+              Validator 0xdeadbeef
+              Validator 0xdeadbeef
+          }
+        }
+      }
+    }
+    Menu 0xdeadbeef, SEPARATOR
+  }
+}
