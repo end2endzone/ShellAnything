@@ -79,8 +79,8 @@ public:
   HRESULT STDMETHODCALLTYPE Initialize(LPCITEMIDLIST pIDFolder, LPDATAOBJECT pDataObj, HKEY hKeyID);
 
 private:
-  void BuildMenuTree(HMENU hMenu);
-  void BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
+  void BuildTopMenuTree(HMENU hMenu);
+  void BuildSubMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
 
   CCriticalSection            m_CS; //protects class members
   ULONG                       m_refCount;

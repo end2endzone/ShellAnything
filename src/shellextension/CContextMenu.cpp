@@ -53,7 +53,7 @@ OBJECT_ENTRY_AUTO(CLSID_ShellAnything, CContextMenu)
 
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
 
-void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
+void CContextMenu::BuildSubMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
 {
   SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
   sli.verbose = true;
@@ -239,7 +239,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& i
     {
       shellanything::Menu* submenu = subs[i];
       SA_VERBOSE_LOG(INFO) << "Build of child menu " << (i + 1) << " of " << subs.size() << " for menu " << menu_unique_id_desc << " started.";
-      BuildMenuTree(hSubMenu, submenu, sub_insert_pos, next_sub_menu_is_column);
+      BuildSubMenuTree(hSubMenu, submenu, sub_insert_pos, next_sub_menu_is_column);
       SA_VERBOSE_LOG(INFO) << "Build of child menu " << (i + 1) << " of " << subs.size() << " for menu " << menu_unique_id_desc << " completed.";
     }
 
@@ -310,7 +310,7 @@ void CContextMenu::BuildMenuTree(HMENU hMenu)
         shellanything::Menu* menu = menus[j];
 
         //Add this menu to the tree
-        BuildMenuTree(hMenu, menu, insert_pos, next_menu_is_column);
+        BuildSubMenuTree(hMenu, menu, insert_pos, next_menu_is_column);
 
         SA_VERBOSE_LOG(INFO) << "Build of menu " << (j + 1) << " of " << menus.size() << " completed.";
       }
@@ -411,7 +411,7 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   UINT next_command_id = cmgr.AssignCommandIds(first_command_id);
 
   //Build the menus
-  BuildMenuTree(hMenu);
+  BuildTopMenuTree(hMenu);
 
   //Log information about menu statistics.
   UINT menu_last_command_id = (UINT)-1; //confirmed last command id
