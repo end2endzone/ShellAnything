@@ -125,7 +125,8 @@ namespace shellanything
     ::shellanything::ScopeLogger::INFO info = {0};\
     info.filename = __FILE__;\
     info.line = __LINE__;\
-    info.name = __FUNCTION__ "()";
+    info.name = __FUNCTION__ "()";\
+    info.level = ::shellanything::ILoggerService::LOG_LEVEL::LOG_LEVEL_DEBUG;
   #endif
 
   #ifndef SA_LOG
