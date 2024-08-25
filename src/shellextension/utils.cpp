@@ -107,12 +107,25 @@ public:
       const T& flag = flags[index].value;
       const char* name = flags[index].name;
 
-      //if flag is set
-      if ((value & flag) == flag)
+      // Test special case where a flag has no bit set (flag == 0x00)
+      // The only time where it should be reported is when the value is also 0.
+      if (flag == 0)
       {
-        if (!desc.empty())
-          desc.append("|");
-        desc.append(name);
+        if (flag == value)
+        {
+          desc = name;
+          break;
+        }
+      }
+      else
+      {
+        //if flag is set
+        if ((value & flag) == flag)
+        {
+          if (!desc.empty())
+            desc.append("|");
+          desc.append(name);
+        }
       }
 
       //next flag
