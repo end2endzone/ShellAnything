@@ -49,6 +49,7 @@ namespace shellanything
 
     /// <summary>
     /// Get a string representation of this object and its children.
+    /// The output string is multiple lines. Each line separated by '\n' (LF) character.
     /// </summary>
     /// <param name="str">The string to append this object's description to.</param>
     /// <param name="indent">The indentation (spaces) to add before each line describing this object.</param>

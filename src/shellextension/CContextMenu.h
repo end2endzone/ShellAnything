@@ -81,6 +81,7 @@ public:
 private:
   void BuildTopMenuTree(HMENU hMenu);
   void BuildSubMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column);
+  void PrintVerboseMenuStructure() const;
 
   CCriticalSection            m_CS; //protects class members
   ULONG                       m_refCount;

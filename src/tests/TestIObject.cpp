@@ -25,6 +25,7 @@
 #include "TestIObject.h"
 #include "ConfigManager.h"
 #include "ConfigFile.h"
+#include "LoggerHelper.h"
 
 #include "rapidassist/strings.h"
 #include "rapidassist/testing.h"
@@ -281,7 +282,6 @@ namespace shellanything
       //Get actual
       std::string longstring_actual;
       cmgr.ToLongString(longstring_actual, 0);
-      ra::strings::Replace(longstring_actual, "\r\n", "\n"); // Replace CRLF by LF to display properly in GoogleTest diff view
 
       //Get expected long string from file
       std::string expected_source_path = std::string("test_files") + path_separator + test_name + ".expected.txt";
@@ -300,6 +300,9 @@ namespace shellanything
       //Do the actual comparison
       ASSERT_EQ(longstring_expected, longstring_actual);
 
+      // Add to logs to show how it prints
+      SA_LOG(INFO) << __FUNCTION__ << "() Menu Tree:\n" << longstring_actual;
+      
       //Cleanup
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }

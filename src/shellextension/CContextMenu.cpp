@@ -320,6 +320,23 @@ void CContextMenu::BuildTopMenuTree(HMENU hMenu)
   }
 }
 
+void CContextMenu::PrintVerboseMenuStructure() const
+{
+  if (!shellanything::LoggerHelper::IsVerboseLoggingEnabled())
+    return;
+
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  sli.verbose = true;
+  sli.instance = this;
+  shellanything::ScopeLogger logger(&sli);
+
+  shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
+
+  std::string menu_tree;
+  cmgr.ToLongString(menu_tree, 0);
+  SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), Menu tree:\n" << menu_tree.c_str();
+}
+
 CContextMenu::CContextMenu()
 {
   SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), new instance " << ToHexString(this);
@@ -420,13 +437,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
   UINT num_menu_items = next_command_id - first_command_id;
   SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), statistics: first_command_id=" << first_command_id << " menu_last_command_id=" << menu_last_command_id << " next_command_id=" << next_command_id << " num_menu_items=" << num_menu_items << ".\n";
 
-  //debug the constructed menu tree
-  if (shellanything::LoggerHelper::IsVerboseLoggingEnabled())
-  {
-    std::string menu_tree;
-    cmgr.ToLongString(menu_tree, 0);
-    SA_VERBOSE_LOG(INFO) << __FUNCTION__ "(), Menu tree:\n" << menu_tree.c_str();
-  }
+  //debug the constructed menu tree, if required
+  PrintVerboseMenuStructure();
 
   HRESULT hr = MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, num_menu_items);
   return hr;

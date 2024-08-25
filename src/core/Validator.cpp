@@ -1323,7 +1323,6 @@ namespace shellanything
 
   void Validator::ToLongString(std::string& str, int indent) const
   {
-    static const char* NEW_LINE = ra::environment::GetLineSeparator();
     const std::string indent_str = std::string(indent, ' ');
 
     const std::string short_string = ToShortString();

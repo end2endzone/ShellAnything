@@ -525,7 +525,6 @@ namespace shellanything
 
   void ConfigFile::ToLongString(std::string& str, int indent) const
   {
-    static const char* NEW_LINE = ra::environment::GetLineSeparator();
     const bool have_children = (mMenus.size() > 0);
     const std::string indent_str = std::string(indent, ' ');
 
@@ -533,8 +532,7 @@ namespace shellanything
     str += indent_str + short_string;
     if (have_children)
     {
-      str += " {";
-      str += NEW_LINE;
+      str += " {\n";
 
       // print children
       for (size_t i = 0; i < mMenus.size(); i++)
@@ -542,7 +540,7 @@ namespace shellanything
         Menu* menu = mMenus[i];
         menu->ToLongString(str, indent + 2);
 
-        str += NEW_LINE;
+        str += "\n";
       }
 
       str += indent_str + "}";

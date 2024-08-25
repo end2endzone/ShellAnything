@@ -516,7 +516,6 @@ namespace shellanything
 
   void Menu::ToLongString(std::string& str, int indent) const
   {
-    static const char* NEW_LINE = ra::environment::GetLineSeparator();
     const bool have_children = (mVisibilities.size() + mValidities.size() + mSubMenus.size() > 0);
     const std::string indent_str = std::string(indent, ' ');
 
@@ -524,34 +523,31 @@ namespace shellanything
     str += indent_str + short_string;
     if (have_children)
     {
-      str += " {";
-      str += NEW_LINE;
+      str += " {\n";
 
       // print visibility children
       if (mVisibilities.size())
       {
-        str += indent_str + "  Visibilities:";
-        str += NEW_LINE;
+        str += indent_str + "  Visibilities:\n";
       }
       for (size_t i = 0; i < mVisibilities.size(); i++)
       {
         Validator* validator = mVisibilities[i];
         validator->ToLongString(str, indent + 4);
 
-        str += NEW_LINE;
+        str += "\n";
       }
       // print validity children
       if (mValidities.size())
       {
-        str += indent_str + "  Validities:";
-        str += NEW_LINE;
+        str += indent_str + "  Validities:\n";
       }
       for (size_t i = 0; i < mValidities.size(); i++)
       {
         Validator* validator = mValidities[i];
         validator->ToLongString(str, indent + 4);
 
-        str += NEW_LINE;
+        str += "\n";
       }
       // print menu children
       for (size_t i = 0; i < mSubMenus.size(); i++)
@@ -559,7 +555,7 @@ namespace shellanything
         Menu* submenu = mSubMenus[i];
         submenu->ToLongString(str, indent + 2);
 
-        str += NEW_LINE;
+        str += "\n";
       }
 
       str += indent_str + "}";
