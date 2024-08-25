@@ -89,6 +89,6 @@ private:
   int                         m_BuildMenuTreeCount; //number of times that BuildMenuTree() was called
   shellanything::BitmapCache  m_BitmapCache;
   IconMap                     m_FileExtensionCache;
-  HMENU                       m_previousMenu;
+  static HMENU                m_previousMenu; // issue #6. Field must be static
   shellanything::SelectionContext      m_Context;
 };

@@ -52,6 +52,7 @@
 OBJECT_ENTRY_AUTO(CLSID_ShellAnything, CContextMenu)
 
 static const GUID CLSID_UNDOCUMENTED_01 = { 0x924502a7, 0xcc8e, 0x4f60, { 0xae, 0x1f, 0xf7, 0x0c, 0x0a, 0x2b, 0x7a, 0x7c } };
+HMENU CContextMenu::m_previousMenu = 0;
 
 void CContextMenu::BuildMenuTree(HMENU hMenu, shellanything::Menu* menu, UINT& insert_pos, bool& next_menu_is_column)
 {
@@ -333,7 +334,6 @@ CContextMenu::CContextMenu()
   m_FirstCommandId = 0;
   m_IsBackGround = false;
   m_BuildMenuTreeCount = 0;
-  m_previousMenu = 0;
 }
 
 CContextMenu::~CContextMenu()
@@ -382,7 +382,8 @@ HRESULT STDMETHODCALLTYPE CContextMenu::QueryContextMenu(HMENU hMenu, UINT menu_
     //Issue  #6 - Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
     //Issue #31 - Error in logs for CContextMenu::GetCommandString().
     //Using a static variable is a poor method for solving the issue but it is a "good enough" strategy.
-    SA_LOG(INFO) << "Skipped, QueryContextMenu() called twice and menu is already populated once.";
+    SA_LOG(INFO) << "Skipped, QueryContextMenu() called twice and menu is already populated once. "
+                    "A call to QueryContextMenu() from another instance has already run and populated the menu.";
     return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0); //nothing inserted
   }
 
