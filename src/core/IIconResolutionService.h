@@ -56,6 +56,20 @@ namespace shellanything
     /// <returns>Returns true if the operation is successful. Returns false otherwise.</returns>
     virtual bool ResolveFileExtensionIcon(Icon & icon) = 0;
 
+    /// <summary>
+    /// Check if the given file extension have resolved before.
+    /// </summary>
+    /// <param name="file_entension">The file extension to check.</param>
+    /// <returns>Returns true if the file extension has previously resolve to a valid icon. Returns false otherwise.</returns>
+    virtual bool HaveResolvedBefore(const std::string& file_extension) const = 0;
+
+    /// <summary>
+    /// Check if the given file extension have previously failed to resolve.
+    /// </summary>
+    /// <param name="file_entension">The file extension to check.</param>
+    /// <returns>Returns true if the file extension has previously failed to resolve. Returns false otherwise.</returns>
+    virtual bool HaveFailedBefore(const std::string& file_extension) const = 0;
+
   };
 
 } //namespace shellanything

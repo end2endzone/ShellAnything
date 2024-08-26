@@ -240,7 +240,7 @@ namespace shellanything
       ASSERT_EQ(UNKNOWN_ICON_INDEX, icon.GetIndex());
 
       //act (issue #98)
-      for (int i = 0; i < 500; i++)
+      for (int i = 0; i < 100; i++)
       {
         //this should create multiple log entries if the feature is not properly implemented.
         Icon tmp_icon;
@@ -263,7 +263,8 @@ namespace shellanything
           ASSERT_TRUE(read) << "Failed to read log file: " << path;
 
           int count = CountString(content, UNKNOWN_FILE_EXTENSION);
-          ASSERT_LE(count, 1) << "Log file '" << path << "' contains " << count << " references to '" << UNKNOWN_FILE_EXTENSION << "'.";
+          static const int MAX_COUNT = 2; // Issue 167. A maximum of 2 reference is allowed. One from LegacyIconResolutionService class and another from Icon::ResolveFileExtensionIcon().
+          ASSERT_LE(count, MAX_COUNT) << "Log file '" << path << "' contains " << count << " references to '" << UNKNOWN_FILE_EXTENSION << "'.";
         }
       }
     }

@@ -86,6 +86,31 @@ namespace shellanything
 
   void Icon::ResolveFileExtensionIcon()
   {
+    IIconResolutionService* icon_resolution_service = App::GetInstance().GetIconResolutionService();
+    if (icon_resolution_service == NULL)
+    {
+      SA_LOG(ERROR) << "No Icon Resolution service configured for resolving file extensions to icon.";
+      return;
+    }
+
+    shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
+    std::string file_extension = pmgr.Expand(mFileExtension);
+
+    const bool have_resolved_before = icon_resolution_service->HaveResolvedBefore(file_extension);
+    const bool have_failed_before = icon_resolution_service->HaveFailedBefore(file_extension);
+
+    //Do the actual resolution
+    bool success = icon_resolution_service->ResolveFileExtensionIcon(*this);
+
+    // Print a success/failure message once. Issue #98.
+    if (success && !have_resolved_before)
+    {
+      SA_LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << mPath << "' with index '" << mIndex << "'";
+    }
+    else if (!success && !have_failed_before)
+    {
+      SA_LOG(WARNING) << "Failed to resolve icon for file extension '" << file_extension << "'.";
+    }
   }
 
   const std::string& Icon::GetFileExtension() const

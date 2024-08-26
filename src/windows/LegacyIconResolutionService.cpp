@@ -34,8 +34,6 @@
 
 namespace shellanything
 {
-  LegacyIconResolutionService::FileExtensionSet LegacyIconResolutionService::mUnresolvedFileExtensions;
-
   LegacyIconResolutionService::LegacyIconResolutionService()
   {
   }
@@ -81,6 +79,8 @@ namespace shellanything
         icon.SetIndex(resolved_icon.index);
         icon.SetFileExtension("");
 
+        mResolvedFileExtensions.insert(file_extension);
+
         return true;
       }
       else
@@ -92,8 +92,7 @@ namespace shellanything
         icon.SetIndex(unknown_file_icon.index);
         icon.SetFileExtension("");
 
-        const bool is_already_in_log = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
-        if (!is_already_in_log)
+        if (!HaveFailedBefore(file_extension))
         {
           SA_LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
 
@@ -106,6 +105,23 @@ namespace shellanything
     }
 
     return false;
+  }
+
+  bool LegacyIconResolutionService::HaveResolvedBefore(const std::string& file_extension) const
+  {
+    const bool has_resolved_before = mResolvedFileExtensions.find(file_extension) != mResolvedFileExtensions.end();
+    if (has_resolved_before)
+      return true;
+
+    // or did we resolved as a failure ?
+    const bool has_already_failed = HaveFailedBefore(file_extension);
+    return has_already_failed;
+  }
+
+  bool LegacyIconResolutionService::HaveFailedBefore(const std::string& file_extension) const
+  {
+    const bool has_already_failed = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
+    return has_already_failed;
   }
 
 } //namespace shellanything
