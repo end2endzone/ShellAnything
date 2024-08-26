@@ -263,7 +263,15 @@ namespace shellanything
           ASSERT_TRUE(read) << "Failed to read log file: " << path;
 
           int count = CountString(content, UNKNOWN_FILE_EXTENSION);
-          static const int MAX_COUNT = 2; // Issue 167. A maximum of 2 reference is allowed. One from LegacyIconResolutionService class and another from Icon::ResolveFileExtensionIcon().
+
+          // Define how many reference we should see in log file.
+          // With LegacyIconResolutionService class as active service, a maximum of 2 reference is allowed:
+          // One from LegacyIconResolutionService class and another from Icon::ResolveFileExtensionIcon().
+          // 
+          // With WindowsIconResolutionService class as active service, a maximum of 3 reference is allowed:
+          // Two from WindowsIconResolutionService class and another from Icon::ResolveFileExtensionIcon().
+          static const int MAX_COUNT = 3; // Issue #18. Issue #167.
+
           ASSERT_LE(count, MAX_COUNT) << "Log file '" << path << "' contains " << count << " references to '" << UNKNOWN_FILE_EXTENSION << "'.";
         }
       }

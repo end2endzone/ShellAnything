@@ -6,6 +6,8 @@ add_library(sa.windows SHARED
   Win32Clipboard.h
   WindowsClipboardService.cpp
   WindowsClipboardService.h
+  WindowsIconResolutionService.cpp
+  WindowsIconResolutionService.h
   WindowsRegistryService.cpp
   WindowsRegistryService.h
   WindowsKeyboardService.cpp

@@ -39,7 +39,7 @@
 #include "WindowsClipboardService.h"
 #include "WindowsKeyboardService.h"
 #include "PcgRandomService.h"
-#include "LegacyIconResolutionService.h"
+#include "WindowsIconResolutionService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -201,7 +201,7 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       app.SetRandomService(random_service);
 
       // Setup an active icon resolution service in ShellAnything's core.
-      icon_resolution_service = new shellanything::LegacyIconResolutionService();
+      icon_resolution_service = new shellanything::WindowsIconResolutionService();
       app.SetIconResolutionService(icon_resolution_service);
 
       // Setup and starting application

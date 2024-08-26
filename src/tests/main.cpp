@@ -50,7 +50,7 @@
 #include "WindowsClipboardService.h"
 #include "TestKeyboardService.h"
 #include "PcgRandomService.h"
-#include "LegacyIconResolutionService.h"
+#include "WindowsIconResolutionService.h"
 #include "ConfigManager.h"
 
 using namespace ra;
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
   app.SetRandomService(random_service);
 
   // Setup an active icon resolution service in ShellAnything's core.
-  shellanything::IIconResolutionService* icon_resolution_service = new shellanything::LegacyIconResolutionService();
+  shellanything::IIconResolutionService* icon_resolution_service = new shellanything::WindowsIconResolutionService();
   app.SetIconResolutionService(icon_resolution_service);
 
   //Issue #60 - Unit tests cannot execute from installation directory.
