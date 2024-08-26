@@ -76,10 +76,16 @@ namespace shellanything
   {
     if (!mFileExtension.empty())
       return true;
-    if (!mPath.empty() && mIndex >= 0) // not a resource id. See Issue #17, #150, #155
+
+    //See issue #17, 155, 164.
+    //An icon with a negative index is valid from the registry.
+    //Only the special case index = -1 should be considered invalid (Issue #17).
+    //And ShellAnything accept positive (index) and negative index (resource id). (Issue #155, Issue #164).
+    if (!mPath.empty() && mIndex != INVALID_ICON_INDEX)
       return true;
+
     return false;
-  }
+}
 
   void Icon::ResolveFileExtensionIcon()
   {
@@ -100,7 +106,12 @@ namespace shellanything
 
       //try to find the path to the icon module for the given file extension.
       Win32Registry::REGISTRY_ICON resolved_icon = Win32Registry::GetFileTypeIcon(file_extension.c_str());
-      if (!resolved_icon.path.empty() && resolved_icon.index >= 0) // See Issue #17 #155. Do not accept icons which are resource ids.
+
+      //An icon with a negative index is valid from the registry.
+      //Only the special case index = -1 should be considered invalid (Issue #17).
+      //And ShellAnything accept positive (index) and negative index (resource id). (Issue #155, Issue #164).
+      //See issue #17, 155, 164.
+      if (Win32Registry::IsValid(resolved_icon))
       {
         //found the icon for the file extension
         //replace this menu's icon with the new information

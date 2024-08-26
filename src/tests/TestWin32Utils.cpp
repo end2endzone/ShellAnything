@@ -28,6 +28,7 @@
 #pragma warning( pop )
 
 #include "TestWin32Utils.h"
+#include "Icon.h"
 #include "Win32Utils.h"
 #include "ArgumentsHandler.h"
 
@@ -650,6 +651,68 @@ namespace shellanything
         //cleanup
         DeleteObject(hBitmap);
       }
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestWin32Utils, testNegativeIconIndexIssue155) // Issue #155
+    {
+      Icon icon;
+
+      // On my system, with current implementation,
+      // Icon::ResolveFileExtensionIcon() resolves HTML file extension to the following:
+      icon.SetPath("C:\\Program Files\\Internet Explorer\\iexplore.exe");
+      icon.SetIndex(-17);
+
+      // act, load an icon with negative index
+      HBITMAP hBitmap = Win32Utils::LoadIconFromFileAsBitmap32Bpp(icon.GetPath().c_str(), icon.GetIndex());
+      ASSERT_NE(hBitmap, Win32Utils::INVALID_BITMAP_HANDLE);
+
+      // build output files
+      std::string test_dir = ra::filesystem::GetTemporaryDirectory();
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      std::string bitmap_filename = ra::testing::GetTestQualifiedName() + ".bmp";
+      std::string output_path = test_dir + "\\" + bitmap_filename;
+
+      // remove data from previous runs
+      ra::filesystem::DeleteFile(output_path.c_str());
+
+      // Save as *.bmp
+      bool saved = Win32Utils::SaveBitmapFile(output_path.c_str(), hBitmap);
+      ASSERT_TRUE(saved) << "Failed to save bitmap to file: " << output_path;
+
+      // Cleanup
+      DeleteObject(hBitmap);
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestWin32Utils, testNegativeIconIndexIssue164) // Issue #164
+    {
+      Icon icon;
+
+      // On my system, Icon::ResolveFileExtensionIcon() resolves 'txt' file extension to a negative icon index
+      icon.SetFileExtension("txt");
+      icon.ResolveFileExtensionIcon();
+
+      ASSERT_TRUE(icon.IsValid());
+      ASSERT_TRUE(icon.GetIndex() < 1);
+
+      // act, load an icon with negative index
+      HBITMAP hBitmap = Win32Utils::LoadIconFromFileAsBitmap32Bpp(icon.GetPath().c_str(), icon.GetIndex());
+      ASSERT_NE(hBitmap, Win32Utils::INVALID_BITMAP_HANDLE);
+
+      // build output files
+      std::string test_dir = ra::filesystem::GetTemporaryDirectory();
+      ASSERT_TRUE(ra::filesystem::CreateDirectory(test_dir.c_str()));
+      std::string bitmap_filename = ra::testing::GetTestQualifiedName() + ".bmp";
+      std::string output_path = test_dir + "\\" + bitmap_filename;
+
+      // remove data from previous runs
+      ra::filesystem::DeleteFile(output_path.c_str());
+
+      // Save as *.bmp
+      bool saved = Win32Utils::SaveBitmapFile(output_path.c_str(), hBitmap);
+      ASSERT_TRUE(saved) << "Failed to save bitmap to file: " << output_path;
+
+      // Cleanup
+      DeleteObject(hBitmap);
     }
     //--------------------------------------------------------------------------------------------------
 

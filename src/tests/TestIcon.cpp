@@ -133,7 +133,7 @@ namespace shellanything
         Icon icon;
         icon.SetPath("path/to/a/file.ico");
         icon.SetIndex(-99);
-        ASSERT_FALSE(icon.IsValid());
+        ASSERT_TRUE(icon.IsValid());
       }
     }
     //--------------------------------------------------------------------------------------------------
@@ -141,6 +141,22 @@ namespace shellanything
     {
       Icon icon;
       icon.SetFileExtension("txt");
+
+      //act
+      icon.ResolveFileExtensionIcon();
+
+      ASSERT_TRUE(icon.GetFileExtension().empty());
+      ASSERT_FALSE(icon.GetPath().empty());
+      ASSERT_NE(Icon::INVALID_ICON_INDEX, icon.GetIndex());
+
+      // assert we did not resolve to default unknown icon
+      ASSERT_TRUE(icon != Icon::GetDefaultUnknownFileTypeIcon());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestIcon, testResolveFileExtensionIconHtml)
+    {
+      Icon icon;
+      icon.SetFileExtension("html");
 
       //act
       icon.ResolveFileExtensionIcon();
