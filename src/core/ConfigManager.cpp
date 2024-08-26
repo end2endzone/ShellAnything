@@ -237,7 +237,6 @@ namespace shellanything
 
   void ConfigManager::ToLongString(std::string& str, int indent) const
   {
-    static const char* NEW_LINE = ra::environment::GetLineSeparator();
     const bool have_children = (mConfigurations.size() > 0);
     const std::string indent_str = std::string(indent, ' ');
 
@@ -245,8 +244,7 @@ namespace shellanything
     str += indent_str + short_string;
     if (have_children)
     {
-      str += " {";
-      str += NEW_LINE;
+      str += " {\n";
 
       // print config children
       for (size_t i = 0; i < mConfigurations.size(); i++)
@@ -254,7 +252,7 @@ namespace shellanything
         ConfigFile* config = mConfigurations[i];
         config->ToLongString(str, indent + 2);
 
-        str += NEW_LINE;
+        str += "\n";
       }
 
       str += indent_str + "}";
