@@ -39,6 +39,7 @@
 #include "WindowsClipboardService.h"
 #include "WindowsKeyboardService.h"
 #include "PcgRandomService.h"
+#include "WindowsIconResolutionService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -55,6 +56,7 @@ shellanything::IRegistryService* registry_service = NULL;
 shellanything::IClipboardService* clipboard_service = NULL;
 shellanything::IKeyboardService* keyboard_service = NULL;
 shellanything::IRandomService* random_service = NULL;
+shellanything::IIconResolutionService* icon_resolution_service = NULL;
 
 class CShellAnythingModule : public ATL::CAtlDllModuleT< CShellAnythingModule >
 {
@@ -198,6 +200,10 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       random_service = new shellanything::PcgRandomService();
       app.SetRandomService(random_service);
 
+      // Setup an active icon resolution service in ShellAnything's core.
+      icon_resolution_service = new shellanything::WindowsIconResolutionService();
+      app.SetIconResolutionService(icon_resolution_service);
+
       // Setup and starting application
       app.Start();
 
@@ -218,11 +224,13 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       delete clipboard_service;
       delete registry_service;
       delete logger_service;
+      delete icon_resolution_service;
       random_service = NULL;
       keyboard_service = NULL;
       clipboard_service = NULL;
       registry_service = NULL;
       logger_service = NULL;
+      icon_resolution_service = NULL;
     }
   }
 

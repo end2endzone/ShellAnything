@@ -30,6 +30,7 @@
 #include "IClipboardService.h"
 #include "IKeyboardService.h"
 #include "IRandomService.h"
+#include "IIconResolutionService.h"
 
 #include <string>
 
@@ -145,6 +146,21 @@ namespace shellanything
     IRandomService* GetRandomService();
 
     /// <summary>
+    /// Set the current application icon resolution service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetIconResolutionService(IIconResolutionService* instance);
+
+    /// <summary>
+    /// Get the current application random service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IIconResolutionService* GetIconResolutionService();
+
+    /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
     /// </summary>
     /// <returns>Returns true if application is loaded in a test environment. Returns false otherwise.</returns>
@@ -199,6 +215,7 @@ namespace shellanything
     IClipboardService* mClipboard;
     IKeyboardService* mKeyboard;
     IRandomService* mRandom;
+    IIconResolutionService* mIconResolutionService;
   };
 
 

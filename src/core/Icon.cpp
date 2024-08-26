@@ -23,19 +23,16 @@
  *********************************************************************************/
 
 #include "Icon.h"
-#include "SelectionContext.h"
-#include "PropertyManager.h"
-#include "Win32Registry.h"
+#include "App.h"
 #include "LoggerHelper.h"
+#include "PropertyManager.h"
+#include "SelectionContext.h"
 #include "SaUtils.h"
 
 #include "rapidassist/strings.h"
-#include "rapidassist/environment.h"
 
 namespace shellanything
 {
-  Icon::FileExtensionSet Icon::mUnresolvedFileExtensions;
-
   Icon::Icon() :
     mIndex(0) // As per documentation, "If the index is not specified, the value 0 is used." See Issue #17, #150 and #155.
   {
@@ -89,56 +86,30 @@ namespace shellanything
 
   void Icon::ResolveFileExtensionIcon()
   {
-    //is this menu have a file extension ?
+    IIconResolutionService* icon_resolution_service = App::GetInstance().GetIconResolutionService();
+    if (icon_resolution_service == NULL)
+    {
+      SA_LOG(ERROR) << "No Icon Resolution service configured for resolving file extensions to icon.";
+      return;
+    }
+
     shellanything::PropertyManager& pmgr = shellanything::PropertyManager::GetInstance();
     std::string file_extension = pmgr.Expand(mFileExtension);
-    if (!file_extension.empty())
+
+    const bool have_resolved_before = icon_resolution_service->HaveResolvedBefore(file_extension);
+    const bool have_failed_before = icon_resolution_service->HaveFailedBefore(file_extension);
+
+    //Do the actual resolution
+    bool success = icon_resolution_service->ResolveFileExtensionIcon(*this);
+
+    // Print a success/failure message once. Issue #98.
+    if (success && !have_resolved_before)
     {
-      //check for multiple values. keep the first value, forget about other selected file extensions.
-      const std::string separator = pmgr.GetProperty(SelectionContext::MULTI_SELECTION_SEPARATOR_PROPERTY_NAME);
-      if (file_extension.find(separator) != std::string::npos)
-      {
-        //multiple values detected.
-        ra::strings::StringVector extension_list = ra::strings::Split(file_extension, separator.c_str());
-        if (!extension_list.empty())
-          file_extension = extension_list[0];
-      }
-
-      //try to find the path to the icon module for the given file extension.
-      Win32Registry::REGISTRY_ICON resolved_icon = Win32Registry::GetFileTypeIcon(file_extension.c_str());
-
-      //An icon with a negative index is valid from the registry.
-      //Only the special case index = -1 should be considered invalid (Issue #17).
-      //And ShellAnything accept positive (index) and negative index (resource id). (Issue #155, Issue #164).
-      //See issue #17, 155, 164.
-      if (Win32Registry::IsValid(resolved_icon))
-      {
-        //found the icon for the file extension
-        //replace this menu's icon with the new information
-        SA_LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << resolved_icon.path << "' with index '" << resolved_icon.index << "'";
-        mPath = resolved_icon.path;
-        mIndex = resolved_icon.index;
-        mFileExtension = "";
-      }
-      else
-      {
-        //failed to find a valid icon.
-        //using the default "unknown" icon
-        Win32Registry::REGISTRY_ICON unknown_file_icon = Win32Registry::GetUnknownFileTypeIcon();
-        mPath = unknown_file_icon.path;
-        mIndex = unknown_file_icon.index;
-        mFileExtension = "";
-
-        //show the message only once in logs
-        const bool is_already_in_log = mUnresolvedFileExtensions.find(file_extension) != mUnresolvedFileExtensions.end();
-        if (!is_already_in_log)
-        {
-          SA_LOG(WARNING) << "Failed to find icon for file extension '" << file_extension << "'. Resolving icon with default icon for unknown file type '" << unknown_file_icon.path << "' with index '" << unknown_file_icon.index << "'";
-
-          //remember this failure.
-          mUnresolvedFileExtensions.insert(file_extension);
-        }
-      }
+      SA_LOG(INFO) << "Resolving icon for file extension '" << file_extension << "' to file '" << mPath << "' with index '" << mIndex << "'";
+    }
+    else if (!success && !have_failed_before)
+    {
+      SA_LOG(WARNING) << "Failed to resolve icon for file extension '" << file_extension << "'.";
     }
   }
 

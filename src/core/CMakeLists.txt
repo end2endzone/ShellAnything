@@ -18,6 +18,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/Environment.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
   ${CMAKE_SOURCE_DIR}/src/core/IObject.h
+  ${CMAKE_SOURCE_DIR}/src/core/IIconResolutionService.h
   ${CMAKE_SOURCE_DIR}/src/core/IKeyboardService.h
   ${CMAKE_SOURCE_DIR}/src/core/ILiveProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/IClipboardService.h
@@ -62,6 +63,7 @@ add_library(sa.core SHARED
   IAttributeValidator.cpp
   Icon.cpp
   IObject.cpp
+  IIconResolutionService.cpp
   IKeyboardService.cpp
   ILiveProperty.cpp
   IClipboardService.cpp

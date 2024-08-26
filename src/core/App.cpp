@@ -137,6 +137,16 @@ namespace shellanything
     return mRandom;
   }
 
+  void App::SetIconResolutionService(IIconResolutionService* instance)
+  {
+    mIconResolutionService = instance;
+  }
+
+  IIconResolutionService* App::GetIconResolutionService()
+  {
+    return mIconResolutionService;
+  }
+
   bool App::IsTestingEnvironment()
   {
     std::string process_path = ra::process::GetCurrentProcessPath();

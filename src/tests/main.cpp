@@ -50,6 +50,7 @@
 #include "WindowsClipboardService.h"
 #include "TestKeyboardService.h"
 #include "PcgRandomService.h"
+#include "WindowsIconResolutionService.h"
 #include "ConfigManager.h"
 
 using namespace ra;
@@ -147,6 +148,10 @@ int main(int argc, char** argv)
   shellanything::IRandomService* random_service = new shellanything::PcgRandomService();
   app.SetRandomService(random_service);
 
+  // Setup an active icon resolution service in ShellAnything's core.
+  shellanything::IIconResolutionService* icon_resolution_service = new shellanything::WindowsIconResolutionService();
+  app.SetIconResolutionService(icon_resolution_service);
+
   //Issue #60 - Unit tests cannot execute from installation directory.
   //Create log directory under the current executable.
   //When running tests from a developer environment, the log directory is expected to have write access.
@@ -208,11 +213,13 @@ int main(int argc, char** argv)
   delete clipboard_service;
   delete registry_service;
   delete logger_service;
+  delete icon_resolution_service;
   random_service = NULL;
   keyboard_service = NULL;
   clipboard_service = NULL;
   registry_service = NULL;
   logger_service = NULL;
+  icon_resolution_service = NULL;
 
   return wResult; // returns 0 if all the tests are successful, or 1 otherwise
 }
