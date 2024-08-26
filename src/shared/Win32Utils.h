@@ -30,6 +30,8 @@
 
 namespace Win32Utils
 {
+  static const HBITMAP INVALID_BITMAP_HANDLE = NULL;
+
   void GetWindowsVersion(int& major, int& minor);
   std::string GetWindowsProductName();
   bool EnableMonitorDpiAwareness();
@@ -59,6 +61,7 @@ namespace Win32Utils
   bool SaveAs32BppBitmapV3File(const char* path, HBITMAP hBitmap);
   bool SaveBitmapFile(const char* path, HBITMAP hBitmap);
   HBITMAP LoadBitmapFromFile(const char* path);
+  HBITMAP LoadIconFromFileAsBitmap32Bpp(const char* filename, int index);
   BOOL IsFullyTransparent(HBITMAP hBitmap);
   BOOL IsFullyTransparent(const std::string& buffer);
   std::string GetMenuItemDetails(HMENU hMenu, UINT pos);

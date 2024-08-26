@@ -684,8 +684,13 @@ namespace Win32Registry
   {
     if (icon.path.empty())
       return false;
-    if (icon.index == INVALID_ICON_INDEX) //See issue #17
+
+    //See issue #17, 155, 164.
+    //An icon with a negative index is valid from the registry.
+    //Only the special case index = -1 should be considered invalid (Issue #17).
+    if (icon.index == INVALID_ICON_INDEX)
       return false;
+
     if (IsIconEquals(icon, NULL_ICON))
       return false;
     return true;

@@ -1,14 +1,13 @@
 Changes for 0.10.0
 
-* Deprecated support for icons with negative resource id.
 * Fixed issue #6  : (twice) Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
 * Fixed issue #31 : (twice) Error in logs for CContextMenu::GetCommandString()
 * Fixed issue #109: Implement default and verbose logging.
 * Fixed issue #150: ico icon (that do not specifically force index=0) are not working.
-* Fixed issue #155: Drop support for loading icons from a resource id (icons with a negative index smaller than -1).
 * Fixed issue #157: Compilation fails on Github Action: `fatal error C1083: Cannot open include file: 'atlbase.h': No such file or directory`.
 * Fixed issue #158: Compilation fails on Github Action: `CPack error : Problem running WiX.`.
 * Fixed issue #159: Unit test fails on Github Actions: TestPlugins.testServices().
+* Fixed issue #64: Fails to identify icon for HTML files.
 
 
 Changes for 0.9.0

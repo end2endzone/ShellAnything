@@ -65,6 +65,39 @@ namespace shellanything
     {
     }
     //--------------------------------------------------------------------------------------------------
+    TEST_F(TestIcon, testOperatorEquals)
+    {
+      Icon iconA;
+      Icon iconB;
+
+      #define ASSERT_ICON_EQUALS(iconA, iconB) ASSERT_TRUE(iconA == iconB); ASSERT_FALSE(iconA != iconB);
+      #define ASSERT_ICON_NOT_EQUALS(iconA, iconB) ASSERT_TRUE(iconA != iconB); ASSERT_FALSE(iconA == iconB);
+
+      // assert equals
+      ASSERT_ICON_EQUALS(iconA, iconB);
+
+      iconA.SetFileExtension("txt");
+      ASSERT_ICON_NOT_EQUALS(iconA, iconB);
+
+      iconA.SetFileExtension("exe");
+      iconB.SetFileExtension("exe");
+      ASSERT_ICON_EQUALS(iconA, iconB);
+
+      iconA.SetPath("foo.dll");
+      ASSERT_ICON_NOT_EQUALS(iconA, iconB);
+
+      iconA.SetPath("bar.dll");
+      iconB.SetPath("bar.dll");
+      ASSERT_ICON_EQUALS(iconA, iconB);
+
+      iconA.SetIndex(11);
+      ASSERT_ICON_NOT_EQUALS(iconA, iconB);
+
+      iconA.SetIndex(99);
+      iconB.SetIndex(99);
+      ASSERT_ICON_EQUALS(iconA, iconB);
+    }
+    //--------------------------------------------------------------------------------------------------
     TEST_F(TestIcon, testValidIcon)
     {
       // default ctor
@@ -100,11 +133,11 @@ namespace shellanything
         Icon icon;
         icon.SetPath("path/to/a/file.ico");
         icon.SetIndex(-99);
-        ASSERT_FALSE(icon.IsValid());
+        ASSERT_TRUE(icon.IsValid());
       }
     }
     //--------------------------------------------------------------------------------------------------
-    TEST_F(TestIcon, testResolveFileExtensionIcon)
+    TEST_F(TestIcon, testResolveFileExtensionIconTxt)
     {
       Icon icon;
       icon.SetFileExtension("txt");
@@ -113,6 +146,36 @@ namespace shellanything
       icon.ResolveFileExtensionIcon();
 
       ASSERT_TRUE(icon.GetFileExtension().empty());
+      ASSERT_FALSE(icon.GetPath().empty());
+      ASSERT_NE(Icon::INVALID_ICON_INDEX, icon.GetIndex());
+
+      // assert we did not resolve to default unknown icon
+      ASSERT_TRUE(icon != Icon::GetDefaultUnknownFileTypeIcon());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestIcon, testResolveFileExtensionIconHtml)
+    {
+      Icon icon;
+      icon.SetFileExtension("html");
+
+      //act
+      icon.ResolveFileExtensionIcon();
+
+      ASSERT_TRUE(icon.GetFileExtension().empty());
+      ASSERT_FALSE(icon.GetPath().empty());
+      ASSERT_NE(Icon::INVALID_ICON_INDEX, icon.GetIndex());
+
+      // assert we did not resolve to default unknown icon
+      ASSERT_TRUE(icon != Icon::GetDefaultUnknownFileTypeIcon());
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestIcon, testGetDefaultUnknownFileTypeIcon)
+    {
+      Icon icon = Icon::GetDefaultUnknownFileTypeIcon();
+
+      ASSERT_TRUE(icon.IsValid());
+      ASSERT_TRUE(icon.GetFileExtension().empty());
+
       ASSERT_FALSE(icon.GetPath().empty());
       ASSERT_NE(Icon::INVALID_ICON_INDEX, icon.GetIndex());
     }
