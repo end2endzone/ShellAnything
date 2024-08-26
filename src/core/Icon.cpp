@@ -50,15 +50,26 @@ namespace shellanything
   {
   }
 
-  const Icon& Icon::operator =(const Icon& icon)
+  const Icon& Icon::operator =(const Icon& other)
   {
-    if (this != &icon)
+    if (this != &other)
     {
-      mFileExtension = icon.mFileExtension;
-      mPath = icon.mPath;
-      mIndex = icon.mIndex;
+      mFileExtension = other.mFileExtension;
+      mPath = other.mPath;
+      mIndex = other.mIndex;
     }
     return (*this);
+  }
+
+  bool Icon::operator ==(const Icon& other) const
+  {
+    if (this == &other)
+      return true;
+    if ((mFileExtension == other.mFileExtension) &&
+        (mPath == other.mPath) &&
+        (mIndex == other.mIndex))
+        return true;
+    return false;
   }
 
   bool Icon::IsValid() const
@@ -148,6 +159,14 @@ namespace shellanything
   void Icon::SetIndex(const int& index)
   {
     mIndex = index;
+  }
+
+  Icon Icon::GetDefaultUnknownFileTypeIcon()
+  {
+    Icon tmp;
+    tmp.SetFileExtension("this_file_extension_is_not_registered_on_system");
+    tmp.ResolveFileExtensionIcon();
+    return tmp;
   }
 
   std::string Icon::ToShortString() const

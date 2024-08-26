@@ -53,7 +53,20 @@ namespace shellanything
     /// <summary>
     /// Copy operator
     /// </summary>
-    const Icon& operator =(const Icon& icon);
+    const Icon& operator =(const Icon& other);
+
+    /// <summary>
+    /// Equal operator
+    /// </summary>
+    bool operator ==(const Icon& other) const;
+
+    /// <summary>
+    /// Not Equal operator
+    /// </summary>
+    inline bool operator !=(const Icon& other) const
+    {
+      return !((*this) == other);
+    }
 
     /// <summary>
     /// Returns true if the icon have a valid path and index.
@@ -95,6 +108,11 @@ namespace shellanything
     /// Setter for the 'index' parameter.
     /// </summary>
     void SetIndex(const int& index);
+
+    /// <summary>
+    /// Get the system's default visual icon for unknown file type.
+    /// </summary>
+    static Icon GetDefaultUnknownFileTypeIcon();
 
     // IObject methods
     virtual std::string ToShortString() const;
