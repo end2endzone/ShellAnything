@@ -1427,6 +1427,49 @@ namespace Win32Utils
     return hReturn;
   }
 
+  HBITMAP LoadIconFromFileAsBitmap32Bpp(const char* filename, int index)
+  {
+    HBITMAP hBitmap = INVALID_BITMAP_HANDLE;
+    HICON hIconSmall = NULL;
+
+    std::wstring icon_filename_wide = ra::unicode::Utf8ToUnicode(filename);
+
+    //check how many icons the file contains
+    UINT num_icon_in_file = ExtractIconExW(icon_filename_wide.c_str(), -1, NULL, NULL, 1);
+    if (num_icon_in_file == 0)
+    {
+      // ERROR: "File '" << filename << "' does not contains an icon.";
+    }
+    else
+    {
+      //the file contains 1 or more icons, try to load a small one
+      UINT num_icon_loaded = 0;
+      if (num_icon_in_file >= 1)
+        num_icon_loaded = ExtractIconExW(icon_filename_wide.c_str(), index, NULL, &hIconSmall, 1);
+      if (num_icon_in_file >= 1 && num_icon_loaded == 0)
+      {
+        // ERROR: "Failed to load icon index " << icon_index << " from file '" << icon_filename << "'.";
+      }
+      else
+      {
+        SIZE menu_icon_size = Win32Utils::GetIconSize(hIconSmall);
+        // ERROR: "Loaded icon " << icon_index << " from file '" << icon_filename << "' is " << menu_icon_size.cx << "x" << menu_icon_size.cy << ".";
+
+        //Convert the icon to a 32bpp bitmap with alpha channel (invisible background)
+        hBitmap = Win32Utils::CopyAsBitmap(hIconSmall);
+        if (hBitmap == INVALID_BITMAP_HANDLE)
+        {
+          // ERROR: "Icon " << icon_index << " from file '" << icon_filename << "' has failed to convert to bitmap.";
+        }
+
+        if (hIconSmall != NULL)
+          DestroyIcon(hIconSmall);
+      }
+    }
+
+    return hBitmap;
+  }
+
   BOOL IsFullyTransparent(HBITMAP hBitmap)
   {
     SIZE bitmap_size = GetBitmapSize(hBitmap);
