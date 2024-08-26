@@ -1,5 +1,7 @@
 add_library(sa.windows SHARED
   dllmain.cpp
+  LegacyIconResolutionService.cpp
+  LegacyIconResolutionService.h
   Win32Clipboard.cpp
   Win32Clipboard.h
   WindowsClipboardService.cpp
