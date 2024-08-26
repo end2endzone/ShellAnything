@@ -52,6 +52,10 @@ namespace shellanything
     /// <returns>Returns true if the operation is successful. Returns false otherwise.</returns>
     virtual bool ResolveFileExtensionIcon(Icon& icon);
 
+  private:
+    typedef std::set<std::string /*file extension*/> FileExtensionSet;
+    static FileExtensionSet mUnresolvedFileExtensions;
+
   };
 
 } //namespace shellanything

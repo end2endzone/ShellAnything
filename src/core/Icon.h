@@ -119,8 +119,6 @@ namespace shellanything
     virtual void ToLongString(std::string& str, int indent) const;
 
   private:
-    typedef std::set<std::string /*file extension*/> FileExtensionSet;
-    static FileExtensionSet mUnresolvedFileExtensions;
     std::string mFileExtension;
     std::string mPath;
     int mIndex;
