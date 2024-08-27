@@ -6,7 +6,7 @@ set(REFRESH_DEBUG_ARGS_WIN_RESOURCE_FILES ""
   showargs.rc
 )
 
-add_executable(debug.arguments.window WIN32
+add_executable(DebugArgumentsWindow WIN32
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
@@ -22,13 +22,13 @@ add_executable(debug.arguments.window WIN32
 source_group("Resource Files"          FILES ${REFRESH_DEBUG_ARGS_WIN_RESOURCE_FILES})
 
 # Force UNICODE for target
-target_compile_definitions(debug.arguments.window PRIVATE -D_UNICODE -DUNICODE)
+target_compile_definitions(DebugArgumentsWindow PRIVATE -D_UNICODE -DUNICODE)
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(debug.arguments.window PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(DebugArgumentsWindow PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the executable.
-target_include_directories(debug.arguments.window
+target_include_directories(DebugArgumentsWindow
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
@@ -36,14 +36,14 @@ target_include_directories(debug.arguments.window
 )
 
 # Define linking dependencies.
-add_dependencies(debug.arguments.window sa.shared)
-target_link_libraries(debug.arguments.window
+add_dependencies(DebugArgumentsWindow sa.shared)
+target_link_libraries(DebugArgumentsWindow
   PRIVATE
     sa.shared
     rapidassist
 )
 
-install(TARGETS debug.arguments.window
+install(TARGETS DebugArgumentsWindow
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
