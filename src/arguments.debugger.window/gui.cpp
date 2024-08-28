@@ -1,10 +1,3 @@
-// showargs.cpp : Defines the entry point for the application.
-//
-
-// TODO: background color, the background color is grey because it uses ES_READONLY style.
-// TODO: font: Consolas, Regular, 11
-
-
 #include "framework.h"
 #include "resource.h"
 #include "arguments.h"
@@ -16,7 +9,10 @@
 #include <tchar.h>
 #include <Richedit.h>
 
-// Global variables
+
+// Debug arguments example:
+//   This is "multiple arguments at once" including "utf-8 characters" such as the Greek alphabet Αα Ββ Γγ Δδ Εε Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσ/ς Ττ Υυ Φφ Χχ Ψψ Ωω.
+
 
 // The main window class name.
 static TCHAR szWindowClass[] = _T("DesktopApp");
