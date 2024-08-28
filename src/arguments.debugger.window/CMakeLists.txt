@@ -1,34 +1,34 @@
 find_package(rapidassist REQUIRED)
 
-set(REFRESH_DEBUG_ARGS_CON_RESOURCE_FILES ""
+set(REFRESH_DEBUG_ARGS_WIN_RESOURCE_FILES ""
   resource.h
   showargs.ico
   showargs.rc
 )
 
-add_executable(DebugArgumentsConsole
+add_executable(arguments.debugger.window WIN32
   ${SHELLANYTHING_EXPORT_HEADER}
   ${SHELLANYTHING_VERSION_HEADER}
   ${SHELLANYTHING_CONFIG_HEADER}
-  ${REFRESH_DEBUG_ARGS_CON_RESOURCE_FILES}
-  ../DebugArgumentsWindow/arguments.cpp
-  ../DebugArgumentsWindow/arguments.h
+  ${REFRESH_DEBUG_ARGS_WIN_RESOURCE_FILES}
+  arguments.cpp
+  arguments.h
   framework.h
-  main.cpp
+  gui.cpp
   targetver.h
 )
 
 # Group external files as filter for Visual Studio
-source_group("Resource Files"          FILES ${REFRESH_DEBUG_ARGS_CON_RESOURCE_FILES})
+source_group("Resource Files"          FILES ${REFRESH_DEBUG_ARGS_WIN_RESOURCE_FILES})
 
 # Force UNICODE for target
-target_compile_definitions(DebugArgumentsConsole PRIVATE -D_UNICODE -DUNICODE)
+target_compile_definitions(arguments.debugger.window PRIVATE -D_UNICODE -DUNICODE)
 
 # Force CMAKE_DEBUG_POSTFIX for executables
-set_target_properties(DebugArgumentsConsole PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+set_target_properties(arguments.debugger.window PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # Define include directories for the executable.
-target_include_directories(DebugArgumentsConsole
+target_include_directories(arguments.debugger.window
   PRIVATE
     ${GTEST_INCLUDE_DIR}
     rapidassist
@@ -36,14 +36,14 @@ target_include_directories(DebugArgumentsConsole
 )
 
 # Define linking dependencies.
-add_dependencies(DebugArgumentsConsole sa.shared)
-target_link_libraries(DebugArgumentsConsole
+add_dependencies(arguments.debugger.window sa.shared)
+target_link_libraries(arguments.debugger.window
   PRIVATE
     sa.shared
     rapidassist
 )
 
-install(TARGETS DebugArgumentsConsole
+install(TARGETS arguments.debugger.window
         EXPORT shellanything-targets
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}

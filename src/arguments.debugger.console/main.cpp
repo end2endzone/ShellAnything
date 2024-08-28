@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <string>
 #include "framework.h"
-#include "../DebugArgumentsWindow/arguments.h"
+#include "../arguments.debugger.window/arguments.h"
 
 #include "rapidassist/console.h"
 
