@@ -47,6 +47,9 @@ This manual includes a description of the system functionalities and capabilitie
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
 * [Environment variables](#environment-variables)
+* [Tools](#tools)
+  * [file_explorer_renew](#file_explorer_renew)
+  * [arguments.debugger](#argumentsdebugger)
 * [Plugins](#plugins)
   * [Plugin overview](#plugin-overview)
   * [C API](#c-api)
@@ -74,6 +77,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Keyboard mnemonics](#mnemonics--keyboard-shortcuts) 
 * [Troubleshooting](#troubleshooting)
   * [Logging support](#logging-support)
+  * [Checkout the _Tools_ section](#tools)
   * [Missing ampersand character (`&`) in menus](#missing-ampersand-character--in-menus)
   * [Reporting bugs](#reporting-bugs)
 
@@ -1795,6 +1799,79 @@ The following table defines the list of pre-defined environment variables for Sh
 
 
 
+
+# Tools #
+
+
+## file_explorer_renew ##
+
+**file_explorer_renew** is an utility provided with ShellAnything that can close and reopen all File Explorer windows. 
+
+Shell Extension DLLs cannot be easily deleted because _File Explorer_ usually have a lock on the file. File Explorer Renew is used to force File Explorer to release file locks on shell extentions such as ShellAnything.
+
+The utility is useful during the [uninstall process](https://github.com/end2endzone/ShellAnything/blob/master/INSTALL.md#uninstall). For more details, see the [uninstall section of INSTALL.md](https://github.com/end2endzone/ShellAnything/blob/master/INSTALL.md#uninstall).
+
+
+
+## arguments.debugger ##
+
+**arguments debugger** is a set of two applications for debugging command line arguments sent to a program. When launched, they display individual arguments that started their process. 
+
+There are two applications `arguments.debugger.console.exe` and `arguments.debugger.window.exe`. The first is a console application, the second is a windows application. Both applications will show the individual command line arguments received from [&lt;exec&gt; action](#exec-action).
+
+This tool allows one to properly escape string values to use as command line parameters.
+
+For example, if you execute the following menu action:
+```xml
+<menu name="arguments.debugger">
+  <actions>
+    <exec 
+      path="${application.directory}\arguments.debugger.window.exe" 
+      arguments="This is &quot;multiple arguments at once&quot; including &quot;utf-8 characters&quot; such as the Greek alphabet Αα Ββ Γγ Δδ Εε Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσ/ς Ττ Υυ Φφ Χχ Ψψ Ωω."
+    />
+  </actions>
+</menu>
+```
+arguments.debugger.window.exe will starts and show the following arguments:
+```
+argc=35
+
+argv[0]=C:\Program Files\ShellAnything\bin\arguments.debugger.window.exe
+argv[1]=This
+argv[2]=is
+argv[3]=multiple arguments at once
+argv[4]=including
+argv[5]=utf-8 characters
+argv[6]=such
+argv[7]=as
+argv[8]=the
+argv[9]=Greek
+argv[10]=alphabet
+argv[11]=Αα
+argv[12]=Ββ
+argv[13]=Γγ
+argv[14]=Δδ
+argv[15]=Εε
+argv[16]=Ζζ
+argv[17]=Ηη
+argv[18]=Θθ
+argv[19]=Ιι
+argv[20]=Κκ
+argv[21]=Λλ
+argv[22]=Μμ
+argv[23]=Νν
+argv[24]=Ξξ
+argv[25]=Οο
+argv[26]=Ππ
+argv[27]=Ρρ
+argv[28]=Σσ/ς
+argv[29]=Ττ
+argv[30]=Υυ
+argv[31]=Φφ
+argv[32]=Χχ
+argv[33]=Ψψ
+argv[34]=Ωω.
+```
 
 # Plugins #
 
