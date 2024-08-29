@@ -48,6 +48,7 @@ set(CONFIGURATION_TEST_FILES ""
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testStrings.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestPlugins.testTime.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_files/tests.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_files/TestTools.testArgumentsDebugger.xml
 )
 
 set(HEADER_AND_SOURCE_TEST_FILES ""
@@ -99,6 +100,8 @@ set(HEADER_AND_SOURCE_TEST_FILES ""
   TestSelectionContext.h
   TestShellExtension.cpp
   TestShellExtension.h
+  TestTools.cpp
+  TestTools.h
   TestUnicode.cpp
   TestUnicode.h
   TestValidator.cpp
