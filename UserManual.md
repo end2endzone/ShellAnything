@@ -1819,7 +1819,7 @@ The utility is useful during the [uninstall process](https://github.com/end2endz
 
 There are two applications `arguments.debugger.console.exe` and `arguments.debugger.window.exe`. The first is a console application, the second is a windows application. Both applications will show the individual command line arguments received from [&lt;exec&gt; action](#exec-action).
 
-This tool allows one to properly escape string values to use as command line parameters.
+This tool allows one to validate that he properly escaped string values to use as command line parameters. Test your &lt;exec&gt; actions with _arguments.debugger_ until all your arguments are ready. Then switch your actions to launch your actual programs.
 
 For example, if you execute the following menu action:
 ```xml
