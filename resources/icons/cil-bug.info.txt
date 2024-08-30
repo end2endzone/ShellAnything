@@ -1,0 +1,2 @@
+url:		https://github.com/coreui/coreui-icons/blob/main/svg/free/cil-bug.svg
+license:	https://github.com/coreui/coreui-icons/blob/main/LICENSE
