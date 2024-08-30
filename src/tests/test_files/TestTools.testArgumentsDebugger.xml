@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <menu name="arguments.debugger">
+      <actions>
+        <exec path="${application.directory}\arguments.debugger.window${debug.postfix}.exe" arguments="This is &quot;multiple arguments at once&quot; including &quot;utf-8 characters&quot; such as the Greek alphabet Αα Ββ Γγ Δδ Εε Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσ/ς Ττ Υυ Φφ Χχ Ψψ Ωω." />
+      </actions>
+    </menu>
+  </shell>
+</root>

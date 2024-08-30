@@ -39,6 +39,8 @@ add_subdirectory(api)
 add_subdirectory(logger/glog)
 add_subdirectory(windows)
 add_subdirectory(file_explorer_renew)
+add_subdirectory(arguments.debugger.console)
+add_subdirectory(arguments.debugger.window)
 
 if(SHELLANYTHING_BUILD_PLUGINS)
   add_subdirectory(plugins/sa_plugin_process)
