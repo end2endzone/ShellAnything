@@ -52,13 +52,13 @@ goto :eof
 ::   density of 64 --> 32x32 png
 
 echo Processing file: %~1
-convert -density 32  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-16.png"
-convert -density 64  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-32.png"
-convert -density 96  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-48.png"
-convert -density 128 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-64.png"
-REM convert -density 192 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-96.png"
-REM convert -density 256 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-128.png"
-convert "%TEMP_DIR%\%~n1-16.png" "%TEMP_DIR%\%~n1-32.png" "%TEMP_DIR%\%~n1-48.png" "%TEMP_DIR%\%~n1-64.png" "%IMAGE_OUTPUT_DIR%\%~n1.ico"
+magick -density 32  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-16.png"
+magick -density 64  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-32.png"
+magick -density 96  -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-48.png"
+magick -density 128 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-64.png"
+REM magick -density 192 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-96.png"
+REM magick -density 256 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-128.png"
+magick "%TEMP_DIR%\%~n1-16.png" "%TEMP_DIR%\%~n1-32.png" "%TEMP_DIR%\%~n1-48.png" "%TEMP_DIR%\%~n1-64.png" "%IMAGE_OUTPUT_DIR%\%~n1.ico"
 
 goto :eof
 
