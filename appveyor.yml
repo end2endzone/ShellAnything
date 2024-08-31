@@ -71,8 +71,10 @@ before_build:
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_grip.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_zlib.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_libmagic.bat
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_imagemagick.bat
 
 build_script:
+- cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\build_flat-color-icons.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_shellanything.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_process.bat
 - cmd: call %APPVEYOR_BUILD_FOLDER%\ci\appveyor\install_sa_plugin_services.bat
