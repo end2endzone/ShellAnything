@@ -7,12 +7,14 @@ add_library(flat-color-icons SHARED
   resource.h
   resource.rc.in
   ${FLAT-COLOR-ICONS_RESOURCE_FILE}
-  dllmain.cpp
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 # NOTE: DO NOT FOR DEBUG POSTFIX FOR ICON LIBRARIES.
 set_target_properties(flat-color-icons       PROPERTIES DEBUG_POSTFIX "")
+
+# Specify the /NOENTRY linker option. /NOENTRY prevents the linker from linking a reference to _main into the DLL; this option is required to create a resource-only DLL.
+set_target_properties(flat-color-icons       PROPERTIES LINK_FLAGS "/MANIFEST:NO /NODEFAULTLIB /NOENTRY" )
 
 # Define include directories for the executable.
 target_include_directories(flat-color-icons
