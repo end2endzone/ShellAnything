@@ -1,6 +1,5 @@
 /build
 /install
-/third_parties
 /out
 .vscode
 .vs
@@ -16,3 +15,10 @@
 /src/plugins/sa_plugin_process/build
 /scripts/refresh.tmp.bat
 /installer
+/third_parties/RapidAssist
+/third_parties/glog
+/third_parties/glog_static_old
+/third_parties/googletest
+/third_parties/libmagic
+/third_parties/tinyxml2
+/third_parties/zlib
