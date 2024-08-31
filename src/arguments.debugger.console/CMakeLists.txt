@@ -2,7 +2,6 @@ find_package(rapidassist REQUIRED)
 
 set(REFRESH_DEBUG_ARGS_CON_RESOURCE_FILES ""
   resource.h
-  showargs.ico
   showargs.rc
 )
 
@@ -33,6 +32,9 @@ target_include_directories(arguments.debugger.console
     ${GTEST_INCLUDE_DIR}
     rapidassist
     ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/resources/icons
+    ${CMAKE_BINARY_DIR}/include # for finding config.h
+    ${CMAKE_BINARY_DIR}
 )
 
 # Define linking dependencies.
