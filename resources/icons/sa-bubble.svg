@@ -24,9 +24,9 @@
      inkscape:document-units="px"
      showgrid="false"
      width="64px"
-     inkscape:zoom="4"
-     inkscape:cx="-16.875"
-     inkscape:cy="58.25"
+     inkscape:zoom="8"
+     inkscape:cx="3.125"
+     inkscape:cy="28.25"
      inkscape:window-width="1920"
      inkscape:window-height="976"
      inkscape:window-x="-8"
@@ -36,6 +36,17 @@
      showborder="true" />
   <defs
      id="defs2" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="bubble">
+    <circle
+       style="fill:#074477;fill-opacity:1;stroke:#000000;stroke-width:0.965385;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path874"
+       cx="32"
+       cy="32"
+       r="30.892307" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
@@ -109,18 +120,19 @@
      style="display:inline">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.0621px;line-height:1.25;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#00ff00;fill-opacity:1;stroke:#81cfeb;stroke-width:1.91371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="0.81636339"
-       y="47.756348"
-       id="text52742"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.8421px;line-height:1.25;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#00ff00;fill-opacity:1;stroke:#81cfeb;stroke-width:1.65331;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="4.8093472"
+       y="44.626144"
+       id="text52742"
+       transform="scale(0.98270441,1.0176)"><tspan
          sodipodi:role="line"
          id="tspan52740"
-         x="0.81636339"
-         y="47.756348"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.0621px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#00ff00;stroke:#81cfeb;stroke-width:1.91371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.0621px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#81cfeb;fill-opacity:1;stroke:#81cfeb;stroke-width:1.91371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         x="4.8093472"
+         y="44.626144"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.8421px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#00ff00;stroke:#81cfeb;stroke-width:1.65331;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.8421px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#81cfeb;fill-opacity:1;stroke:#81cfeb;stroke-width:1.65331;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="tspan52736">S</tspan><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.0621px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0387ce;fill-opacity:1;stroke:#0387ce;stroke-width:1.91371;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45.8421px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0387ce;fill-opacity:1;stroke:#0387ce;stroke-width:1.65331;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="tspan52738">A</tspan></tspan></text>
   </g>
   <g
