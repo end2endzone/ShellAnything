@@ -16,16 +16,11 @@ if errorlevel 1 (
 echo Found imagemagik directory.
 echo.
 
-:: Notes:
-::   density of 32 --> 16x16 png
-::   density of 48 --> 24x24 png
-::   density of 64 --> 32x32 png
-
 echo Generate pngs...
-magick -density 32  -background none "%~1" "%~dpn1-16.png"
-magick -density 64  -background none "%~1" "%~dpn1-32.png"
-magick -density 96  -background none "%~1" "%~dpn1-48.png"
-magick -density 128 -background none "%~1" "%~dpn1-64.png"
+magick -background none -size 16x16 "%~1" "%~dpn1-16.png"
+magick -background none -size 32x32 "%~1" "%~dpn1-32.png"
+magick -background none -size 48x48 "%~1" "%~dpn1-48.png"
+magick -background none -size 64x64 "%~1" "%~dpn1-64.png"
 
 echo Generate ico...
 set png_files=
@@ -36,7 +31,9 @@ set png_files=%png_files% "%~dpn1-64.png"
 magick %png_files% "%~dpn1.ico"
 
 echo Generated "%~dpn1.ico".
+echo.
 
-echo del %png_files%
+echo Deleting png (intermediate files).
+del %png_files%
 
 pause
