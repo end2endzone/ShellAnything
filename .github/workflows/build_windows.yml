@@ -140,15 +140,15 @@ jobs:
       shell: cmd
       run: call ci\github\install_imagemagick.bat
 
-    - name: Build Shellanything
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      shell: cmd
-      run: call ci\github\install_shellanything.bat
-
     - name: Build flat-color-icons ico files
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: call ci\github\build_flat-color-icons.bat
+
+    - name: Build Shellanything
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_shellanything.bat
 
     - name: Build plugin process
       working-directory: ${{env.GITHUB_WORKSPACE}}
