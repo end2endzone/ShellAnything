@@ -33,7 +33,7 @@ target_link_libraries(flat-color-icons
 
 # Define files that will be part of the installation package.
 install(TARGETS flat-color-icons
-        EXPORT shellanything-targets
+        EXPORT flatcoloricons-targets # do not export as `shellanything-targets` here as we do not want project flat-color-icons to be available as an imported target for plugins.
         ARCHIVE DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         LIBRARY DESTINATION ${SHELLANYTHING_INSTALL_LIB_DIR}
         RUNTIME DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
