@@ -143,24 +143,36 @@ STDAPI DllUnregisterServer(void)
     // See issue #148 for details.
     // Is this failure because the TypeLib is not registered?
 
+    HRESULT hr2 = S_OK;
+
     // Get typelib attributes
     TLIBATTR sTLibAttr;
     ZeroMemory(&sTLibAttr, sizeof(TLIBATTR));
-    if (FAILED(GetTypeLibAttribute(_AtlComModule.m_hInstTypeLib, 0, &sTLibAttr)))
+    hr2 = GetTypeLibAttribute(_AtlComModule.m_hInstTypeLib, 0, &sTLibAttr);
+    if (FAILED(hr2))
       return hr; // return original error
 
-    // Silence the original error only if the TypeLib is not registered on system.
-    HRESULT hr2 = IsTypeLibRegisteredOnSystem(&sTLibAttr);
-    if (SUCCEEDED(hr2) && hr2 == S_FALSE)
-    {
-      // We could assume the error is because the typelib is not registered.
-      // To be certain, we should register the typelib and retry the unregistration:
-      //    _AtlModule.DllRegisterServer(); // don't care about the actual result
-      //    hr = _AtlModule.DllUnregisterServer();
-      // but that could mess up the system if another software is listening for new typelib registrations events.
-      // So we just overrides the original result.
-      return S_OK;
-    }
+    // Check if typelib is registered on system.
+    hr2 = IsTypeLibRegisteredOnSystem(&sTLibAttr);
+    if (FAILED(hr2))
+      return hr; // We don't know if typelib is registered or not. Return original error.
+    if (hr2 == S_OK)
+      return hr; // Yes, the typelib is registered, hr is a legit error. 
+
+    // Check if typelib is registered for current user.
+    hr2 = IsTypeLibRegisteredForCurrentUser(&sTLibAttr);
+    if (FAILED(hr2))
+      return hr; // We don't know if typelib is registered or not. Return original error.
+    if (hr2 == S_OK)
+      return hr; // Yes, the typelib is registered, hr is a legit error. 
+
+    // At this point, assume error 0x8002801c (TYPE_E_REGISTRYACCESS) is because the typelib is not registered.
+    // To be certain, we should register the typelib and retry the unregistration:
+    //    _AtlModule.DllRegisterServer(); // don't care about the actual result
+    //    hr = _AtlModule.DllUnregisterServer();
+    // but that could mess up the system if another software is listening for new typelib registrations events.
+    // So we just silence the original error.
+    return S_OK;
   }
 
   if (SUCCEEDED(hr))

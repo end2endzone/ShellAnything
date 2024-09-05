@@ -47,4 +47,18 @@ HRESULT IsTypeLibRegisteredOnSystem(const GUID& guid, PCWSTR szVersion);
 /// </remarks>
 /// <param name="pTLibAttr">A pointer to the typelib's attributes.</param>
 /// <returns>Returns S_OK if the typelib is registered on system. Returns S_FALSE if the typelib is not registered on system. Returns an HRESULT matching an error code otherwise.</returns>
-HRESULT IsTypeLibRegisteredOnSystem(_In_ LPTLIBATTR pTLibAttr);
+HRESULT IsTypeLibRegisteredOnSystem(_In_ const LPTLIBATTR pTLibAttr);
+
+/// <summary>
+/// Check if the given typelib is registered for the current user.
+/// </summary>
+/// <remarks>
+/// The following registry keys and values are present for a registered typelib:
+///   [HKEY_CURRENT_USER\TypeLib\{guid}\{version}]
+///   @ = "MyClassNameLib"
+///   [HKEY_CURRENT_USER\TypeLib\{guid}\{version}\0\win64]
+///   @ = "Z:\\path\\to\\current\\file.dll"
+/// </remarks>
+/// <param name="pTLibAttr">A pointer to the typelib's attributes.</param>
+/// <returns>Returns S_OK if the typelib is registered on system. Returns S_FALSE if the typelib is not registered on system. Returns an HRESULT matching an error code otherwise.</returns>
+HRESULT IsTypeLibRegisteredForCurrentUser(_In_ const LPTLIBATTR pTLibAttr);
