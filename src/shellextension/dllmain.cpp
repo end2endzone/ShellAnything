@@ -128,6 +128,8 @@ STDAPI DllRegisterServer(void)
 _Use_decl_annotations_
 STDAPI DllUnregisterServer(void)
 {
+  ATTACH_HOOK_DEBUGGING;
+
   // unregisters object, typelib and all interfaces in typelib
   HRESULT hr = _AtlModule.DllUnregisterServer();
 
@@ -146,6 +148,8 @@ STDAPI DllUnregisterServer(void)
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+  //ATTACH_HOOK_DEBUGGING;
+
   BOOL result = _AtlModule.DllMain(dwReason, lpReserved);
   if (result == FALSE)
   {
