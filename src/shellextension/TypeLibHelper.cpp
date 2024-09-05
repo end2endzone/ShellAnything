@@ -61,7 +61,7 @@ HRESULT IsTypeLibRegisteredOnSystem(_In_ LPTLIBATTR pTLibAttr)
 	HRESULT hr;
 
 	// guid to string
-  wchar_t szGUID[64] = { 0 };
+	wchar_t szGUID[64] = { 0 };
 	StringFromGUID2(pTLibAttr->guid, szGUID, 64);
 
 	// version to string
@@ -74,7 +74,9 @@ HRESULT IsTypeLibRegisteredOnSystem(_In_ LPTLIBATTR pTLibAttr)
 	const wchar_t * szSysKind = NULL;
 	switch ( pTLibAttr->syskind )
 	{
-	//case SYS_WIN32: // not supported
+	case SYS_WIN32:
+		szSysKind = L"win32";
+		break;
 	case SYS_WIN64:
 		szSysKind = L"win64";
 		break;
