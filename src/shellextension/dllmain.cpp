@@ -47,6 +47,7 @@
 #include "GlogUtils.h"
 #include "SaUtils.h"
 #include "utils.h"
+#include "TypeLibHelper.h"
 
 #include "rapidassist/errors.h"
 
@@ -132,6 +133,35 @@ STDAPI DllUnregisterServer(void)
 
   // unregisters object, typelib and all interfaces in typelib
   HRESULT hr = _AtlModule.DllUnregisterServer();
+
+  // Issue #148 - Can't uninstall
+  if ( hr == TYPE_E_REGISTRYACCESS )
+  {
+    // Unregistration has failed with error 0x8002801c.
+    // Function _AtlModule.DllUnregisterServer() can also return TYPE_E_REGISTRYACCESS if the TypeLib is not registered on system.
+    // For example, calling `_AtlModule.DllUnregisterServer()` twice, the second call will return TYPE_E_REGISTRYACCESS.
+    // See issue #148 for details.
+    // Is this failure because the TypeLib is not registered?
+
+    // Get typelib attributes
+    TLIBATTR sTLibAttr;
+    ZeroMemory(&sTLibAttr, sizeof(TLIBATTR));
+    if (FAILED(GetTypeLibAttribute(_AtlComModule.m_hInstTypeLib, 0, &sTLibAttr)))
+      return hr; // return original error
+
+    // Silence the original error only if the TypeLib is not registered on system.
+    HRESULT hr2 = IsTypeLibRegisteredOnSystem(&sTLibAttr);
+    if (SUCCEEDED(hr2) && hr2 == S_FALSE)
+    {
+      // We could assume the error is because the typelib is not registered.
+      // To be certain, we should register the typelib and retry the unregistration:
+      //    _AtlModule.DllRegisterServer(); // don't care about the actual result
+      //    hr = _AtlModule.DllUnregisterServer();
+      // but that could mess up the system if another software is listening for new typelib registrations events.
+      // So we just overrides the original result.
+      return S_OK;
+    }
+  }
 
   if (SUCCEEDED(hr))
   {
