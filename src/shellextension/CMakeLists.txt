@@ -20,6 +20,8 @@ add_library(sa.shellextension SHARED
   stdafx.cpp
   stdafx.h
   targetver.h
+  TypeLibHelper.cpp
+  TypeLibHelper.h
   utils.cpp
   utils.h
 )
