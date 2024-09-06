@@ -47,6 +47,7 @@
 #include "GlogUtils.h"
 #include "SaUtils.h"
 #include "utils.h"
+#include "TypeLibHelper.h"
 
 #include "rapidassist/errors.h"
 
@@ -128,8 +129,51 @@ STDAPI DllRegisterServer(void)
 _Use_decl_annotations_
 STDAPI DllUnregisterServer(void)
 {
+  ATTACH_HOOK_DEBUGGING;
+
   // unregisters object, typelib and all interfaces in typelib
   HRESULT hr = _AtlModule.DllUnregisterServer();
+
+  // Issue #148 - Can't uninstall
+  if ( hr == TYPE_E_REGISTRYACCESS )
+  {
+    // Unregistration has failed with error 0x8002801c.
+    // Function _AtlModule.DllUnregisterServer() can also return TYPE_E_REGISTRYACCESS if the TypeLib is not registered on system.
+    // For example, calling `_AtlModule.DllUnregisterServer()` twice, the second call will return TYPE_E_REGISTRYACCESS.
+    // See issue #148 for details.
+    // Is this failure because the TypeLib is not registered?
+
+    HRESULT hr2 = S_OK;
+
+    // Get typelib attributes
+    TLIBATTR sTLibAttr;
+    ZeroMemory(&sTLibAttr, sizeof(TLIBATTR));
+    hr2 = GetTypeLibAttribute(_AtlComModule.m_hInstTypeLib, 0, &sTLibAttr);
+    if (FAILED(hr2))
+      return hr; // return original error
+
+    // Check if typelib is registered on system.
+    hr2 = IsTypeLibRegisteredOnSystem(&sTLibAttr);
+    if (FAILED(hr2))
+      return hr; // We don't know if typelib is registered or not. Return original error.
+    if (hr2 == S_OK)
+      return hr; // Yes, the typelib is registered, hr is a legit error. 
+
+    // Check if typelib is registered for current user.
+    hr2 = IsTypeLibRegisteredForCurrentUser(&sTLibAttr);
+    if (FAILED(hr2))
+      return hr; // We don't know if typelib is registered or not. Return original error.
+    if (hr2 == S_OK)
+      return hr; // Yes, the typelib is registered, hr is a legit error. 
+
+    // At this point, assume error 0x8002801c (TYPE_E_REGISTRYACCESS) is because the typelib is not registered.
+    // To be certain, we should register the typelib and retry the unregistration:
+    //    _AtlModule.DllRegisterServer(); // don't care about the actual result
+    //    hr = _AtlModule.DllUnregisterServer();
+    // but that could mess up the system if another software is listening for new typelib registrations events.
+    // So we just silence the original error.
+    return S_OK;
+  }
 
   if (SUCCEEDED(hr))
   {
@@ -146,6 +190,8 @@ STDAPI DllUnregisterServer(void)
 
 extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+  //ATTACH_HOOK_DEBUGGING;
+
   BOOL result = _AtlModule.DllMain(dwReason, lpReserved);
   if (result == FALSE)
   {

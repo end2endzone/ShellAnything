@@ -5,6 +5,7 @@ Changes for 0.10.0
 * Fixed issue #31 : (twice) Error in logs for CContextMenu::GetCommandString()
 * Fixed issue #109: Implement default and verbose logging.
 * Fixed issue #110: Create a simple command line arguments debugging application.
+* Fixed issue #148: Can't uninstall.
 * Fixed issue #150: ico icon (that do not specifically force index=0) are not working.
 * Fixed issue #157: Compilation fails on Github Action: `fatal error C1083: Cannot open include file: 'atlbase.h': No such file or directory`.
 * Fixed issue #158: Compilation fails on Github Action: `CPack error : Problem running WiX.`.

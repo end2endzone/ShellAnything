@@ -11,6 +11,8 @@ add_library(sa.shellextension SHARED
   CCriticalSection.cpp
   CCriticalSection.h
   dllmain.cpp
+  Reg.cpp
+  Reg.h
   resource.h
   shellext.def
   shellext.idl
@@ -18,6 +20,8 @@ add_library(sa.shellextension SHARED
   stdafx.cpp
   stdafx.h
   targetver.h
+  TypeLibHelper.cpp
+  TypeLibHelper.h
   utils.cpp
   utils.h
 )
@@ -27,6 +31,9 @@ source_group("Source Files" FILES "shellext.rgs")
 
 # Force CMAKE_DEBUG_POSTFIX for executables
 set_target_properties(sa.shellextension        PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
+# Force UNICODE for target
+target_compile_definitions(sa.shellextension PRIVATE -D_UNICODE -DUNICODE)
 
 # Define include directories for the library.
 target_include_directories(sa.shellextension
