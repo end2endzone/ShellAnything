@@ -24,7 +24,7 @@ This manual includes a description of the steps that are required in order to bu
 
 ### Compiled binary packages ###
 
-You can find the latest pre-compiled binaries  on the [github project release page](https://github.com/end2endzone/ShellAnything/releases/latest). 
+You can find the latest pre-compiled binaries on the [github project release page](https://github.com/end2endzone/ShellAnything/releases/latest). 
 The binary installer of previous versions are also available [here](https://github.com/end2endzone/ShellAnything/releases).
 
 You can also checkout the [latest builds / nightly builds](https://ci.appveyor.com/project/end2endzone/shellanything) available on AppVeyor which offers CI/CD services for Windows. Successful builds are identified by a vertical green line. Select the *current build* or one [from the history](https://ci.appveyor.com/project/end2endzone/shellanything/history). Click on the `Platform: x64` , then look in the `Artifacts` tab.  In the *Actifacts* section, you will find two installers, one is a traditional "setup.exe" and the other is a more modern MSI. A portable version is also available.
@@ -116,6 +116,7 @@ The following software must be installed on the system for compiling source code
 * [zlib v1.2.11](https://github.com/madler/zlib/releases/tag/v1.2.11)
 * [CMake v3.4.3](http://www.cmake.org/) (tested up to 3.29.7)
 * [imneme/pcg-cpp](https://github.com/imneme/pcg-cpp/tree/428802d1a5634f96bcd0705fab379ff0113bcf13) (or newer)
+* [icons8/flat-color-icons 8eccbbb](https://github.com/icons8/flat-color-icons/tree/8eccbbbd8b2af1d2c9593e7cfba5ecb0d68ee378) (available as a submodule)
 * (optional) [Grip (GitHub Readme Instant Preview)](https://github.com/joeyespo/grip)  v4.5.2 (or newer)
 
 
