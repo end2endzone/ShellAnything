@@ -20,25 +20,26 @@ set IMAGE_OUTPUT_DIR=%~dp0..\..\build\third_parties\flat-color-icons
 mkdir "%IMAGE_OUTPUT_DIR%" 1>NUL 2>NUL
 mkdir "%TEMP_DIR%" 1>NUL 2>NUL
 
-echo Deleting previous resource file %IMAGE_OUTPUT_DIR%\resource.rc...
-del %IMAGE_OUTPUT_DIR%\resource.rc 1>NUL 2>NUL
-echo done.
-echo.
-
 :: For each svg icons
-echo Converting each svg file as ico.
-echo Searching for svg files in directory "%IMAGE_INPUT_DIR%"...
+echo Converting flat-color-icons svg files to ico format.
+echo Searching directory: "%IMAGE_INPUT_DIR%".
+setlocal EnableDelayedExpansion
 for /f %%f in ('dir /b "%IMAGE_INPUT_DIR%"') do (
   REM echo %%f
   call :process_file "%%f"
+  if !errorlevel! neq 0 echo Failed to process file "%%f". ERRORLEVEL=!errorlevel! && exit /b !errorlevel!
 )
+endlocal
 echo done.
 echo.
 
-pause
-
-
+echo All flat-color-icons icons converted to ico format.
+echo Output directory: "%IMAGE_OUTPUT_DIR%".
+echo.
 goto :eof
+
+
+
 
 :process_file
 @echo off
@@ -49,9 +50,13 @@ goto :eof
 
 echo Processing file: %~1
 magick -size 16x16 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-16.png"
+if %errorlevel% neq 0 echo Failure to convert svg file to png. ERRORLEVEL=%errorlevel% && exit /b %errorlevel%
 magick -size 32x32 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-32.png"
+if %errorlevel% neq 0 echo Failure to convert svg file to png. ERRORLEVEL=%errorlevel% && exit /b %errorlevel%
 magick -size 48x48 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-48.png"
+if %errorlevel% neq 0 echo Failure to convert svg file to png. ERRORLEVEL=%errorlevel% && exit /b %errorlevel%
 magick -size 64x64 -background none "%IMAGE_INPUT_DIR%\%~1" "%TEMP_DIR%\%~n1-64.png"
+if %errorlevel% neq 0 echo Failure to convert svg file to png. ERRORLEVEL=%errorlevel% && exit /b %errorlevel%
 
 set png_files=
 set png_files=%png_files% "%TEMP_DIR%\%~n1-16.png"
@@ -60,6 +65,7 @@ set png_files=%png_files% "%TEMP_DIR%\%~n1-48.png"
 set png_files=%png_files% "%TEMP_DIR%\%~n1-64.png"
 
 magick %png_files% "%IMAGE_OUTPUT_DIR%\%~n1.ico"
+if %errorlevel% neq 0 echo Failure to convert png files to ico. ERRORLEVEL=%errorlevel% && exit /b %errorlevel%
 
 goto :eof
 
