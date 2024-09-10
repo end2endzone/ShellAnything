@@ -92,7 +92,7 @@ The main features of ShellAnything are:
 * Easily integrate any third party application with custom menus.
 * Supports windows [keyboard mnemonics](https://en.wikipedia.org/wiki/Mnemonics_(keyboard)).
 
-For more details about ShellAnything features, please refer to the [User Manual](UserManual.md).
+**_For more details about ShellAnything features, please refer to the [User Manual](UserManual.md)._**
 
 
 

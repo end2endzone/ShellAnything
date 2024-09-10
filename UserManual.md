@@ -26,6 +26,7 @@ This manual includes a description of the system functionalities and capabilitie
     * [inverse attribute](#inverse-attribute)
     * [Combining multiple &lt;visibility&gt; and &lt;validity&gt; elements](#combining-multiple-visibility-and-validity-elements)
   * [Icons](#icons)
+    * [Windows icons preview](#windows-icons-preview)
   * [Actions](#actions)
     * [&lt;exec&gt; action](#exec-action)
     * [&lt;open&gt; action](#open-action)
@@ -686,15 +687,22 @@ For instance, the following icon definition uses the same icon as the clicked fi
 ```
 
 
-*_Hint_*: you can use Windows own icons to assign your &lt;icon&gt; with familiar Windows icons.
-The following links shows a visual representation and the index of each icons:
-* [Windows  7 icons in shell32.dll](https://help4windows.com/windows_7_shell32_dll.shtml)
-* [Windows  7 icons in imageres.dll](https://help4windows.com/windows_7_imageres_dll.shtml)
-* [Windows  8 icons in shell32.dll](https://help4windows.com/windows_8_shell32_dll.shtml)
-* [Windows  8 icons in imageres.dll](https://help4windows.com/windows_8_imageres_dll.shtml)
-* [Windows 10 icons in shell32.dll](https://help4windows.com/)
-* [Windows 10 icons in imageres.dll](https://help4windows.com/)
 
+### Windows icons preview ###
+
+*_Hint_*: Windows have a variety of built-in icons available. You can assign a Windows built-in icons to an &lt;icon&gt; to get a familiar Windows looks and feel. The following images show all icons within popular Windows dll files:
+
+Microsoft Windows 10 Home:
+* [shell32.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20shell32.dll%20icons.png)
+* [imageres.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20netshell.dll%20icons.png)
+
+Microsoft Windows 11 Pro:
+* [shell32.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20shell32.dll%20icons.png)
+* [imageres.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20netshell.dll%20icons.png)
 
 
 
