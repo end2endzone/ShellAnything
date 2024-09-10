@@ -693,16 +693,16 @@ For instance, the following icon definition uses the same icon as the clicked fi
 *_Hint_*: Windows have a variety of built-in icons available. You can assign a Windows built-in icons to an &lt;icon&gt; to get a familiar Windows looks and feel. The following images show all icons within popular Windows dll files:
 
 Microsoft Windows 10 Home:
-* [shell32.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20shell32.dll%20icons.png)
-* [imageres.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20imageres.dll%20icons.png)
-* [ieframe.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20ieframe.dll%20icons.png)
-* [netshell.dll](#resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20netshell.dll%20icons.png)
+* [shell32.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20shell32.dll%20icons.png)
+* [imageres.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20netshell.dll%20icons.png)
 
 Microsoft Windows 11 Pro:
-* [shell32.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20shell32.dll%20icons.png)
-* [imageres.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20imageres.dll%20icons.png)
-* [ieframe.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20ieframe.dll%20icons.png)
-* [netshell.dll](#resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20netshell.dll%20icons.png)
+* [shell32.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20shell32.dll%20icons.png)
+* [imageres.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20netshell.dll%20icons.png)
 
 
 
