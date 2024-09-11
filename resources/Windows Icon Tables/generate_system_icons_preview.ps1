@@ -178,7 +178,11 @@ function ProcessIconsInDllFile(
   if ($NumRows % 16)
   {
     $NumRows = $NumRows + 1
-  }  
+  } 
+  if ($NumRows -eq 0)
+  {
+    $NumRows = 1
+  } 
   $image_witdh = $NumCols * $GridCellWidth
   $image_height = $NumRows * $GridCellHeight
   Write-Output "Using a grid size of $NumCols x $NumRows, image size $image_witdh x $image_height (cells size $GridCellWidth x $GridCellHeight)."
@@ -293,17 +297,30 @@ Add-Type -AssemblyName System.Windows.Forms
 
 
 $files = @(
-  "$env:windir\system32\shell32.dll"
-  "$env:windir\System32\imageres.dll"
+  "$env:windir\system32\accessibilitycpl.dll"
   "$env:windir\System32\ieframe.dll"
+  "$env:windir\System32\imageres.dll"
   "$env:windir\system32\netshell.dll"
-  #"$env:windir\system32\ddores.dll"
-  #"$env:windir\System32\wmploc.DLL"
-  #"$env:windir\system32\setupapi.dll"
-  #"$env:windir\System32\pifmgr.dll"
-  #"$env:windir\System32\moricons.dll"
-  #"$env:windir\System32\mmcndmgr.dll"
+  "$env:windir\system32\shdocvw.dll"
+  "$env:windir\system32\shell32.dll"
+  "$env:windir\system32\urlmon.dll"
+  "$env:windir\system32\user32.dll"
+  "$env:windir\system32\wmploc.dll"
+  "$env:windir\system32\wpdshext.dll"
   #"$env:windir\System32\compstui.dll"
+  #"$env:windir\system32\ddores.dll"
+  #"$env:windir\System32\mmcndmgr.dll"
+  #"$env:windir\system32\mmres.dll"
+  #"$env:windir\System32\moricons.dll"
+  #"$env:windir\System32\pifmgr.dll"
+  #"$env:windir\system32\powrprof.dll"
+  #"$env:windir\system32\setupapi.dll"
+  #"$env:windir\system32\Vault.dll"
+  #"$env:windir\system32\wdc.dll"
+  #"$env:windir\system32\wiashext.dll"
+  #"$env:windir\System32\wmploc.DLL"
+  #"$env:windir\system32\WorkFoldersRes.dll"
+  #"$env:windir\system32\wusa.exe"
 )
 foreach($path in $files)
 {
