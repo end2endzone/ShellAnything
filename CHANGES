@@ -10,6 +10,7 @@ Changes for 0.10.0
 * Fixed issue #157: Compilation fails on Github Action: `fatal error C1083: Cannot open include file: 'atlbase.h': No such file or directory`.
 * Fixed issue #158: Compilation fails on Github Action: `CPack error : Problem running WiX.`.
 * Fixed issue #159: Unit test fails on Github Actions: TestPlugins.testServices().
+* Fixed issue #161: Create tools to help quickly find a system icon when creating a menu.
 * Fixed issue #164: Fails to identify icon for HTML files.
 * Fixed issue #167: Improve the quality and accuracy of icon's fileextension attribute resolution (Icon::ResolveFileExtensionIcon()).
 
