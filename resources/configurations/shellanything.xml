@@ -129,8 +129,57 @@
         </menu>
       </menu>
 
-      <menu separator="true />
+      <menu separator="true" />
       
+      <menu name="Windows icon previews...">
+        <icon path="C:\Windows\system32\shell32.dll" index="130" />
+        <menu name="Windows 10 Home">
+          <menu name="shell32.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - shell32.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="ieframe.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - ieframe.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="imageres.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - imageres.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="netshell.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - netshell.dll icons.png" />
+            </actions>
+          </menu>
+        </menu>
+
+        <menu name="Windows 11 Pro">
+          <menu name="shell32.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - shell32.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="ieframe.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - ieframe.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="imageres.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - imageres.dll icons.png" />
+            </actions>
+          </menu>
+          <menu name="netshell.dll">
+            <actions>
+              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - netshell.dll icons.png" />
+            </actions>
+          </menu>
+        </menu>
+      </menu>
+
       <menu name="More configurations files...">
         <icon path="C:\Windows\system32\shell32.dll" index="69" />
         <actions>
@@ -140,6 +189,7 @@
 
       <menu name="Version ${application.version}">
         <icon path="${application.path}" index="0" />
+        <validity istrue="${system.false}" />
       </menu>
 	  
     </menu>
