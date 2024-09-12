@@ -1742,16 +1742,18 @@ The application defines a list of properties about the current runtime. The valu
 
 The following table defines the list of fixed properties and their utility:
 
-| Property              | Description                                              |
-|-----------------------|----------------------------------------------------------|
-| application.path      | Matches the full path of the shell extension DLL.        |
-| application.directory | Matches the directory of the shell extension.            |
-| log.directory         | Matches the directory where the logs are created.        |
-| config.directory      | Matches the directory of the configuration files.        |
-| home.directory        | Matches the home directory of the current user.          |
-| path.separator        | Matches the `\` character.                               |
-| line.separator        | Matches the `\r\n` string.                               |
-| newline               | Matches the `\r\n` string. Same as `${line.separator}`.  |
+| Property                      | Description                                             |
+|-------------------------------|---------------------------------------------------------|
+| application.path              | Matches the full path of the shell extension DLL.       |
+| application.directory         | Matches the directory of the shell extension.           |
+| application.install.directory | Matches the directory where ShellAnything is installed. |
+| application.version           | Matches ShellAnything current version.                  |
+| log.directory                 | Matches the directory where the logs are created.       |
+| config.directory              | Matches the directory of the configuration files.       |
+| home.directory                | Matches the home directory of the current user.         |
+| path.separator                | Matches the `\` character.                              |
+| line.separator                | Matches the `\r\n` string.                              |
+| newline                       | Matches the `\r\n` string. Same as `${line.separator}`. |
 
 
 Fixed properties are encoded in utf-8.
