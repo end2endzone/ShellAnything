@@ -23,12 +23,13 @@
  *********************************************************************************/
 
 #include "WindowsProcessLauncherService.h"
-#include "rapidassist/process_utf8.h"
+#include "LoggerHelper.h"
+#include "SaUtils.h"
+
 #include "rapidassist/unicode.h"
 
 #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #include <Windows.h>
-#include "rapidassist/undef_windows_macros.h"
 #include <shellapi.h>
 
 #include <urlmon.h>
@@ -44,16 +45,31 @@ namespace shellanything
   {
   }
 
+  std::string GetErrorMessageUtf8(DWORD dwMessageId)
+  {
+    LPWSTR lpMessageBuffer = NULL;
+
+    size_t size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 NULL, dwMessageId, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&lpMessageBuffer, 0, NULL);
+
+    //Copy the error message into a wide std::string.
+    std::wstring message_wide;
+    if (size)
+      message_wide = std::wstring(lpMessageBuffer, size);
+
+    //Free the Win32's string's buffer.
+    if (lpMessageBuffer)
+      LocalFree(lpMessageBuffer);
+
+    // Convert from wide characters to utf8
+    std::string message = ra::unicode::UnicodeToUtf8(message_wide);
+
+    return message;
+  }
+
   bool WindowsProcessLauncherService::OpenDocument(const std::string& path, ProcessLaunchResult* result) const
   {
-    uint32_t pId = ra::process::OpenDocumentUtf8(path);
-    bool success = (pId != ra::process::INVALID_PROCESS_ID);
-
-    if (result)
-    {
-      result->pId = pId;
-    }
-
+    bool success = OpenPath(path, result);
     return success;
   }
 
@@ -78,11 +94,23 @@ namespace shellanything
 
     bool success = (ShellExecuteExW(&info) == TRUE);
 
-    if (result)
+    // inform the caller of the result on success
+    if (success && result)
     {
-      DWORD dwPid = GetProcessId(info.hProcess);
+      HANDLE hProcess = info.hProcess;
+      DWORD dwPid = GetProcessId(hProcess);
       result->pId = dwPid;
     }
+
+    // Log a windows specific error in failure.
+    if (!success)
+    {
+      DWORD dwLastError = ::GetLastError();
+      std::string sErrorMessage = GetErrorMessageUtf8(dwLastError);
+
+      SA_LOG(ERROR) << "Failed to call ShellExecuteExW() for value '" << path << "', Error " << ToHexString(dwLastError) << ". Description: " << sErrorMessage << ".";
+    }
+
     return success;
   }
 
