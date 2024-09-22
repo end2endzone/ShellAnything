@@ -45,7 +45,36 @@ namespace shellanything
     WindowsProcessLauncherService& operator=(const WindowsProcessLauncherService&);
   public:
 
-    virtual bool IsFooBar() const;
+    /// <summary>
+    /// Open a document with the default system application.
+    /// </summary>
+    /// <param name="path">The path to the document to open.</param>
+    /// <param name="result">The optional result of the process launch.</param>
+    /// <returns>Returns true if the document was opened with the system's default application. Returns false otherwise.</returns>
+    virtual bool OpenDocument(const std::string& path, ProcessLaunchResult* result = NULL) const;
+
+    /// <summary>
+    /// Open a directory with the system file explorer.
+    /// </summary>
+    /// <param name="path">The path to the directory to open.</param>
+    /// <param name="result">The optional result of the process launch.</param>
+    /// <returns>Returns true if the given directory was opened with the system's default application. Returns false otherwise.</returns>
+    virtual bool OpenPath(const std::string& path, ProcessLaunchResult* result = NULL) const;
+
+    /// <summary>
+    /// Check if the given URL is valid.
+    /// </summary>
+    /// <param name="value">The url link to validate.</param>
+    /// <returns>Returns true if the given url is valid. Returns false otherwise.</returns>
+    virtual bool IsValidUrl(const std::string& value) const;
+
+    /// <summary>
+    /// Open an url with the system default browser.
+    /// </summary>
+    /// <param name="path">The url path to open.</param>
+    /// <param name="result">The optional result of the process launch.</param>
+    /// <returns>Returns true if the given url was opened with the system's default application. Returns false otherwise.</returns>
+    virtual bool OpenUrl(const std::string& path, ProcessLaunchResult* result = NULL) const;
 
   };
 
