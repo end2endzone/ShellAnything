@@ -113,6 +113,13 @@ namespace shellanything
         action->SetWait(tmp_str);
       }
 
+      //parse console
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "console", true, true, tmp_str, error))
+      {
+        action->SetConsole(tmp_str);
+      }
+
       //parse timeout
       tmp_str = "";
       if (ObjectFactory::ParseAttribute(element, "timeout", true, true, tmp_str, error))
@@ -445,6 +452,16 @@ namespace shellanything
   void ActionExecute::SetWait(const std::string& value)
   {
     mWait = value;
+  }
+
+  const std::string& ActionExecute::GetConsole() const
+  {
+    return mConsole;
+  }
+
+  void ActionExecute::SetConsole(const std::string& value)
+  {
+    mConsole = value;
   }
 
   const std::string& ActionExecute::GetTimeout() const

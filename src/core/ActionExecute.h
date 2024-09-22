@@ -110,6 +110,16 @@ namespace shellanything
     void SetWait(const std::string& value);
 
     /// <summary>
+    /// Getter for the 'console' parameter.
+    /// </summary>
+    const std::string& GetConsole() const;
+
+    /// <summary>
+    /// Setter for the 'console' parameter.
+    /// </summary>
+    void SetConsole(const std::string& value);
+
+    /// <summary>
     /// Getter for the 'timeout' parameter.
     /// </summary>
     const std::string& GetTimeout() const;
@@ -149,6 +159,7 @@ namespace shellanything
     std::string mArguments;
     std::string mVerb;
     std::string mWait;
+    std::string mConsole;
     std::string mTimeout;
   };
 
