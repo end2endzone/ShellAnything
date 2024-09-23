@@ -30,8 +30,7 @@
 #include "PropertyManager.h"
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
-
-#include <windows.h>
+#include "SaUtils.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;
@@ -149,107 +148,31 @@ namespace shellanything
   bool ActionExecute::Execute(const SelectionContext& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
+    std::string path = pmgr.Expand(mPath);
+    std::string basedir = pmgr.Expand(mBaseDir);
+    std::string arguments = pmgr.Expand(mArguments);
     std::string verb = pmgr.Expand(mVerb);
-    std::string timeout = pmgr.Expand(mTimeout);
+    std::string wait = pmgr.Expand(mWait);
+    std::string timeout_str = pmgr.Expand(mTimeout);
+
+    IProcessLauncherService* process_launcher_service = App::GetInstance().GetProcessLauncherService();
+    if (process_launcher_service == NULL)
+    {
+      SA_LOG(ERROR) << "No Process Launcher service configured for creating process.";
+      return false;
+    }
 
     // Validate that timeout is valid
-    if (!timeout.empty())
+    if (!timeout_str.empty())
     {
       uint32_t tmp = 0;
-      bool parsed = ra::strings::Parse(timeout, tmp);
+      bool parsed = ra::strings::Parse(timeout_str, tmp);
       if (!parsed)
       {
-        SA_LOG(ERROR) << "Failed parsing time out value: '" << timeout << "'.";
+        SA_LOG(ERROR) << "Failed parsing time out value: '" << timeout_str << "'.";
         return false;
       }
     }
-
-    //If a verb was specified, delegate to VerbExecute(). Otherwise, use ProcessExecute().
-    if (verb.empty())
-      return ExecuteProcess(context);
-    else
-      return ExecuteVerb(context);
-  }
-
-  bool ActionExecute::ExecuteVerb(const SelectionContext& context) const
-  {
-    PropertyManager& pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.Expand(mPath);
-    std::string basedir = pmgr.Expand(mBaseDir);
-    std::string arguments = pmgr.Expand(mArguments);
-    std::string verb = pmgr.Expand(mVerb);
-    std::string wait = pmgr.Expand(mWait);
-    std::string timeout_str = pmgr.Expand(mTimeout);
-
-    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
-    std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
-    std::wstring basedirW = ra::unicode::Utf8ToUnicode(basedir);
-    std::wstring verbW = ra::unicode::Utf8ToUnicode(verb);
-
-    SHELLEXECUTEINFOW info = { 0 };
-
-    info.cbSize = sizeof(SHELLEXECUTEINFOW);
-
-    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
-    info.fMask |= SEE_MASK_NOASYNC;
-    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
-
-    info.hwnd = HWND_DESKTOP;
-    info.nShow = SW_SHOWDEFAULT;
-    info.lpFile = pathW.c_str();
-
-    //Print execute values in the logs
-    SA_LOG(INFO) << "Path: " << path;
-    if (!verb.empty())
-    {
-      info.lpVerb = verbW.c_str(); // Verb
-      SA_LOG(INFO) << "Verb: " << verb;
-    }
-    if (!arguments.empty())
-    {
-      info.lpParameters = argumentsW.c_str(); // Arguments
-      SA_LOG(INFO) << "Arguments: " << arguments;
-    }
-    if (!basedir.empty())
-    {
-      info.lpDirectory = basedirW.c_str(); // Default directory
-      SA_LOG(INFO) << "Basedir: " << basedir;
-    }
-
-    //Execute and get the pid
-    bool success = (ShellExecuteExW(&info) == TRUE);
-    if (!success)
-      return false;
-    DWORD pId = GetProcessId(info.hProcess);
-
-    // Check valid process
-    success = (pId != ra::process::INVALID_PROCESS_ID);
-    if (!success)
-    {
-      SA_LOG(WARNING) << "Failed to create process.";
-      return false;
-    }
-    SA_LOG(INFO) << "Process created. PID=" << pId;
-
-    // Check for wait exit code
-    bool wait_success = WaitForExit(pId);
-    if (!wait_success)
-    {
-      SA_LOG(WARNING) << "Timed out! The process with PID=" << pId << " has failed to exit before the specified timeout.";
-      return false;
-    }
-
-    return wait_success;
-  }
-
-  bool ActionExecute::ExecuteProcess(const SelectionContext& context) const
-  {
-    PropertyManager& pmgr = PropertyManager::GetInstance();
-    std::string path = pmgr.Expand(mPath);
-    std::string basedir = pmgr.Expand(mBaseDir);
-    std::string arguments = pmgr.Expand(mArguments);
-    std::string wait = pmgr.Expand(mWait);
-    std::string timeout_str = pmgr.Expand(mTimeout);
 
     bool basedir_missing = basedir.empty();
     bool arguments_missing = arguments.empty();
@@ -295,6 +218,10 @@ namespace shellanything
 
     //Print execute values in the logs
     SA_LOG(INFO) << "Path: " << path;
+    if (!verb.empty())
+    {
+      SA_LOG(INFO) << "Verb: " << verb;
+    }
     if (!arguments.empty())
     {
       SA_LOG(INFO) << "Arguments: " << arguments;
@@ -304,25 +231,23 @@ namespace shellanything
       SA_LOG(INFO) << "Basedir: " << basedir;
     }
 
-    //Execute and get the pid
-    uint32_t pId = ra::process::INVALID_PROCESS_ID;
-    if (arguments_missing)
-    {
-      pId = ra::process::StartProcessUtf8(path, basedir);
-    }
-    else
-    {
-      pId = ra::process::StartProcessUtf8(path, basedir, arguments);
-    }
+    // Prepare options for process launcher service
+    PropertyStore options;
+    if (!verb.empty())
+      options.SetProperty("verb", verb);
+    
+    // Call the process launcher service
+    IProcessLauncherService::ProcessLaunchResult result = { 0 };
+    bool success = process_launcher_service->StartProcess(path, basedir, arguments, options, &result);
 
     // Check valid process
-    bool success = (pId != ra::process::INVALID_PROCESS_ID);
     if (!success)
     {
       SA_LOG(WARNING) << "Failed to create process.";
       return false;
     }
-    SA_LOG(INFO) << "Process created. PID=" << pId;
+    uint32_t pId = result.pId;
+    SA_LOG(INFO) << "Process created. PID=" << pId << " (" << ToHexString(pId) << ")";
 
     // Check for wait exit code
     bool wait_success = WaitForExit(pId);

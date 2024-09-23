@@ -45,7 +45,7 @@ namespace shellanything
   {
   }
 
-  std::string GetErrorMessageUtf8(DWORD dwMessageId)
+  std::string WindowsProcessLauncherService::GetErrorMessageUtf8(uint32_t dwMessageId) const
   {
     LPWSTR lpMessageBuffer = NULL;
 
@@ -65,6 +65,105 @@ namespace shellanything
     std::string message = ra::unicode::UnicodeToUtf8(message_wide);
 
     return message;
+  }
+
+  bool WindowsProcessLauncherService::StartProcess(const std::string& path, const std::string& basedir, const std::string& arguments, PropertyStore& options, ProcessLaunchResult* result) const
+  {
+    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
+    std::wstring basedirW = ra::unicode::Utf8ToUnicode(basedir);
+    std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
+
+    std::wstring verbW = ra::unicode::Utf8ToUnicode(options.GetProperty("verb"));
+
+    bool success = false;
+    HANDLE hProcess = NULL;
+    DWORD pId = 0;
+
+    const char* launch_api_function = "";
+
+    // If a verb was specified
+    if (!verbW.empty())
+    {
+      // We must use ShellExecuteEx api
+      launch_api_function = "ShellExecuteExW";
+
+      SHELLEXECUTEINFOW info = { 0 };
+
+      info.cbSize = sizeof(SHELLEXECUTEINFOW);
+
+      info.fMask |= SEE_MASK_NOCLOSEPROCESS;
+      info.fMask |= SEE_MASK_NOASYNC;
+      info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+      info.hwnd = HWND_DESKTOP;
+      info.nShow = SW_SHOWDEFAULT;
+      info.lpFile = pathW.c_str();
+
+      info.lpVerb = verbW.c_str(); // Verb
+      info.lpParameters = argumentsW.c_str(); // Arguments
+      info.lpDirectory = basedirW.c_str(); // Default directory
+
+      success = (ShellExecuteExW(&info) == TRUE);
+      if (success)
+        hProcess = info.hProcess;
+    }
+    else
+    {
+      // We use CreateProcessEx api
+      launch_api_function = "CreateProcessW";
+
+      //build the full command line
+      std::string command;
+
+      command += path;
+      if (path.find(" ") != std::string::npos)
+      {
+        command.insert(0, 1, '\"');
+        command += "\"";
+      }
+
+      if (!arguments.empty())
+      {
+        command += " ";
+        command += arguments;
+      }
+
+      const std::wstring commandW = ra::unicode::Utf8ToUnicode(command);
+
+      //launch a new process with the command line
+      PROCESS_INFORMATION pi = { 0 };
+      STARTUPINFOW si = { 0 };
+      si.cb = sizeof(STARTUPINFOW);
+      si.dwFlags = STARTF_USESHOWWINDOW;
+      si.wShowWindow = SW_SHOWDEFAULT; //SW_SHOW, SW_SHOWNORMAL
+      static const DWORD creation_flags = 0; //EXTENDED_STARTUPINFO_PRESENT
+      success = (CreateProcessW(NULL, (wchar_t*)commandW.c_str(), NULL, NULL, FALSE, creation_flags, NULL, basedirW.c_str(), &si, &pi) != 0);
+      if (success)
+      {
+        hProcess = pi.hProcess;
+
+        //Wait for the application to initialize properly
+        WaitForInputIdle(hProcess, INFINITE);
+      }
+    }
+
+    // inform the caller of the result on success
+    if (success && result)
+    {
+      pId = GetProcessId(hProcess);
+      result->pId = pId;
+    }
+
+    // Log a windows specific error in case of failure.
+    if (!success)
+    {
+      DWORD dwLastError = ::GetLastError();
+      std::string sErrorMessage = GetErrorMessageUtf8((uint32_t)dwLastError);
+
+      SA_LOG(ERROR) << "Failed to call " << launch_api_function << "() for value '" << path << "', Error " << ToHexString(dwLastError) << ".Description: " << sErrorMessage << ".";
+    }
+
+    return success;
   }
 
   bool WindowsProcessLauncherService::OpenDocument(const std::string& path, ProcessLaunchResult* result) const
@@ -102,11 +201,11 @@ namespace shellanything
       result->pId = dwPid;
     }
 
-    // Log a windows specific error in failure.
+    // Log a windows specific error in case of failure.
     if (!success)
     {
       DWORD dwLastError = ::GetLastError();
-      std::string sErrorMessage = GetErrorMessageUtf8(dwLastError);
+      std::string sErrorMessage = GetErrorMessageUtf8((uint32_t)dwLastError);
 
       SA_LOG(ERROR) << "Failed to call ShellExecuteExW() for value '" << path << "', Error " << ToHexString(dwLastError) << ". Description: " << sErrorMessage << ".";
     }

@@ -46,6 +46,17 @@ namespace shellanything
   public:
 
     /// <summary>
+    /// Start the given process.
+    /// </summary>
+    /// <param name="path">The path to the process to start.</param>
+    /// <param name="basedir">The base directory for the process to start in.</param>
+    /// <param name="arguments">The arguments for the process.</param>
+    /// <param name="args">A PropertyStore which contains optional settings for the start process.</param>
+    /// <param name="result">The optional result of the process launch.</param>
+    /// <returns>Returns true if the process was started. Returns false otherwise.</returns>
+    virtual bool StartProcess(const std::string& path, const std::string& basedir, const std::string& arguments, PropertyStore& options, ProcessLaunchResult* result = NULL) const;
+
+    /// <summary>
     /// Open a document with the default system application.
     /// </summary>
     /// <param name="path">The path to the document to open.</param>
@@ -76,6 +87,8 @@ namespace shellanything
     /// <returns>Returns true if the given url was opened with the system's default application. Returns false otherwise.</returns>
     virtual bool OpenUrl(const std::string& path, ProcessLaunchResult* result = NULL) const;
 
+  private:
+    std::string GetErrorMessageUtf8(uint32_t dwMessageId) const;
   };
 
 } //namespace shellanything

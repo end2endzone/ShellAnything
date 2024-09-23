@@ -130,21 +130,6 @@ namespace shellanything
     void SetTimeout(const std::string& value);
 
   private:
-    /// <summary>
-    /// Execute an application with ShellExecuteEx method.
-    /// This execute method supports verbs.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const SelectionContext& context) const;
-
-    /// <summary>
-    /// Execute an application with RapidAssist method.
-    /// This execute method does not supports verbs.
-    /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const SelectionContext& context) const;
 
     /// <summary>
     /// Wait for the process to exit, if required.
