@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "WindowsProcessLauncherService.h"
+#include "Validator.h"
 #include "LoggerHelper.h"
 #include "SaUtils.h"
 
@@ -69,85 +70,40 @@ namespace shellanything
 
   bool WindowsProcessLauncherService::StartProcess(const std::string& path, const std::string& basedir, const std::string& arguments, PropertyStore& options, ProcessLaunchResult* result) const
   {
-    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
-    std::wstring basedirW = ra::unicode::Utf8ToUnicode(basedir);
-    std::wstring argumentsW = ra::unicode::Utf8ToUnicode(arguments);
+    PROCESS_START_CONTEXT context;
 
+    // options
     std::wstring verbW = ra::unicode::Utf8ToUnicode(options.GetProperty("verb"));
 
-    bool success = false;
+    context.pathW = ra::unicode::Utf8ToUnicode(path);
+    context.basedirW = ra::unicode::Utf8ToUnicode(basedir);
+    context.argumentsW = ra::unicode::Utf8ToUnicode(arguments);
+
     HANDLE hProcess = NULL;
     DWORD pId = 0;
 
     const char* launch_api_function = "";
 
-    // If a verb was specified
+    // If a verb was specified...
     if (!verbW.empty())
     {
       // We must use ShellExecuteEx api
       launch_api_function = "ShellExecuteExW";
 
-      SHELLEXECUTEINFOW info = { 0 };
-
-      info.cbSize = sizeof(SHELLEXECUTEINFOW);
-
-      info.fMask |= SEE_MASK_NOCLOSEPROCESS;
-      info.fMask |= SEE_MASK_NOASYNC;
-      info.fMask |= SEE_MASK_FLAG_DDEWAIT;
-
-      info.hwnd = HWND_DESKTOP;
-      info.nShow = SW_SHOWDEFAULT;
-      info.lpFile = pathW.c_str();
-
-      info.lpVerb = verbW.c_str(); // Verb
-      info.lpParameters = argumentsW.c_str(); // Arguments
-      info.lpDirectory = basedirW.c_str(); // Default directory
-
-      success = (ShellExecuteExW(&info) == TRUE);
-      if (success)
-        hProcess = info.hProcess;
+      // Start process with ShellExecute
+      hProcess = StartProcessFromShellExecute(context, options);
     }
     else
     {
-      // We use CreateProcessEx api
+      // We use CreateProcess api
       launch_api_function = "CreateProcessW";
 
-      //build the full command line
-      std::string command;
-
-      command += path;
-      if (path.find(" ") != std::string::npos)
-      {
-        command.insert(0, 1, '\"');
-        command += "\"";
-      }
-
-      if (!arguments.empty())
-      {
-        command += " ";
-        command += arguments;
-      }
-
-      const std::wstring commandW = ra::unicode::Utf8ToUnicode(command);
-
-      //launch a new process with the command line
-      PROCESS_INFORMATION pi = { 0 };
-      STARTUPINFOW si = { 0 };
-      si.cb = sizeof(STARTUPINFOW);
-      si.dwFlags = STARTF_USESHOWWINDOW;
-      si.wShowWindow = SW_SHOWDEFAULT; //SW_SHOW, SW_SHOWNORMAL
-      static const DWORD creation_flags = 0; //EXTENDED_STARTUPINFO_PRESENT
-      success = (CreateProcessW(NULL, (wchar_t*)commandW.c_str(), NULL, NULL, FALSE, creation_flags, NULL, basedirW.c_str(), &si, &pi) != 0);
-      if (success)
-      {
-        hProcess = pi.hProcess;
-
-        //Wait for the application to initialize properly
-        WaitForInputIdle(hProcess, INFINITE);
-      }
+      // Start process with ShellExecute
+      hProcess = StartProcessFromCreateProcess(context, options);
     }
 
     // inform the caller of the result on success
+    bool success = (hProcess != NULL);
     if (success && result)
     {
       pId = GetProcessId(hProcess);
@@ -164,6 +120,77 @@ namespace shellanything
     }
 
     return success;
+  }
+
+  HANDLE WindowsProcessLauncherService::StartProcessFromShellExecute(const PROCESS_START_CONTEXT& context, PropertyStore& options) const
+  {
+    // options
+    std::wstring verbW = ra::unicode::Utf8ToUnicode(options.GetProperty("verb"));
+
+    HANDLE hProcess = NULL;
+
+    SHELLEXECUTEINFOW info = { 0 };
+
+    info.cbSize = sizeof(SHELLEXECUTEINFOW);
+
+    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
+    info.fMask |= SEE_MASK_NOASYNC;
+    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+
+    info.hwnd = HWND_DESKTOP;
+    info.nShow = SW_SHOWDEFAULT;
+
+    info.lpFile = context.pathW.c_str();
+
+    if (!verbW.empty())
+      info.lpVerb = verbW.c_str(); // Verb
+    if (!context.argumentsW.empty())
+      info.lpParameters = context.argumentsW.c_str(); // Arguments
+    if (!context.basedirW.empty())
+      info.lpDirectory = context.basedirW.c_str(); // Default directory
+
+    bool success = (ShellExecuteExW(&info) == TRUE);
+    if (success)
+      hProcess = info.hProcess;
+
+    return hProcess;
+  }
+
+  HANDLE WindowsProcessLauncherService::StartProcessFromCreateProcess(const PROCESS_START_CONTEXT& context, PropertyStore& options) const
+  {
+    HANDLE hProcess = NULL;
+
+    //build the full command line
+    std::wstring commandW = context.pathW;
+    if (context.pathW.find(L" ") != std::string::npos)
+    {
+      commandW.insert(0, 1, '\"');
+      commandW.append(1, '\"');
+    }
+
+    if (!context.argumentsW.empty())
+    {
+      commandW.append(1, ' ');
+      commandW += context.argumentsW;
+    }
+
+    //launch a new process with the command line
+    PROCESS_INFORMATION pi = { 0 };
+    STARTUPINFOW si = { 0 };
+    si.cb = sizeof(STARTUPINFOW);
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_SHOWDEFAULT; //SW_SHOW, SW_SHOWNORMAL
+    static const DWORD creation_flags = 0; //EXTENDED_STARTUPINFO_PRESENT
+    bool success = (CreateProcessW(NULL, (wchar_t*)commandW.c_str(), NULL, NULL, FALSE, creation_flags, NULL, context.basedirW.c_str(), &si, &pi) != 0);
+    if (success)
+    {
+      hProcess = pi.hProcess;
+
+      //Wait for the application to initialize properly
+      WaitForInputIdle(hProcess, INFINITE);
+    }
+
+    return hProcess;
   }
 
   bool WindowsProcessLauncherService::OpenDocument(const std::string& path, ProcessLaunchResult* result) const

@@ -27,6 +27,7 @@
 
 #include "sa_windows_export.h"
 #include "IProcessLauncherService.h"
+#include <string>
 
 namespace shellanything
 {
@@ -89,6 +90,32 @@ namespace shellanything
 
   private:
     std::string GetErrorMessageUtf8(uint32_t dwMessageId) const;
+
+    struct PROCESS_START_CONTEXT
+    {
+      std::wstring pathW;       // path of the executable or file to open
+      std::wstring basedirW;    // base directory of the process
+      std::wstring argumentsW;  // arguments to send to the new process
+    };
+
+    /// <summary>
+    /// Start the given process with ShellExecuteEx Api.
+    /// </summary>
+    /// <param name="context">The context with details to start the process.</param>
+    /// <param name="args">A PropertyStore which contains optional settings for the start process.</param>
+    /// <returns>Returns a valid HANDLE when the process is created. Returns a invalid HANDLE otherwise.</returns>
+    void* StartProcessFromShellExecute(const PROCESS_START_CONTEXT& context, PropertyStore& options) const;
+
+    /// <summary>
+    /// Start the given process with CreateProcess Api.
+    /// </summary>
+    /// <param name="path">The path to the process to start.</param>
+    /// <param name="basedir">The base directory for the process to start in.</param>
+    /// <param name="arguments">The arguments for the process.</param>
+    /// <param name="args">A PropertyStore which contains optional settings for the start process.</param>
+    /// <returns>Returns a valid HANDLE when the process is created. Returns a invalid HANDLE otherwise.</returns>
+    void* StartProcessFromCreateProcess(const PROCESS_START_CONTEXT& context, PropertyStore& options) const;
+
   };
 
 } //namespace shellanything
