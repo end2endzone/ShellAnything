@@ -372,6 +372,7 @@ namespace shellanything
         ae.SetPath(self_path);
         ae.SetBaseDir(temp_dir);
         ae.SetArguments(arguments);
+        ae.SetPid("process.id");
 
         // launch the process using all different methods
         switch (test_id)
@@ -423,6 +424,68 @@ namespace shellanything
         ra::process::Kill(pId);
         pmgr.ClearProperty("process.id");
       }
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestActionExecute, testProcessId)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\calc.exe");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      std::string self_path = ra::process::GetCurrentProcessPath();
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string output_filename = "sa.tests.ProcessSettings.txt";
+      std::string output_file_path = temp_dir + "\\" + output_filename;
+      std::string arguments = "--PrintProcessSettings --foobar";
+
+      //Cleanup
+      ra::filesystem::DeleteFileUtf8(output_file_path.c_str());
+      pmgr.ClearProperty("my.process.id");
+
+      //Execute the action
+      ActionExecute ae;
+      ae.SetPath(self_path);
+      ae.SetBaseDir(temp_dir);
+      ae.SetArguments(arguments);
+      ae.SetPid("my.process.id");
+
+      bool executed = ae.Execute(c);
+      ASSERT_TRUE(executed);
+
+      //Wait for the operation to complete, with a timeout
+      static const double timeout_time = 50; //seconds
+      bool result_file_found = false;
+      double timer_start = ra::timing::GetMillisecondsTimer();
+      double time_elapsed = ra::timing::GetMillisecondsTimer() - timer_start;
+      while (!result_file_found && time_elapsed <= timeout_time)
+      {
+        result_file_found = ra::filesystem::FileExists(output_file_path.c_str());
+        ra::timing::Millisleep(500); //allow process to complete
+        time_elapsed = ra::timing::GetMillisecondsTimer() - timer_start; //evaluate elapsed time again
+      }
+
+      //Validate arguments
+      ASSERT_TRUE(result_file_found);
+
+      // ASSERT the property for the process id is created
+      ASSERT_TRUE(pmgr.HasProperty("my.process.id"));
+      std::string pId = pmgr.GetProperty("my.process.id");
+
+      //Read the result file, search the process id.
+      std::string result;
+      ASSERT_TRUE(ra::filesystem::ReadTextFile(output_file_path, result));
+      const std::string PROCESS_ID_SIGNATURE = std::string("process.pid=") + pId;
+      ASSERT_NE(result.find(PROCESS_ID_SIGNATURE), std::string::npos);
+
+      //Cleanup
+      ra::filesystem::DeleteFileUtf8(output_file_path.c_str());
+      pmgr.ClearProperty("my.process.id");
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestActionExecute, DISABLED_demoAdminCommandPromptHere)

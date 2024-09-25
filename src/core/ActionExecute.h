@@ -110,6 +110,16 @@ namespace shellanything
     void SetWait(const std::string& value);
 
     /// <summary>
+    /// Getter for the 'timeout' parameter.
+    /// </summary>
+    const std::string& GetTimeout() const;
+
+    /// <summary>
+    /// Setter for the 'timeout' parameter.
+    /// </summary>
+    void SetTimeout(const std::string& value);
+
+    /// <summary>
     /// Getter for the 'console' parameter.
     /// </summary>
     const std::string& GetConsole() const;
@@ -120,14 +130,14 @@ namespace shellanything
     void SetConsole(const std::string& value);
 
     /// <summary>
-    /// Getter for the 'timeout' parameter.
+    /// Getter for the 'pid' parameter.
     /// </summary>
-    const std::string& GetTimeout() const;
+    const std::string& GetPid() const;
 
     /// <summary>
-    /// Setter for the 'timeout' parameter.
+    /// Setter for the 'pid' parameter.
     /// </summary>
-    void SetTimeout(const std::string& value);
+    void SetPid(const std::string& value);
 
   private:
 
@@ -144,8 +154,9 @@ namespace shellanything
     std::string mArguments;
     std::string mVerb;
     std::string mWait;
-    std::string mConsole;
     std::string mTimeout;
+    std::string mConsole;
+    std::string mPid;
   };
 
 } //namespace shellanything

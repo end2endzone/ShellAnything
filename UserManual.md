@@ -776,6 +776,18 @@ Tell ShellAnything to wait until the search is complete before proceeding to the
 
 
 
+
+#### timeout attribute: ####
+
+The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
+
+For example, the following launch `cmd.exe` and list files and directories recursively in `C:\`. The list of files are stored in file `${env.TEMP}\files_in_c_drive.txt`. For stability reason, if the listing takes more than 60 seconds, ShellAnything stops waiting for _cmd.exe_ to exit and resume normal operation :
+```xml
+<exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
+```
+
+
+
 #### console attribute: ####
 
 The `console` attribute defines how we should display the main window of the launched application. The attribute allow console applications to be launched without a console. The feature is particularly useful for running background tasks. The attribute must be set to a value that evaluates to `false` to enable the feature. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. The attribute is optional.
@@ -788,20 +800,20 @@ The conversion to JPEG format will be performed without showing a console and no
 
 **Note:**
 * The _console_ attribute may also affects windowed applications and may hide their main graphical user interface.
-* Users must be careful when launching background application (hidden application). A background application should not wait for user input or it may never complete/terminate gracefully. Background tasks can also cause system instability. If the `wait` attribute is also set and the background process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_ forever.
+* Users must be careful when launching background applications (hidden applications). A background application should not wait for user input or it may never complete/terminate gracefully. Background tasks can also cause system instability if the `wait` attribute is also set and the background process freezes, pauses or never exists because it will lock _ShellAnything_ and _File Explorer_ forever.
 
 
 
+#### pid attribute: ####
 
-#### timeout attribute: ####
+The `pid` attribute defines the name of the property to set with the new launch process id.
 
-The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
-
-For example, the following launch `cmd.exe` and list files and directories recursively in `C:\`. The list of files are stored in file `${env.TEMP}\files_in_c_drive.txt`. For stability reason, if the listing takes more than 60 seconds, ShellAnything stops waiting for _cmd.exe_ to exit and resume normal operation :
+For example, the following will sets the property `calc.process.id` to the process id of `calc.exe` :
 ```xml
-<exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
+<exec path="C:\Windows\System32\calc.exe" pid="calc.process.id" />
 ```
 
+The target property is left untouched if the process cannot be launched.
 
 
 #### verb attribute: ####

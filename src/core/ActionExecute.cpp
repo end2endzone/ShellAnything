@@ -112,6 +112,13 @@ namespace shellanything
         action->SetWait(tmp_str);
       }
 
+      //parse timeout
+      tmp_str = "";
+      if (ObjectFactory::ParseAttribute(element, "timeout", true, true, tmp_str, error))
+      {
+        action->SetTimeout(tmp_str);
+      }
+
       //parse console
       tmp_str = "";
       if (ObjectFactory::ParseAttribute(element, "console", true, true, tmp_str, error))
@@ -119,11 +126,11 @@ namespace shellanything
         action->SetConsole(tmp_str);
       }
 
-      //parse timeout
+      //parse pid
       tmp_str = "";
-      if (ObjectFactory::ParseAttribute(element, "timeout", true, true, tmp_str, error))
+      if (ObjectFactory::ParseAttribute(element, "pid", true, true, tmp_str, error))
       {
-        action->SetTimeout(tmp_str);
+        action->SetPid(tmp_str);
       }
 
       //done parsing
@@ -155,6 +162,7 @@ namespace shellanything
     std::string wait = pmgr.Expand(mWait);
     std::string timeout_str = pmgr.Expand(mTimeout);
     std::string console = pmgr.Expand(mConsole);
+    std::string pid = pmgr.Expand(mPid);
 
     IProcessLauncherService* process_launcher_service = App::GetInstance().GetProcessLauncherService();
     if (process_launcher_service == NULL)
@@ -257,17 +265,21 @@ namespace shellanything
     SA_LOG(INFO) << "Process created. PID=" << pId << " (" << ToHexString(pId) << ")";
 
     // Save the process id as a property
-    pmgr.SetProperty("process.id", ra::strings::ToString(pId));
+    if (!pid.empty())
+      pmgr.SetProperty(pid, ra::strings::ToString(pId));
     
     // Check for wait exit code
-    bool wait_success = WaitForExit(pId);
-    if (!wait_success)
+    if (!wait.empty())
     {
-      SA_LOG(WARNING) << "Timed out! The process with PID=" << pId << " has failed to exit before the specified timeout.";
-      return false;
+      bool wait_success = WaitForExit(pId);
+      if (!wait_success)
+      {
+        SA_LOG(WARNING) << "Timed out! The process with PID=" << pId << " has failed to exit before the specified timeout.";
+        return false;
+      }
     }
 
-    return wait_success;
+    return true;
   }
 
   bool ActionExecute::WaitForExit(uint32_t pId) const
@@ -389,6 +401,16 @@ namespace shellanything
     mWait = value;
   }
 
+  const std::string& ActionExecute::GetTimeout() const
+  {
+    return mTimeout;
+  }
+
+  void ActionExecute::SetTimeout(const std::string& value)
+  {
+    mTimeout = value;
+  }
+
   const std::string& ActionExecute::GetConsole() const
   {
     return mConsole;
@@ -399,14 +421,14 @@ namespace shellanything
     mConsole = value;
   }
 
-  const std::string& ActionExecute::GetTimeout() const
+  const std::string& ActionExecute::GetPid() const
   {
-    return mTimeout;
+    return mPid;
   }
 
-  void ActionExecute::SetTimeout(const std::string& value)
+  void ActionExecute::SetPid(const std::string& value)
   {
-    mTimeout = value;
+    mPid = value;
   }
 
 } //namespace shellanything

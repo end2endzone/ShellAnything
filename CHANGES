@@ -14,6 +14,7 @@ Changes for 0.10.0
 * Fixed issue #164: Fails to identify icon for HTML files.
 * Fixed issue #167: Improve the quality and accuracy of icon's fileextension attribute resolution (Icon::ResolveFileExtensionIcon()).
 * Fixed issue #177: Execute a console program without showing a window.
+* Fixed issue #178: Exec action should expose the created process id.
 
 
 Changes for 0.9.0
