@@ -30,12 +30,14 @@
 #include "ActionManager.h"
 #include "Workspace.h"
 #include "QuickLoader.h"
+#include "ArgumentsHandler.h"
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/user.h"
 #include "rapidassist/timing.h"
 #include "rapidassist/environment.h"
 #include "rapidassist/process.h"
+#include "rapidassist/cli.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -61,6 +63,67 @@ namespace shellanything
       //The executable path is something similar to C:\Program Files\WindowsApps\Microsoft.WindowsCalculator_10.2103.8.0_x64__8wbfmf6g6wwcr\Calculator.exe
       system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%Calculator.exe'\"    DELETE >NUL 2>NUL");
       system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%CalculatorApp.exe'\" DELETE >NUL 2>NUL");
+    }
+
+    namespace FindProcessWindows
+    {
+      static const uint32_t ERROR_PROCESS_NOT_FOUND = (uint32_t)-1;
+
+      struct DATA
+      {
+        uint32_t pId;
+        bool found; // true when the given process id was found
+        bool error;
+        std::vector<HWND> windows;
+      };
+
+      BOOL CALLBACK enum_windows_callback(HWND hWnd, LPARAM lParam)
+      {
+        DATA& data = *(DATA*)lParam;
+
+        //// Debugging
+        //int length = GetWindowTextLength(handle);
+        //char* buffer = new char[length + 1];
+        //GetWindowTextA(handle, buffer, length + 1);
+        //std::string windowTitle(buffer);
+        //delete[] buffer;
+        //printf("%s\n", windowTitle.c_str());
+
+        // Get the process of the current window
+        DWORD owner_process_id = 0;
+        DWORD threadId = GetWindowThreadProcessId(hWnd, &owner_process_id);
+        if (threadId == 0 || owner_process_id == 0)
+        {
+          data.error = true;
+          return FALSE; // stop enumeration
+        }
+
+        // Is that our queried process
+        if (data.pId == owner_process_id)
+        {
+          data.found = true;
+          data.windows.push_back(hWnd);
+        }
+        return TRUE; // continue enumeration
+      }
+
+      uint32_t GetProcessWindowsCount(uint32_t pId)
+      {
+        DATA data;
+        data.pId = pId;
+        data.found = false;
+        data.error = false;
+        data.windows.clear();
+
+        EnumWindows(enum_windows_callback, (LPARAM)&data);
+
+        if (data.error)
+          return ERROR_PROCESS_NOT_FOUND;
+        if (!data.found)
+          return 0; // process not found while enumerating windows
+        uint32_t count = (uint32_t)data.windows.size();
+        return count;
+      }
     }
 
     //--------------------------------------------------------------------------------------------------
@@ -246,6 +309,120 @@ namespace shellanything
 
       //Cleanup
       ra::filesystem::DeleteFileUtf8(output_file_path.c_str());
+    }
+    //--------------------------------------------------------------------------------------------------
+    int PrintCountdown(int argc, char** argv)
+    {
+      //MessageBox(NULL, "ATTACH NOW!", "ATTACH NOW!", MB_OK);
+
+      const char* argument_name;
+
+      argument_name = "seconds";
+      std::string seconds_str;
+      bool has_icon_path = ra::cli::ParseArgument(argument_name, seconds_str, argc, argv);
+      if (!has_icon_path)
+      {
+        printf("Missing argument: '%s'\n", argument_name);
+        return 10;
+      }
+
+      int seconds = 0;
+      bool parsed = ra::strings::Parse(seconds_str, seconds);
+      if (!parsed)
+      {
+        std::cout << "Failed parsing value '" << seconds_str << "'.\n";
+        return 1;
+      }
+
+      // Start countdown
+      std::cout << "Countdown from " << seconds << " to 0.\n";
+      for (int i = seconds; i >= 0; i--)
+      {
+        std::cout << i << "\n";
+        Sleep(1000);
+      }
+
+      return 0;
+    }
+    COMMAND_LINE_ENTRY_POINT* PrintCountdownEntryPoint = shellanything::RegisterCommandLineEntryPoint("PrintCountdown", PrintCountdown);
+    TEST_F(TestActionExecute, testConsole)
+    {
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+
+      //Create a valid context
+      SelectionContext c;
+      StringList elements;
+      elements.push_back("C:\\Windows\\System32\\calc.exe");
+      c.SetElements(elements);
+
+      c.RegisterProperties();
+
+      std::string self_path = ra::process::GetCurrentProcessPath();
+      std::string temp_dir = ra::filesystem::GetTemporaryDirectory();
+      std::string arguments = "--PrintCountdown --seconds=5";
+
+      // launch the process using all different methods
+      for (int test_id = 0; test_id < 3; test_id++)
+      {
+        //Cleanup
+        pmgr.ClearProperty("process.id");
+
+        //Execute the action
+        ActionExecute ae;
+        ae.SetPath(self_path);
+        ae.SetBaseDir(temp_dir);
+        ae.SetArguments(arguments);
+
+        // launch the process using all different methods
+        switch (test_id)
+        {
+          case 0:
+            ae.SetConsole("");
+            break;
+          case 1:
+            ae.SetConsole("false");
+            break;
+          case 2:
+            ae.SetConsole("false");
+            ae.SetVerb("open");
+            break;
+        }
+
+        bool executed = ae.Execute(c);
+        ASSERT_TRUE(executed);
+
+        //Wait for the operation to start
+        ra::timing::Millisleep(1100);
+
+        // ASSERT the property for the process id is created
+        ASSERT_TRUE(pmgr.HasProperty("process.id"));
+        std::string pId_str = pmgr.GetProperty("process.id");
+
+        // ASSERT convert pId from string to uint32_t
+        uint32_t pId = 0;
+        bool parsed = ra::strings::Parse(pId_str, pId);
+        ASSERT_TRUE(parsed);
+
+        // ASSERT how many window associated to the new process
+        uint32_t count = FindProcessWindows::GetProcessWindowsCount(pId);
+        if (count == (uint32_t)-1)
+        switch (test_id)
+        {
+        case 0:
+          ASSERT_GE(count, (uint32_t)1);
+          break;
+        case 1:
+          ASSERT_EQ(count, (uint32_t)0);
+          break;
+        case 2:
+          ASSERT_EQ(count, (uint32_t)0);
+          break;
+        }
+
+        //Cleanup
+        ra::process::Kill(pId);
+        pmgr.ClearProperty("process.id");
+      }
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestActionExecute, DISABLED_demoAdminCommandPromptHere)

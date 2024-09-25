@@ -154,6 +154,7 @@ namespace shellanything
     std::string verb = pmgr.Expand(mVerb);
     std::string wait = pmgr.Expand(mWait);
     std::string timeout_str = pmgr.Expand(mTimeout);
+    std::string console = pmgr.Expand(mConsole);
 
     IProcessLauncherService* process_launcher_service = App::GetInstance().GetProcessLauncherService();
     if (process_launcher_service == NULL)
@@ -222,6 +223,10 @@ namespace shellanything
     {
       SA_LOG(INFO) << "Verb: " << verb;
     }
+    if (!console.empty())
+    {
+      SA_LOG(INFO) << "Console: " << console;
+    }
     if (!arguments.empty())
     {
       SA_LOG(INFO) << "Arguments: " << arguments;
@@ -235,6 +240,8 @@ namespace shellanything
     PropertyStore options;
     if (!verb.empty())
       options.SetProperty("verb", verb);
+    if (!console.empty())
+      options.SetProperty("console", console);
     
     // Call the process launcher service
     IProcessLauncherService::ProcessLaunchResult result = { 0 };
@@ -249,6 +256,9 @@ namespace shellanything
     uint32_t pId = result.pId;
     SA_LOG(INFO) << "Process created. PID=" << pId << " (" << ToHexString(pId) << ")";
 
+    // Save the process id as a property
+    pmgr.SetProperty("process.id", ra::strings::ToString(pId));
+    
     // Check for wait exit code
     bool wait_success = WaitForExit(pId);
     if (!wait_success)

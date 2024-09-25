@@ -74,6 +74,7 @@ namespace shellanything
 
     // options
     std::wstring verbW = ra::unicode::Utf8ToUnicode(options.GetProperty("verb"));
+    context.hide_console = Validator::IsFalse(options.GetProperty("console"));
 
     context.pathW = ra::unicode::Utf8ToUnicode(path);
     context.basedirW = ra::unicode::Utf8ToUnicode(basedir);
@@ -136,9 +137,12 @@ namespace shellanything
     info.fMask |= SEE_MASK_NOCLOSEPROCESS;
     info.fMask |= SEE_MASK_NOASYNC;
     info.fMask |= SEE_MASK_FLAG_DDEWAIT;
+    //info.fMask |= SEE_MASK_NO_CONSOLE; Force child process to have its own console
 
     info.hwnd = HWND_DESKTOP;
-    info.nShow = SW_SHOWDEFAULT;
+    info.nShow = SW_SHOW;
+    if (context.hide_console)
+      info.nShow = SW_HIDE;
 
     info.lpFile = context.pathW.c_str();
 
@@ -179,9 +183,15 @@ namespace shellanything
     STARTUPINFOW si = { 0 };
     si.cb = sizeof(STARTUPINFOW);
     si.dwFlags = STARTF_USESHOWWINDOW;
-    si.wShowWindow = SW_SHOWDEFAULT; //SW_SHOW, SW_SHOWNORMAL
-    static const DWORD creation_flags = 0; //EXTENDED_STARTUPINFO_PRESENT
-    bool success = (CreateProcessW(NULL, (wchar_t*)commandW.c_str(), NULL, NULL, FALSE, creation_flags, NULL, context.basedirW.c_str(), &si, &pi) != 0);
+    si.wShowWindow = SW_SHOW;
+    DWORD dwCreationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP;
+    if (context.hide_console)
+    {
+      si.wShowWindow = SW_HIDE;
+      dwCreationFlags &= ~CREATE_NEW_CONSOLE;
+      dwCreationFlags |= CREATE_NO_WINDOW;
+    }
+    bool success = (CreateProcessW(NULL, (wchar_t*)commandW.c_str(), NULL, NULL, FALSE, dwCreationFlags, NULL, context.basedirW.c_str(), &si, &pi) != 0);
     if (success)
     {
       hProcess = pi.hProcess;
@@ -212,7 +222,7 @@ namespace shellanything
     info.fMask |= SEE_MASK_FLAG_DDEWAIT;
 
     info.hwnd = HWND_DESKTOP;
-    info.nShow = SW_SHOWDEFAULT;
+    info.nShow = SW_SHOW;
     info.lpVerb = L"open";
     info.lpFile = pathW.c_str();
     info.lpParameters = NULL; // arguments

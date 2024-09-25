@@ -96,6 +96,7 @@ namespace shellanything
       std::wstring pathW;       // path of the executable or file to open
       std::wstring basedirW;    // base directory of the process
       std::wstring argumentsW;  // arguments to send to the new process
+      bool hide_console;        // true if the console must be hidden
     };
 
     /// <summary>
