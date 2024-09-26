@@ -4,7 +4,7 @@
 
     <menu name="menu">
       <actions>
-        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 10&quot;" wait="true" />
+        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 10&quot;" wait="true" console="false" />
       </actions>
     </menu>
     

@@ -38,6 +38,7 @@
 #include "rapidassist/environment.h"
 #include "rapidassist/process.h"
 #include "rapidassist/cli.h"
+#include "rapidassist/random.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -55,14 +56,160 @@ namespace shellanything
 {
   namespace test
   {
+    ra::strings::StringVector RunProcesAndCaptureOutput(const std::string& base_command)
+    {
+      static const ra::strings::StringVector EMPTY_LIST;
+
+      std::string random_value = ra::strings::ToString(ra::random::GetRandomInt(0, 32767) + 10000);
+      std::string temp_file = ra::filesystem::GetTemporaryDirectory() + "\\" + __FUNCTION__ + "." + random_value + ".tmp";
+      ra::strings::Replace(temp_file, "::", ".");
+
+      // Execute
+      std::string full_command = base_command + ">" + temp_file;
+      int exit_code = system(full_command.c_str());
+
+      if (exit_code != 0)
+        return EMPTY_LIST; // error
+
+      ra::strings::StringVector output;
+      bool success_read = ra::filesystem::ReadTextFile(temp_file, output);
+      if (!success_read)
+        return EMPTY_LIST;
+
+      return output;
+    }
+
+    size_t FindValue(const ra::strings::StringVector& list_values, const std::string& query_value)
+    {
+      for (size_t i = 0; i < list_values.size(); i++)
+      {
+        const std::string& list_value = list_values[i];
+        if (query_value == list_value)
+          return i;
+      }
+      return std::string::npos;
+    }
+
+    ra::strings::StringVector FindNewValues(const ra::strings::StringVector& baseline_values, const ra::strings::StringVector& current_values)
+    {
+      ra::strings::StringVector new_values;
+
+      for (size_t i = 0; i < current_values.size(); i++)
+      {
+        const std::string& current_value = current_values[i];
+        size_t find_pos = FindValue(baseline_values, current_value);
+        if (find_pos == std::string::npos)
+        {
+          // This is a new value
+          new_values.push_back(current_value);
+        }
+      }
+
+      return new_values;
+    }
+
     void KillCalculatorProcess()
     {
+      printf("Killing all calculator processes...\n");
+
       system("cmd.exe /c taskkill /IM calc.exe >NUL 2>NUL");
 
       // On Windows 10, calc.exe launches Calculator which is an application in the Microsoft App Store.
       //The executable path is something similar to C:\Program Files\WindowsApps\Microsoft.WindowsCalculator_10.2103.8.0_x64__8wbfmf6g6wwcr\Calculator.exe
       system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%Calculator.exe'\"    DELETE >NUL 2>NUL");
       system("cmd.exe /c WMIC PROCESS WHERE \"ExecutablePath like '%%Microsoft.WindowsCalculator%%CalculatorApp.exe'\" DELETE >NUL 2>NUL");
+
+      ra::timing::Millisleep(1000);
+
+      printf("killed.\n");
+    }
+
+    bool StartCalculatorProcess(ra::process::processid_t & pId)
+    {
+      // https://stackoverflow.com/questions/63990787/the-process-id-returned-by-the-createprocess-function-is-different-from-the-task
+      // calc.exe is a stub/proxy which will launch the actual CalculatorApp.exe.
+      // For my system, thats is "C:\Program Files\WindowsApps\Microsoft.WindowsCalculator_11.2405.2.0_x64__8wekyb3d8bbwe\CalculatorApp.exe"
+      // However, a normal user cannot launch this process:
+      //   Windows cannot access the specified device, path, or file.You may not have the appropriate permissions to access the item.
+      // So we hack our way and try our best to detect it...
+      //
+
+
+      /*
+      PropertyManager& pmgr = PropertyManager::GetInstance();
+      printf("Starting calc.exe...\n");
+
+      SelectionContext c;
+      {
+        StringList elements;
+        elements.push_back("C:\\Windows\\System32\\cmd.exe");
+        c.SetElements(elements);
+      }
+
+      ActionExecute ae;
+      ae.SetPath("C:\\Windows\\System32\\calc.exe");
+      ae.SetPid("tmp.pid");
+
+      bool executed = ae.Execute(c);
+      if (!executed)
+      {
+        printf("error: not started.\n");
+        return false;
+      }
+
+      ra::timing::Millisleep(2000);
+
+      bool parsed = ra::strings::Parse(pmgr.GetProperty("tmp.pid"), pId);
+      if (!parsed)
+      {
+        printf("error: unknown pid.\n");
+        return false;
+      }
+
+      printf("started.\n");
+      return true;
+      */
+
+      printf("Starting calc.exe...\n");
+
+      static const std::string base_command = "powershell -ExecutionPolicy bypass -Command \"Get-Process | Where{ $_.ProcessName -eq 'CalculatorApp' } | Select -ExpandProperty 'Id'\"";
+      ra::strings::StringVector baseline_processes = RunProcesAndCaptureOutput(base_command);
+
+      system("start \"\" calc.exe >NUL 2>NUL");
+
+      double start = ra::timing::GetMillisecondsTimer();
+      double elapsed_ms = ra::timing::GetMillisecondsTimer() - start;
+      while (pId == 0 && elapsed_ms < 2500)
+      {
+        ra::timing::Millisleep(250);
+
+        // Search for a new process
+        ra::strings::StringVector new_processes = RunProcesAndCaptureOutput(base_command);
+
+        // Check for new values
+        ra::strings::StringVector new_values = FindNewValues(baseline_processes, new_processes);
+        if (new_values.size() >= 1)
+        {
+          // This is the one
+          std::string pid_str = new_values[0];
+
+          bool parsed = ra::strings::Parse(pid_str, pId);
+          if (parsed)
+          {
+            printf("started.\n");
+            return true;
+          }
+
+          // We failed parsing, ignore this value for the next pass.
+          baseline_processes.push_back(pid_str);
+        }
+
+        // refresh timers
+        elapsed_ms = ra::timing::GetMillisecondsTimer() - start;
+      }
+
+      printf("error: not running.\n");
+      return false;
     }
 
     namespace FindProcessWindows

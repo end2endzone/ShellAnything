@@ -4,7 +4,7 @@
 
     <menu name="expected_exec_timeout">
       <actions>
-        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 30&quot;" wait="true" timeout="10" />
+        <exec path="powershell.exe" arguments="-nologo -executionpolicy bypass -Command &quot;Start-Sleep -Seconds 30&quot;" wait="true" timeout="10" console="false" />
       </actions>
     </menu>
 

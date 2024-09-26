@@ -28,6 +28,7 @@
 #include "PropertyManager.h"
 #include "SelectionContext.h"
 #include "SelectionContext.h"
+#include "ActionExecute.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
@@ -39,6 +40,9 @@ namespace shellanything
 {
   namespace test
   {
+    extern void KillCalculatorProcess();
+    extern bool StartCalculatorProcess(ra::process::processid_t& pId);
+
     static const ConfigFile* INVALID_CONFIGURATION = NULL;
 
     //--------------------------------------------------------------------------------------------------
@@ -160,10 +164,8 @@ namespace shellanything
       //Disable process id property
       pmgr.SetProperty("sa_plugin_process.pid", "");
 
-      //Kill all instances of notepad.exe
-      printf("Killing notepad.exe processes...\n");
-      system("taskkill /F /IM notepad.exe");
-      printf("done.\n");
+      //Kill all instances of calc.exe
+      KillCalculatorProcess();
 
       //Set all menus visible
       for (size_t i = 0; i < menus.size(); i++)
@@ -192,12 +194,9 @@ namespace shellanything
         ASSERT_FALSE(menu->IsVisible()) << "menu[" << i << "] named '" << menu->GetName() << "' should be invisible";
       }
 
-      //Start notepad
-      printf("Starting notepad.exe...\n");
-      ra::process::processid_t notepad_pid = ra::process::StartProcess("C:\\Windows\\System32\\notepad.exe");
-      ra::timing::Millisleep(2000);
-      ASSERT_NE(0, notepad_pid);
-      printf("done.\n");
+      //Start calc
+      ra::process::processid_t pId = 0;
+      ASSERT_TRUE( StartCalculatorProcess(pId) );
 
       //Set all menus visible
       for (size_t i = 0; i < menus.size(); i++)
@@ -222,8 +221,8 @@ namespace shellanything
         menu->SetVisible(false);
       }
 
-      std::string notepad_pid_str = ra::strings::ToString(notepad_pid);
-      pmgr.SetProperty("sa_plugin_process.pid", notepad_pid_str);
+      // Change a property which is used by menus to filter visibility by pid
+      pmgr.SetProperty("sa_plugin_process.pid", ra::strings::ToString(pId));
 
       //Update menus again
       config0->Update(c);
@@ -236,7 +235,7 @@ namespace shellanything
       }
 
       //Cleanup
-      ra::process::Kill(notepad_pid);
+      KillCalculatorProcess();
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
     }
     //--------------------------------------------------------------------------------------------------
