@@ -14,6 +14,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ConfigFile.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
+  ${CMAKE_SOURCE_DIR}/src/core/ConsoleLoggerService.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Environment.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
@@ -55,6 +56,7 @@ add_library(sa.core SHARED
   ConfigFile.cpp
   ConfigManager.cpp
   SelectionContext.cpp
+  ConsoleLoggerService.cpp
   DefaultSettings.cpp
   FileMagicManager.h
   FileMagicManager.cpp
