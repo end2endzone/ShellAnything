@@ -36,15 +36,12 @@
 #include "rapidassist/timing.h"
 #include "rapidassist/process.h"
 
-#include "Environment.h"
-#include "rapidassist/environment_utf8.h"
-
 namespace shellanything
 {
   namespace test
   {
-    //extern void KillCalculatorProcess();
-    //extern bool StartCalculatorProcess(ra::process::processid_t& pId);
+    extern void KillCalculatorProcess();
+    extern bool StartCalculatorProcess(ra::process::processid_t& pId);
     extern void KillMsPaintProcess();
     extern bool StartMsPaintProcess(ra::process::processid_t& pId);
 
@@ -104,30 +101,12 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestPlugins, testProcess)
     {
-#define TRACE_LINE printf("%s, line %d\n", __FUNCTION__, __LINE__)
-
-      TRACE_LINE;
-
-      {
-        // Force verbose mode
-        static const std::string& VERBOSE_OPTION_NAME = Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME;
-        ra::environment::SetEnvironmentVariableUtf8(VERBOSE_OPTION_NAME.c_str(), "true");
-
-
-      }
-
-      TRACE_LINE;
-
       ConfigManager& cmgr = ConfigManager::GetInstance();
-
-      TRACE_LINE;
 
       //Creating a temporary workspace for the test execution.
       Workspace workspace;
       ASSERT_FALSE(workspace.GetBaseDirectory().empty());
       ASSERT_TRUE(workspace.IsEmpty());
-
-      TRACE_LINE;
 
       //Import the required files into the workspace
       static const std::string path_separator = ra::filesystem::GetPathSeparatorStr();
@@ -135,29 +114,19 @@ namespace shellanything
       std::string template_source_path = std::string("test_files") + path_separator + test_name + ".xml";
       ASSERT_TRUE(workspace.ImportFileUtf8(template_source_path.c_str()));
 
-      TRACE_LINE;
-
       //Wait to make sure that the next file copy/modification will not have the same timestamp
       ra::timing::Millisleep(1500);
-
-      TRACE_LINE;
 
       //Setup ConfigManager to read files from workspace
       cmgr.ClearSearchPath();
       cmgr.AddSearchPath(workspace.GetBaseDirectory());
       cmgr.Refresh();
 
-      TRACE_LINE;
-
       //ASSERT the file is loaded
       ConfigFile::ConfigFilePtrList configs = cmgr.GetConfigFiles();
       ASSERT_EQ(1, configs.size());
 
-      TRACE_LINE;
-
       ConfigFile* config0 = cmgr.GetConfigFiles()[0];
-
-      TRACE_LINE;
 
       //ASSERT all plugins were loaded
       for (size_t i = 0; i < config0->GetPlugins().size(); i++)
@@ -165,8 +134,6 @@ namespace shellanything
         const Plugin* plugin = config0->GetPlugins()[i];
         ASSERT_TRUE(plugin->IsLoaded()) << "The plugin '" << plugin->GetPath() << "' is not loaded.";
       }
-
-      TRACE_LINE;
 
       //Get menus
       Menu::MenuPtrList menus = cmgr.GetConfigFiles()[0]->GetMenus();
@@ -179,8 +146,6 @@ namespace shellanything
       ASSERT_TRUE(menu1 != NULL);
       ASSERT_TRUE(menu2 != NULL);
       ASSERT_TRUE(menu3 != NULL);
-
-      TRACE_LINE;
 
       //ASSERT all expected content is parsed
       for (size_t i = 0; i < menus.size(); i++)
@@ -196,21 +161,13 @@ namespace shellanything
         ASSERT_EQ(1, actions.size());
       }
 
-      TRACE_LINE;
-
       PropertyManager& pmgr = PropertyManager::GetInstance();
-
-      TRACE_LINE;
 
       //Disable process id property
       pmgr.SetProperty("sa_plugin_process.pid", "");
 
-      TRACE_LINE;
-
       //Kill all instances of mspaint.exe
       KillMsPaintProcess();
-
-      TRACE_LINE;
 
       //Set all menus visible
       for (size_t i = 0; i < menus.size(); i++)
@@ -218,8 +175,6 @@ namespace shellanything
         Menu* menu = menus[i];
         menu->SetVisible(true);
       }
-
-      TRACE_LINE;
 
       //Force an update to call the plugin
       SelectionContext c;
@@ -234,8 +189,6 @@ namespace shellanything
 #endif
       config0->Update(c);
 
-      TRACE_LINE;
-
       //ASSERT all menus are now invisible
       for (size_t i = 0; i < menus.size(); i++)
       {
@@ -243,13 +196,9 @@ namespace shellanything
         ASSERT_FALSE(menu->IsVisible()) << "menu[" << i << "] named '" << menu->GetName() << "' should be invisible";
       }
 
-      TRACE_LINE;
-
       //Start mspaint
       ra::process::processid_t pId = 0;
       ASSERT_TRUE( StartMsPaintProcess(pId) );
-
-      TRACE_LINE;
 
       //Set all menus visible
       for (size_t i = 0; i < menus.size(); i++)
@@ -258,20 +207,14 @@ namespace shellanything
         menu->SetVisible(true);
       }
 
-      TRACE_LINE;
-
       //Update menus again
       config0->Update(c);
-
-      TRACE_LINE;
 
       //ASSERT that half of menus are now invisible
       ASSERT_TRUE(menu0->IsVisible()) << "Menu named '" << menu0->GetName() << "' should be visible";
       ASSERT_FALSE(menu1->IsVisible()) << "Menu named '" << menu1->GetName() << "' should be invisible";
       ASSERT_TRUE(menu2->IsVisible()) << "Menu named '" << menu2->GetName() << "' should be visible";
       ASSERT_FALSE(menu3->IsVisible()) << "Menu named '" << menu3->GetName() << "' should be invisible";
-
-      TRACE_LINE;
 
       //Set all menus invisible
       for (size_t i = 0; i < menus.size(); i++)
@@ -280,17 +223,11 @@ namespace shellanything
         menu->SetVisible(false);
       }
 
-      TRACE_LINE;
-
       // Change a property which is used by menus to filter visibility by pid
       pmgr.SetProperty("sa_plugin_process.pid", ra::strings::ToString(pId));
 
-      TRACE_LINE;
-
       //Update menus again
       config0->Update(c);
-
-      TRACE_LINE;
 
       //ASSERT all menus are now visible
       for (size_t i = 0; i < menus.size(); i++)
@@ -299,13 +236,9 @@ namespace shellanything
         ASSERT_TRUE(menu->IsVisible()) << "menu[" << i << "] named '" << menu->GetName() << "' should be visible";
       }
 
-      TRACE_LINE;
-
       //Cleanup
       KillMsPaintProcess();
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
-
-      TRACE_LINE;
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestPlugins, testServices)
