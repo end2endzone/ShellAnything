@@ -29,8 +29,6 @@
 #include "SelectionContext.h"
 #include "SelectionContext.h"
 #include "ActionExecute.h"
-#include "App.h"
-#include "ConsoleLoggerService.h"
 
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
@@ -111,13 +109,11 @@ namespace shellanything
       TRACE_LINE;
 
       {
-        // Override default logger. Replace by a console logger
-        shellanything::App& app = shellanything::App::GetInstance();
-        app.SetLoggerService(new ConsoleLoggerService());
-
         // Force verbose mode
         static const std::string& VERBOSE_OPTION_NAME = Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME;
         ra::environment::SetEnvironmentVariableUtf8(VERBOSE_OPTION_NAME.c_str(), "true");
+
+
       }
 
       TRACE_LINE;
