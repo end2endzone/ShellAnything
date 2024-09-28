@@ -42,6 +42,63 @@
 
 #define EXPORT_API __declspec(dllexport)
 
+class ScopeLogger2
+{
+public:
+  /// <summary>
+  /// Argument struct for a ScopeManager
+  /// </summary>
+  struct ARGS
+  {
+    ///<summary>The souce code filename generating the log entries.</summary>
+    const char* filename;
+    ///<summary>The souce code line number generating the log entries.</summary>
+    int line;
+    ///<summary>The level to use while producing log entries.</summary>
+    sa_log_level_t level;
+    ///<summary>The name to use while generating logs. Usually the function name.</summary>
+    const char* name;
+  };
+
+public:
+  ScopeLogger2(const ScopeLogger2::ARGS* args_) :
+    args(args_)
+  {
+    // Prepare output text
+    std::string text;
+    text += args->name;
+
+    sa_logging_print_format(args->level, "sa_plugin_process", "%s", text.c_str());
+  }
+
+  ~ScopeLogger2()
+  {
+    // Prepare output text
+    std::string text;
+    text += args->name;
+    text += " - returns";
+
+    sa_logging_print_format(args->level, "sa_plugin_process", "%s", text.c_str());
+  }
+
+private:
+  // Disable copy constructor and copy operator
+  ScopeLogger2(const ScopeLogger2&);
+  ScopeLogger2& operator=(const ScopeLogger2&);
+
+public:
+  const ARGS* args;
+};
+
+#ifndef SA_DECLARE_SCOPE_LOGGER_ARGS
+#define SA_DECLARE_SCOPE_LOGGER_ARGS(info) \
+    ::ScopeLogger2::ARGS info = {0};\
+    info.filename = __FILE__;\
+    info.line = __LINE__;\
+    info.name = __FUNCTION__ "()";\
+    info.level = SA_LOG_LEVEL_INFO;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #if 0
@@ -86,6 +143,9 @@ void parse_string_dword(const char* str, DWORD& value)
 // https://stackoverflow.com/questions/13179410/check-whether-one-specific-process-is-running-on-windows-with-c
 DWORD find_process_id_from_name(const char* process_name)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   // strip path
   const char* p = strrchr(process_name, '\\');
   if (p)
@@ -120,6 +180,9 @@ DWORD find_process_id_from_name(const char* process_name)
 
 bool process_id_exists(DWORD pid)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   PROCESSENTRY32 pi;
   pi.dwSize = sizeof(pi);
 
@@ -149,6 +212,9 @@ bool process_id_exists(DWORD pid)
 
 sa_error_t kill_process_by_pid(DWORD pid)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   bool success = false;
   HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
   if (hProcess)
@@ -163,6 +229,9 @@ sa_error_t kill_process_by_pid(DWORD pid)
 
 sa_error_t terminate_process_by_pid(DWORD pid)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   //ask the process to exit gracefully allowing a maximum of 60 seconds to close
   ULONGLONG time_start = GetTickCount64();
   bool terminated = ra::process::Terminate(pid);
@@ -185,6 +254,9 @@ sa_error_t terminate_process_by_pid(DWORD pid)
 
 sa_error_t killprocess_event_create(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   const char* name = sa_plugin_action_get_name();
   const char* xml = sa_plugin_action_get_xml();
   sa_property_store_t* store = sa_plugin_action_get_property_store();
@@ -209,6 +281,9 @@ sa_error_t killprocess_event_create(sa_action_event_t evnt)
 
 sa_error_t killprocess_event_execute(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   const char* action_name = sa_plugin_action_get_name();
   sa_property_store_t* store = sa_plugin_action_get_property_store();
 
@@ -262,6 +337,9 @@ sa_error_t killprocess_event_execute(sa_action_event_t evnt)
 
 sa_error_t killprocess_event(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   sa_error_t result;
   switch (evnt)
   {
@@ -284,6 +362,9 @@ sa_error_t killprocess_event(sa_action_event_t evnt)
 
 sa_error_t terminateprocess_event_create(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   const char* name = sa_plugin_action_get_name();
   const char* xml = sa_plugin_action_get_xml();
   sa_property_store_t* store = sa_plugin_action_get_property_store();
@@ -308,6 +389,9 @@ sa_error_t terminateprocess_event_create(sa_action_event_t evnt)
 
 sa_error_t terminateprocess_event_execute(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   const char* action_name = sa_plugin_action_get_name();
   sa_property_store_t* store = sa_plugin_action_get_property_store();
 
@@ -361,6 +445,9 @@ sa_error_t terminateprocess_event_execute(sa_action_event_t evnt)
 
 sa_error_t terminateprocess_event(sa_action_event_t evnt)
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   sa_error_t result;
   switch (evnt)
   {
@@ -383,6 +470,9 @@ sa_error_t terminateprocess_event(sa_action_event_t evnt)
 
 sa_boolean validate_process_filename()
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   sa_selection_context_immutable_t* ctx = sa_plugin_validation_get_selection_context();
   sa_property_store_immutable_t* store = sa_plugin_validation_get_property_store();
 
@@ -416,6 +506,9 @@ sa_boolean validate_process_filename()
 
 sa_boolean validate_process_pid()
 {
+  SA_DECLARE_SCOPE_LOGGER_ARGS(sli);
+  ScopeLogger2 logger(&sli);
+
   sa_selection_context_immutable_t* ctx = sa_plugin_validation_get_selection_context();
   sa_property_store_immutable_t* store = sa_plugin_validation_get_property_store();
 
