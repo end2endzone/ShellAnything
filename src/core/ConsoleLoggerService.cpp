@@ -110,7 +110,7 @@ namespace shellanything
 
     const char * level_str = GetLevelString(level);
     std::string log_time = GetLogTimestamp();
-    DWORD dwThreadId = GetThreadId(NULL);
+    DWORD dwThreadId = GetCurrentThreadId();
     std::string actual_filename = ra::filesystem::GetFilename(filename);
 
     std::cout << level_str << " " << log_time << " " << dwThreadId << " " << actual_filename << ":" << line << "] " << message << "\n";
