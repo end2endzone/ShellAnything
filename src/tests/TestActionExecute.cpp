@@ -31,6 +31,8 @@
 #include "Workspace.h"
 #include "QuickLoader.h"
 #include "ArgumentsHandler.h"
+#include "SaUtils.h"
+
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/user.h"
@@ -39,6 +41,7 @@
 #include "rapidassist/process.h"
 #include "rapidassist/cli.h"
 #include "rapidassist/random.h"
+#include "rapidassist/errors.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -212,6 +215,104 @@ namespace shellanything
       return false;
     }
 
+    void KillShellAnythingArgumentsDebuggerProcess()
+    {
+      printf("Killing all arguments.debugger.window.exe processes...\n");
+
+      if (ra::environment::IsConfigurationDebug())
+        system("cmd.exe /c taskkill /IM arguments.debugger.window-d.exe >NUL 2>NUL");
+      else
+        system("cmd.exe /c taskkill /IM arguments.debugger.window.exe   >NUL 2>NUL");
+
+      ra::timing::Millisleep(1000);
+
+      printf("killed.\n");
+    }
+
+    bool StartShellAnythingArgumentsDebuggerProcess(ra::process::processid_t& pId)
+    {
+      printf("Starting arguments.debugger.window.exe...\n");
+
+      // Build path of arguments.debugger.window.exe
+      std::string current_process_dir = ra::process::GetCurrentProcessDir();
+      std::string process_path;
+      if (ra::environment::IsConfigurationDebug())
+        process_path = current_process_dir + "\\arguments.debugger.window-d.exe";
+      else
+        process_path = current_process_dir + "\\arguments.debugger.window.exe";
+
+      // Assert that file exists
+      if (!ra::filesystem::FileExists(process_path.c_str()))
+      {
+        printf("Start process failed. File not found: '%s'.\n", process_path.c_str());
+        return false;
+      }
+
+      // Start the actual process
+      ra::process::processid_t tmp_pid = ra::process::StartProcess(process_path, current_process_dir.c_str());
+
+      // Asser created properly
+      if (tmp_pid == 0)
+      {
+        ra::errors::errorcode_t last_error = ra::errors::GetLastErrorCode();
+        std::string error_desc = ra::errors::GetErrorCodeDescription(last_error);
+
+        printf("Start process failed. Error code %s, %s.\n", ToHexString(last_error).c_str(), error_desc.c_str());
+        return false;
+      }
+
+      ra::timing::Millisleep(2000);
+
+      printf("started.\n");
+      pId = tmp_pid;
+      return true;
+    }
+
+    void KillMsPaintProcess()
+    {
+      printf("Killing all mspaint.exe processes...\n");
+
+      system("cmd.exe /c taskkill /IM mspaint.exe >NUL 2>NUL");
+      ra::timing::Millisleep(1000);
+
+      printf("killed.\n");
+    }
+
+    bool StartMsPaintProcess(ra::process::processid_t& pId)
+    {
+      printf("Starting mspaint.exe...\n");
+
+      // Build path of arguments.debugger.window.exe
+      std::string current_process_dir = ra::process::GetCurrentProcessDir();
+      std::string process_path = "C:\\Windows\\System32\\mspaint.exe";
+
+      // Assert that file exists
+      if (!ra::filesystem::FileExists(process_path.c_str()))
+      {
+        printf("Start process failed. File not found: '%s'.\n", process_path.c_str());
+        return false;
+      }
+
+      // Start the actual process
+      ra::process::processid_t tmp_pid = ra::process::StartProcess(process_path, current_process_dir.c_str());
+
+      // Asser created properly
+      if (tmp_pid == 0)
+      {
+        ra::errors::errorcode_t last_error = ra::errors::GetLastErrorCode();
+        std::string error_desc = ra::errors::GetErrorCodeDescription(last_error);
+
+        printf("Start process failed. Error code %s, %s.\n", ToHexString(last_error).c_str(), error_desc.c_str());
+        return false;
+      }
+
+      ra::timing::Millisleep(2000);
+
+      printf("started.\n");
+      pId = tmp_pid;
+      return true;
+    }
+
     namespace FindProcessWindows
     {
       static const uint32_t ERROR_PROCESS_NOT_FOUND = (uint32_t)-1;
@@ -296,7 +397,7 @@ namespace shellanything
 
       //Execute the action
       ActionExecute ae;
-      ae.SetPath("C:\\Windows\\System32\\calc.exe");
+      ae.SetPath("C:\\Windows\\System32\\mspaint.exe");
       ae.SetBaseDir("");
       ae.SetArguments("");
 
@@ -305,7 +406,7 @@ namespace shellanything
 
       //Cleanup
       ra::timing::Millisleep(500);
-      KillCalculatorProcess();
+      KillMsPaintProcess();
     }
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestActionExecute, testBaseDir)
@@ -324,7 +425,7 @@ namespace shellanything
 
       //Execute the action
       ActionExecute ae;
-      ae.SetPath("calc.exe");
+      ae.SetPath("mspaint.exe");
       ae.SetBaseDir("C:\\Windows\\System32");
       ae.SetArguments("");
 

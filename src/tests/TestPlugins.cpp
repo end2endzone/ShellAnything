@@ -45,8 +45,10 @@ namespace shellanything
 {
   namespace test
   {
-    extern void KillCalculatorProcess();
-    extern bool StartCalculatorProcess(ra::process::processid_t& pId);
+    //extern void KillCalculatorProcess();
+    //extern bool StartCalculatorProcess(ra::process::processid_t& pId);
+    extern void KillMsPaintProcess();
+    extern bool StartMsPaintProcess(ra::process::processid_t& pId);
 
     static const ConfigFile* INVALID_CONFIGURATION = NULL;
 
@@ -209,8 +211,8 @@ namespace shellanything
 
       TRACE_LINE;
 
-      //Kill all instances of calc.exe
-      KillCalculatorProcess();
+      //Kill all instances of mspaint.exe
+      KillMsPaintProcess();
 
       TRACE_LINE;
 
@@ -247,9 +249,9 @@ namespace shellanything
 
       TRACE_LINE;
 
-      //Start calc
+      //Start mspaint
       ra::process::processid_t pId = 0;
-      ASSERT_TRUE( StartCalculatorProcess(pId) );
+      ASSERT_TRUE( StartMsPaintProcess(pId) );
 
       TRACE_LINE;
 
@@ -304,7 +306,7 @@ namespace shellanything
       TRACE_LINE;
 
       //Cleanup
-      KillCalculatorProcess();
+      KillMsPaintProcess();
       ASSERT_TRUE(workspace.Cleanup()) << "Failed deleting workspace directory '" << workspace.GetBaseDirectory() << "'.";
 
       TRACE_LINE;
