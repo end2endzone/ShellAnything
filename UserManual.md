@@ -808,9 +808,9 @@ The conversion to JPEG format will be performed without showing a console and no
 
 The `pid` attribute defines the name of the property to set with the new launch process id.
 
-For example, the following will sets the property `calc.process.id` to the process id of `calc.exe` :
+For example, the following will sets the property `mspaint.process.id` to the process id of `mspaint.exe` :
 ```xml
-<exec path="C:\Windows\System32\calc.exe" pid="calc.process.id" />
+<exec path="C:\Windows\System32\mspaint.exe" pid="mspaint.process.id" />
 ```
 
 The target property is left untouched if the process cannot be launched.
