@@ -59,41 +59,52 @@ namespace shellanything
 {
   namespace test
   {
-    void KillShellAnythingArgumentsDebuggerProcess()
+    inline std::string GetArgumentsDebuggerFileName()
     {
-      printf("Killing all arguments.debugger.window.exe processes...\n");
-
+      std::string name;
       if (ra::environment::IsConfigurationDebug())
-        system("cmd.exe /c taskkill /IM arguments.debugger.window-d.exe >NUL 2>NUL");
+        name = "arguments.debugger.window-d.exe";
       else
-        system("cmd.exe /c taskkill /IM arguments.debugger.window.exe   >NUL 2>NUL");
+        name = "arguments.debugger.window.exe";
+      return name;
+    }
+
+    void KillArgumentsDebuggerProcess()
+    {
+      // Build exec name
+      std::string exec_file_name = GetArgumentsDebuggerFileName();
+
+      printf("Killing all '%s' processes...\n", exec_file_name.c_str());
+
+      char command[1024] = { 0 };
+      sprintf_s(command, sizeof(command), "cmd.exe /c taskkill /IM %s >NUL 2>NUL", exec_file_name.c_str());
+      system(command);
 
       ra::timing::Millisleep(1000);
 
       printf("killed.\n");
     }
 
-    bool StartShellAnythingArgumentsDebuggerProcess(ra::process::processid_t& pId)
+    bool StartArgumentsDebuggerProcess(ra::process::processid_t& pId)
     {
-      printf("Starting arguments.debugger.window.exe...\n");
+      // Build exec name
+      std::string exec_file_name = GetArgumentsDebuggerFileName();
+
+      printf("Starting %s...\n", exec_file_name.c_str());
 
       // Build path of arguments.debugger.window.exe
       std::string current_process_dir = ra::process::GetCurrentProcessDir();
-      std::string process_path;
-      if (ra::environment::IsConfigurationDebug())
-        process_path = current_process_dir + "\\arguments.debugger.window-d.exe";
-      else
-        process_path = current_process_dir + "\\arguments.debugger.window.exe";
+      std::string exec_path = current_process_dir + "\\" + exec_file_name;
 
       // Assert that file exists
-      if (!ra::filesystem::FileExists(process_path.c_str()))
+      if (!ra::filesystem::FileExists(exec_path.c_str()))
       {
-        printf("Start process failed. File not found: '%s'.\n", process_path.c_str());
+        printf("Start process failed. File not found: '%s'.\n", exec_path.c_str());
         return false;
       }
 
       // Start the actual process
-      ra::process::processid_t tmp_pid = ra::process::StartProcess(process_path, current_process_dir.c_str());
+      ra::process::processid_t tmp_pid = ra::process::StartProcess(exec_path, current_process_dir.c_str());
 
       // Asser created properly
       if (tmp_pid == 0)
