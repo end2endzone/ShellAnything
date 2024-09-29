@@ -14,28 +14,28 @@
   </plugins>
   <shell>
 
-    <menu name="Terminate Notepad (by filename)">
-      <visibility process_filename="notepad.exe" />
+    <menu name="Terminate MsPaint (by filename)">
+      <visibility process_filename="mspaint.exe" />
       <actions>
-        <terminateprocess filename="notepad.exe" />
+        <terminateprocess filename="mspaint.exe" />
       </actions>
     </menu>
 
-    <menu name="Terminate Notepad (by pid)">
+    <menu name="Terminate MsPaint (by pid)">
       <visibility process_pid="${sa_plugin_process.pid}" />
       <actions>
         <terminateprocess pid="${sa_plugin_process.pid}" />
       </actions>
     </menu>
 
-    <menu name="Kill Notepad (by filename)">
-      <visibility process_filename="notepad.exe" />
+    <menu name="Kill MsPaint (by filename)">
+      <visibility process_filename="mspaint.exe" />
       <actions>
-        <killprocess filename="notepad.exe" />
+        <killprocess filename="mspaint.exe" />
       </actions>
     </menu>
 
-    <menu name="Kill Notepad (by pid)">
+    <menu name="Kill MsPaint (by pid)">
       <visibility process_pid="${sa_plugin_process.pid}" />
       <actions>
         <killprocess pid="${sa_plugin_process.pid}" />

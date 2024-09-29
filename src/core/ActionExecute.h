@@ -119,22 +119,27 @@ namespace shellanything
     /// </summary>
     void SetTimeout(const std::string& value);
 
-  private:
     /// <summary>
-    /// Execute an application with ShellExecuteEx method.
-    /// This execute method supports verbs.
+    /// Getter for the 'console' parameter.
     /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteVerb(const SelectionContext& context) const;
+    const std::string& GetConsole() const;
 
     /// <summary>
-    /// Execute an application with RapidAssist method.
-    /// This execute method does not supports verbs.
+    /// Setter for the 'console' parameter.
     /// </summary>
-    /// <param name="context">The current context of execution.</param>
-    /// <returns>Returns true if the execution is successful. Returns false otherwise.</returns>
-    virtual bool ExecuteProcess(const SelectionContext& context) const;
+    void SetConsole(const std::string& value);
+
+    /// <summary>
+    /// Getter for the 'pid' parameter.
+    /// </summary>
+    const std::string& GetPid() const;
+
+    /// <summary>
+    /// Setter for the 'pid' parameter.
+    /// </summary>
+    void SetPid(const std::string& value);
+
+  private:
 
     /// <summary>
     /// Wait for the process to exit, if required.
@@ -150,6 +155,8 @@ namespace shellanything
     std::string mVerb;
     std::string mWait;
     std::string mTimeout;
+    std::string mConsole;
+    std::string mPid;
   };
 
 } //namespace shellanything

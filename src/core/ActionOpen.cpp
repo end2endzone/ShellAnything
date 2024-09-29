@@ -30,14 +30,8 @@
 #include "ObjectFactory.h"
 #include "LoggerHelper.h"
 
- //#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
-#include <Windows.h>
-#include "rapidassist/undef_windows_macros.h"
-
 #include "tinyxml2.h"
 using namespace tinyxml2;
-
-#pragma comment(lib, "Urlmon.lib") //for IsValidURL()
 
 namespace shellanything
 {
@@ -106,40 +100,23 @@ namespace shellanything
   {
   }
 
-  bool OpenPathGeneric(const std::string& path)
-  {
-    std::wstring pathW = ra::unicode::Utf8ToUnicode(path);
-
-    SHELLEXECUTEINFOW info = { 0 };
-
-    info.cbSize = sizeof(SHELLEXECUTEINFOW);
-
-    info.fMask |= SEE_MASK_NOCLOSEPROCESS;
-    info.fMask |= SEE_MASK_NOASYNC;
-    info.fMask |= SEE_MASK_FLAG_DDEWAIT;
-
-    info.hwnd = HWND_DESKTOP;
-    info.nShow = SW_SHOWDEFAULT;
-    info.lpVerb = L"open";
-    info.lpFile = pathW.c_str();
-    info.lpParameters = NULL; // arguments
-    info.lpDirectory = NULL;  // Default directory
-
-    BOOL success = ShellExecuteExW(&info);
-    return (success == TRUE);
-  }
-
   bool ActionOpen::Execute(const SelectionContext& context) const
   {
     PropertyManager& pmgr = PropertyManager::GetInstance();
     std::string path = pmgr.Expand(mPath);
 
+    IProcessLauncherService* process_launcher_service = App::GetInstance().GetProcessLauncherService();
+    if (process_launcher_service == NULL)
+    {
+      SA_LOG(ERROR) << "No Process Launcher service configured for creating process.";
+      return false;
+    }
+
     //is path a file?
     if (ra::filesystem::FileExistsUtf8(path.c_str()))
     {
       SA_LOG(INFO) << "Open file '" << path << "'.";
-      uint32_t pId = ra::process::OpenDocumentUtf8(path);
-      bool success = (pId != ra::process::INVALID_PROCESS_ID);
+      bool success = process_launcher_service->OpenDocument(path);
       if (!success)
         SA_LOG(ERROR) << "Failed opening file '" << path << "'.";
       return success;
@@ -149,18 +126,17 @@ namespace shellanything
     if (ra::filesystem::DirectoryExistsUtf8(path.c_str()))
     {
       SA_LOG(INFO) << "Open directory '" << path << "'.";
-      bool success = OpenPathGeneric(path);
+      bool success = process_launcher_service->OpenPath(path);
       if (!success)
         SA_LOG(ERROR) << "Failed opening directory '" << path << "'.";
       return success;
     }
 
     //is path a valid url?
-    std::wstring wide_path = ra::unicode::Utf8ToUnicode(path);
-    if (IsValidURL(NULL, wide_path.c_str(), 0) == S_OK)
+    if (process_launcher_service->IsValidUrl(path))
     {
       SA_LOG(INFO) << "Open url '" << path << "'.";
-      bool success = OpenPathGeneric(path);
+      bool success = process_launcher_service->OpenUrl(path);
       if (!success)
         SA_LOG(ERROR) << "Failed opening URL '" << path << "'.";
       return success;

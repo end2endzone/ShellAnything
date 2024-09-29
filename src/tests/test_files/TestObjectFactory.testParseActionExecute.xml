@@ -38,5 +38,11 @@
       </actions>
     </menu>
  
+    <menu name="menu06">
+      <actions>
+        <exec path="foo.exe" arguments="bar" console="true" timeout="5" />
+      </actions>
+    </menu>
+  
   </shell>
 </root>

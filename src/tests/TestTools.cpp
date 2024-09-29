@@ -32,6 +32,7 @@
 #include "rapidassist/testing.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/timing.h"
+#include "rapidassist/environment.h"
 
 namespace shellanything
 {
@@ -106,9 +107,10 @@ namespace shellanything
 
       // Set a property to allow properly detecting debug executables
       PropertyManager& pmgr = PropertyManager::GetInstance();
-#ifdef _DEBUG
-      pmgr.SetProperty("debug.postfix", "-d");
-#endif
+      if (ra::environment::IsConfigurationDebug())
+        pmgr.SetProperty("debug.postfix", "-d");
+      else
+        pmgr.SetProperty("debug.postfix", "");
 
       //Create a valid context
       SelectionContext c;

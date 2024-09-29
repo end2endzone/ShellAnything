@@ -28,6 +28,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
   // The string that appears in the application's title bar.
   tcout << _T("ShellAything Arguments Debugging Application\n");
+  tcout << "\n";
+
+  // Get current directory
+  TCHAR curdir[MAX_PATH] = { 0 };
+  GetCurrentDirectory(MAX_PATH, curdir);
+  tcout << _T("Current directory: ") << curdir << "\n";
 
   tstring_t arguments_desc;
   ReadCommandLineArguments(arguments_desc);

@@ -8,10 +8,12 @@ add_library(sa.windows SHARED
   WindowsClipboardService.h
   WindowsIconResolutionService.cpp
   WindowsIconResolutionService.h
-  WindowsRegistryService.cpp
-  WindowsRegistryService.h
   WindowsKeyboardService.cpp
   WindowsKeyboardService.h
+  WindowsProcessLauncherService.cpp
+  WindowsProcessLauncherService.h
+  WindowsRegistryService.cpp
+  WindowsRegistryService.h
 )
 
 # Force CMAKE_DEBUG_POSTFIX for executables
