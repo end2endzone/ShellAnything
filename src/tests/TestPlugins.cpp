@@ -40,8 +40,8 @@ namespace shellanything
 {
   namespace test
   {
-    extern void KillCalculatorProcess();
-    extern bool StartCalculatorProcess(ra::process::processid_t& pId);
+    extern void KillArgumentsDebuggerProcess();
+    extern bool StartArgumentsDebuggerProcess(ra::process::processid_t& pId);
     extern void KillMsPaintProcess();
     extern bool StartMsPaintProcess(ra::process::processid_t& pId);
 
