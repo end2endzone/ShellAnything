@@ -147,6 +147,16 @@ namespace shellanything
     return mIconResolutionService;
   }
 
+  void App::SetProcessLauncherService(IProcessLauncherService* instance)
+  {
+    mProcessLauncherService = instance;
+  }
+
+  IProcessLauncherService* App::GetProcessLauncherService()
+  {
+    return mProcessLauncherService;
+  }
+
   bool App::IsTestingEnvironment()
   {
     std::string process_path = ra::process::GetCurrentProcessPath();

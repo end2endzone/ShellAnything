@@ -48,7 +48,18 @@ int WINAPI WinMain(
 )
 #endif
 {
-  ReadCommandLineArguments(window_text);
+  // Get current directory
+  TCHAR curdir[MAX_PATH] = { 0 };
+  GetCurrentDirectory(MAX_PATH, curdir);
+  window_text += _T("Current directory: ");
+  window_text += curdir;
+  window_text += _T("\r\n");
+
+  tstring_t args_text;
+  ReadCommandLineArguments(args_text);
+
+  window_text += args_text;
+  window_text += _T("\r\n");
 
   WNDCLASSEX wcex;
 

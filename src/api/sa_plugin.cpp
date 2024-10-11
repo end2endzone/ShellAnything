@@ -558,7 +558,7 @@ sa_error_t sa_plugin_register_action_event(const char* name, sa_plugin_action_ev
   // Check if the regitering action is declared by the plugin xml
   if (!plugin->SupportAction(name))
   {
-    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. The plugin '%s' does not report this condition.", name, plugin->GetPath().c_str());
+    sa_logging_print_format(SA_LOG_LEVEL_ERROR, SA_API_LOG_IDDENTIFIER, "Failed to register action '%s' event function. The plugin '%s' does not report this action.", name, plugin->GetPath().c_str());
     return SA_ERROR_NOT_SUPPORTED;
   }
 

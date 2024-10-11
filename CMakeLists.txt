@@ -162,6 +162,7 @@ set(SHELLANYTHING_INSTALL_ROOT_DIR     "/")
 set(SHELLANYTHING_INSTALL_BIN_DIR      "bin")
 set(SHELLANYTHING_INSTALL_LIB_DIR      "lib/shellanything-${SHELLANYTHING_VERSION}")
 set(SHELLANYTHING_INSTALL_INCLUDE_DIR  "include/shellanything-${SHELLANYTHING_VERSION}")
+set(SHELLANYTHING_INSTALL_RESOURCE_DIR  "resources")
 set(SHELLANYTHING_INSTALL_CMAKE_DIR    ${SHELLANYTHING_INSTALL_LIB_DIR}) # CMake files (*.cmake) should have the same destination as the library files. Some also prefers to use "cmake".
 set(SHELLANYTHING_INSTALL_DOC_DIR      "docs")
 
@@ -375,6 +376,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake DESTI
 install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
               ${CMAKE_SOURCE_DIR}/resources/unregister.bat
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
+
+# Resources
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/Windows Icon Tables" DESTINATION ${SHELLANYTHING_INSTALL_RESOURCE_DIR})
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/shellanything DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR})
 install(FILES ${SHELLANYTHING_EXPORT_HEADER}

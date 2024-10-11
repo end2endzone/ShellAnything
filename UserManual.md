@@ -50,6 +50,7 @@ This manual includes a description of the system functionalities and capabilitie
 * [Tools](#tools)
   * [file_explorer_renew](#file_explorer_renew)
   * [arguments.debugger](#argumentsdebugger)
+  * [Windows icons preview images](#windows-icons-preview-images)
 * [Plugins](#plugins)
   * [Plugin overview](#plugin-overview)
   * [C API](#c-api)
@@ -685,16 +686,7 @@ For instance, the following icon definition uses the same icon as the clicked fi
   <icon fileextension="${selection.filename.extension}" />
 ```
 
-
-*_Hint_*: you can use Windows own icons to assign your &lt;icon&gt; with familiar Windows icons.
-The following links shows a visual representation and the index of each icons:
-* [Windows  7 icons in shell32.dll](https://help4windows.com/windows_7_shell32_dll.shtml)
-* [Windows  7 icons in imageres.dll](https://help4windows.com/windows_7_imageres_dll.shtml)
-* [Windows  8 icons in shell32.dll](https://help4windows.com/windows_8_shell32_dll.shtml)
-* [Windows  8 icons in imageres.dll](https://help4windows.com/windows_8_imageres_dll.shtml)
-* [Windows 10 icons in shell32.dll](https://help4windows.com/)
-* [Windows 10 icons in imageres.dll](https://help4windows.com/)
-
+*_Hint_*: Windows have a variety of built-in icons available. You can assign a Windows built-in icons to an &lt;icon&gt; to give a familiar Windows looks and feel to your menus. See the [Windows icons preview](#windows-icons-preview) section in Tools for more details.
 
 
 
@@ -713,6 +705,9 @@ The application support multiple types of actions. The list of each specific act
 ### &lt;exec&gt; action ###
 
 The &lt;exec&gt; element is used to launch an application. The &lt;exec&gt; element must be added under the &lt;actions&gt; element.
+
+**Note:**
+When a process is created, ShellAnything will set property `process.id` to the process id of the new launched application.
 
 The &lt;exec&gt; elements have the following attributes:
 
@@ -762,7 +757,7 @@ For example, the following launch `cmd.exe` and list files and directories recur
 ```
 
 **Note:**
-It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_.
+It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_ forever.
 
 When combined with other elements, the `wait` attribute allows advanced use case.
 
@@ -781,6 +776,7 @@ Tell ShellAnything to wait until the search is complete before proceeding to the
 
 
 
+
 #### timeout attribute: ####
 
 The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
@@ -790,6 +786,34 @@ For example, the following launch `cmd.exe` and list files and directories recur
 <exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
 ```
 
+
+
+#### console attribute: ####
+
+The `console` attribute defines how we should display the main window of the launched application. The attribute allow console applications to be launched without a console. The feature is particularly useful for running background tasks. The attribute must be set to a value that evaluates to `false` to enable the feature. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. The attribute is optional.
+
+For example, the following will launch ImageMagick `magick.exe` command line application to convert webp images to jpg :
+```xml
+<exec wait="true" console="off" path="${imagemagick.path}" arguments="&quot;${selection.path}&quot; &quot;${selection.filename.noext}.jpg&quot;" />
+```
+The conversion to JPEG format will be performed without showing a console and no window flickering will be visible.
+
+**Note:**
+* The _console_ attribute may also affects windowed applications and may hide their main graphical user interface.
+* Users must be careful when launching background applications (hidden applications). A background application should not wait for user input or it may never complete/terminate gracefully. Background tasks can also cause system instability if the `wait` attribute is also set and the background process freezes, pauses or never exists because it will lock _ShellAnything_ and _File Explorer_ forever.
+
+
+
+#### pid attribute: ####
+
+The `pid` attribute defines the name of the property to set with the new launch process id.
+
+For example, the following will sets the property `mspaint.process.id` to the process id of `mspaint.exe` :
+```xml
+<exec path="C:\Windows\System32\mspaint.exe" pid="mspaint.process.id" />
+```
+
+The target property is left untouched if the process cannot be launched.
 
 
 #### verb attribute: ####
@@ -1750,16 +1774,18 @@ The application defines a list of properties about the current runtime. The valu
 
 The following table defines the list of fixed properties and their utility:
 
-| Property              | Description                                              |
-|-----------------------|----------------------------------------------------------|
-| application.path      | Matches the full path of the shell extension DLL.        |
-| application.directory | Matches the directory of the shell extension.            |
-| log.directory         | Matches the directory where the logs are created.        |
-| config.directory      | Matches the directory of the configuration files.        |
-| home.directory        | Matches the home directory of the current user.          |
-| path.separator        | Matches the `\` character.                               |
-| line.separator        | Matches the `\r\n` string.                               |
-| newline               | Matches the `\r\n` string. Same as `${line.separator}`.  |
+| Property                      | Description                                             |
+|-------------------------------|---------------------------------------------------------|
+| application.path              | Matches the full path of the shell extension DLL.       |
+| application.directory         | Matches the directory of the shell extension.           |
+| application.install.directory | Matches the directory where ShellAnything is installed. |
+| application.version           | Matches ShellAnything current version.                  |
+| log.directory                 | Matches the directory where the logs are created.       |
+| config.directory              | Matches the directory of the configuration files.       |
+| home.directory                | Matches the home directory of the current user.         |
+| path.separator                | Matches the `\` character.                              |
+| line.separator                | Matches the `\r\n` string.                              |
+| newline                       | Matches the `\r\n` string. Same as `${line.separator}`. |
 
 
 Fixed properties are encoded in utf-8.
@@ -1872,6 +1898,29 @@ argv[32]=Χχ
 argv[33]=Ψψ
 argv[34]=Ωω.
 ```
+
+
+
+### Windows icons preview images ###
+
+Windows have a variety of built-in icons available. You can assign a Windows built-in icons to an &lt;icon&gt; to give a familiar Windows looks and feel to your menus. ShellAnything has preview images of the icons in most Windows dll. It allows one to quickly identify the file and the index of a desired icon.
+
+The following images show all icons within popular Windows dll files:
+
+Microsoft Windows 10 Home:
+* [shell32.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20shell32.dll%20icons.png)
+* [imageres.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](resources/Windows%20Icon%20Tables/Win%2010%20Home%20-%20netshell.dll%20icons.png)
+
+Microsoft Windows 11 Pro:
+* [shell32.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20shell32.dll%20icons.png)
+* [imageres.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20imageres.dll%20icons.png)
+* [ieframe.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20ieframe.dll%20icons.png)
+* [netshell.dll](resources/Windows%20Icon%20Tables/Win%2011%20Pro%20-%20netshell.dll%20icons.png)
+
+
+
 
 # Plugins #
 
