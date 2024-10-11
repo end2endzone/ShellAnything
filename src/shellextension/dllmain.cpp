@@ -40,6 +40,7 @@
 #include "WindowsKeyboardService.h"
 #include "PcgRandomService.h"
 #include "WindowsIconResolutionService.h"
+#include "WindowsProcessLauncherService.h"
 
 #include "shellanything/version.h"
 #include "shellanything/config.h"
@@ -58,6 +59,7 @@ shellanything::IClipboardService* clipboard_service = NULL;
 shellanything::IKeyboardService* keyboard_service = NULL;
 shellanything::IRandomService* random_service = NULL;
 shellanything::IIconResolutionService* icon_resolution_service = NULL;
+shellanything::IProcessLauncherService* process_launcher_service = NULL;
 
 class CShellAnythingModule : public ATL::CAtlDllModuleT< CShellAnythingModule >
 {
@@ -250,6 +252,10 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       icon_resolution_service = new shellanything::WindowsIconResolutionService();
       app.SetIconResolutionService(icon_resolution_service);
 
+      // Setup an active process launcher service in ShellAnything's core.
+      process_launcher_service = new shellanything::WindowsProcessLauncherService();
+      app.SetProcessLauncherService(process_launcher_service);
+
       // Setup and starting application
       app.Start();
 
@@ -271,12 +277,14 @@ extern "C" int APIENTRY DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRe
       delete registry_service;
       delete logger_service;
       delete icon_resolution_service;
+      delete process_launcher_service;
       random_service = NULL;
       keyboard_service = NULL;
       clipboard_service = NULL;
       registry_service = NULL;
       logger_service = NULL;
       icon_resolution_service = NULL;
+      process_launcher_service = NULL;
     }
   }
 

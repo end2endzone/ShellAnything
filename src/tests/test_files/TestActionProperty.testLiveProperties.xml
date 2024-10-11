@@ -5,7 +5,7 @@
     <menu name="Test">
       <actions>
         <!-- Setting the clipboard from outside of the scope of ShellAnything -->
-        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Luke&quot;" wait="true" timeout="10" />
+        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Luke&quot;" wait="true" timeout="10" console="false" />
 
         <!-- Expect the live property `clipboard` is updated -->
         <property name="character1" value="${clipboard}" />
@@ -13,7 +13,7 @@
 
         
         <!-- Setting the clipboard from outside of the scope of ShellAnything -->
-        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Leia&quot;" wait="true" timeout="10" />
+        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Leia&quot;" wait="true" timeout="10" console="false" />
 
         <!-- Expect the live property `clipboard` is updated -->
         <property name="character2" value="${clipboard}" />
@@ -21,7 +21,7 @@
 
         
         <!-- Setting the clipboard from outside of the scope of ShellAnything -->
-        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Han&quot;" wait="true" timeout="10" />
+        <exec path="powershell.exe" arguments="Set-Clipboard -Value &quot;Han&quot;" wait="true" timeout="10" console="false" />
 
         <!-- Expect the live property `clipboard` is updated -->
         <property name="character3" value="${clipboard}" />

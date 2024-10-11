@@ -14,6 +14,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ConfigFile.h
   ${CMAKE_SOURCE_DIR}/src/core/ConfigManager.h
   ${CMAKE_SOURCE_DIR}/src/core/SelectionContext.h
+  ${CMAKE_SOURCE_DIR}/src/core/ConsoleLoggerService.h
   ${CMAKE_SOURCE_DIR}/src/core/DefaultSettings.h
   ${CMAKE_SOURCE_DIR}/src/core/Environment.h
   ${CMAKE_SOURCE_DIR}/src/core/Icon.h
@@ -23,6 +24,7 @@ set(SHELLANYTHING_CORE_HEADER_FILES ""
   ${CMAKE_SOURCE_DIR}/src/core/ILiveProperty.h
   ${CMAKE_SOURCE_DIR}/src/core/IClipboardService.h
   ${CMAKE_SOURCE_DIR}/src/core/ILoggerService.h
+  ${CMAKE_SOURCE_DIR}/src/core/IProcessLauncherService.h
   ${CMAKE_SOURCE_DIR}/src/core/IRandomService.h
   ${CMAKE_SOURCE_DIR}/src/core/IRegistryService.h
   ${CMAKE_SOURCE_DIR}/src/core/KeyboardHelper.h
@@ -54,6 +56,7 @@ add_library(sa.core SHARED
   ConfigFile.cpp
   ConfigManager.cpp
   SelectionContext.cpp
+  ConsoleLoggerService.cpp
   DefaultSettings.cpp
   FileMagicManager.h
   FileMagicManager.cpp
@@ -68,6 +71,7 @@ add_library(sa.core SHARED
   ILiveProperty.cpp
   IClipboardService.cpp
   ILoggerService.cpp
+  IProcessLauncherService.cpp
   IRandomService.cpp
   IRegistryService.cpp
   KeyboardHelper.cpp

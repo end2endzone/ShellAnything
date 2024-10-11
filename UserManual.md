@@ -706,6 +706,9 @@ The application support multiple types of actions. The list of each specific act
 
 The &lt;exec&gt; element is used to launch an application. The &lt;exec&gt; element must be added under the &lt;actions&gt; element.
 
+**Note:**
+When a process is created, ShellAnything will set property `process.id` to the process id of the new launched application.
+
 The &lt;exec&gt; elements have the following attributes:
 
 
@@ -754,7 +757,7 @@ For example, the following launch `cmd.exe` and list files and directories recur
 ```
 
 **Note:**
-It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_.
+It is recommanded to use the `wait` attribute with the `timeout` attribute. Without a _timeout_ value, ShellAnything will wait indefinitely until the launched process exits. This can result in system instability. If the launced process freezes, pauses or never exists, it will lock _ShellAnything_ and _File Explorer_ forever.
 
 When combined with other elements, the `wait` attribute allows advanced use case.
 
@@ -773,6 +776,7 @@ Tell ShellAnything to wait until the search is complete before proceeding to the
 
 
 
+
 #### timeout attribute: ####
 
 The `timeout` attribute defines the maximum time to wait in seconds with the `wait` attribute. If the running process fails to exit before the _timeout_ value, a warning is logged and the next actions of the menu are not executed. The value must be numerical. The attribute is optional.
@@ -782,6 +786,34 @@ For example, the following launch `cmd.exe` and list files and directories recur
 <exec path="cmd.exe" wait="true" timeout="60" arguments="/C dir /a /s /b C:\*.*>&quot;${env.TEMP}\files_in_c_drive.txt&quot;" />
 ```
 
+
+
+#### console attribute: ####
+
+The `console` attribute defines how we should display the main window of the launched application. The attribute allow console applications to be launched without a console. The feature is particularly useful for running background tasks. The attribute must be set to a value that evaluates to `false` to enable the feature. See [istrue attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#istrue-attribute) or [isfalse attribute](https://github.com/end2endzone/ShellAnything/blob/master/UserManual.md#isfalse-attribute) logic for details. The attribute is optional.
+
+For example, the following will launch ImageMagick `magick.exe` command line application to convert webp images to jpg :
+```xml
+<exec wait="true" console="off" path="${imagemagick.path}" arguments="&quot;${selection.path}&quot; &quot;${selection.filename.noext}.jpg&quot;" />
+```
+The conversion to JPEG format will be performed without showing a console and no window flickering will be visible.
+
+**Note:**
+* The _console_ attribute may also affects windowed applications and may hide their main graphical user interface.
+* Users must be careful when launching background applications (hidden applications). A background application should not wait for user input or it may never complete/terminate gracefully. Background tasks can also cause system instability if the `wait` attribute is also set and the background process freezes, pauses or never exists because it will lock _ShellAnything_ and _File Explorer_ forever.
+
+
+
+#### pid attribute: ####
+
+The `pid` attribute defines the name of the property to set with the new launch process id.
+
+For example, the following will sets the property `mspaint.process.id` to the process id of `mspaint.exe` :
+```xml
+<exec path="C:\Windows\System32\mspaint.exe" pid="mspaint.process.id" />
+```
+
+The target property is left untouched if the process cannot be launched.
 
 
 #### verb attribute: ####

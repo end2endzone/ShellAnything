@@ -31,6 +31,7 @@
 #include "IKeyboardService.h"
 #include "IRandomService.h"
 #include "IIconResolutionService.h"
+#include "IProcessLauncherService.h"
 
 #include <string>
 
@@ -155,10 +156,25 @@ namespace shellanything
     void SetIconResolutionService(IIconResolutionService* instance);
 
     /// <summary>
-    /// Get the current application random service.
+    /// Get the current application icon resolution service.
     /// </summary>
     /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
     IIconResolutionService* GetIconResolutionService();
+
+    /// <summary>
+    /// Set the current application process launcher service.
+    /// </summary>
+    /// <remarks>
+    /// If a service instance is already set, the caller must properly destroy the old instance.
+    /// </remarks>
+    /// <param name="instance">A valid instance of a the service.</param>
+    void SetProcessLauncherService(IProcessLauncherService* instance);
+
+    /// <summary>
+    /// Get the current application process launcher service.
+    /// </summary>
+    /// <returns>Returns a pointer of the instance that is currently set. Returns NULL if no service is set.</returns>
+    IProcessLauncherService* GetProcessLauncherService();
 
     /// <summary>
     /// Test if application is loaded in a test environment (main's tests executable).
@@ -216,6 +232,7 @@ namespace shellanything
     IKeyboardService* mKeyboard;
     IRandomService* mRandom;
     IIconResolutionService* mIconResolutionService;
+    IProcessLauncherService* mProcessLauncherService;
   };
 
 

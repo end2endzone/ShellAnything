@@ -149,7 +149,7 @@ add_executable(sa.tests
 
 # Group external files as filter for Visual Studio
 source_group("Test Data Files"          FILES ${CONFIGURATION_TEST_FILES})
-source_group("Test Source Files"        FILES ${HEADER_AND_SOURCE_TEST_FILES})
+source_group("Test Source Files"        FILES ${HEADER_AND_SOURCE_TEST_FILES} ${PLUGINS_TEST_FILES})
 
 # Unit test projects requires to link with pthread if also linking with gtest
 if(NOT WIN32)
