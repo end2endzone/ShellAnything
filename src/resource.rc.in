@@ -61,7 +61,13 @@ IDR_SHELLANYTHING         REGISTRY                "shellext.rgs"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_MAIN  ICON  "@CMAKE_SOURCE_DIR@/resources/icons/shellanything.ico"
+IDI_ICON_MAIN             ICON  "@CMAKE_SOURCE_DIR@/resources/icons/shellanything.ico"
+IDI_ICON_SA_TEXT          ICON  "@CMAKE_SOURCE_DIR@/resources/icons/sa-text.ico"
+IDI_ICON_SA_BUBBLE        ICON  "@CMAKE_SOURCE_DIR@/resources/icons/sa-bubble.ico"
+IDI_ICON_MENU01           ICON  "@CMAKE_SOURCE_DIR@/resources/icons/menu01.ico"
+IDI_ICON_MENU02           ICON  "@CMAKE_SOURCE_DIR@/resources/icons/menu02.ico"
+IDI_ICON_MENU03           ICON  "@CMAKE_SOURCE_DIR@/resources/icons/menu03.ico"
+
 
 
 #endif    // English (United States) resources
