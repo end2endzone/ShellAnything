@@ -21,6 +21,7 @@ Changes for 0.10.0
 * Fixed issue #178: Exec action should expose the created process id.
 
 
+
 Changes for 0.9.0
 
 * Fixed issue #111: Move code from the shell extension to the core.
