@@ -1,0 +1,3 @@
+[submodule "third_parties/flat-color-icons"]
+	path = third_parties/flat-color-icons
+	url = https://github.com/icons8/flat-color-icons.git

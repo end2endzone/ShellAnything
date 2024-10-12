@@ -135,6 +135,16 @@ jobs:
       shell: cmd
       run: call ci\github\install_libmagic.bat
 
+    - name: Install ImageMagick
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\install_imagemagick.bat
+
+    - name: Build flat-color-icons ico files
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: call ci\github\build_flat-color-icons.bat
+
     - name: Build Shellanything
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd

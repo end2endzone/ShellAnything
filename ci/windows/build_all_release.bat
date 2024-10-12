@@ -38,7 +38,11 @@ call %PRODUCT_SOURCE_DIR%\ci\windows\install_zlib.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 call %PRODUCT_SOURCE_DIR%\ci\windows\install_libmagic.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
+call %PRODUCT_SOURCE_DIR%\ci\windows\install_imagemagick.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 
+call %PRODUCT_SOURCE_DIR%\ci\windows\build_flat-color-icons.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 call %PRODUCT_SOURCE_DIR%\ci\windows\install_shellanything.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 

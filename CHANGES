@@ -1,6 +1,9 @@
 Changes for 0.10.0
 
+* ShellAnything has a new high-resolution logo icon!
 * Shellanything now features verbose logging mode and command line arguments debugging tools.
+* ShellAnything now packages icons from [icons8/flat-color-icons](https://github.com/icons8/flat-color-icons)
+
 * Fixed issue #6  : (twice) Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
 * Fixed issue #31 : (twice) Error in logs for CContextMenu::GetCommandString()
 * Fixed issue #109: Implement default and verbose logging.
@@ -13,6 +16,7 @@ Changes for 0.10.0
 * Fixed issue #161: Create tools to help quickly find a system icon when creating a menu.
 * Fixed issue #164: Fails to identify icon for HTML files.
 * Fixed issue #167: Improve the quality and accuracy of icon's fileextension attribute resolution (Icon::ResolveFileExtensionIcon()).
+* Fixed issue #171: New logo icon.
 * Fixed issue #177: Execute a console program without showing a window.
 * Fixed issue #178: Exec action should expose the created process id.
 

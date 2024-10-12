@@ -41,6 +41,7 @@ add_subdirectory(windows)
 add_subdirectory(file_explorer_renew)
 add_subdirectory(arguments.debugger.console)
 add_subdirectory(arguments.debugger.window)
+add_subdirectory(flat-color-icons)
 
 if(SHELLANYTHING_BUILD_PLUGINS)
   add_subdirectory(plugins/sa_plugin_process)

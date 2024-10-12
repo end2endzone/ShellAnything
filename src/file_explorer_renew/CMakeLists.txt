@@ -2,7 +2,6 @@ find_package(rapidassist REQUIRED)
 
 set(REFRESH_FILE_EXP_RESOURCE_FILES ""
   resource.h
-  resource.ico
   resource.rc
 )
 
@@ -36,6 +35,8 @@ target_include_directories(file_explorer_renew
     ${GTEST_INCLUDE_DIR}
     rapidassist
     ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_BINARY_DIR}/include # for finding config.h
+    ${CMAKE_BINARY_DIR}
 )
 
 # Define linking dependencies.
