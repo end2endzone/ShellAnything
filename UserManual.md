@@ -1720,9 +1720,21 @@ The system will generates the following property values (note the `\r\n` charact
 
 If you need more flexibility when dealing with multiple files, the system defines the property `selection.multi.separator` that allows customizing the separator when combining multiple files.
 
-By default, this property is set to the value `\r\n` (new line)  when the application initialize.
+By default, this property is set to the value `\r\n` (new line) when the application initialize.
 
-The property can be modified at any time using a [&lt;property&gt;](#property-action) action for changing the property when a menu is executed or with the  [&lt;default&gt;](#default) element to change the value globally (when the `Configuration File` is loaded).
+The property can be modified at any time using a [&lt;property&gt;](#property-action) action or with the [&lt;default&gt;](#default) element to change it globally.
+
+If you mostly need the opposite of the default behavior (double-quotes instead of CRLF), override the value of the property globally when the `Configuration File` is loaded : 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <shell>
+    <default>
+      <property name="selection.multi.separator" value="&quot; &quot;" />
+    </default>
+  </shell>
+</root>
+```
 
 To reset the property back to the default value, use the following &lt;property&gt; action:
 ```xml
@@ -1731,7 +1743,7 @@ To reset the property back to the default value, use the following &lt;property&
 
 **Example #1:**
 
-If an executable must get the list of selected files in a single command line (one after the other), one can set the property `selection.multi.separator` to  `" "` (double quote, space, double quote) and use the string `"${selection.path}"` (including the double quotes) to get the required expanded value:
+If an executable must get the list of selected files in a single command line (one after the other), one can temporary set the property `selection.multi.separator` to `" "` (double quote, space, double quote) and use the string `"${selection.path}"` (including the double quotes) to get the required expanded value:
 
 ```xml
 <actions>
@@ -1740,13 +1752,15 @@ If an executable must get the list of selected files in a single command line (o
   <property name="selection.multi.separator" value="${line.separator}" />
 </actions>
 ```
+
 Which result in the following expanded value:
 ```
 "C:\Program Files (x86)\Winamp\libFLAC.dll" "C:\Program Files (x86)\Winamp\winamp.exe" "C:\Program Files (x86)\Winamp\zlib.dll"
 ```
+
 **Example #2:**
 
-Assume that you want to run a specific command on each of the selected files (for example reset the files attributes), one can set the property `selection.multi.separator` to  `${line.separator}attrib -r -a -s -h "` (including the ending double quote character) and use the string `attrib -r -a -s -h "${selection.filename}"` (including the double quotes) to get the following expanded value:
+Assume that you want to run a specific command on each of the selected files (for example reset the files attributes), one can set the property `selection.multi.separator` to `${line.separator}attrib -r -a -s -h "` (including the ending double quote character) and use the string `attrib -r -a -s -h "${selection.filename}"` (including the double quotes) to get the following expanded value:
 ```
 attrib -r -a -s -h "C:\Program Files (x86)\Winamp\libFLAC.dll"
 attrib -r -a -s -h "C:\Program Files (x86)\Winamp\winamp.exe"
