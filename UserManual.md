@@ -79,6 +79,7 @@ This manual includes a description of the system functionalities and capabilitie
 * [Troubleshooting](#troubleshooting)
   * [Logging support](#logging-support)
   * [Checkout the _Tools_ section](#tools)
+  * [Change the rendering order of your system's shell extension menus](#change-the-rendering-order-of-your-systems-shell-extension-menus)
   * [Missing ampersand character (`&`) in menus](#missing-ampersand-character--in-menus)
   * [Reporting bugs](#reporting-bugs)
 
@@ -2726,6 +2727,33 @@ The verbose mode can be enabled (or disabled) with the following option :
 If both options are specified, the environment variable has priority. 
 
 If no option is specified, verbose mode is disabled.
+
+
+
+## Change the rendering order of your system's shell extension menus ##
+
+ShellAnything does not control in which order the system renders all the registered Shell Extensions. Because of this, your ShellAnything menus could be rendered at the top, middle or the end of Window's Context menu.
+
+This behavior can however be altered.
+
+**Note:**
+Changing the default order of ShellAnything's menu is not officially supported by ShellAnything. The feature is documented as working on Windows 10 (22H2 or later) and Windows 11. This is basically a hack. The method is added to ShellAnything's documentation because some users have a need for it.
+
+Windows renders the registered Shell Extension alphabetically. For example, to change the rendering order of Shell Extensions for directories, you need to rename the desired shell extension's registry key in `HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers`.
+
+For example: you could rename the registry key `HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\ShellAnything` to change ShellAnything's menu order in a Windows context menu. You can rename the key to `!ShellAnything` to have ShellAnything's menus rendered to the top of the context menu. Or you can rename the registry key to `ΩShellAnything` to move ShellAnything's menus to the bottom of the context menu.
+
+This feature is not officially supported. If you unregister or uninstall ShellAnything, the renamed registry key will not be deleted from your system. If you re-register ShellAnything then two registry keys referencing ShellAnything will be registered on the system (`!ShellAnything` and `ShellAnything`). This could lead to adding the menus twice to the context menu.
+
+Another downside is that you need to do this for every locations in the registry where ShellAnything is registered as a shell extension:
+
+* `*` (star character)
+* `Directory`
+* `Directory\Background`
+* `Folder`
+* `Drive`
+
+There is also shell extensions registered under `AllFilesystemObjects` (_HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AllFilesystemObjects\shellex\ContextMenuHandlers_). ShellAnything do not register itself to this file system element. This could create confusion on the rendering order of context menus since `Directory` may (or may not) have priority over `AllFilesystemObjects`.
 
 
 
