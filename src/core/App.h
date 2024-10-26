@@ -189,16 +189,22 @@ namespace shellanything
     std::string GetLogDirectory();
 
     /// <summary>
+    /// Test if the given directory is valid for logging.
+    /// </summary>
+    /// <returns>Returns true if the directory is valid for logging. Returns false otherwise.</returns>
+    bool IsValidLogDirectory(const std::string& path);
+
+    /// <summary>
     /// Get the application's configurations directory.
     /// </summary>
     /// <returns>Returns the path of the directory of the user's Configuration Files.</returns>
     std::string GetConfigurationsDirectory();
 
     /// <summary>
-    /// Test if the given directory is valid for logging.
+    /// Test if the given directory is valid for reading configurations.
     /// </summary>
-    /// <returns>Returns true if the directory is valid for logging. Returns false otherwise.</returns>
-    bool IsValidLogDirectory(const std::string& path);
+    /// <returns>Returns true if the directory is valid for reading configurations. Returns false otherwise.</returns>
+    bool IsValidConfigDirectory(const std::string& path);
 
     /// <summary>
     /// Initialize and start the application ready for usage.

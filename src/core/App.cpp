@@ -27,12 +27,10 @@
 #include "ConfigManager.h"
 #include "PropertyManager.h"
 
-#include "rapidassist/process.h"
-#include "rapidassist/user.h"
-#include "rapidassist/environment.h"
-#include "rapidassist/filesystem.h"
-#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/process_utf8.h"
 #include "rapidassist/user_utf8.h"
+#include "rapidassist/environment_utf8.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/unicode.h"
 
 #include "shellanything/version.h"
@@ -159,7 +157,7 @@ namespace shellanything
 
   bool App::IsTestingEnvironment()
   {
-    std::string process_path = ra::process::GetCurrentProcessPath();
+    std::string process_path = ra::process::GetCurrentProcessPathUtf8();
     if (process_path.find("sa.tests") != std::string::npos)
       return true;
     return false;
@@ -174,7 +172,7 @@ namespace shellanything
 
       //Create 'test_logs' directory under the current executable.
       //When running tests from a developer environment, the 'test_logs' directory is expected to have write access.
-      std::string log_dir = ra::process::GetCurrentProcessDir();
+      std::string log_dir = ra::process::GetCurrentProcessDirUtf8();
       if (!log_dir.empty())
       {
         log_dir.append("\\test_logs");
@@ -185,7 +183,7 @@ namespace shellanything
       //Issue #60 - Unit tests cannot execute from installation directory.
       //If unit tests are executed from the installation directory,
       //the 'test_logs' directory under the current executable is denied write access.
-      log_dir = ra::environment::GetEnvironmentVariable("TEMP");
+      log_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
       if (!log_dir.empty())
       {
         log_dir.append("\\test_logs");
@@ -194,24 +192,23 @@ namespace shellanything
       }
     }
 
-    //This DLL is executed by the shell (File Explorer).
+    //This DLL is most probably executed by the shell (File Explorer).
 
     //By default, GLOG will output log files in %TEMP% directory.
-    //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
-
-    std::string log_dir = ra::user::GetHomeDirectory();
+    //However, I prefer to use %USERPROFILE%\ShellAnything\logs
+    std::string log_dir = ra::user::GetHomeDirectoryUtf8();
     if (!log_dir.empty())
     {
       //We got the %USERPROFILE% directory.
       //Now add our custom path to it
-      log_dir.append("\\ShellAnything\\Logs");
+      log_dir.append("\\" + app_name + "\\logs");
       if (IsValidLogDirectory(log_dir))
         return log_dir;
     }
 
     //Failed getting HOME directory.
     //Fallback to using %TEMP%.
-    log_dir = ra::environment::GetEnvironmentVariable("TEMP");
+    log_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
     return log_dir;
   }
 
@@ -219,7 +216,18 @@ namespace shellanything
   {
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
-    std::string config_dir = home_dir + "\\" + app_name + "\\configs";
+    std::string app_dir = home_dir + "\\" + app_name;
+    std::string config_dir;
+
+    if (!app_dir.empty())
+    {
+      //We got the %USERPROFILE% directory.
+      //Now add our custom path to it
+      config_dir = app_dir + +"\\configs";
+      if (IsValidConfigDirectory(config_dir))
+        return config_dir;
+    }
+
     return config_dir;
   }
 
@@ -237,16 +245,39 @@ namespace shellanything
     //Issue #60 - Unit tests cannot execute from installation directory.
 
     //Check if the directory already exists
-    if (!ra::filesystem::DirectoryExists(path.c_str()))
+    if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
     {
       //Try to create the directory.
-      bool created = ra::filesystem::CreateDirectory(path.c_str());
+      bool created = ra::filesystem::CreateDirectoryUtf8(path.c_str());
       if (!created)
         return false;
     }
 
     //Validate that directory path is writable.
-    bool write_access = HasDirectoryWriteAccess(path);
+    bool write_access = HasDirectoryWriteAccessUtf8(path);
+    if (!write_access)
+      return false; //Write to directory is denied.
+
+    //Write to directory is granted.
+    return true;
+  }
+
+  bool App::IsValidConfigDirectory(const std::string& path)
+  {
+    // Config directory must be accessible for reading.
+    // Write access is optional
+
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
+    {
+      //Try to create the directory.
+      bool created = ra::filesystem::CreateDirectoryUtf8(path.c_str());
+      if (!created)
+        return false;
+    }
+
+    //Validate that directory path is readable.
+    bool write_access = HasDirectoryReadAccessUtf8(path);
     if (!write_access)
       return false; //Write to directory is denied.
 

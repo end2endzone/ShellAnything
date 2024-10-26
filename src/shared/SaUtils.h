@@ -40,10 +40,28 @@ std::string GetCurrentModulePath();
 std::string GetCurrentModulePathUtf8();
 
 /// <summary>
+/// Test if a directory has read access.
+/// </summary>
+/// <returns>Returns true if read access is granted. Returns false otherwise.</returns>
+bool HasDirectoryReadAccess(const std::string& path);
+
+/// <summary>
+/// Test if a directory has read access.
+/// </summary>
+/// <returns>Returns true if read access is granted. Returns false otherwise.</returns>
+bool HasDirectoryReadAccessUtf8(const std::string& path);
+
+/// <summary>
 /// Test if a directory has write access.
 /// </summary>
 /// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
 bool HasDirectoryWriteAccess(const std::string& path);
+
+/// <summary>
+/// Test if a directory has write access.
+/// </summary>
+/// <returns>Returns true if write access is granted. Returns false otherwise.</returns>
+bool HasDirectoryWriteAccessUtf8(const std::string& path);
 
 /// <summary>
 /// Returns true if the application is run for the first time.
