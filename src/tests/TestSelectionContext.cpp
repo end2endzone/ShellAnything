@@ -23,8 +23,11 @@
  *********************************************************************************/
 
 #include "TestSelectionContext.h"
+#include "App.h"
 #include "SelectionContext.h"
 #include "PropertyManager.h"
+#include "SaUtils.h"
+
 #include "rapidassist/process.h"
 #include "rapidassist/filesystem.h"
 #include "rapidassist/testing.h"
@@ -525,11 +528,13 @@ namespace shellanything
     {
       PropertyManager& pmgr = PropertyManager::GetInstance();
 
+      const std::string install_dir = shellanything::App::GetInstallDirectory();
+
       SelectionContext context;
 #ifdef _WIN32
       {
         StringList elements;
-        elements.push_back(ra::process::GetCurrentProcessDir() + "\\configurations\\default.xml");
+        elements.push_back(install_dir + "\\resources\\configurations\\default.xml");
         context.SetElements(elements);
       }
 #else

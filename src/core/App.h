@@ -216,6 +216,19 @@ namespace shellanything
     bool IsValidConfigDirectory(const std::string& path);
 
     /// <summary>
+    /// Get the application's bin directory. The bin directory contains all ShellAnything's executables and binaries.
+    /// </summary>
+    /// <returns>Returns the path of the bin directory.</returns>
+    static std::string GetBinDirectory();
+
+    /// <summary>
+    /// Get the application's installation directory. The installation directory is the root directory selected when the application was installed.
+    /// When running in debug mode or within a development environment, the installation directory is set to the parent directory of `${CMAKE_BIN_DIR}\build\bin\Debug`.
+    /// </summary>
+    /// <returns>Returns the path of the installation directory.</returns>
+    static std::string GetInstallDirectory();
+
+    /// <summary>
     /// Initialize and start the application ready for usage.
     /// </summary>
     /// <returns>Returns true if init and start has succeeded. Returns false otherwise.</returns>

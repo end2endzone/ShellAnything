@@ -378,6 +378,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/resources/installer/bin/register.bat
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
 
 # Resources
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/configurations" DESTINATION ${SHELLANYTHING_INSTALL_RESOURCE_DIR})
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/Windows Icon Tables" DESTINATION ${SHELLANYTHING_INSTALL_RESOURCE_DIR})
 install(FILES ${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico
               ${CMAKE_SOURCE_DIR}/resources/icons/0.1.0.ico

@@ -114,7 +114,7 @@ source_group("Default Configuration Files"          FILES ${CONFIGURATION_DEFAUL
 # Copy default configuration files database to target dir
 add_custom_command( TARGET sa.core POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    ${CMAKE_SOURCE_DIR}/resources/configurations $<TARGET_FILE_DIR:sa.core>/configurations
+                    ${CMAKE_SOURCE_DIR}/resources/configurations $<TARGET_FILE_DIR:sa.core>/../resources/configurations
                     COMMENT "Copying default configurations files database.")
 
 # Copy registration and unregistration scripts to target dir

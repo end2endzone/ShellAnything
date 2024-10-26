@@ -48,10 +48,6 @@ add_custom_target(src_dummy_target
                           "${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in"
 )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/configurations
-        DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR}
-)
-
 install(FILES ${LIBMAGIC_MGC_DIR}/magic.mgc
               ${LIBMAGIC_MGC_DIR}/file.exe
               ${ZLIB_INCLUDE_DIRS}/../bin/zlib.dll

@@ -233,6 +233,20 @@ namespace shellanything
     return config_dir;
   }
 
+  std::string App::GetBinDirectory()
+  {
+    const std::string module_path = GetCurrentModulePathUtf8();
+    const std::string bin_dir = ra::filesystem::GetParentPath(module_path);
+    return bin_dir;
+  }
+
+  std::string App::GetInstallDirectory()
+  {
+    const std::string bin_dir = GetBinDirectory();
+    const std::string install_dir = ra::filesystem::GetParentPath(bin_dir);
+    return install_dir;
+  }
+
   bool App::Start()
   {
     SetupGlobalProperties();
@@ -289,8 +303,7 @@ namespace shellanything
 
   void App::InstallDefaultConfigurations(const std::string& dest_dir)
   {
-    std::string app_path = GetCurrentModulePathUtf8();
-    std::string app_dir = ra::filesystem::GetParentPath(app_path);
+    const std::string install_dir = shellanything::App::GetInstallDirectory();
 
     static const char* default_files[] = {
       "default.xml",
@@ -304,7 +317,7 @@ namespace shellanything
     for (size_t i = 0; i < num_files; i++)
     {
       const char* filename = default_files[i];
-      std::string source_path = app_dir + "\\configurations\\" + filename;
+      std::string source_path = install_dir + "\\resources\\configurations\\" + filename;
       std::string target_path = dest_dir + "\\" + filename;
 
       SA_LOG(INFO) << "Installing configuration file: " << target_path;
