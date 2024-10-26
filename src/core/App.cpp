@@ -219,7 +219,7 @@ namespace shellanything
   {
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
-    std::string config_dir = home_dir + "\\" + app_name;
+    std::string config_dir = home_dir + "\\" + app_name + "\\configs";
     return config_dir;
   }
 
