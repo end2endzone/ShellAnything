@@ -16,18 +16,7 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/version.rc.in ${SHELLANYTHING_VERSION_RC
 
 set(CONFIGURATION_DEFAULT_FILES ""
    ${CMAKE_SOURCE_DIR}/resources/configurations/default.xml
-  "${CMAKE_SOURCE_DIR}/resources/configurations/git.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Hugo.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Mark Text.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2003.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2007.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2010.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2013.xml"
-  "${CMAKE_SOURCE_DIR}/resources/configurations/Microsoft Office 2016.xml"
    ${CMAKE_SOURCE_DIR}/resources/configurations/shellanything.xml
-   ${CMAKE_SOURCE_DIR}/resources/configurations/WinDirStat.xml
 )
 
 # Subprojects
