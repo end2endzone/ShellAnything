@@ -373,8 +373,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config-version.cma
 configure_file(${CMAKE_SOURCE_DIR}/cmake/shellanything-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/shellanything-config.cmake DESTINATION ${SHELLANYTHING_INSTALL_CMAKE_DIR})
 
-install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
-              ${CMAKE_SOURCE_DIR}/resources/unregister.bat
+install(FILES ${CMAKE_SOURCE_DIR}/resources/installer/bin/register.bat
+              ${CMAKE_SOURCE_DIR}/resources/installer/bin/unregister.bat
               DESTINATION ${SHELLANYTHING_INSTALL_BIN_DIR})
 
 # Resources
@@ -473,7 +473,7 @@ set(CPACK_PACKAGE_EXECUTABLES
 # This is intended behavior for ShellAnything.
 set(CPACK_WIX_UPGRADE_GUID "EBEF1698-CA72-480A-9FE3-E8A08E7E03ED")  # as per v0.7.0 and older
 
-set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/wix_license_template.rtf")
+set(CPACK_WIX_LICENSE_RTF  "${CMAKE_SOURCE_DIR}/resources/installer/wix_license_template.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico")
 set(CPACK_WIX_HELP_LINK "https://github.com/end2endzone/ShellAnything")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "${PROJECT_NAME}")
