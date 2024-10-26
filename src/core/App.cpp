@@ -223,7 +223,7 @@ namespace shellanything
     {
       //We got the %USERPROFILE% directory.
       //Now add our custom path to it
-      config_dir = app_dir + +"\\configs";
+      config_dir = app_dir + +"\\configurations";
       if (IsValidConfigDirectory(config_dir))
         return config_dir;
     }
