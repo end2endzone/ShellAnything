@@ -292,11 +292,6 @@ namespace shellanything
 
     static const char* default_files[] = {
       "default.xml",
-      "Microsoft Office 2003.xml",
-      "Microsoft Office 2007.xml",
-      "Microsoft Office 2010.xml",
-      "Microsoft Office 2013.xml",
-      "Microsoft Office 2016.xml",
       "shellanything.xml",
     };
     static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
