@@ -379,6 +379,11 @@ install(FILES ${CMAKE_SOURCE_DIR}/resources/register.bat
 
 # Resources
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/Windows Icon Tables" DESTINATION ${SHELLANYTHING_INSTALL_RESOURCE_DIR})
+install(FILES ${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico
+              ${CMAKE_SOURCE_DIR}/resources/icons/0.1.0.ico
+              ${CMAKE_SOURCE_DIR}/resources/icons/0.2.0.ico
+              ${CMAKE_SOURCE_DIR}/resources/icons/0.2.0-16x16-legacy.ico
+              DESTINATION ${SHELLANYTHING_INSTALL_RESOURCE_DIR}/icons)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/shellanything DESTINATION ${SHELLANYTHING_INSTALL_INCLUDE_DIR})
 install(FILES ${SHELLANYTHING_EXPORT_HEADER}
@@ -390,7 +395,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/licenses DESTINATION ${SHELLANYTHING_INSTA
 install(FILES ${CMAKE_SOURCE_DIR}/docs/screenshot_file.png
               ${CMAKE_SOURCE_DIR}/docs/screenshot_folder.png
               ${CMAKE_SOURCE_DIR}/docs/ShellAnything-splashscreen.jpg
-              ${CMAKE_SOURCE_DIR}/resources/icons/shellanything.ico
               ${CMAKE_CURRENT_BINARY_DIR}/sa_plugin_demo.zip
               DESTINATION ${SHELLANYTHING_INSTALL_DOC_DIR})
 
