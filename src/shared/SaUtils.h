@@ -64,6 +64,20 @@ bool HasDirectoryWriteAccess(const std::string& path);
 bool HasDirectoryWriteAccessUtf8(const std::string& path);
 
 /// <summary>
+/// Rename a file name to another name.
+/// Paths must be specified in as absolute path. If the source directory and the target directories are not the same, the file will be also moved.
+/// </summary>
+/// <returns>Returns true if the operation is successful. Returns false otherwise.</returns>
+bool RenameFile(const std::string& old_path, const std::string& new_path);
+
+/// <summary>
+/// Rename a file name to another name.
+/// Paths must be specified in as absolute path. If the source directory and the target directories are not the same, the file will be also moved.
+/// </summary>
+/// <returns>Returns true if the operation is successful. Returns false otherwise.</returns>
+bool RenameFileUtf8(const std::string& old_path, const std::string& new_path);
+
+/// <summary>
 /// Returns true if the application is run for the first time.
 /// Note, for Windows users, the implementation is based on registry keys in HKEY_CURRENT_USER\Software\name\version.
 /// </summary>

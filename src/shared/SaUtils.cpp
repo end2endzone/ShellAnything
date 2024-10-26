@@ -204,6 +204,31 @@ bool HasDirectoryWriteAccessUtf8(const std::string& path)
   return true;
 }
 
+bool RenameFile(const std::string& old_path, const std::string& new_path)
+{
+  if (std::rename(old_path.c_str(), new_path.c_str()) < 0)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool RenameFileUtf8(const std::string& old_path, const std::string& new_path)
+{
+#ifndef WIN32
+  // Win32 API not available, proceed with a normal ansi rename
+  return RenameFile(old_path, new_path);
+#else
+  std::wstring old_path_w = ra::unicode::Utf8ToUnicode(old_path);
+  std::wstring new_path_w = ra::unicode::Utf8ToUnicode(new_path);
+  if (_wrename(old_path_w.c_str(), new_path_w.c_str()) < 0)
+  {
+    return false;
+  }
+  return true;
+#endif
+}
+
 bool IsFirstApplicationRun(const std::string& name, const std::string& version)
 {
   std::string key = ra::strings::Format("HKEY_CURRENT_USER\\Software\\%s\\%s", name.c_str(), version.c_str());

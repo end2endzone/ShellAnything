@@ -29,6 +29,10 @@
 
 #include "TestSaUtils.h"
 #include "SaUtils.h"
+#include "rapidassist/testing_utf8.h"
+#include "rapidassist/environment_utf8.h"
+#include "rapidassist/random.h"
+#include "rapidassist/filesystem_utf8.h"
 
 namespace shellanything
 {
@@ -62,6 +66,33 @@ namespace shellanything
       ASSERT_TRUE(IsPrintableUtf8("hello world!"));
       ASSERT_TRUE(IsPrintableUtf8("hello\nworld!"));
       ASSERT_TRUE(IsPrintableUtf8("Espa" "\xc3" "\xb1" "ol")); // Español 
+    }
+    //--------------------------------------------------------------------------------------------------
+    TEST_F(TestSaUtils, testRenameFileUtf8)
+    {
+      static const std::string filename_characters = "abcdefghijklmnopqrstuvwxyz0123456789_";
+      std::string temp_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
+      std::string old_filename = ra::random::GetRandomString(16, filename_characters.c_str()) + ".tmp";
+      std::string new_filename = ra::random::GetRandomString(16, filename_characters.c_str()) + ".tmp";
+
+      std::string old_path = temp_dir + "\\" + old_filename;
+      std::string new_path = temp_dir + "\\" + new_filename;
+
+      // assert pre-state
+      ASSERT_TRUE(ra::testing::CreateFileUtf8(old_path.c_str(), 10240)) << "Failed to create file: " << old_path;
+      ASSERT_FALSE(ra::filesystem::FileExistsUtf8(new_path.c_str()));
+
+      // assert operation is successful
+      bool renamed = RenameFileUtf8(old_path, new_path);
+      ASSERT_TRUE(renamed);
+
+      // assert files are actualy renamed
+      ASSERT_FALSE(ra::filesystem::FileExistsUtf8(old_path.c_str()));
+      ASSERT_TRUE (ra::filesystem::FileExistsUtf8(new_path.c_str()));
+
+      // cleanup
+      ra::filesystem::DeleteFileUtf8(old_path.c_str());
+      ra::filesystem::DeleteFileUtf8(new_path.c_str());
     }
     //--------------------------------------------------------------------------------------------------
 
