@@ -169,7 +169,7 @@ A *configuration file* contains the definition of all [&lt;menu&gt;](#Menu) elem
 
 When a user right-click on a file in *Windows Explorer*, the application will load all available *configuration files* and display their content into the displayed context menu.
 
-The list of *Configuration Files* is unique for each users of the system. The files are stored in `C:\Users\%USERNAME%\ShellAnything` directory where `%USERNAME%` is your current Windows session *username*. Note that *Windows Explorer* also support copy & pasting `C:\Users\%USERNAME%\ShellAnything` into an *address bar* to quickly jump to the directory.
+The list of *Configuration Files* is unique for each users of the system. The files are stored in `C:\Users\%USERNAME%\ShellAnything\configurations` directory where `%USERNAME%` is your current Windows session *username*. Note that *Windows Explorer* also support copy & pasting `C:\Users\%USERNAME%\ShellAnything\configurations` into an *address bar* to quickly jump to the directory.
 
 The application support multiple *configuration files* at the same time. One can add new files in the *configuration directory* and the system will automatically detect and load them.
 

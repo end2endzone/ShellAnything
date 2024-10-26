@@ -195,6 +195,15 @@ namespace shellanything
     bool IsValidLogDirectory(const std::string& path);
 
     /// <summary>
+    /// Get the application's configurations legacy directory.
+    /// </summary>
+    /// <remarks>
+    /// Directory was change in issue #108.
+    /// </remarks>
+    /// <returns>Returns the path of the legacy directory of the user's Configuration Files.</returns>
+    std::string GetLegacyConfigurationsDirectory();
+
+    /// <summary>
     /// Get the application's configurations directory.
     /// </summary>
     /// <returns>Returns the path of the directory of the user's Configuration Files.</returns>
@@ -218,6 +227,11 @@ namespace shellanything
     /// </summary>
     /// <param name="dest_dir">The destination directory.</param>
     void InstallDefaultConfigurations(const std::string& dest_dir);
+
+    /// <summary>
+    /// Moved any Configuration Files from the given legacy directory to the official configurations directory.
+    /// </summary>
+    void ClearLegacyConfigurationDirectory(const std::string& legacy_dir);
 
     /// <summary>
     /// Initialize the Configuration Manager to the user's stall the original configuration files to the specified destination directory.

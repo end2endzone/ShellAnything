@@ -212,21 +212,23 @@ namespace shellanything
     return log_dir;
   }
 
+  std::string App::GetLegacyConfigurationsDirectory()
+  {
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string legacy_dir = home_dir + "\\" + app_name;
+    return legacy_dir;
+  }
+
   std::string App::GetConfigurationsDirectory()
   {
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
     std::string app_dir = home_dir + "\\" + app_name;
-    std::string config_dir;
+    std::string config_dir = app_dir + +"\\configurations";
 
-    if (!app_dir.empty())
-    {
-      //We got the %USERPROFILE% directory.
-      //Now add our custom path to it
-      config_dir = app_dir + +"\\configurations";
-      if (IsValidConfigDirectory(config_dir))
-        return config_dir;
-    }
+    if (IsValidConfigDirectory(config_dir))
+      return config_dir;
 
     return config_dir;
   }
@@ -314,16 +316,55 @@ namespace shellanything
     }
   }
 
+  void App::ClearLegacyConfigurationDirectory(const std::string& legacy_dir)
+  {
+    const std::string config_dir = GetConfigurationsDirectory();
+    if (legacy_dir == config_dir)
+      return; // nothing to do
+
+    // Search for xml files directly under legacy_dir
+    ra::strings::StringVector files;
+    static const int depth = 0; // Do not search recursively
+    bool success = ra::filesystem::FindFilesUtf8(files, legacy_dir.c_str(), depth);
+    if (!success)
+      return; // aborted
+
+    // for each file found
+    for (size_t i = 0; i < files.size(); i++)
+    {
+      const std::string& file_path = files[i];
+
+      // Is that a configuration file ?
+      if (ConfigFile::IsValidConfigFile(file_path))
+      {
+        // It does not belongs there. Move it to the new configuration directory.
+
+        std::string file_name = ra::filesystem::GetFilename(file_path.c_str());
+        std::string old_path = file_path;
+        std::string new_path = config_dir + "\\" + file_name;
+
+        SA_LOG(INFO) << "Moving legacy configuration file '" << old_path << "' to '" << new_path << "'.";
+        bool moved = RenameFileUtf8(old_path, new_path);
+        if (!moved)
+        {
+          SA_LOG(ERROR) << "Failed moving configuration file '" << old_path << "' to target file '" << new_path << "'.";
+        }
+      }
+    }
+  }
+
   void App::InitConfigManager()
   {
     shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
 
+    std::string legacy_dir = GetLegacyConfigurationsDirectory();
     std::string config_dir = GetConfigurationsDirectory();
 
     bool first_run = IsFirstApplicationRun(app_name, app_version);
     if (first_run)
     {
       SA_LOG(INFO) << "First application launch.";
+      ClearLegacyConfigurationDirectory(legacy_dir); // Issue #108 moved Configuration Files directory to a new location.
       InstallDefaultConfigurations(config_dir);
     }
 
