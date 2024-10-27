@@ -26,13 +26,12 @@
 #include "LoggerHelper.h"
 #include "ConfigManager.h"
 #include "PropertyManager.h"
+#include "Environment.h"
 
-#include "rapidassist/process.h"
-#include "rapidassist/user.h"
-#include "rapidassist/environment.h"
-#include "rapidassist/filesystem.h"
-#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/process_utf8.h"
 #include "rapidassist/user_utf8.h"
+#include "rapidassist/environment_utf8.h"
+#include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/unicode.h"
 
 #include "shellanything/version.h"
@@ -159,10 +158,18 @@ namespace shellanything
 
   bool App::IsTestingEnvironment()
   {
-    std::string process_path = ra::process::GetCurrentProcessPath();
+    std::string process_path = ra::process::GetCurrentProcessPathUtf8();
     if (process_path.find("sa.tests") != std::string::npos)
       return true;
     return false;
+  }
+
+  std::string App::GetLegacyLogsDirectory()
+  {
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string legacy_dir = home_dir + "\\" + app_name + "\\Logs";
+    return legacy_dir;
   }
 
   std::string App::GetLogDirectory()
@@ -174,7 +181,7 @@ namespace shellanything
 
       //Create 'test_logs' directory under the current executable.
       //When running tests from a developer environment, the 'test_logs' directory is expected to have write access.
-      std::string log_dir = ra::process::GetCurrentProcessDir();
+      std::string log_dir = ra::process::GetCurrentProcessDirUtf8();
       if (!log_dir.empty())
       {
         log_dir.append("\\test_logs");
@@ -185,7 +192,7 @@ namespace shellanything
       //Issue #60 - Unit tests cannot execute from installation directory.
       //If unit tests are executed from the installation directory,
       //the 'test_logs' directory under the current executable is denied write access.
-      log_dir = ra::environment::GetEnvironmentVariable("TEMP");
+      log_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
       if (!log_dir.empty())
       {
         log_dir.append("\\test_logs");
@@ -194,33 +201,86 @@ namespace shellanything
       }
     }
 
-    //This DLL is executed by the shell (File Explorer).
+    //This DLL is most probably executed by the shell (File Explorer).
 
     //By default, GLOG will output log files in %TEMP% directory.
-    //However, I prefer to use %USERPROFILE%\ShellAnything\Logs
 
-    std::string log_dir = ra::user::GetHomeDirectory();
-    if (!log_dir.empty())
+    // Issue #108. Log files directory can be overriden with an option.
+    Environment& env = Environment::GetInstance();
+    if (env.IsOptionSet(Environment::SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME))
+    {
+      std::string log_dir = env.GetOptionValue(Environment::SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME);
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
+    }
+
+    // Issue #108. Log files should be stored in %LOCALAPPDATA%\ShellAnything\logs
+    std::string localappdata_dir = ra::environment::GetEnvironmentVariableUtf8("LOCALAPPDATA");
+    if (!localappdata_dir.empty() && ra::filesystem::DirectoryExistsUtf8(localappdata_dir.c_str()))
+    {
+      std::string log_dir = localappdata_dir + "\\" + app_name + "\\logs";
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
+    }
+
+    // Fallback to %USERPROFILE%\ShellAnything\logs
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    if (!home_dir.empty() && ra::filesystem::DirectoryExistsUtf8(home_dir.c_str()))
     {
       //We got the %USERPROFILE% directory.
-      //Now add our custom path to it
-      log_dir.append("\\ShellAnything\\Logs");
+      std::string log_dir = home_dir + "\\" + app_name + "\\logs";
       if (IsValidLogDirectory(log_dir))
         return log_dir;
     }
 
     //Failed getting HOME directory.
     //Fallback to using %TEMP%.
-    log_dir = ra::environment::GetEnvironmentVariable("TEMP");
-    return log_dir;
+    std::string temp_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
+    return temp_dir;
+  }
+
+  std::string App::GetLegacyConfigurationsDirectory()
+  {
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string legacy_dir = home_dir + "\\" + app_name;
+    return legacy_dir;
   }
 
   std::string App::GetConfigurationsDirectory()
   {
+    // Issue #108. Configuration Files directory can be overriden with an option.
+    Environment& env = Environment::GetInstance();
+    if (env.IsOptionSet(Environment::SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME))
+    {
+      std::string config_dir = env.GetOptionValue(Environment::SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME);
+      if (IsValidConfigDirectory(config_dir))
+        return config_dir;
+    }
+
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
-    std::string config_dir = home_dir + "\\" + app_name;
+    std::string app_dir = home_dir + "\\" + app_name;
+    std::string config_dir = app_dir + +"\\configurations";
+
+    if (IsValidConfigDirectory(config_dir))
+      return config_dir;
+
     return config_dir;
+  }
+
+  std::string App::GetBinDirectory()
+  {
+    const std::string module_path = GetCurrentModulePathUtf8();
+    const std::string bin_dir = ra::filesystem::GetParentPath(module_path);
+    return bin_dir;
+  }
+
+  std::string App::GetInstallDirectory()
+  {
+    const std::string bin_dir = GetBinDirectory();
+    const std::string install_dir = ra::filesystem::GetParentPath(bin_dir);
+    return install_dir;
   }
 
   bool App::Start()
@@ -237,16 +297,39 @@ namespace shellanything
     //Issue #60 - Unit tests cannot execute from installation directory.
 
     //Check if the directory already exists
-    if (!ra::filesystem::DirectoryExists(path.c_str()))
+    if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
     {
       //Try to create the directory.
-      bool created = ra::filesystem::CreateDirectory(path.c_str());
+      bool created = ra::filesystem::CreateDirectoryUtf8(path.c_str());
       if (!created)
         return false;
     }
 
     //Validate that directory path is writable.
-    bool write_access = HasDirectoryWriteAccess(path);
+    bool write_access = HasDirectoryWriteAccessUtf8(path);
+    if (!write_access)
+      return false; //Write to directory is denied.
+
+    //Write to directory is granted.
+    return true;
+  }
+
+  bool App::IsValidConfigDirectory(const std::string& path)
+  {
+    // Config directory must be accessible for reading.
+    // Write access is optional
+
+    //Check if the directory already exists
+    if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
+    {
+      //Try to create the directory.
+      bool created = ra::filesystem::CreateDirectoryUtf8(path.c_str());
+      if (!created)
+        return false;
+    }
+
+    //Validate that directory path is readable.
+    bool write_access = HasDirectoryReadAccessUtf8(path);
     if (!write_access)
       return false; //Write to directory is denied.
 
@@ -256,16 +339,10 @@ namespace shellanything
 
   void App::InstallDefaultConfigurations(const std::string& dest_dir)
   {
-    std::string app_path = GetCurrentModulePathUtf8();
-    std::string app_dir = ra::filesystem::GetParentPath(app_path);
+    const std::string install_dir = shellanything::App::GetInstallDirectory();
 
     static const char* default_files[] = {
       "default.xml",
-      "Microsoft Office 2003.xml",
-      "Microsoft Office 2007.xml",
-      "Microsoft Office 2010.xml",
-      "Microsoft Office 2013.xml",
-      "Microsoft Office 2016.xml",
       "shellanything.xml",
     };
     static const size_t num_files = sizeof(default_files) / sizeof(default_files[0]);
@@ -276,7 +353,7 @@ namespace shellanything
     for (size_t i = 0; i < num_files; i++)
     {
       const char* filename = default_files[i];
-      std::string source_path = app_dir + "\\configurations\\" + filename;
+      std::string source_path = install_dir + "\\resources\\configurations\\" + filename;
       std::string target_path = dest_dir + "\\" + filename;
 
       SA_LOG(INFO) << "Installing configuration file: " << target_path;
@@ -285,6 +362,91 @@ namespace shellanything
       {
         SA_LOG(ERROR) << "Failed coping file '" << source_path << "' to target file '" << target_path << "'.";
       }
+    }
+  }
+
+  void App::ClearLegacyConfigurationDirectory()
+  {
+    const std::string legacy_config_dir = GetLegacyConfigurationsDirectory();
+    const std::string config_dir = GetConfigurationsDirectory();
+    if (legacy_config_dir == config_dir)
+      return; // nothing to do
+
+    // Search for xml files directly under legacy_dir
+    ra::strings::StringVector files;
+    static const int depth = 0; // Do not search recursively
+    bool success = ra::filesystem::FindFilesUtf8(files, legacy_config_dir.c_str(), depth);
+    if (!success)
+      return; // aborted
+
+    // for each file found
+    for (size_t i = 0; i < files.size(); i++)
+    {
+      const std::string& file_path = files[i];
+
+      // Is that a configuration file ?
+      if (ConfigFile::IsValidConfigFile(file_path))
+      {
+        // It does not belongs there. Move it to the new configuration directory.
+
+        std::string file_name = ra::filesystem::GetFilename(file_path.c_str());
+        std::string old_path = file_path;
+        std::string new_path = config_dir + "\\" + file_name;
+
+        SA_LOG(INFO) << "Moving legacy configuration file '" << old_path << "' to '" << new_path << "'.";
+        bool moved = RenameFileUtf8(old_path, new_path);
+        if (!moved)
+        {
+          SA_LOG(ERROR) << "Failed moving configuration file '" << old_path << "' to target file '" << new_path << "'.";
+        }
+      }
+    }
+  }
+
+  void App::ClearLegacyLogsDirectory()
+  {
+    const std::string legacy_logs_dir = GetLegacyLogsDirectory();
+
+    // Search for log files directly under legacy_logs_dir
+    ra::strings::StringVector files;
+    static const int depth = 0; // Do not search recursively
+    bool success = ra::filesystem::FindFilesUtf8(files, legacy_logs_dir.c_str(), depth);
+    if (!success)
+      return; // aborted
+
+    // for each file found
+    for (size_t i = 0; i < files.size(); i++)
+    {
+      const std::string& file_path = files[i];
+
+      // Is that a configuration file ?
+      if (LoggerHelper::IsValidLogFile(file_path))
+      {
+        // It does not belongs there.
+        // Delete the file
+        SA_LOG(INFO) << "Deleting old legacy log file '" << file_path << "'.";
+        bool deleted = ra::filesystem::DeleteFileUtf8(file_path.c_str());
+        if (!deleted)
+        {
+          SA_LOG(ERROR) << "Failed deleting old legacy log file '" << file_path << "'.";
+        }
+      }
+    }
+
+    // Check if the directory is empty.
+    // We need to make this check before calling ra::filesystel::DeleteDirectory() because the
+    // DeleteDirectory function will automatically delete remaining files in order to delete the directory.
+    // We need to make sure the directory is empty first.
+    bool empty = ra::filesystem::IsDirectoryEmptyUtf8(legacy_logs_dir);
+    if (empty)
+    {
+      // Now it is safe to delete the directory
+      SA_LOG(INFO) << "Deleting old legacy log directory '" << legacy_logs_dir << "'.";
+      ra::filesystem::DeleteDirectoryUtf8(legacy_logs_dir.c_str());
+    }
+    else
+    {
+      SA_LOG(ERROR) << "Skipped deleting old legacy log directory '" << legacy_logs_dir << "'. The directory is not empty. The directory likely contains files that are not log files.";
     }
   }
 
@@ -298,6 +460,8 @@ namespace shellanything
     if (first_run)
     {
       SA_LOG(INFO) << "First application launch.";
+      ClearLegacyConfigurationDirectory(); // Issue #108 moved Configuration Files directory to a new location.
+      ClearLegacyLogsDirectory(); // Issue #108 delete previous logs directory.
       InstallDefaultConfigurations(config_dir);
     }
 
@@ -314,10 +478,10 @@ namespace shellanything
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
     std::string config_dir = GetConfigurationsDirectory();
-    std::string log_dir = ra::unicode::AnsiToUtf8(GetLogDirectory());
+    std::string log_dir = GetLogDirectory();
 
     SA_LOG(INFO) << "HOME   directory : " << home_dir.c_str();
-    SA_LOG(INFO) << "Config directory : " << config_dir.c_str();
+    SA_LOG(INFO) << "CONFIG directory : " << config_dir.c_str();
     SA_LOG(INFO) << "LOG    directory : " << log_dir.c_str();
 
     //define global properties

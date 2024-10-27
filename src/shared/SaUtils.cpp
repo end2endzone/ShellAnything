@@ -27,7 +27,7 @@
 #include "rapidassist/errors.h"
 #include "rapidassist/unicode.h"
 #include "rapidassist/strings.h"
-#include "rapidassist/filesystem.h"
+#include "rapidassist/filesystem_utf8.h"
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h> //for MAX_PATH
@@ -114,6 +114,44 @@ std::string GetCurrentModulePathUtf8()
   return path;
 }
 
+//Test if a directory allow read access to the current user.
+//Note: the only way to detect if read access is available is to actually try to list files in the directory
+bool HasDirectoryReadAccess(const std::string& path)
+{
+  //Check if the directory already exists
+  if (!ra::filesystem::DirectoryExists(path.c_str()))
+    return false; //Directory not found. Denied read access.
+
+  ra::strings::StringVector files;
+  bool success = ra::filesystem::FindFiles(files, path.c_str(), 0);
+  if (!success)
+    return false; // Unable to list files in the given directory
+
+  if (files.empty())
+    return true;   // Assume directory is empty
+
+  return true;
+}
+
+//Test if a directory allow read access to the current user.
+//Note: the only way to detect if read access is available is to actually try to list files in the directory
+bool HasDirectoryReadAccessUtf8(const std::string& path)
+{
+  //Check if the directory already exists
+  if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
+    return false; //Directory not found. Denied read access.
+
+  ra::strings::StringVector files;
+  bool success = ra::filesystem::FindFilesUtf8(files, path.c_str(), 0);
+  if (!success)
+    return false; // Unable to list files in the given directory
+
+  if (files.empty())
+    return true;   // Assume directory is empty
+
+  return true;
+}
+
 //Test if a directory allow write access to the current user.
 //Note: the only way to detect if write access is available is to actually write a file
 bool HasDirectoryWriteAccess(const std::string& path)
@@ -138,6 +176,57 @@ bool HasDirectoryWriteAccess(const std::string& path)
   bool deleted = ra::filesystem::DeleteFile(file_path.c_str());
 
   return true;
+}
+
+//Test if a directory allow write access to the current user.
+//Note: the only way to detect if write access is available is to actually write a file
+bool HasDirectoryWriteAccessUtf8(const std::string& path)
+{
+  //Check if the directory already exists
+  if (!ra::filesystem::DirectoryExistsUtf8(path.c_str()))
+    return false; //Directory not found. Denied write access.
+
+  //Generate a random filename to use as a "temporary file".
+  std::string filename = ra::filesystem::GetTemporaryFileName();
+
+  //Try to create a file. This will validate that we have write access to the directory.
+  std::string file_path = path + ra::filesystem::GetPathSeparatorStr() + filename;
+  static const std::string data = __FUNCTION__;
+  bool file_created = ra::filesystem::WriteFileUtf8(file_path, data);
+  if (!file_created)
+    return false; //Write is denied
+
+  //Write is granted
+
+  //Cleaning up
+  bool deleted = ra::filesystem::DeleteFileUtf8(file_path.c_str());
+
+  return true;
+}
+
+bool RenameFile(const std::string& old_path, const std::string& new_path)
+{
+  if (std::rename(old_path.c_str(), new_path.c_str()) < 0)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool RenameFileUtf8(const std::string& old_path, const std::string& new_path)
+{
+#ifndef WIN32
+  // Win32 API not available, proceed with a normal ansi rename
+  return RenameFile(old_path, new_path);
+#else
+  std::wstring old_path_w = ra::unicode::Utf8ToUnicode(old_path);
+  std::wstring new_path_w = ra::unicode::Utf8ToUnicode(new_path);
+  if (_wrename(old_path_w.c_str(), new_path_w.c_str()) < 0)
+  {
+    return false;
+  }
+  return true;
+#endif
 }
 
 bool IsFirstApplicationRun(const std::string& name, const std::string& version)

@@ -23,11 +23,13 @@
  *********************************************************************************/
 
 #include "TestConfiguration.h"
+#include "App.h"
 #include "Workspace.h"
 #include "ConfigManager.h"
 #include "ConfigFile.h"
 #include "Menu.h"
 #include "ActionExecute.h"
+#include "SaUtils.h"
 
 #include "rapidassist/filesystem_utf8.h"
 #include "rapidassist/testing.h"
@@ -94,17 +96,17 @@ namespace shellanything
     TEST_F(TestConfiguration, testIsValidConfigFile)
     {
       static const char* files[] = {
-        //default configuration files
-        "configurations\\default.xml",
-        "configurations\\Microsoft Office 2003.xml",
-        "configurations\\Microsoft Office 2007.xml",
-        "configurations\\Microsoft Office 2010.xml",
-        "configurations\\Microsoft Office 2013.xml",
-        "configurations\\Microsoft Office 2016.xml",
-        "configurations\\shellanything.xml",
-        "configurations\\WinDirStat.xml",
+        //default configuration files (relative to bin directory)
+        "..\\resources\\configurations\\default.xml",
+        "..\\resources\\configurations\\Microsoft Office 2003.xml",
+        "..\\resources\\configurations\\Microsoft Office 2007.xml",
+        "..\\resources\\configurations\\Microsoft Office 2010.xml",
+        "..\\resources\\configurations\\Microsoft Office 2013.xml",
+        "..\\resources\\configurations\\Microsoft Office 2016.xml",
+        "..\\resources\\configurations\\shellanything.xml",
+        "..\\resources\\configurations\\WinDirStat.xml",
 
-        //test configuration files
+        //test configuration files (relative to bin directory)
         "test_files\\samples.xml",
         "test_files\\TestConfigManager.testAssignCommandId.1.xml",
         "test_files\\TestConfigManager.testAssignCommandId.2.xml",
@@ -129,10 +131,13 @@ namespace shellanything
       };
       const size_t num_files = sizeof(files) / sizeof(files[0]);
 
+      const std::string bin_dir = shellanything::App::GetBinDirectory();
+
       //for each test files
       for (size_t i = 0; i < num_files; i++)
       {
-        const std::string path = files[i];
+        const std::string relative_path = files[i];
+        const std::string path = bin_dir + "\\" + relative_path;
         ASSERT_TRUE(ra::filesystem::FileExists(path.c_str())) << "File '" << path.c_str() << "' is not found.";
         ASSERT_TRUE(shellanything::ConfigFile::IsValidConfigFile(path)) << "The file '" << path.c_str() << "' is not a valid configuration file.";
       }
@@ -141,7 +146,8 @@ namespace shellanything
     TEST_F(TestConfiguration, testIsValidConfigFileUtf8)
     {
       static const std::string separator = ra::filesystem::GetPathSeparatorStr();
-      const std::string source_path = "configurations/default.xml";
+      const std::string install_dir = shellanything::App::GetInstallDirectory();
+      const std::string source_path = install_dir + "/resources/configurations/default.xml";
       std::string target_path = ra::filesystem::GetTemporaryDirectory() + separator + ra::testing::GetTestQualifiedName() + ".psi_\xCE\xA8_psi.xml";
 
       //copy default config to the new utf-8 path
@@ -153,7 +159,8 @@ namespace shellanything
     //--------------------------------------------------------------------------------------------------
     TEST_F(TestConfiguration, testLoadFile)
     {
-      const std::string path = "configurations/default.xml";
+      const std::string install_dir = shellanything::App::GetInstallDirectory();
+      const std::string path = install_dir + "/resources/configurations/default.xml";
       std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
       ConfigFile* config = ConfigFile::LoadFile(path, error_message);
 
@@ -168,8 +175,9 @@ namespace shellanything
     {
       //This test validates that Configuration::LoadFile() supports filename with utf-8 characters.
 
+      const std::string install_dir = shellanything::App::GetInstallDirectory();
       static const std::string separator = ra::filesystem::GetPathSeparatorStr();
-      const std::string source_path = "configurations/default.xml";
+      const std::string source_path = install_dir + "/resources/configurations/default.xml";
       std::string target_path = ra::filesystem::GetTemporaryDirectory() + separator + ra::testing::GetTestQualifiedName() + ".psi_\xCE\xA8_psi.xml";
 
       //copy default config to the new utf-8 path

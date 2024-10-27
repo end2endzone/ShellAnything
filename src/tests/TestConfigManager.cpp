@@ -23,6 +23,7 @@
  *********************************************************************************/
 
 #include "TestConfigManager.h"
+#include "App.h"
 #include "Workspace.h"
 #include "QuickLoader.h"
 #include "ConfigManager.h"
@@ -338,7 +339,9 @@ namespace shellanything
     {
       ConfigManager& mgr = ConfigManager::GetInstance();
 
-      const std::string path = "configurations/default.xml";
+      const std::string install_dir = shellanything::App::GetInstallDirectory();
+
+      const std::string path = install_dir + "/resources/configurations/default.xml";
       std::string error_message = ra::testing::GetTestQualifiedName(); //init error message to an unexpected string
       ConfigFile* config = ConfigFile::LoadFile(path, error_message);
 

@@ -1,11 +1,15 @@
 Changes for 0.10.0
 
+* **Breaking change:** The _Configuration Files_ directory has moved from `%USERPROFILE%\ShellAnything` to `%USERPROFILE%\ShellAnything\configurations`. Configuration Files in the old directory will move to the new directory automatically on application first launch. Other files in `%USERPROFILE%\ShellAnything` will not be moved.
+* **Breaking change:** The _logs_ directory has moved from `%USERPROFILE%\ShellAnything\Logs` to `%LOCALAPPDATA%\ShellAnything\logs`. The previous logs directory will be removed on application first launch.
 * ShellAnything has a new high-resolution logo icon!
 * Shellanything now features verbose logging mode and command line arguments debugging tools.
-* ShellAnything now packages icons from [icons8/flat-color-icons](https://github.com/icons8/flat-color-icons)
+* ShellAnything now packages icons from [icons8/flat-color-icons](https://github.com/icons8/flat-color-icons).
 
+Fixes:
 * Fixed issue #6  : (twice) Right-click on a directory with Windows Explorer in the left panel shows the menus twice.
 * Fixed issue #31 : (twice) Error in logs for CContextMenu::GetCommandString()
+* Fixed issue #108: Separate location for log files ? (and exclusions?)
 * Fixed issue #109: Implement default and verbose logging.
 * Fixed issue #110: Create a simple command line arguments debugging application.
 * Fixed issue #148: Can't uninstall.

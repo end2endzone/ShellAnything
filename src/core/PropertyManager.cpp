@@ -648,9 +648,8 @@ namespace shellanything
     shellanything::App& app = shellanything::App::GetInstance();
 
     //define global properties
-    std::string prop_core_module_path = GetCurrentModulePathUtf8();
-    std::string prop_application_directory = ra::filesystem::GetParentPath(prop_core_module_path);
-    std::string prop_install_directory = ra::filesystem::GetParentPath(prop_application_directory);
+    std::string prop_application_directory = app.GetBinDirectory();
+    std::string prop_install_directory = app.GetInstallDirectory();
     std::string prop_path_separator = ra::filesystem::GetPathSeparatorStr();
     std::string prop_line_separator = ra::environment::GetLineSeparator();
 

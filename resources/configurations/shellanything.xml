@@ -36,51 +36,51 @@
         
         <menu name="CONTRIBUTING">
           <menu name="markdown">
-            <visibility exists="${application.directory}\..\CONTRIBUTING.md" />
+            <visibility exists="${application.install.directory}\CONTRIBUTING.md" />
             <icon fileextension="md" />
             <actions>
-              <open path="${application.directory}\..\CONTRIBUTING.md" />
+              <open path="${application.install.directory}\CONTRIBUTING.md" />
             </actions>
           </menu>
           <menu name="html">
-            <visibility exists="${application.directory}\..\CONTRIBUTING.html" />
+            <visibility exists="${application.install.directory}\CONTRIBUTING.html" />
             <icon fileextension="html" />
             <actions>
-              <open path="${application.directory}\..\CONTRIBUTING.html" />
+              <open path="${application.install.directory}\CONTRIBUTING.html" />
             </actions>
           </menu>
         </menu>
         
         <menu name="README">
           <menu name="markdown">
-            <visibility exists="${application.directory}\..\README.md" />
+            <visibility exists="${application.install.directory}\README.md" />
             <icon fileextension="md" />
             <actions>
-              <open path="${application.directory}\..\README.md" />
+              <open path="${application.install.directory}\README.md" />
             </actions>
           </menu>
           <menu name="html">
-            <visibility exists="${application.directory}\..\README.html" />
+            <visibility exists="${application.install.directory}\README.html" />
             <icon fileextension="html" />
             <actions>
-              <open path="${application.directory}\..\README.html" />
+              <open path="${application.install.directory}\README.html" />
             </actions>
           </menu>
         </menu>
         
         <menu name="UserManual">
           <menu name="markdown">
-            <visibility exists="${application.directory}\..\UserManual.md" />
+            <visibility exists="${application.install.directory}\UserManual.md" />
             <icon fileextension="md" />
             <actions>
-              <open path="${application.directory}\..\UserManual.md" />
+              <open path="${application.install.directory}\UserManual.md" />
             </actions>
           </menu>
           <menu name="html">
-            <visibility exists="${application.directory}\..\UserManual.html" />
+            <visibility exists="${application.install.directory}\UserManual.html" />
             <icon fileextension="html" />
             <actions>
-              <open path="${application.directory}\..\UserManual.html" />
+              <open path="${application.install.directory}\UserManual.html" />
             </actions>
           </menu>
         </menu>
@@ -136,22 +136,22 @@
         <menu name="Windows 10 Home">
           <menu name="shell32.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - shell32.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 10 Home - shell32.dll icons.png" />
             </actions>
           </menu>
           <menu name="ieframe.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - ieframe.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 10 Home - ieframe.dll icons.png" />
             </actions>
           </menu>
           <menu name="imageres.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - imageres.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 10 Home - imageres.dll icons.png" />
             </actions>
           </menu>
           <menu name="netshell.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 10 Home - netshell.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 10 Home - netshell.dll icons.png" />
             </actions>
           </menu>
         </menu>
@@ -159,22 +159,22 @@
         <menu name="Windows 11 Pro">
           <menu name="shell32.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - shell32.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 11 Pro - shell32.dll icons.png" />
             </actions>
           </menu>
           <menu name="ieframe.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - ieframe.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 11 Pro - ieframe.dll icons.png" />
             </actions>
           </menu>
           <menu name="imageres.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - imageres.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 11 Pro - imageres.dll icons.png" />
             </actions>
           </menu>
           <menu name="netshell.dll">
             <actions>
-              <open path="${application.directory}\..\resources\Windows Icon Tables\Win 11 Pro - netshell.dll icons.png" />
+              <open path="${application.install.directory}\resources\Windows Icon Tables\Win 11 Pro - netshell.dll icons.png" />
             </actions>
           </menu>
         </menu>
@@ -183,7 +183,7 @@
       <menu name="More configurations files...">
         <icon path="C:\Windows\system32\shell32.dll" index="69" />
         <actions>
-          <open path="${application.directory}\configurations" />
+          <open path="${application.directory}\resources\configurations" />
         </actions>
       </menu>
 
