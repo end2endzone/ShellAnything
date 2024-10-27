@@ -33,6 +33,8 @@ namespace shellanything
   static const std::string EMPTY_VALUE;
 
   const std::string Environment::SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME = "SA_OPTION_LOGGING_VERBOSE";
+  const std::string Environment::SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME = "SA_OPTION_CONFIGURATIONS_DIR";
+  const std::string Environment::SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME = "SA_OPTION_LOGS_DIR";
 
   Environment::Environment()
   {
@@ -65,6 +67,12 @@ namespace shellanything
 
     bool is_true = Validator::IsTrue(value);
     return is_true;
+  }
+
+  std::string Environment::GetOptionValue(const std::string& name) const
+  {
+    std::string value = ra::environment::GetEnvironmentVariableUtf8(name.c_str());
+    return value;
   }
 
   bool Environment::IsOptionFalse(const std::string& name) const

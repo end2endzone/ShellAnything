@@ -54,6 +54,16 @@ namespace shellanything
     /// </summary>
     static const std::string SYSTEM_LOGGING_VERBOSE_ENVIRONMENT_VARIABLE_NAME;
 
+    /// <summary>
+    /// Name of the environment variable that defines the configurations directory path override.
+    /// </summary>
+    static const std::string SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME;
+
+    /// <summary>
+    /// Name of the environment variable that defines the logs directory path override.
+    /// </summary>
+    static const std::string SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME;
+
   public:
 
     /// <summary>
@@ -63,6 +73,13 @@ namespace shellanything
     /// <param name="name">The name of the environment variable to check.</param>
     /// <returns>Returns true if the environment variable is set. Returns false otherwise.</returns>
     bool IsOptionSet(const std::string& name) const;
+
+    /// <summary>
+    /// Get the value of an option.
+    /// </summary>
+    /// <param name="name">The name of the environment variable to check.</param>
+    /// <returns>Returns the value of the given environment variable.</returns>
+    std::string GetOptionValue(const std::string& name) const;
 
     /// <summary>
     /// Check if an environment variable evaluates to true.

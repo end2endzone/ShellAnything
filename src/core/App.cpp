@@ -26,6 +26,7 @@
 #include "LoggerHelper.h"
 #include "ConfigManager.h"
 #include "PropertyManager.h"
+#include "Environment.h"
 
 #include "rapidassist/process_utf8.h"
 #include "rapidassist/user_utf8.h"
@@ -204,6 +205,15 @@ namespace shellanything
 
     //By default, GLOG will output log files in %TEMP% directory.
 
+    // Issue #108. Log files directory can be overriden with an option.
+    Environment& env = Environment::GetInstance();
+    if (env.IsOptionSet(Environment::SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME))
+    {
+      std::string log_dir = env.GetOptionValue(Environment::SYSTEM_LOGS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME);
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
+    }
+
     // Issue #108. Log files should be stored in %LOCALAPPDATA%\ShellAnything\logs
     std::string localappdata_dir = ra::environment::GetEnvironmentVariableUtf8("LOCALAPPDATA");
     if (!localappdata_dir.empty() && ra::filesystem::DirectoryExistsUtf8(localappdata_dir.c_str()))
@@ -239,6 +249,15 @@ namespace shellanything
 
   std::string App::GetConfigurationsDirectory()
   {
+    // Issue #108. Configuration Files directory can be overriden with an option.
+    Environment& env = Environment::GetInstance();
+    if (env.IsOptionSet(Environment::SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME))
+    {
+      std::string config_dir = env.GetOptionValue(Environment::SYSTEM_CONFIGURATIONS_DIR_OVERRIDE_ENVIRONMENT_VARIABLE_NAME);
+      if (IsValidConfigDirectory(config_dir))
+        return config_dir;
+    }
+
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
     std::string app_dir = home_dir + "\\" + app_name;

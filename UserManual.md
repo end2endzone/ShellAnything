@@ -46,7 +46,7 @@ This manual includes a description of the system functionalities and capabilitie
   * [Multi-selection-based properties](#multi-selection-based-properties)
   * [Fixed properties](#fixed-properties)
   * [Default properties](#default-properties)
-* [Environment variables](#environment-variables)
+* [Environment Variables options](#environment-variables-options)
 * [Tools](#tools)
   * [file_explorer_renew](#file_explorer_renew)
   * [arguments.debugger](#argumentsdebugger)
@@ -169,13 +169,15 @@ A *configuration file* contains the definition of all [&lt;menu&gt;](#Menu) elem
 
 When a user right-click on a file in *Windows Explorer*, the application will load all available *configuration files* and display their content into the displayed context menu.
 
-The list of *Configuration Files* is unique for each users of the system. The files are stored in `C:\Users\%USERNAME%\ShellAnything\configurations` directory where `%USERNAME%` is your current Windows session *username*. Note that *Windows Explorer* also support copy & pasting `C:\Users\%USERNAME%\ShellAnything\configurations` into an *address bar* to quickly jump to the directory.
+The list of *Configuration Files* is unique for each users of the system. The files are stored in `C:\Users\%USERNAME%\ShellAnything\configurations` directory where `%USERNAME%` is your current Windows session *username*. Note that you can paste `C:\Users\%USERNAME%\ShellAnything\configurations` into an *address bar* of *Windows Explorer* to quickly jump to the directory.
 
 The application support multiple *configuration files* at the same time. One can add new files in the *configuration directory* and the system will automatically detect and load them.
 
 When a *configuration file* is deleted, the application automatically detect the missing file and properly unload the associated menus which stop displaying their content.
 
 To temporary disable a *configuration file*, one can simply change the file extension from `xml` to `txt`. Change the file extension back to `xml` to re-enable the file.
+
+**Note:** The *Configuration Files* directory can be modified with the `SA_OPTION_CONFIGURATIONS_DIR` environment variable option. See [Environment Variables options](#environment-variables-options) section for details.
 
 
 
@@ -1822,7 +1824,7 @@ For example, the following would define `services.wce.command.start` and `servic
 
 
 
-# Environment variables #
+# Environment Variables options #
 
 ShellAnything default startup behavior can be modified by setting specific pre-defined environment variables. Some features or configuration options can also be enabled or disabled through environment variables. For example, one can define an environment variables to enable verbose logging.
 
@@ -1834,10 +1836,11 @@ All ShellAnything environment variables names are prefixed with `SA_`.
 
 The following table defines the list of pre-defined environment variables for ShellAnything:
 
-| Name                           | Description                                                                                                        |
-|--------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| SA_OPTION_LOGGING_VERBOSE      | Enables [verbose logging](#verbose-logging) when set to a value that evaluates to [true](#istrue-attribute).       |
-
+| Name                           | Description                                                                                                          |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| SA_OPTION_LOGGING_VERBOSE      | Enables [verbose logging](#verbose-logging) when set to a value that evaluates to [true](#istrue-attribute).         |
+| SA_OPTION_CONFIGURATIONS_DIR   | Set to a custom value to change/override the directory where [Configuration Files](#configuration-files) are stored. |
+| SA_OPTION_LOGS_DIR             | Set to a custom value to change/override the directory where [Log Files](#logging-support) are stored.               |
 
 
 
@@ -2652,6 +2655,9 @@ ShellAnything provides logging support for troubleshooting and debugging command
 The logging directory is unique for each users of the system.
 
 The log files are stored in `%LOCALAPPDATA%\ShellAnything\logs` directory. For example, the user `JohnSmith` can find his own ShellAnything log files in directory `C:\Users\JohnSmith\AppData\Local\ShellAnything\logs`.
+
+**Note:** The logging directory can be modified with the `SA_OPTION_LOGS_DIR` environment variable option. See [Environment Variables options](#environment-variables-options) section for details.
+
 
 
 ### Filename Format ###
