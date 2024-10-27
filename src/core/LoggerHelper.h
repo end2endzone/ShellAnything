@@ -66,6 +66,13 @@ namespace shellanything
     /// <returns>Returns true when verbose logging is enabled. Returns false otherwise.</returns>
     static bool IsVerboseLoggingEnabled();
 
+    /// <summary>
+    /// Detect if a given file is a valid log file.
+    /// </summary>
+    /// <param name="path">The file path to check</param>
+    /// <returns>Returns true if the file is a valid log file. Returns false otherwise.</returns>
+    static bool IsValidLogFile(const std::string& path);
+
   private:
     ILoggerService::LOG_LEVEL mLevel;
     bool mIsVerboseStream;

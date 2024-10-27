@@ -163,6 +163,14 @@ namespace shellanything
     return false;
   }
 
+  std::string App::GetLegacyLogsDirectory()
+  {
+    //get home directory of the user
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    std::string legacy_dir = home_dir + "\\" + app_name + "\\Logs";
+    return legacy_dir;
+  }
+
   std::string App::GetLogDirectory()
   {
     //Issue #10 - Change the log directory if run from the unit tests executable
@@ -195,21 +203,30 @@ namespace shellanything
     //This DLL is most probably executed by the shell (File Explorer).
 
     //By default, GLOG will output log files in %TEMP% directory.
-    //However, I prefer to use %USERPROFILE%\ShellAnything\logs
-    std::string log_dir = ra::user::GetHomeDirectoryUtf8();
-    if (!log_dir.empty())
+
+    // Issue #108. Log files should be stored in %LOCALAPPDATA%\ShellAnything\logs
+    std::string localappdata_dir = ra::environment::GetEnvironmentVariableUtf8("LOCALAPPDATA");
+    if (!localappdata_dir.empty() && ra::filesystem::DirectoryExistsUtf8(localappdata_dir.c_str()))
+    {
+      std::string log_dir = localappdata_dir + "\\" + app_name + "\\logs";
+      if (IsValidLogDirectory(log_dir))
+        return log_dir;
+    }
+
+    // Fallback to %USERPROFILE%\ShellAnything\logs
+    std::string home_dir = ra::user::GetHomeDirectoryUtf8();
+    if (!home_dir.empty() && ra::filesystem::DirectoryExistsUtf8(home_dir.c_str()))
     {
       //We got the %USERPROFILE% directory.
-      //Now add our custom path to it
-      log_dir.append("\\" + app_name + "\\logs");
+      std::string log_dir = home_dir + "\\" + app_name + "\\logs";
       if (IsValidLogDirectory(log_dir))
         return log_dir;
     }
 
     //Failed getting HOME directory.
     //Fallback to using %TEMP%.
-    log_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
-    return log_dir;
+    std::string temp_dir = ra::environment::GetEnvironmentVariableUtf8("TEMP");
+    return temp_dir;
   }
 
   std::string App::GetLegacyConfigurationsDirectory()
@@ -329,16 +346,17 @@ namespace shellanything
     }
   }
 
-  void App::ClearLegacyConfigurationDirectory(const std::string& legacy_dir)
+  void App::ClearLegacyConfigurationDirectory()
   {
+    const std::string legacy_config_dir = GetLegacyConfigurationsDirectory();
     const std::string config_dir = GetConfigurationsDirectory();
-    if (legacy_dir == config_dir)
+    if (legacy_config_dir == config_dir)
       return; // nothing to do
 
     // Search for xml files directly under legacy_dir
     ra::strings::StringVector files;
     static const int depth = 0; // Do not search recursively
-    bool success = ra::filesystem::FindFilesUtf8(files, legacy_dir.c_str(), depth);
+    bool success = ra::filesystem::FindFilesUtf8(files, legacy_config_dir.c_str(), depth);
     if (!success)
       return; // aborted
 
@@ -366,18 +384,65 @@ namespace shellanything
     }
   }
 
+  void App::ClearLegacyLogsDirectory()
+  {
+    const std::string legacy_logs_dir = GetLegacyLogsDirectory();
+
+    // Search for log files directly under legacy_logs_dir
+    ra::strings::StringVector files;
+    static const int depth = 0; // Do not search recursively
+    bool success = ra::filesystem::FindFilesUtf8(files, legacy_logs_dir.c_str(), depth);
+    if (!success)
+      return; // aborted
+
+    // for each file found
+    for (size_t i = 0; i < files.size(); i++)
+    {
+      const std::string& file_path = files[i];
+
+      // Is that a configuration file ?
+      if (LoggerHelper::IsValidLogFile(file_path))
+      {
+        // It does not belongs there.
+        // Delete the file
+        SA_LOG(INFO) << "Deleting old legacy log file '" << file_path << "'.";
+        bool deleted = ra::filesystem::DeleteFileUtf8(file_path.c_str());
+        if (!deleted)
+        {
+          SA_LOG(ERROR) << "Failed deleting old legacy log file '" << file_path << "'.";
+        }
+      }
+    }
+
+    // Check if the directory is empty.
+    // We need to make this check before calling ra::filesystel::DeleteDirectory() because the
+    // DeleteDirectory function will automatically delete remaining files in order to delete the directory.
+    // We need to make sure the directory is empty first.
+    bool empty = ra::filesystem::IsDirectoryEmptyUtf8(legacy_logs_dir);
+    if (empty)
+    {
+      // Now it is safe to delete the directory
+      SA_LOG(INFO) << "Deleting old legacy log directory '" << legacy_logs_dir << "'.";
+      ra::filesystem::DeleteDirectoryUtf8(legacy_logs_dir.c_str());
+    }
+    else
+    {
+      SA_LOG(ERROR) << "Skipped deleting old legacy log directory '" << legacy_logs_dir << "'. The directory is not empty. The directory likely contains files that are not log files.";
+    }
+  }
+
   void App::InitConfigManager()
   {
     shellanything::ConfigManager& cmgr = shellanything::ConfigManager::GetInstance();
 
-    std::string legacy_dir = GetLegacyConfigurationsDirectory();
     std::string config_dir = GetConfigurationsDirectory();
 
     bool first_run = IsFirstApplicationRun(app_name, app_version);
     if (first_run)
     {
       SA_LOG(INFO) << "First application launch.";
-      ClearLegacyConfigurationDirectory(legacy_dir); // Issue #108 moved Configuration Files directory to a new location.
+      ClearLegacyConfigurationDirectory(); // Issue #108 moved Configuration Files directory to a new location.
+      ClearLegacyLogsDirectory(); // Issue #108 delete previous logs directory.
       InstallDefaultConfigurations(config_dir);
     }
 
@@ -394,10 +459,10 @@ namespace shellanything
     //get home directory of the user
     std::string home_dir = ra::user::GetHomeDirectoryUtf8();
     std::string config_dir = GetConfigurationsDirectory();
-    std::string log_dir = ra::unicode::AnsiToUtf8(GetLogDirectory());
+    std::string log_dir = GetLogDirectory();
 
     SA_LOG(INFO) << "HOME   directory : " << home_dir.c_str();
-    SA_LOG(INFO) << "Config directory : " << config_dir.c_str();
+    SA_LOG(INFO) << "CONFIG directory : " << config_dir.c_str();
     SA_LOG(INFO) << "LOG    directory : " << log_dir.c_str();
 
     //define global properties

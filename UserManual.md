@@ -2651,9 +2651,7 @@ ShellAnything provides logging support for troubleshooting and debugging command
 
 The logging directory is unique for each users of the system.
 
-The log files are stored in `C:\Users\%USERNAME%\ShellAnything\Logs` directory where `%USERNAME%` matches your current login username.
-For example, the user `JohnSmith` can find his own ShellAnything log files in directory `C:\Users\JohnSmith\ShellAnything\Logs`.
-
+The log files are stored in `%LOCALAPPDATA%\ShellAnything\logs` directory. For example, the user `JohnSmith` can find his own ShellAnything log files in directory `C:\Users\JohnSmith\AppData\Local\ShellAnything\logs`.
 
 
 ### Filename Format ###

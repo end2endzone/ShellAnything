@@ -183,6 +183,12 @@ namespace shellanything
     bool IsTestingEnvironment();
 
     /// <summary>
+    /// Get the application's legacy log directory. The returned directory has write access.
+    /// </summary>
+    /// <returns>Returns the path of the legacy directory that was used by the logging framework.</returns>
+    std::string GetLegacyLogsDirectory();
+
+    /// <summary>
     /// Get the application's log directory. The returned directory has write access.
     /// </summary>
     /// <returns>Returns the path of the directory that should be used by the logging framework.</returns>
@@ -242,9 +248,16 @@ namespace shellanything
     void InstallDefaultConfigurations(const std::string& dest_dir);
 
     /// <summary>
-    /// Moved any Configuration Files from the given legacy directory to the official configurations directory.
+    /// Moved any Configuration Files from the legacy directory to the official configurations directory.
+    /// The term legacy refers to version 0.9.0 and older.
     /// </summary>
-    void ClearLegacyConfigurationDirectory(const std::string& legacy_dir);
+    void ClearLegacyConfigurationDirectory();
+
+    /// <summary>
+    /// Delete any log files from the legacy logs directory.
+    /// The term legacy refers to version 0.9.0 and older.
+    /// </summary>
+    void ClearLegacyLogsDirectory();
 
     /// <summary>
     /// Initialize the Configuration Manager to the user's stall the original configuration files to the specified destination directory.

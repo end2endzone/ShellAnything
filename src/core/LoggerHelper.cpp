@@ -30,6 +30,8 @@
 #include <string>
 
 #include "rapidassist/strings.h"
+#include "rapidassist/filesystem_utf8.h"
+#include "rapidassist/unicode.h"
 
 namespace shellanything
 {
@@ -125,6 +127,27 @@ namespace shellanything
 
     bool has_vebose_logging = Validator::IsTrue(value);
     return has_vebose_logging;
+  }
+
+  bool LoggerHelper::IsValidLogFile(const std::string& path)
+  {
+    std::string file_extension = ra::filesystem::GetFileExtention(path);
+    file_extension = ra::strings::Uppercase(file_extension);
+
+    if (file_extension != "LOG")
+      return false;
+
+    // Peek at the file for validating content
+    std::string data;
+    bool peeked = ra::filesystem::PeekFileUtf8(path, 1024 * 1024, data);
+    if (!peeked)
+      return false;
+
+    bool valid = ra::unicode::IsValidUtf8(data.c_str());
+    if (!valid)
+      return false; // the file might contain binary data
+
+    return true;
   }
 
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
