@@ -1,3 +1,8 @@
+Changes for 0.11.0
+
+* No changes
+
+
 Changes for 0.10.0
 
 * **Breaking change:** The _Configuration Files_ directory has moved from `%USERPROFILE%\ShellAnything` to `%USERPROFILE%\ShellAnything\configurations`. Configuration Files in the old directory will move to the new directory automatically on application first launch. Other files in `%USERPROFILE%\ShellAnything` will not be moved.
