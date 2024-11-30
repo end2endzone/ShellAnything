@@ -16,7 +16,7 @@ target_include_directories(libexprtk
   PUBLIC
     $<INSTALL_INTERFACE:${SHELLANYTHING_INSTALL_INCLUDE_DIR}>  # for clients using the installed library.
   PRIVATE
-    ${PACKAGE_DOWNLOAD_DIR}/exprtk-master
+    ${PACKAGE_DOWNLOAD_DIR}/exprtk-${EXPRTK_TAG}
 )
 
 # Define files that will be part of the installation package.
